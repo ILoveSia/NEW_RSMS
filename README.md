@@ -92,3 +92,5 @@ npm run dev
 1. ✅ 개발환경 설정 완료
 2. 📝 업무화면(Frontend) 개발 예정
 3. 📝 업무서비스(Backend) 개발 예정
+# NEW_RSMS
+NEW 책무구조도 시스템(Responsibility Structure Management System) 
