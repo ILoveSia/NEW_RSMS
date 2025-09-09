@@ -36,3 +36,8 @@
 2025-09-09T12:38:36.887+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
 2025-09-09T12:38:37.026+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
 2025-09-09T12:38:37.053+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Started RsmsApplication in 6.107 seconds (process running for 6.499)
+2025-09-09T12:55:30.646+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-09T12:55:30.651+09:00  INFO 23733 --- [RSMS-Backend] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-09T12:55:30.662+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-09T12:55:30.669+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Shutdown initiated...
+2025-09-09T12:55:30.677+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Shutdown completed.
