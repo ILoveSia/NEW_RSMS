@@ -1,0 +1,167 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  width: 100%;
+  
+  // UI 디자인 나오면 전체 스타일 교체 예정
+}
+
+.input {
+  flex: 1;
+  
+  // 검색 아이콘 스타일링
+  .MuiInputAdornment-root {
+    .MuiSvgIcon-root {
+      transition: color 0.2s ease;
+    }
+  }
+  
+  // 입력 필드 포커스 시 검색 아이콘 색상 변경
+  .MuiInputBase-root.Mui-focused {
+    .MuiInputAdornment-positionStart .MuiSvgIcon-root {
+      color: $color-primary;
+    }
+  }
+}
+
+.filterButton {
+  flex-shrink: 0;
+  
+  &.filterActive {
+    background-color: $color-primary;
+    color: white;
+    
+    &:hover {
+      background-color: darken($color-primary, 10%);
+    }
+  }
+}
+
+// 크기별 스타일 (UI 디자인에 따라 조정 예정)
+.size-small {
+  .input {
+    .MuiInputBase-root {
+      height: 36px;
+    }
+  }
+  
+  .filterButton {
+    height: 36px;
+    min-width: 80px;
+    font-size: 0.875rem;
+  }
+}
+
+.size-medium {
+  .input {
+    .MuiInputBase-root {
+      height: 44px;
+    }
+  }
+  
+  .filterButton {
+    height: 44px;
+    min-width: 88px;
+    font-size: 1rem;
+  }
+}
+
+.size-large {
+  .input {
+    .MuiInputBase-root {
+      height: 52px;
+    }
+  }
+  
+  .filterButton {
+    height: 52px;
+    min-width: 96px;
+    font-size: 1.125rem;
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-mobile) {
+  .searchBar {
+    gap: $spacing-xs;
+  }
+  
+  .filterButton {
+    min-width: auto;
+    padding: $spacing-xs $spacing-sm;
+    
+    // 모바일에서는 아이콘만 표시 옵션
+    .MuiButton-startIcon {
+      margin-right: 0;
+      margin-left: 0;
+    }
+    
+    // 텍스트 숨기기 (필요시 활용)
+    &.iconOnly {
+      .MuiButton-startIcon {
+        margin: 0;
+      }
+      
+      span:not(.MuiButton-startIcon) {
+        display: none;
+      }
+    }
+  }
+}
+
+// 접근성 스타일
+.searchBar {
+  // 포커스 트래핑을 위한 스타일
+  &:focus-within {
+    .input {
+      .MuiInputBase-root {
+        outline: 2px solid $color-primary;
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+// 로딩 상태 스타일
+.input {
+  &.loading {
+    .MuiInputBase-root {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+}
+
+// 비활성화 상태
+.searchBar {
+  &.disabled {
+    .filterButton {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+// 고대비 모드 지원
+@media (prefers-contrast: high) {
+  .filterButton {
+    border-width: 2px;
+    
+    &.filterActive {
+      border-color: $color-primary;
+    }
+  }
+}
+
+// 다크 테마 지원 (추후 UI 디자인에 따라 조정)
+@media (prefers-color-scheme: dark) {
+  .filterButton {
+    &.filterActive {
+      background-color: lighten($color-primary, 10%);
+    }
+  }
+}

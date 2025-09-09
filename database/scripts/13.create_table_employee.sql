@@ -9,6 +9,7 @@ CREATE TABLE rsms.employee (
   job_rank_cd varchar(20) NULL,
 	email varchar(100) NULL,
 	phone_no varchar(20) NULL,
+  address varchar(200) NULL,
 	active BOOLEAN DEFAULT true,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,

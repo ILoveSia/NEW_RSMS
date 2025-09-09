@@ -1,0 +1,198 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+@import '@/styles/ag-grid-theme';
+
+.container {
+  width: 100%;
+  position: relative;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  
+  // UI 디자인 나오면 전체 스타일 교체 예정
+  border: 1px solid $color-border;
+  background: $color-background-paper;
+  
+  // 그림자 효과
+  @include card-shadow;
+  
+  &.loadingState,
+  &.errorState {
+    @include flex-center;
+    background: $color-background-default;
+  }
+}
+
+.grid {
+  width: 100%;
+  height: 100%;
+  
+  // AG-Grid 기본 스타일 오버라이드 (UI 디자인에 따라 조정)
+  &.ag-theme-rsms {
+    // 커스텀 RSMS 테마 (기본 alpine 기반)
+    @extend .ag-theme-alpine;
+    
+    // 색상 변수 커스터마이징
+    --ag-foreground-color: #{$color-text-primary};
+    --ag-background-color: #{$color-background-paper};
+    --ag-header-foreground-color: #{$color-text-primary};
+    --ag-header-background-color: #{$color-background-default};
+    --ag-odd-row-background-color: #{rgba($color-primary, 0.02)};
+    --ag-row-hover-color: #{rgba($color-primary, 0.04)};
+    --ag-selected-row-background-color: #{rgba($color-primary, 0.08)};
+    --ag-border-color: #{$color-border};
+    --ag-primary-color: #{$color-primary};
+    --ag-secondary-color: #{$color-secondary};
+    
+    // 폰트 설정
+    --ag-font-family: inherit;
+    --ag-font-size: 14px;
+    
+    // 간격 설정
+    --ag-grid-size: 8px;
+    --ag-row-height: 48px;
+    --ag-header-height: 48px;
+    
+    // 테두리 설정
+    --ag-borders: solid 1px #{$color-border};
+    --ag-border-radius: #{$border-radius-sm};
+    
+    // 헤더 스타일
+    .ag-header {
+      font-weight: 600;
+      border-bottom: 2px solid $color-border;
+    }
+    
+    // 체크박스 스타일
+    .ag-checkbox-input-wrapper {
+      &.ag-checked {
+        background-color: $color-primary;
+        border-color: $color-primary;
+        
+        &::after {
+          color: white;
+        }
+      }
+    }
+    
+    // 페이지네이션 스타일
+    .ag-paging-panel {
+      border-top: 1px solid $color-border;
+      background: $color-background-default;
+      padding: $spacing-sm $spacing-md;
+      
+      .ag-paging-page-summary-panel,
+      .ag-paging-row-summary-panel {
+        font-size: 0.875rem;
+        color: $color-text-secondary;
+      }
+    }
+    
+    // 필터 스타일
+    .ag-filter-wrapper {
+      border-radius: $border-radius-sm;
+      border: 1px solid $color-border;
+    }
+    
+    // 로딩 오버레이
+    .ag-overlay-loading-wrapper {
+      background: rgba($color-background-paper, 0.95);
+    }
+    
+    // 빈 상태 오버레이
+    .ag-overlay-no-rows-wrapper {
+      background: $color-background-default;
+      
+      .ag-overlay-no-rows-center {
+        color: $color-text-secondary;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-tablet) {
+  .container {
+    border-radius: 0; // 태블릿에서는 둥근 모서리 제거
+    border-left: none;
+    border-right: none;
+  }
+  
+  .grid.ag-theme-rsms {
+    --ag-row-height: 44px;
+    --ag-header-height: 44px;
+    --ag-font-size: 13px;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .container {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .grid.ag-theme-rsms {
+    --ag-row-height: 52px; // 모바일에서는 더 큰 터치 영역
+    --ag-header-height: 48px;
+    --ag-font-size: 14px;
+    
+    // 모바일에서는 일부 컬럼 숨기기 기능 활용
+    .ag-header-cell[col-id*="actions"] {
+      min-width: 60px;
+    }
+    
+    // 스크롤 개선
+    .ag-body-horizontal-scroll {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}
+
+// 접근성 스타일
+.grid.ag-theme-rsms {
+  // 포커스 스타일 강화
+  .ag-cell:focus,
+  .ag-header-cell:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: -2px;
+  }
+  
+  // 고대비 모드 지원
+  @media (prefers-contrast: high) {
+    --ag-border-color: #{darken($color-border, 20%)};
+    --ag-foreground-color: #{darken($color-text-primary, 10%)};
+    
+    .ag-header {
+      font-weight: 700;
+    }
+  }
+  
+  // 모션 감소 선호 사용자 지원
+  @media (prefers-reduced-motion: reduce) {
+    --ag-transition-duration: 0s;
+    
+    .ag-row {
+      transition: none;
+    }
+  }
+}
+
+// 다크 테마 지원 (추후 UI 디자인에 따라 조정)
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+  
+  .grid.ag-theme-rsms {
+    --ag-foreground-color: rgba(255, 255, 255, 0.87);
+    --ag-background-color: #1e1e1e;
+    --ag-header-foreground-color: rgba(255, 255, 255, 0.87);
+    --ag-header-background-color: #2a2a2a;
+    --ag-odd-row-background-color: rgba(255, 255, 255, 0.02);
+    --ag-row-hover-color: rgba(255, 255, 255, 0.04);
+    --ag-selected-row-background-color: rgba(25, 118, 210, 0.12);
+    --ag-border-color: #333;
+  }
+}

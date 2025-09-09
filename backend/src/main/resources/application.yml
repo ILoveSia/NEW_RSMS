@@ -1,5 +1,5 @@
 # RSMS Backend Application Configuration
-# Spring Boot 3.3.5 + Java 21
+# Spring Boot 3.3.5 + Java 21 - 공통 설정
 
 # Server Configuration
 server:
@@ -15,32 +15,18 @@ server:
     include-binding-errors: always
   shutdown: graceful
 
-# Spring Configuration
+# Spring Configuration - 공통 설정
 spring:
   application:
     name: RSMS-Backend
     
   profiles:
-    active: local
+    active: ${SPRING_PROFILES_ACTIVE:local}
     
   main:
     banner-mode: console
     
-  # Database Configuration (PostgreSQL)
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://172.21.174.2:5432/postgres}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1q2w3e4r!}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      pool-name: RSMS-HikariPool
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      leak-detection-threshold: 60000
-      
-  # JPA Configuration
+  # JPA Configuration - 공통
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -50,8 +36,6 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 16
-        format_sql: true
-        use_sql_comments: true
         jdbc:
           batch_size: 20
           batch_versioned_data: true
@@ -59,7 +43,7 @@ spring:
         order_updates: true
     open-in-view: false
     
-  # Session Configuration (Database-based, Redis 추후 전환 가능)
+  # Session Configuration - 공통 (Database-based, Redis 추후 전환 가능)
   session:
     store-type: jdbc
     jdbc:
@@ -68,27 +52,13 @@ spring:
       cleanup-cron: "0 */30 * * * *"  # 30분마다 정리
     timeout: 30m  # 세션 타임아웃 30분
     
-  # Cache Configuration (Ehcache → Redis 전환 가능)
+  # Cache Configuration - 공통 (Ehcache → Redis 전환 가능)
   cache:
     type: jcache
     jcache:
       config: classpath:ehcache.xml
       
-  # Security Configuration
-  security:
-    user:
-      name: admin
-      password: admin123  # 개발용 기본 비밀번호 (운영 시 변경 필수)
-      
-  # Flyway Configuration
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-    sql-migration-prefix: V
-    sql-migration-suffixes: .sql
-    
-  # Jackson Configuration
+  # Jackson Configuration - 공통
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -98,33 +68,13 @@ spring:
       fail-on-unknown-properties: false
     time-zone: Asia/Seoul
     
-# Logging Configuration
-logging:
-  level:
-    root: INFO
-    com.rsms: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: logs/rsms-backend.log
-    max-size: 10MB
-    max-history: 30
-    
-# Management (Actuator)
+# Management (Actuator) - 공통 설정
 management:
   endpoints:
     web:
-      exposure:
-        include: health,info,metrics,prometheus
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
       probes:
         enabled: true
   health:
@@ -148,25 +98,32 @@ springdoc:
     operations-sorter: alpha
   show-actuator: false
   
-# Application Custom Properties
+# RSMS 애플리케이션 공통 속성
 rsms:
   security:
     jwt:
       secret: ${JWT_SECRET:rsms-secret-key-change-in-production}
-      expiration: 86400000  # 24시간
+      expiration: 86400000  # 24시간 (밀리초)
   cors:
-    allowed-origins:
-      - http://localhost:3000
-      - http://localhost:5173
     allowed-methods:
       - GET
       - POST
       - PUT
       - DELETE
+      - PATCH
       - OPTIONS
     allowed-headers:
       - "*"
     allow-credentials: true
   file:
-    upload-dir: ${FILE_UPLOAD_DIR:./uploads}
     max-size: 10MB
+    allowed-extensions:
+      - jpg
+      - jpeg
+      - png
+      - gif
+      - pdf
+      - doc
+      - docx
+      - xls
+      - xlsx

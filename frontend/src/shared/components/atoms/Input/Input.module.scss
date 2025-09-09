@@ -1,0 +1,179 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.input {
+  // 기본 Material-UI 스타일 유지
+  // UI 디자인 나오면 이 부분을 완전히 교체할 예정
+  
+  width: 100%;
+  
+  // 라벨 스타일 (UI 디자인에 따라 조정)
+  .MuiInputLabel-root {
+    font-family: inherit;
+    font-weight: 500;
+  }
+
+  // 입력 필드 기본 스타일
+  .MuiInputBase-root {
+    font-family: inherit;
+    border-radius: $border-radius-md;
+    
+    // 포커스 스타일
+    &.Mui-focused {
+      .MuiOutlinedInput-notchedOutline {
+        border-width: 2px;
+      }
+    }
+  }
+
+  // 도움말 텍스트 스타일
+  .MuiFormHelperText-root {
+    font-family: inherit;
+    font-size: 0.75rem;
+    margin-left: 0;
+    margin-top: $spacing-xs;
+  }
+
+  // 성공 상태 스타일
+  &.success {
+    .MuiOutlinedInput-notchedOutline {
+      border-color: $color-success;
+    }
+    
+    .MuiInputLabel-root.Mui-focused {
+      color: $color-success;
+    }
+    
+    .MuiFormHelperText-root {
+      color: $color-success;
+    }
+  }
+
+  // 로딩 상태
+  &.loading {
+    .MuiInputBase-root {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+
+  // 클리어 가능한 입력 필드
+  &.clearable {
+    .MuiInputBase-root {
+      padding-right: $spacing-xs;
+    }
+  }
+}
+
+// 크기별 스타일 (UI 디자인에 따라 조정 예정)
+.size-small {
+  .MuiInputBase-root {
+    height: 36px;
+    font-size: 0.875rem;
+  }
+  
+  .MuiInputLabel-root {
+    font-size: 0.875rem;
+  }
+}
+
+.size-medium {
+  .MuiInputBase-root {
+    height: 44px;
+    font-size: 1rem;
+  }
+  
+  .MuiInputLabel-root {
+    font-size: 1rem;
+  }
+}
+
+.size-large {
+  .MuiInputBase-root {
+    height: 52px;
+    font-size: 1.125rem;
+  }
+  
+  .MuiInputLabel-root {
+    font-size: 1.125rem;
+  }
+}
+
+// 변형별 스타일 (UI 디자인에 따라 완전 교체 예정)
+.variant-outlined {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+  
+  .MuiOutlinedInput-notchedOutline {
+    border-radius: $border-radius-md;
+  }
+}
+
+.variant-filled {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+  
+  .MuiFilledInput-root {
+    border-radius: $border-radius-md $border-radius-md 0 0;
+    background-color: rgba($color-text-primary, 0.04);
+    
+    &:hover {
+      background-color: rgba($color-text-primary, 0.08);
+    }
+    
+    &.Mui-focused {
+      background-color: rgba($color-text-primary, 0.12);
+    }
+  }
+}
+
+.variant-standard {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-mobile) {
+  .size-small {
+    .MuiInputBase-root {
+      height: 40px;
+    }
+  }
+  
+  .size-medium {
+    .MuiInputBase-root {
+      height: 48px;
+    }
+  }
+  
+  .size-large {
+    .MuiInputBase-root {
+      height: 56px;
+    }
+  }
+}
+
+// 접근성 스타일
+.input {
+  // 포커스 표시자
+  .MuiInputBase-root {
+    &:focus-within {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
+  }
+  
+  // 고대비 모드 지원
+  @media (prefers-contrast: high) {
+    .MuiOutlinedInput-notchedOutline {
+      border-width: 2px;
+    }
+  }
+  
+  // 모션 감소 선호 사용자 지원
+  @media (prefers-reduced-motion: reduce) {
+    .MuiInputBase-root {
+      transition: none;
+    }
+  }
+}

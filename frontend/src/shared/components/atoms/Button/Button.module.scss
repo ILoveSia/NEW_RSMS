@@ -1,0 +1,103 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.button {
+  // 기본 Material-UI 스타일 유지
+  // UI 디자인 나오면 이 부분을 완전히 교체할 예정
+  
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  text-transform: none; // Material-UI 기본 대문자 비활성화
+  border-radius: $border-radius-md;
+  
+  // 포커스 스타일
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  // 로딩 상태
+  &.loading {
+    pointer-events: none;
+    
+    // 로딩 중 약간의 투명도
+    opacity: 0.7;
+  }
+
+  // 비활성화 상태
+  &.disabled {
+    cursor: not-allowed;
+  }
+
+  // 전체 너비
+  &.fullWidth {
+    width: 100%;
+  }
+}
+
+// 크기별 스타일 (UI 디자인에 따라 조정 예정)
+.size-small {
+  padding: $spacing-xs $spacing-sm;
+  font-size: 0.875rem;
+  min-height: 32px;
+}
+
+.size-medium {
+  padding: $spacing-sm $spacing-md;
+  font-size: 1rem;
+  min-height: 40px;
+}
+
+.size-large {
+  padding: $spacing-md $spacing-lg;
+  font-size: 1.125rem;
+  min-height: 48px;
+}
+
+// 변형별 스타일 (UI 디자인에 따라 완전 교체 예정)
+.variant-contained {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+}
+
+.variant-outlined {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+}
+
+.variant-text {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+}
+
+.variant-ghost {
+  // 커스텀 ghost 스타일 (Material-UI text를 기반으로)
+  background: transparent;
+  border: none;
+  color: $color-text-secondary;
+  
+  &:hover {
+    background: rgba($color-primary, 0.04);
+    color: $color-primary;
+  }
+  
+  &:active {
+    background: rgba($color-primary, 0.08);
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-mobile) {
+  .size-small {
+    min-height: 36px;
+  }
+  
+  .size-medium {
+    min-height: 44px;
+  }
+  
+  .size-large {
+    min-height: 52px;
+  }
+}

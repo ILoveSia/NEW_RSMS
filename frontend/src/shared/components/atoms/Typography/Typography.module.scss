@@ -1,0 +1,252 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.typography {
+  // 기본 Material-UI 스타일 유지
+  // UI 디자인 나오면 이 부분을 완전히 교체할 예정
+  
+  font-family: inherit;
+  margin: 0; // 기본 마진 제거
+  
+  // 텍스트 렌더링 최적화
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+// 변형별 스타일 (UI 디자인에 따라 완전 교체 예정)
+.variant-h1 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-h2 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-h3 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-h4 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-h5 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-h6 {
+  // Material-UI 기본 스타일 사용
+  // 디자인 시스템: 폰트 크기, 줄 높이, 굵기 등 조정
+}
+
+.variant-subtitle1 {
+  // Material-UI 기본 스타일 사용
+}
+
+.variant-subtitle2 {
+  // Material-UI 기본 스타일 사용
+}
+
+.variant-body1 {
+  // Material-UI 기본 스타일 사용
+}
+
+.variant-body2 {
+  // Material-UI 기본 스타일 사용
+}
+
+.variant-caption {
+  // Material-UI 기본 스타일 사용
+}
+
+.variant-overline {
+  // Material-UI 기본 스타일 사용
+}
+
+// 색상별 스타일 (UI 디자인에 따라 조정)
+.color-primary {
+  color: $color-primary;
+}
+
+.color-secondary {
+  color: $color-secondary;
+}
+
+.color-error {
+  color: $color-error;
+}
+
+.color-warning {
+  color: $color-warning;
+}
+
+.color-success {
+  color: $color-success;
+}
+
+.color-text-primary {
+  color: $color-text-primary;
+}
+
+.color-text-secondary {
+  color: $color-text-secondary;
+}
+
+.color-text-disabled {
+  color: $color-text-disabled;
+}
+
+// 정렬
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-justify {
+  text-align: justify;
+}
+
+// 글꼴 굵기
+.weight-light {
+  font-weight: 300;
+}
+
+.weight-normal {
+  font-weight: 400;
+}
+
+.weight-medium {
+  font-weight: 500;
+}
+
+.weight-bold {
+  font-weight: 700;
+}
+
+// 줄 높이
+.lineHeight-none {
+  line-height: 1;
+}
+
+.lineHeight-tight {
+  line-height: 1.25;
+}
+
+.lineHeight-normal {
+  line-height: 1.5;
+}
+
+.lineHeight-relaxed {
+  line-height: 1.75;
+}
+
+// 텍스트 스타일
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+// 텍스트 생략
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 여러 줄 생략
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.clamp-5 {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 반응형 스타일 (모바일에서 헤딩 크기 조정)
+@include responsive-breakpoint($breakpoint-mobile) {
+  .variant-h1 {
+    font-size: 2rem; // 기본보다 작게
+  }
+  
+  .variant-h2 {
+    font-size: 1.75rem;
+  }
+  
+  .variant-h3 {
+    font-size: 1.5rem;
+  }
+  
+  .variant-h4 {
+    font-size: 1.25rem;
+  }
+}
+
+// 접근성 스타일
+@media (prefers-contrast: high) {
+  .typography {
+    // 고대비 모드에서 텍스트 대비 강화
+    text-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typography {
+    // 모션 감소 선호 사용자를 위한 설정
+    transition: none;
+  }
+}
+
+// 다크 테마 지원 (추후 UI 디자인에 따라 조정)
+@media (prefers-color-scheme: dark) {
+  .color-text-primary {
+    color: rgba(255, 255, 255, 0.87);
+  }
+  
+  .color-text-secondary {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .color-text-disabled {
+    color: rgba(255, 255, 255, 0.38);
+  }
+}

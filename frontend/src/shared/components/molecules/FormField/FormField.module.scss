@@ -1,0 +1,232 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.formField {
+  // UI 디자인 나오면 전체 스타일 교체 예정
+  width: 100%;
+}
+
+// 간격별 스타일
+.spacing-compact {
+  .verticalLayout > *:not(:last-child) {
+    margin-bottom: $spacing-xs;
+  }
+  
+  .horizontalLayout {
+    gap: $spacing-sm;
+  }
+}
+
+.spacing-normal {
+  .verticalLayout > *:not(:last-child) {
+    margin-bottom: $spacing-sm;
+  }
+  
+  .horizontalLayout {
+    gap: $spacing-md;
+  }
+}
+
+.spacing-comfortable {
+  .verticalLayout > *:not(:last-child) {
+    margin-bottom: $spacing-md;
+  }
+  
+  .horizontalLayout {
+    gap: $spacing-lg;
+  }
+}
+
+// 레이아웃별 스타일
+.verticalLayout {
+  display: flex;
+  flex-direction: column;
+}
+
+.horizontalLayout {
+  display: flex;
+  align-items: flex-start;
+  
+  .labelSection {
+    flex-shrink: 0;
+    padding-top: $spacing-sm; // 입력 필드와 정렬
+    
+    .description {
+      margin-top: $spacing-xs;
+    }
+  }
+  
+  .controlSection {
+    flex: 1;
+    min-width: 0; // flex 아이템 오버플로우 방지
+  }
+}
+
+.inlineLayout {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  
+  .label {
+    order: 2;
+  }
+  
+  .description {
+    order: 3;
+    width: 100%;
+  }
+  
+  .message {
+    order: 4;
+    width: 100%;
+  }
+}
+
+// 라벨 스타일
+.label {
+  display: block;
+  color: $color-text-primary;
+  font-family: inherit;
+  
+  &.labelRequired {
+    .requiredIndicator {
+      color: $color-error;
+      margin-left: 2px;
+    }
+  }
+  
+  &.labelError {
+    color: $color-error;
+  }
+  
+  // 포커스 시 색상 변경 (Material-UI 기본 동작)
+  &.Mui-focused {
+    color: $color-primary;
+    
+    &.labelError {
+      color: $color-error;
+    }
+  }
+}
+
+.requiredIndicator {
+  color: $color-error;
+  font-weight: bold;
+}
+
+// 설명 텍스트
+.description {
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+// 메시지 스타일
+.message {
+  margin-top: $spacing-xs;
+  margin-left: 0; // Material-UI 기본 마진 제거
+  
+  &.messageError {
+    color: $color-error;
+  }
+  
+  &.messageSuccess {
+    color: $color-success;
+  }
+}
+
+// 상태별 스타일
+.formField {
+  &.hasError {
+    .label {
+      color: $color-error;
+    }
+  }
+  
+  &.hasSuccess {
+    .label {
+      color: $color-success;
+    }
+  }
+  
+  &.required {
+    .label::after {
+      // CSS로 필수 표시 추가 (접근성 고려)
+      content: '';
+    }
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-tablet) {
+  .horizontalLayout {
+    flex-direction: column;
+    
+    .labelSection {
+      width: 100% !important;
+      padding-top: 0;
+    }
+    
+    .controlSection {
+      width: 100%;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .inlineLayout {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .label {
+      order: 1;
+    }
+    
+    .description {
+      order: 2;
+    }
+  }
+  
+  .spacing-comfortable {
+    .verticalLayout > *:not(:last-child) {
+      margin-bottom: $spacing-sm; // 모바일에서 간격 줄이기
+    }
+  }
+}
+
+// 접근성 스타일
+.formField {
+  // 고대비 모드 지원
+  @media (prefers-contrast: high) {
+    .label {
+      font-weight: 600;
+    }
+    
+    .requiredIndicator {
+      font-weight: 900;
+    }
+  }
+  
+  // 포커스 표시 강화
+  &:focus-within {
+    .label {
+      color: $color-primary;
+      transition: color 0.2s ease;
+    }
+  }
+}
+
+// 다크 테마 지원 (추후 UI 디자인에 따라 조정)
+@media (prefers-color-scheme: dark) {
+  .label {
+    color: rgba(255, 255, 255, 0.87);
+    
+    &.labelError {
+      color: #f44336;
+    }
+  }
+  
+  .description {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}

@@ -18,7 +18,7 @@
     <!-- 사용자 정보 캐시 -->
     <cache alias="users" uses-template="defaultTemplate">
         <key-type>java.lang.Long</key-type>
-        <value-type>com.rsms.domain.user.entity.User</value-type>
+        <value-type>com.ems.domain.user.entity.User</value-type>
         <expiry>
             <ttl unit="minutes">15</ttl>
         </expiry>
@@ -28,18 +28,6 @@
         </resources>
     </cache>
     
-    <!-- 리스크 정보 캐시 -->
-    <cache alias="risks" uses-template="defaultTemplate">
-        <key-type>java.lang.Long</key-type>
-        <value-type>com.rsms.domain.risk.entity.Risk</value-type>
-        <expiry>
-            <ttl unit="minutes">5</ttl>  <!-- 리스크는 자주 변경될 수 있으므로 짧게 -->
-        </expiry>
-        <resources>
-            <heap unit="entries">10000</heap>
-            <offheap unit="MB">30</offheap>
-        </resources>
-    </cache>
     
     <!-- 대시보드 데이터 캐시 -->
     <cache alias="dashboard" uses-template="defaultTemplate">

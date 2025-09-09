@@ -79,6 +79,6 @@ flyway {
     url = 'jdbc:postgresql://172.21.174.2:5432/postgres'
     user = 'postgres'
     password = '1q2w3e4r!'
-    schemas = ['public']
-    locations = ['filesystem:src/main/resources/db/migration']
+    schemas = ['public', 'rsms']
+    locations = ['classpath:db/migration']
 }
