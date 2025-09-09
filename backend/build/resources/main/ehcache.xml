@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.ehcache.org/v3"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107">
+    
+    <!-- 기본 캐시 템플릿 -->
+    <cache-template name="defaultTemplate">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache-template>
+    
+    <!-- 사용자 정보 캐시 -->
+    <cache alias="users" uses-template="defaultTemplate">
+        <key-type>java.lang.Long</key-type>
+        <value-type>com.rsms.domain.user.entity.User</value-type>
+        <expiry>
+            <ttl unit="minutes">15</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">5000</heap>
+            <offheap unit="MB">20</offheap>
+        </resources>
+    </cache>
+    
+    <!-- 리스크 정보 캐시 -->
+    <cache alias="risks" uses-template="defaultTemplate">
+        <key-type>java.lang.Long</key-type>
+        <value-type>com.rsms.domain.risk.entity.Risk</value-type>
+        <expiry>
+            <ttl unit="minutes">5</ttl>  <!-- 리스크는 자주 변경될 수 있으므로 짧게 -->
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+            <offheap unit="MB">30</offheap>
+        </resources>
+    </cache>
+    
+    <!-- 대시보드 데이터 캐시 -->
+    <cache alias="dashboard" uses-template="defaultTemplate">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="minutes">2</ttl>  <!-- 대시보드는 실시간성이 중요하므로 매우 짧게 -->
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+    
+    <!-- 설정 정보 캐시 (변경이 적으므로 긴 TTL) -->
+    <cache alias="settings" uses-template="defaultTemplate">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="hours">1</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">500</heap>
+        </resources>
+    </cache>
+    
+    <!-- 공통 캐시 (일반적인 용도) -->
+    <cache alias="default" uses-template="defaultTemplate">
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+    </cache>
+    
+</config>

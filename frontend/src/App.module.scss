@@ -1,0 +1,56 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder {
+  @include flex-center;
+  @include flex-column;
+  flex: 1;
+  padding: $spacing-xl;
+  background-color: $color-background-default;
+  
+  h1 {
+    color: $color-text-primary;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-md;
+    text-align: center;
+  }
+  
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-lg;
+    text-align: center;
+    max-width: 600px;
+    line-height: $line-height-relaxed;
+  }
+}
+
+.notFound {
+  @extend .placeholder;
+  
+  h1 {
+    color: $color-error;
+  }
+  
+  p {
+    color: $color-text-secondary;
+  }
+}
+
+// 반응형 조정
+@include mobile {
+  .placeholder {
+    padding: $spacing-lg;
+    
+    h1 {
+      font-size: $font-size-xl;
+    }
+    
+    p {
+      font-size: $font-size-base;
+    }
+  }
+}

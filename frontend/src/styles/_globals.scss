@@ -1,0 +1,121 @@
+// 전역 스타일
+// Reset 및 전역 스타일 정의
+
+// CSS Reset 확장
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px; // 1rem = 16px
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-family-primary;
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  background-color: $color-background-default;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 링크 스타일
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-primary-dark;
+  }
+
+  &:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// 버튼 기본 스타일
+button {
+  font-family: inherit;
+  cursor: pointer;
+  
+  &:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// 폼 요소 기본 스타일
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+// 스크롤바 커스텀 (webkit 브라우저)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-background-paper;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-text-disabled;
+  border-radius: $border-radius-full;
+
+  &:hover {
+    background: $color-text-secondary;
+  }
+}
+
+// 선택 텍스트 스타일
+::selection {
+  background: rgba($color-primary, 0.2);
+  color: $color-text-primary;
+}
+
+::-moz-selection {
+  background: rgba($color-primary, 0.2);
+  color: $color-text-primary;
+}
+
+// 접근성: 포커스 표시
+:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+// 애니메이션 비활성화 선호도 존중
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// 고대비 모드 지원
+@media (prefers-contrast: high) {
+  a {
+    text-decoration: underline;
+  }
+}

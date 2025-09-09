@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Pre-push hooks 실행 중..."
+
+# 전체 테스트 실행
+echo "🧪 전체 테스트 실행 중..."
+
+# Frontend 테스트
+if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+    echo "🔷 Frontend 테스트 중..."
+    cd frontend
+    if grep -q "\"test\":" package.json; then
+        npm run test
+        if [ $? -ne 0 ]; then
+            echo "❌ Frontend 테스트 실패. Push가 중단됩니다."
+            exit 1
+        fi
+    else
+        echo "⚠️  Frontend 테스트 스크립트가 설정되지 않았습니다."
+    fi
+    cd ..
+fi
+
+# Backend 테스트
+if [ -d "backend" ]; then
+    echo "☕ Backend 테스트 중..."
+    cd backend
+    ./gradlew test
+    if [ $? -ne 0 ]; then
+        echo "❌ Backend 테스트 실패. Push가 중단됩니다."
+        exit 1
+    fi
+    cd ..
+fi
+
+echo "✅ 모든 테스트를 통과했습니다. Push를 진행합니다."

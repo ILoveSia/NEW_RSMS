@@ -1,0 +1,172 @@
+# RSMS Backend Application Configuration
+# Spring Boot 3.3.5 + Java 21
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  error:
+    include-message: always
+    include-binding-errors: always
+  shutdown: graceful
+
+# Spring Configuration
+spring:
+  application:
+    name: RSMS-Backend
+    
+  profiles:
+    active: local
+    
+  main:
+    banner-mode: console
+    
+  # Database Configuration (PostgreSQL)
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://172.21.174.2:5432/postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:1q2w3e4r!}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: RSMS-HikariPool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+      
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate  # Flyway로 스키마 관리
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        default_batch_fetch_size: 16
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+    
+  # Session Configuration (Database-based, Redis 추후 전환 가능)
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never  # Flyway로 관리
+      table-name: SPRING_SESSION
+      cleanup-cron: "0 */30 * * * *"  # 30분마다 정리
+    timeout: 30m  # 세션 타임아웃 30분
+    
+  # Cache Configuration (Ehcache → Redis 전환 가능)
+  cache:
+    type: jcache
+    jcache:
+      config: classpath:ehcache.xml
+      
+  # Security Configuration
+  security:
+    user:
+      name: admin
+      password: admin123  # 개발용 기본 비밀번호 (운영 시 변경 필수)
+      
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    sql-migration-prefix: V
+    sql-migration-suffixes: .sql
+    
+  # Jackson Configuration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: Asia/Seoul
+    
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.rsms: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/rsms-backend.log
+    max-size: 10MB
+    max-history: 30
+    
+# Management (Actuator)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: false
+  
+# Application Custom Properties
+rsms:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:rsms-secret-key-change-in-production}
+      expiration: 86400000  # 24시간
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:5173
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+  file:
+    upload-dir: ${FILE_UPLOAD_DIR:./uploads}
+    max-size: 10MB

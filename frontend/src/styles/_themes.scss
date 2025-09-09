@@ -1,0 +1,72 @@
+// 테마 스타일
+// 라이트/다크 테마 지원 (향후 확장 가능)
+
+// 기본 라이트 테마
+:root {
+  // Primary Colors
+  --color-primary: #{$color-primary};
+  --color-primary-light: #{$color-primary-light};
+  --color-primary-dark: #{$color-primary-dark};
+
+  // Secondary Colors  
+  --color-secondary: #{$color-secondary};
+  --color-secondary-light: #{$color-secondary-light};
+  --color-secondary-dark: #{$color-secondary-dark};
+
+  // System Colors
+  --color-success: #{$color-success};
+  --color-warning: #{$color-warning};
+  --color-error: #{$color-error};
+  --color-info: #{$color-info};
+
+  // Text Colors
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-text-disabled: #{$color-text-disabled};
+
+  // Background Colors
+  --color-background-default: #{$color-background-default};
+  --color-background-paper: #{$color-background-paper};
+  --color-divider: #{$color-divider};
+}
+
+// 다크 테마 (향후 구현)
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --color-primary: #90caf9;
+//     --color-text-primary: #ffffff;
+//     --color-text-secondary: #b0b0b0;
+//     --color-background-default: #121212;
+//     --color-background-paper: #1e1e1e;
+//     --color-divider: #404040;
+//   }
+// }
+
+// 다크 테마 클래스 (수동 토글용)
+// .dark-theme {
+//   --color-primary: #90caf9;
+//   --color-text-primary: #ffffff;
+//   --color-text-secondary: #b0b0b0;
+//   --color-background-default: #121212;
+//   --color-background-paper: #1e1e1e;
+//   --color-divider: #404040;
+// }
+
+// 테마 적용 유틸리티 클래스
+.theme-light {
+  color-scheme: light;
+}
+
+.theme-dark {
+  color-scheme: dark;
+}
+
+// 고대비 테마 (접근성)
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #0000ff;
+    --color-text-primary: #000000;
+    --color-background-default: #ffffff;
+    --color-divider: #000000;
+  }
+}

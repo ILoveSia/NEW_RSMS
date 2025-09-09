@@ -1,0 +1,63 @@
+# Local Development Configuration
+
+spring:
+  # Database Configuration (WSL PostgreSQL)
+  datasource:
+    url: jdbc:postgresql://172.21.174.2:5432/postgres
+    username: postgres
+    password: 1q2w3e4r!
+    
+  # JPA Configuration for Development
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway 사용
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        
+  # Session Configuration
+  session:
+    timeout: 60m  # 개발 시 긴 세션 시간
+    
+  # Security Configuration (개발용)
+  security:
+    user:
+      name: admin
+      password: admin123
+      
+# Logging Configuration (개발용 상세 로그)
+logging:
+  level:
+    root: INFO
+    com.rsms: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.session: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    
+# Management Endpoints (개발용 모든 엔드포인트 노출)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      
+# RSMS Custom Properties (Development)
+rsms:
+  cors:
+    allowed-origins:
+      - http://localhost:3000   # React 개발 서버
+      - http://localhost:5173   # Vite 개발 서버
+      - http://127.0.0.1:3000
+      - http://127.0.0.1:5173
+  file:
+    upload-dir: ./dev-uploads
+    max-size: 50MB  # 개발 시 큰 파일 허용

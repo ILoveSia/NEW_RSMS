@@ -1,0 +1,60 @@
+// ===================================
+// RSMS Main Styles Entry Point
+// CSS Modules + SCSS Architecture
+// ===================================
+
+// Import order is important!
+// Variables must come first, then mixins, then base styles
+
+// 1️⃣ Variables (색상, 폰트, 스페이싱 등)
+@import './variables';
+
+// 2️⃣ Mixins (재사용 가능한 스타일 함수들)
+@import './mixins';
+
+// 3️⃣ Base styles (리셋, 기본 스타일, 유틸리티)
+@import './base';
+
+// 4️⃣ AG Grid 테마 (전역으로 적용)
+@import './ag-grid-theme';
+
+// ===================================
+// Global Component Overrides
+// ===================================
+
+// Material-UI 글로벌 오버라이드
+.MuiCssBaseline-root {
+  font-family: $font-family-base;
+}
+
+// Toast 스타일링
+.Toastify__toast {
+  font-family: $font-family-base;
+  border-radius: $border-radius-lg;
+}
+
+.Toastify__toast--success {
+  background-color: $color-success;
+}
+
+.Toastify__toast--error {
+  background-color: $color-error;
+}
+
+.Toastify__toast--warning {
+  background-color: $color-warning;
+}
+
+.Toastify__toast--info {
+  background-color: $color-info;
+}
+
+// React Router 링크 기본 스타일 제거
+.router-link {
+  text-decoration: none;
+  color: inherit;
+  
+  &:hover {
+    text-decoration: none;
+  }
+}

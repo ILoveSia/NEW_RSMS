@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Pre-commit hooks 실행 중..."
+
+# Lint-staged 실행
+npx lint-staged
+
+# 커스텀 검사 실행
+echo "📋 코드 품질 검사 중..."
+
+# Frontend 타입 체크
+if [ -d "frontend" ]; then
+    echo "🔷 Frontend TypeScript 검사 중..."
+    cd frontend
+    npm run type-check
+    if [ $? -ne 0 ]; then
+        echo "❌ TypeScript 타입 오류 발견. 커밋이 중단됩니다."
+        exit 1
+    fi
+    cd ..
+fi
+
+# Backend 컴파일 검사
+if [ -d "backend" ]; then
+    echo "☕ Backend Java 컴파일 검사 중..."
+    cd backend
+    ./gradlew compileJava compileTestJava
+    if [ $? -ne 0 ]; then
+        echo "❌ Java 컴파일 오류 발견. 커밋이 중단됩니다."
+        exit 1
+    fi
+    cd ..
+fi
+
+echo "✅ 모든 검사를 통과했습니다. 커밋을 진행합니다."

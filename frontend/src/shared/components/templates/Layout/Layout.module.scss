@@ -1,0 +1,185 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $color-background-default;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  background-color: $color-background-paper;
+  border-bottom: 1px solid $color-border-default;
+  box-shadow: $shadow-sm;
+  
+  .headerContent {
+    @include container($breakpoint-2xl);
+    @include flex-between;
+    height: $header-height;
+    padding: 0 $spacing-lg;
+    
+    @include md {
+      padding: 0 $spacing-xl;
+    }
+  }
+  
+  .logo {
+    @include flex-start;
+    gap: $spacing-sm;
+    
+    h1 {
+      margin: 0;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $color-primary;
+      line-height: 1;
+    }
+    
+    span {
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      font-weight: $font-weight-medium;
+      
+      @include mobile {
+        display: none;
+      }
+    }
+  }
+  
+  .navigation {
+    @include flex-start;
+    gap: $spacing-lg;
+    
+    @include mobile {
+      display: none; // 모바일에서는 햄버거 메뉴로 대체 예정
+    }
+    
+    .navItem {
+      @include transition(color);
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      text-decoration: none;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      
+      &:hover {
+        color: $color-primary;
+        background-color: rgba($color-primary, 0.04);
+      }
+      
+      &.active {
+        color: $color-primary;
+        background-color: rgba($color-primary, 0.08);
+      }
+    }
+  }
+  
+  .userArea {
+    @include flex-end;
+    gap: $spacing-md;
+    
+    .userName {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      
+      @include mobile {
+        display: none;
+      }
+    }
+    
+    .userMenu {
+      @include flex-center;
+      width: 40px;
+      height: 40px;
+      border-radius: $border-radius-full;
+      background-color: $color-gray-100;
+      cursor: pointer;
+      @include transition(background-color);
+      
+      &:hover {
+        background-color: $color-gray-200;
+      }
+    }
+  }
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  
+  .content {
+    flex: 1;
+    width: 100%;
+    max-width: $breakpoint-2xl;
+    margin: 0 auto;
+    padding: $spacing-lg;
+    
+    @include md {
+      padding: $spacing-xl;
+    }
+  }
+}
+
+.footer {
+  background-color: $color-gray-50;
+  border-top: 1px solid $color-border-light;
+  
+  .footerContent {
+    @include container($breakpoint-2xl);
+    @include flex-between;
+    height: $footer-height;
+    padding: 0 $spacing-lg;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    
+    @include md {
+      padding: 0 $spacing-xl;
+    }
+    
+    @include mobile {
+      flex-direction: column;
+      gap: $spacing-xs;
+      height: auto;
+      padding: $spacing-md $spacing-lg;
+      text-align: center;
+    }
+  }
+}
+
+// 모바일 대응을 위한 반응형 조정
+@include mobile {
+  .layout {
+    .header {
+      .headerContent {
+        padding: 0 $spacing-md;
+      }
+    }
+    
+    .main {
+      .content {
+        padding: $spacing-md;
+      }
+    }
+  }
+}
+
+// 다크모드 대응 (미래 확장)
+@include theme-dark {
+  .layout {
+    background-color: #1a1a1a;
+    
+    .header {
+      background-color: #2d2d2d;
+      border-bottom-color: #404040;
+    }
+    
+    .footer {
+      background-color: #2d2d2d;
+      border-top-color: #404040;
+    }
+  }
+}

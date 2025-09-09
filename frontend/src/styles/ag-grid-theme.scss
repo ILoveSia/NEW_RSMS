@@ -1,0 +1,249 @@
+// ===================================
+// RSMS AG-Grid Custom Theme
+// Based on ag-theme-alpine with RSMS customizations
+// ===================================
+
+// AG-Grid RSMS 커스텀 테마
+.ag-theme-rsms {
+  // 베이스 테마 상속
+  @extend .ag-theme-alpine;
+  
+  // SCSS 변수를 AG-Grid CSS 변수로 매핑
+  --ag-background-color: #{$color-background-paper};
+  --ag-foreground-color: #{$color-text-primary};
+  --ag-border-color: #{$color-border-light};
+  --ag-secondary-border-color: #{$color-border-default};
+  --ag-primary-color: #{$color-primary};
+  --ag-accent-color: #{$color-primary};
+  
+  // Header
+  --ag-header-background-color: #{$color-gray-50};
+  --ag-header-foreground-color: #{$color-text-primary};
+  --ag-header-cell-hover-background-color: #{$color-gray-100};
+  --ag-header-cell-moving-background-color: #{$color-primary};
+  
+  // Rows
+  --ag-row-height: 48px;
+  --ag-row-border-color: #{$color-border-light};
+  --ag-row-hover-color: #{rgba($color-primary, 0.04)};
+  --ag-odd-row-background-color: #{$color-gray-25};
+  --ag-selected-row-background-color: #{rgba($color-primary, 0.08)};
+  
+  // Cells
+  --ag-cell-horizontal-padding: #{$spacing-sm};
+  --ag-cell-widget-spacing: #{$spacing-xs};
+  
+  // Fonts
+  --ag-font-family: #{$font-family-base};
+  --ag-font-size: #{$font-size-sm};
+  
+  // Icons
+  --ag-icon-font-family: 'agGridMaterial';
+  
+  // Borders and spacing
+  --ag-borders: solid 1px;
+  --ag-border-radius: #{$border-radius-md};
+  --ag-wrapper-border-radius: #{$border-radius-lg};
+  
+  // 커스텀 스타일링
+  .ag-header {
+    border-bottom: 2px solid $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+  
+  .ag-header-cell {
+    @include transition(background-color, 0.2s);
+    
+    &:not(.ag-header-cell-moving) {
+      border-right: 1px solid $color-border-light;
+    }
+    
+    &:hover {
+      background-color: $color-gray-100;
+    }
+  }
+  
+  .ag-header-cell-text {
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+  
+  // 행 스타일
+  .ag-row {
+    @include transition(background-color, 0.15s);
+    border-bottom: 1px solid $color-border-light;
+    
+    &:hover {
+      background-color: rgba($color-primary, 0.04) !important;
+    }
+    
+    &.ag-row-selected {
+      background-color: rgba($color-primary, 0.08) !important;
+      border-left: 3px solid $color-primary;
+    }
+    
+    &.ag-row-even {
+      background-color: $color-gray-25;
+    }
+  }
+  
+  // 셀 스타일
+  .ag-cell {
+    border-right: 1px solid $color-border-light;
+    @include transition(all, 0.15s);
+    
+    &:focus-within {
+      outline: 2px solid $color-primary;
+      outline-offset: -2px;
+    }
+  }
+  
+  // 정렬 표시
+  .ag-sort-ascending-icon,
+  .ag-sort-descending-icon {
+    color: $color-primary !important;
+  }
+  
+  .ag-sort-none-icon {
+    color: $color-text-secondary;
+  }
+  
+  // 필터
+  .ag-filter-input {
+    border: 1px solid $color-border-default !important;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs !important;
+    font-family: $font-family-base;
+    
+    &:focus {
+      border-color: $color-primary !important;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
+    }
+  }
+  
+  .ag-filter-apply-panel-button {
+    background-color: $color-primary;
+    color: white;
+    border: none;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs $spacing-sm;
+    @include transition(background-color);
+    
+    &:hover {
+      background-color: $color-primary-dark;
+    }
+  }
+  
+  // 페이지네이션
+  .ag-paging-panel {
+    border-top: 1px solid $color-border-default;
+    background-color: $color-background-paper;
+    padding: $spacing-sm;
+    font-family: $font-family-base;
+  }
+  
+  .ag-paging-button {
+    @include transition(all, 0.2s);
+    border: 1px solid $color-border-default;
+    background-color: $color-background-paper;
+    color: $color-text-primary;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs;
+    margin: 0 2px;
+    
+    &:hover:not(.ag-disabled) {
+      background-color: $color-primary;
+      color: white;
+      border-color: $color-primary;
+    }
+    
+    &.ag-selected {
+      background-color: $color-primary;
+      color: white;
+      border-color: $color-primary;
+    }
+    
+    &.ag-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+  
+  .ag-paging-page-summary-panel {
+    color: $color-text-secondary;
+  }
+  
+  // 로딩 오버레이
+  .ag-overlay-loading-wrapper {
+    background-color: rgba($color-background-paper, 0.8);
+  }
+  
+  .ag-loading {
+    color: $color-primary;
+  }
+  
+  // 스크롤바 커스터마이징
+  .ag-body-viewport {
+    @include custom-scrollbar(8px, $color-gray-100, $color-gray-400);
+  }
+  
+  .ag-body-horizontal-scroll-viewport {
+    @include custom-scrollbar(8px, $color-gray-100, $color-gray-400);
+  }
+  
+  // 컨텍스트 메뉴
+  .ag-menu {
+    background-color: $color-background-paper;
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-lg;
+    
+    .ag-menu-option {
+      @include transition(background-color);
+      
+      &:hover {
+        background-color: rgba($color-primary, 0.04);
+      }
+    }
+  }
+  
+  // 체크박스
+  .ag-checkbox-input-wrapper {
+    input[type="checkbox"] {
+      accent-color: $color-primary;
+    }
+  }
+  
+  // 셀 에디터
+  .ag-cell-editor input {
+    border: 1px solid $color-primary !important;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs;
+    font-family: $font-family-base;
+  }
+  
+  // 반응형 조정
+  @include tablet {
+    --ag-row-height: 40px;
+    --ag-font-size: #{$font-size-xs};
+    
+    .ag-cell {
+      padding: $spacing-xs;
+    }
+    
+    .ag-header-cell {
+      padding: $spacing-xs;
+    }
+  }
+  
+  @include mobile {
+    --ag-row-height: 36px;
+    --ag-font-size: #{$font-size-xs};
+    --ag-cell-horizontal-padding: #{$spacing-xs};
+    
+    .ag-header-cell-text {
+      font-size: $font-size-xs;
+    }
+  }
+}

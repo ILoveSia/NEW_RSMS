@@ -1,0 +1,35 @@
+{
+  "recommendations": [
+    // 필수 확장
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next", 
+    "redhat.java",
+    "vscjava.vscode-java-pack",
+    
+    // 린팅 및 포맷팅
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-json",
+    
+    // React 개발
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    
+    // Java 개발
+    "vscjava.vscode-java-dependency",
+    "vscjava.vscode-java-test",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-spring-boot-dashboard",
+    
+    // Git 및 협업
+    "eamodio.gitlens",
+    "ms-vscode.vscode-merge-conflict",
+    
+    // 유틸리티
+    "ms-vscode.vscode-todo-highlight",
+    "wayou.vscode-todo-highlight",
+    "editorconfig.editorconfig",
+    "ms-vscode.vscode-markdown"
+  ]
+}
