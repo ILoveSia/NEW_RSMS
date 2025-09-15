@@ -15,8 +15,8 @@
 // 3️⃣ Base styles (리셋, 기본 스타일, 유틸리티)
 @import './base';
 
-// 4️⃣ AG Grid 테마 (전역으로 적용)
-@import './ag-grid-theme';
+// 4️⃣ AG Grid 테마 (전역으로 적용) - 임시 비활성화
+// @import './ag-grid-theme';
 
 // ===================================
 // Global Component Overrides

@@ -1,0 +1,491 @@
+// ===================================
+// FinancialLayout.module.scss
+// 금융권 전용 메인 레이아웃 스타일
+// ===================================
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 메인 레이아웃 컨테이너
+.financialLayout {
+  display: grid;
+  grid-template-rows: $header-height 1fr;
+  height: 100vh;
+  width: 100vw;
+  background: $surface-app-background;
+  font-family: $font-family-base;
+  overflow: hidden;
+}
+
+// 📋 TopHeader (64px 고정)
+.topHeader {
+  height: $header-height;
+  background: $surface-header-background;
+  color: $color-text-inverse;
+  display: grid;
+  grid-template-columns: $sidebar-width 1fr auto;
+  align-items: center;
+  padding: 0 $spacing-md;
+  box-shadow: $shadow-md;
+  z-index: $z-index-fixed;
+  position: relative;
+  
+  // 브랜딩 영역
+  .brandSection {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 0 $spacing-sm;
+    
+    .logo {
+      font-size: 24px;
+      line-height: 1;
+    }
+    
+    .brandInfo {
+      .title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+      }
+      
+      .subtitle {
+        font-size: $font-size-xs;
+        opacity: 0.85;
+        font-weight: $font-weight-normal;
+        line-height: 1;
+        margin-top: 2px;
+      }
+    }
+  }
+  
+  // 탭 네비게이션
+  .tabNavigation {
+    display: flex;
+    gap: 2px;
+    padding: 0 $spacing-md;
+    overflow-x: auto;
+    flex: 1;
+    
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      padding: $spacing-xs $spacing-sm;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: $border-radius-lg $border-radius-lg 0 0;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: $font-size-sm;
+      cursor: pointer;
+      transition: all $transition-base $transition-ease-in-out;
+      min-width: 120px;
+      max-width: 180px;
+      position: relative;
+      
+      .tabIcon {
+        font-size: $font-size-base;
+        flex-shrink: 0;
+      }
+      
+      .tabTitle {
+        flex: 1;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .tabBadge {
+        background: $color-error;
+        color: white;
+        font-size: $font-size-xs;
+        padding: 2px 6px;
+        border-radius: $border-radius-full;
+        line-height: 1;
+        font-weight: $font-weight-medium;
+      }
+      
+      .closeButton {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: $border-radius-sm;
+        opacity: 0.6;
+        transition: opacity $transition-fast;
+        margin-left: $spacing-xs;
+        
+        &:hover {
+          opacity: 1;
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      &.active {
+        background: $surface-content-background;
+        color: $color-text-primary;
+        
+        .closeButton {
+          color: $color-text-secondary;
+        }
+      }
+    }
+  }
+  
+  // 사용자 영역
+  .userSection {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: 0 $spacing-sm;
+    
+    .notificationButton {
+      position: relative;
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: $font-size-lg;
+      cursor: pointer;
+      padding: $spacing-xs;
+      border-radius: $border-radius-md;
+      transition: background $transition-fast;
+      
+      .notificationBadge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: $color-error;
+        color: white;
+        font-size: $font-size-xs;
+        padding: 2px 5px;
+        border-radius: $border-radius-full;
+        line-height: 1;
+        transform: translate(25%, -25%);
+      }
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+    
+    .userProfile {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      
+      .userName {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        line-height: 1.2;
+      }
+      
+      .userRole {
+        font-size: $font-size-xs;
+        opacity: 0.75;
+        line-height: 1;
+        margin-top: 2px;
+      }
+    }
+    
+    .settingsButton {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: $font-size-lg;
+      cursor: pointer;
+      padding: $spacing-xs;
+      border-radius: $border-radius-md;
+      transition: background $transition-fast;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+// 🏠 Body (TopHeader 아래 전체)
+.body {
+  display: grid;
+  grid-template-columns: $sidebar-width 1fr;
+  height: calc(100vh - $header-height);
+  overflow: hidden;
+}
+
+// 📂 LeftMenu (사이드바)
+.leftMenu {
+  width: $sidebar-width;
+  background: $surface-sidebar-background;
+  border-right: 1px solid $color-border-light;
+  transition: width $transition-base $transition-ease-in-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+    
+    .menuTitle,
+    .sectionTitle span:not(.menuIcon),
+    .submenu,
+    .badge,
+    .submenuBadge {
+      display: none;
+    }
+    
+    .sectionTitle {
+      justify-content: center;
+    }
+  }
+  
+  // 메뉴 헤더
+  .menuHeader {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 $spacing-md;
+    border-bottom: 1px solid $color-border-light;
+    
+    .collapseButton {
+      background: none;
+      border: 1px solid $color-border-default;
+      color: $color-text-secondary;
+      padding: $spacing-xs;
+      border-radius: $border-radius-md;
+      cursor: pointer;
+      font-size: $font-size-xs;
+      transition: all $transition-fast;
+      
+      &:hover {
+        background: $surface-hover-background;
+        color: $color-text-primary;
+        border-color: $color-border-focus;
+      }
+    }
+  }
+  
+  // 네비게이션
+  .navigation {
+    padding: $spacing-md $spacing-sm;
+    
+    .menuSection {
+      margin-bottom: $spacing-sm;
+      
+      .sectionTitle {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-sm $spacing-md;
+        color: $color-text-primary;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        border-radius: $border-radius-lg;
+        transition: all $transition-fast;
+        position: relative;
+        
+        .menuIcon {
+          font-size: $font-size-base;
+          flex-shrink: 0;
+        }
+        
+        .badge {
+          background: $color-error;
+          color: white;
+          font-size: $font-size-xs;
+          padding: 2px 6px;
+          border-radius: $border-radius-full;
+          margin-left: auto;
+          line-height: 1;
+        }
+        
+        &:hover {
+          background: $surface-hover-background;
+        }
+      }
+      
+      .submenu {
+        margin-top: $spacing-xs;
+        margin-left: $spacing-lg;
+        
+        .submenuItem {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: $spacing-xs $spacing-md;
+          background: none;
+          border: none;
+          text-align: left;
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
+          cursor: pointer;
+          border-radius: $border-radius-md;
+          transition: all $transition-fast;
+          
+          .submenuBadge {
+            background: $color-error;
+            color: white;
+            font-size: $font-size-xs;
+            padding: 2px 5px;
+            border-radius: $border-radius-full;
+            line-height: 1;
+          }
+          
+          &:hover {
+            background: $surface-hover-background;
+            color: $color-text-primary;
+          }
+        }
+      }
+      
+      .menuItem {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        background: none;
+        border: none;
+        text-align: left;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        cursor: pointer;
+        border-radius: $border-radius-lg;
+        transition: all $transition-fast;
+        
+        .menuIcon {
+          font-size: $font-size-base;
+          flex-shrink: 0;
+        }
+        
+        .menuTitle {
+          flex: 1;
+        }
+        
+        &:hover {
+          background: $surface-hover-background;
+          color: $color-text-primary;
+        }
+        
+        &.active {
+          background: $surface-selected-background;
+          color: $color-primary-700;
+          font-weight: $font-weight-medium;
+          position: relative;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: $color-primary-500;
+            border-radius: 0 $border-radius-sm $border-radius-sm 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 📄 TabContext (메인 컨텐츠)
+.tabContext {
+  background: $surface-content-background;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  .contentArea {
+    flex: 1;
+    overflow: auto;
+    padding: $spacing-md;
+  }
+}
+
+// 📱 반응형 처리
+@media (max-width: $breakpoint-md) {
+  .financialLayout {
+    .topHeader {
+      grid-template-columns: auto 1fr auto;
+      
+      .brandSection {
+        .brandInfo {
+          .subtitle {
+            display: none;
+          }
+        }
+      }
+      
+      .tabNavigation {
+        display: none; // 태블릿에서 탭 숨김
+      }
+    }
+  }
+  
+  .body {
+    grid-template-columns: 1fr;
+    
+    .leftMenu {
+      position: fixed;
+      top: $header-height;
+      left: calc(-#{$sidebar-width});
+      height: calc(100vh - $header-height);
+      z-index: $z-index-modal;
+      transition: left $transition-base;
+      box-shadow: $shadow-xl;
+      
+      &.open {
+        left: 0;
+      }
+      
+      &.collapsed {
+        left: calc(-#{$sidebar-collapsed-width});
+        
+        &.open {
+          left: 0;
+          width: $sidebar-width; // 모바일에서는 펼침 상태 유지
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .financialLayout {
+    .topHeader {
+      height: 56px; // 모바일에서 높이 축소
+      padding: 0 $spacing-sm;
+      
+      .brandSection {
+        gap: $spacing-xs;
+        
+        .brandInfo {
+          .title {
+            font-size: $font-size-lg;
+          }
+        }
+      }
+      
+      .userSection {
+        gap: $spacing-sm;
+        
+        .userProfile {
+          .userRole {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

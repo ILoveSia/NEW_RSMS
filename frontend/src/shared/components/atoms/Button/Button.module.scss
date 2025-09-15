@@ -2,16 +2,28 @@
 @import '@/styles/mixins';
 
 .button {
-  // 기본 Material-UI 스타일 유지
-  // UI 디자인 나오면 이 부분을 완전히 교체할 예정
-  
+  // 🏙️ 맨하탄 금융센터 스타일 (Wall Street Digital Excellence)
   font-family: inherit;
   font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  text-transform: none; // Material-UI 기본 대문자 비활성화
+  text-transform: none; // 금융권에서는 대문자 변환 지양
   border-radius: $border-radius-md;
   
-  // 포커스 스타일
+  // Wall Street 타이밍 시스템 적용
+  transition: all $timing-quick $manhattan-ease-out;
+  
+  // 즉시 반응 호버 효과
+  &:hover:not(.disabled):not(.loading) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+  
+  // 즉각적인 클릭 반응
+  &:active:not(.disabled):not(.loading) {
+    transform: translateY(0);
+    transition: all $timing-instant ease-out;
+  }
+  
+  // 포커스 스타일 (금융권 접근성)
   &:focus-visible {
     outline: 2px solid $color-primary;
     outline-offset: 2px;
@@ -20,8 +32,6 @@
   // 로딩 상태
   &.loading {
     pointer-events: none;
-    
-    // 로딩 중 약간의 투명도
     opacity: 0.7;
   }
 
@@ -34,45 +44,72 @@
   &.fullWidth {
     width: 100%;
   }
+  
+  // 확인 필요 (중요한 액션)
+  &.confirmationRequired {
+    border: 2px solid $color-warning;
+    
+    &:hover {
+      border-color: $color-error;
+      box-shadow: 0 4px 12px rgba($color-error, 0.15);
+    }
+  }
 }
 
-// 크기별 스타일 (UI 디자인에 따라 조정 예정)
+// 🏛️ 맨하탄 금융센터 크기 시스템 (Wall Street Size Hierarchy)
 .size-small {
   padding: $spacing-xs $spacing-sm;
-  font-size: 0.875rem;
-  min-height: 32px;
+  font-size: $font-size-sm;
+  min-height: $trading-row-height;
+  font-weight: $font-weight-normal;
 }
 
 .size-medium {
   padding: $spacing-sm $spacing-md;
-  font-size: 1rem;
+  font-size: $font-size-base;
   min-height: 40px;
+  font-weight: $font-weight-medium;
 }
 
 .size-large {
   padding: $spacing-md $spacing-lg;
-  font-size: 1.125rem;
+  font-size: $font-size-lg;
   min-height: 48px;
+  font-weight: $font-weight-semibold;
 }
 
-// 변형별 스타일 (UI 디자인에 따라 완전 교체 예정)
+.size-executive {
+  // C-Suite 전용 - 가장 큰 크기
+  padding: $spacing-lg $spacing-xl;
+  font-size: $font-size-xl;
+  min-height: 56px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.5px;
+}
+
+// 🎯 맨하탄 금융센터 변형 스타일 (Wall Street Button Variants)
 .variant-contained {
-  // Material-UI 기본 스타일 사용
-  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+  // Material-UI 기본 스타일을 맨하탄 스타일로 강화
+  background: $color-primary;
+  
+  &:hover {
+    background: $color-primary-600;
+  }
 }
 
 .variant-outlined {
-  // Material-UI 기본 스타일 사용
-  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+  // Material-UI 기본 스타일을 맨하탄 스타일로 강화  
+  border-color: $color-primary;
+  color: $color-primary;
 }
 
 .variant-text {
-  // Material-UI 기본 스타일 사용
-  // 디자인 시스템 적용 시 커스텀 스타일로 교체
+  // Material-UI 기본 스타일 유지
+  color: $color-primary;
 }
 
 .variant-ghost {
-  // 커스텀 ghost 스타일 (Material-UI text를 기반으로)
+  // 미묘한 투명 버튼 (기존 유지)
   background: transparent;
   border: none;
   color: $color-text-secondary;
@@ -87,6 +124,77 @@
   }
 }
 
+.variant-corporate {
+  // 임원급 중요 결정용 버튼
+  background: $color-platinum;
+  color: $color-platinum-contrast;
+  box-shadow: 0 4px 12px rgba($color-platinum, 0.25);
+  
+  &:hover {
+    background: $color-platinum-light;
+    box-shadow: 0 6px 16px rgba($color-platinum, 0.35);
+    transform: translateY(-2px);
+  }
+}
+
+.variant-trading {
+  // 실시간 거래용 버튼 (Trading Floor)
+  border: 1px solid $color-trading;
+  color: $color-trading;
+  background: transparent;
+  font-family: $font-family-monospace;
+  font-weight: $font-weight-medium;
+  
+  &:hover {
+    background: rgba($color-trading, 0.05);
+    border-color: $color-trading-active;
+    color: $color-trading-active;
+  }
+  
+  &:active {
+    background: rgba($color-trading, 0.1);
+  }
+}
+
+// 🏛️ 권한 레벨별 스타일 (Authority Level Styling)
+.authority-ceo {
+  // CEO 전용 - 골드 악센트와 최고 권위
+  border: 2px solid $color-gold;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: $color-gold;
+    border-radius: $border-radius-full;
+  }
+}
+
+.authority-executive {
+  // 임원급 - 플래티넘 스타일
+  border-left: 4px solid $color-executive;
+}
+
+.authority-director {
+  // 부장급 - 디렉터 블루
+  border-left: 3px solid $color-authority-director;
+}
+
+.authority-manager {
+  // 팀장급 - 표준 스타일 (기본값)
+  border-left: 2px solid $color-authority-manager;
+}
+
+.authority-staff {
+  // 직원급 - 미묘한 표시
+  border-left: 1px solid $color-authority-staff;
+  opacity: 0.9;
+}
+
 // 반응형 스타일
 @include responsive-breakpoint($breakpoint-mobile) {
   .size-small {
@@ -99,5 +207,23 @@
   
   .size-large {
     min-height: 52px;
+  }
+  
+  .size-executive {
+    min-height: 60px;
+    padding: $spacing-md $spacing-lg;
+  }
+  
+  // 모바일에서는 권한 표시 단순화
+  .authority-ceo,
+  .authority-executive,
+  .authority-director,
+  .authority-manager,
+  .authority-staff {
+    border-left: 2px solid $color-primary;
+    
+    &::after {
+      display: none;
+    }
   }
 }

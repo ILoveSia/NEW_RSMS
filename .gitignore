@@ -39,6 +39,9 @@ dev-uploads/
 test-uploads/
 *.log
 
+# ITCEN Solution 기존 시스템 (GitHub 업로드 금지)
+my_rsms/
+
 # Backup files
 *.bak
 *.backup

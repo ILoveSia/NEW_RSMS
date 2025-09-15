@@ -8,8 +8,8 @@
 ## 🎯 프로젝트 개요
 
 ### 기본 정보
-- **프로젝트명**: RSMS (Risk/Responsibility Management System)
-- **도메인**: 리스크/책임 관리 시스템
+- **프로젝트명**: RSMS (Responsibility Structure Management System)
+- **도메인**: 책무구조도 관리 시스템
 - **핵심 도메인**: `resps` (Responsibility Management)
 - **아키텍처 패턴**: Domain-Driven Design (DDD) + Clean Architecture
 - **개발 환경**: Fullstack (React + Spring Boot)
@@ -154,7 +154,7 @@ src/
 ├── domains/          # 비즈니스 도메인
 │   ├── auth/         # 인증/인가
 │   ├── users/        # 사용자 관리  
-│   ├── resps/        # 책임 관리 (핵심 도메인)
+│   ├── resps/        # 책무구조도 관리 (핵심 도메인)
 │   ├── reports/      # 보고서
 │   ├── dashboard/    # 대시보드
 │   └── settings/     # 설정
@@ -171,7 +171,7 @@ src/
 ```
 src/main/java/com/rsms/
 ├── domain/           # 도메인 계층 (핵심)
-│   ├── resp/         # 책임 도메인 (핵심)
+│   ├── resp/         # 책무구조도 도메인 (핵심)
 │   ├── user/         # 사용자 도메인
 │   ├── report/       # 보고서 도메인
 │   └── common/       # 공통 도메인
@@ -364,7 +364,7 @@ const RespDashboard: React.FC = () => {
       data={chartData}
       xAxis="month"
       yAxis="completed"
-      title="책임 완료 현황"
+      title="책무 완료 현황"
     />
   );
 };
@@ -379,7 +379,7 @@ const RespDashboard: React.FC = () => {
 public/locales/
 ├── ko/
 │   ├── common.json          # 공통 번역
-│   ├── resps.json           # 책임 도메인
+│   ├── resps.json           # 책무구조도 도메인
 │   ├── users.json           # 사용자 도메인
 │   └── dashboard.json       # 대시보드
 └── en/
@@ -480,13 +480,13 @@ describe('RespForm', () => {
     render(<RespForm onSubmit={onSubmit} />);
     
     fireEvent.change(screen.getByLabelText('제목'), {
-      target: { value: '테스트 책임' }
+      target: { value: '테스트 책무' }
     });
     
     fireEvent.click(screen.getByText('제출'));
     
     expect(onSubmit).toHaveBeenCalledWith({
-      title: '테스트 책임'
+      title: '테스트 책무'
     });
   });
 });
@@ -507,9 +507,9 @@ class RespServiceTest {
     @Test
     void createResp_WhenValidData_ShouldReturnRespDto() {
         // Given
-        CreateRespDto dto = new CreateRespDto("테스트 책임", 3);
+        CreateRespDto dto = new CreateRespDto("테스트 책무", 3);
         Resp savedResp = Resp.builder()
-            .title("테스트 책임")
+            .title("테스트 책무")
             .priority(3)
             .build();
         
@@ -519,7 +519,7 @@ class RespServiceTest {
         RespDto result = respService.create(dto);
         
         // Then
-        assertThat(result.getTitle()).isEqualTo("테스트 책임");
+        assertThat(result.getTitle()).isEqualTo("테스트 책무");
         verify(respRepository).save(any(Resp.class));
     }
 }
@@ -535,7 +535,7 @@ class RespControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.title").value("테스트 책임"));
+            .andExpect(jsonPath("$.title").value("테스트 책무"));
     }
 }
 ```

@@ -1,0 +1,800 @@
+// ===================================
+// HomeDashboard.module.scss
+// RSMS 책무구조도 이행관리시스템 홈 대시보드
+// 뉴욕 맨하탄 금융센터 전문 UI/UX 디자인 시스템
+// ===================================
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+@import '@/styles/manhattan-professional';
+
+.homeDashboard {
+  min-height: 100vh;
+  @include manhattan-bg-primary;
+  padding: $spacing-xl;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-lg;
+  }
+  
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-md;
+  }
+}
+
+// ===================================
+// 대시보드 헤더
+// ===================================
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-xl;
+  padding: $spacing-lg $spacing-xl;
+  @include manhattan-bg-section;
+  border-radius: $border-radius-xl;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-lg;
+    padding: $spacing-lg;
+  }
+}
+
+.headerLeft {
+  .dashboardTitle {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    @include manhattan-heading-primary;
+    font-size: $font-size-2xl;
+    margin-bottom: $spacing-sm;
+    
+    svg {
+      color: $manhattan-navy;
+    }
+    
+    @include responsive-breakpoint($breakpoint-tablet) {
+      font-size: $font-size-xl;
+    }
+  }
+  
+  .dashboardSubtitle {
+    @include manhattan-text-caption;
+    font-size: $font-size-base;
+    margin: 0;
+  }
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+}
+
+.periodControl,
+.orgControl {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  @include manhattan-bg-card;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(98, 125, 152, 0.12);
+  
+  svg {
+    color: $manhattan-slate;
+  }
+  
+  select {
+    border: none;
+    background: transparent;
+    color: $manhattan-charcoal;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.refreshButton {
+  @include manhattan-button-secondary;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .spinning {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ===================================
+// 대시보드 그리드 레이아웃
+// ===================================
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: $spacing-xl;
+  max-width: 1920px;
+  margin: 0 auto;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+}
+
+// ===================================
+// 공통 카드 스타일
+// ===================================
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  
+  h3 {
+    @include manhattan-heading-primary;
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+}
+
+.addButton,
+.viewAllButton,
+.filterButton,
+.downloadButton {
+  @include manhattan-button-secondary;
+  padding: $spacing-sm;
+  width: auto;
+  height: auto;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-sm;
+}
+
+.headerActions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// ===================================
+// 웰컴 카드
+// ===================================
+
+.welcomeCard {
+  @include manhattan-card-section;
+  padding: $spacing-xl;
+  
+  .welcomeHeader {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+    
+    .welcomeIcon {
+      width: 48px;
+      height: 48px;
+      @include manhattan-bg-card;
+      border-radius: $border-radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(98, 125, 152, 0.15);
+      
+      svg {
+        color: $manhattan-navy;
+      }
+    }
+    
+    .welcomeInfo {
+      flex: 1;
+      
+      h2 {
+        @include manhattan-heading-primary;
+        font-size: $font-size-xl;
+        margin-bottom: $spacing-xs;
+      }
+      
+      p {
+        @include manhattan-text-caption;
+        margin: 0;
+      }
+    }
+  }
+  
+  .notificationPanel {
+    display: flex;
+    gap: $spacing-lg;
+    
+    @include responsive-breakpoint($breakpoint-mobile) {
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+  }
+  
+  .notificationItem {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex: 1;
+    
+    .notificationIcon {
+      width: 36px;
+      height: 36px;
+      @include manhattan-bg-overlay;
+      border-radius: $border-radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      svg {
+        color: $manhattan-blue;
+      }
+    }
+    
+    .notificationContent {
+      display: flex;
+      flex-direction: column;
+      
+      .notificationLabel {
+        @include manhattan-text-caption;
+        margin-bottom: 2px;
+      }
+      
+      .notificationValue {
+        @include manhattan-heading-secondary;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+      }
+    }
+  }
+}
+
+// ===================================
+// 책무 현황 플로우 차트
+// ===================================
+
+.responsibilityFlow {
+  @include manhattan-card-section;
+  padding: $spacing-xl;
+  
+  .flowChart {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    overflow-x: auto;
+    padding: $spacing-md 0;
+  }
+  
+  .flowLevel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .flowNode {
+    @include manhattan-bg-card;
+    padding: $spacing-md;
+    border-radius: $border-radius-lg;
+    border: 2px solid rgba(98, 125, 152, 0.15);
+    text-align: center;
+    min-width: 120px;
+    transition: all $timing-quick $manhattan-ease-out;
+    
+    &:hover {
+      @include manhattan-hover-subtle;
+      transform: translateY(-2px);
+    }
+    
+    .nodeLabel {
+      @include manhattan-text-caption;
+      margin-bottom: $spacing-xs;
+      font-weight: $font-weight-semibold;
+    }
+    
+    .nodeValue {
+      @include manhattan-heading-primary;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+    }
+  }
+  
+  .flowConnector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: $spacing-sm 0;
+    
+    svg {
+      color: $manhattan-slate;
+    }
+  }
+  
+  .flowSplit {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
+    .flowConnector {
+      flex: 1;
+    }
+  }
+  
+  .flowEndNodes,
+  .flowBottomNodes {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .flowEndNode,
+  .flowBottomNode {
+    @include manhattan-bg-overlay;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba(98, 125, 152, 0.12);
+    text-align: center;
+    min-width: 100px;
+    
+    .nodeLabel {
+      @include manhattan-text-caption;
+      margin-bottom: 4px;
+      font-size: $font-size-xs;
+    }
+    
+    .nodeValue {
+      @include manhattan-heading-secondary;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+    }
+  }
+  
+  .flowBottom {
+    margin-top: $spacing-md;
+  }
+}
+
+// ===================================
+// 팀가드팀 책무현황
+// ===================================
+
+.teamStatusCard {
+  @include manhattan-card-section;
+  padding: $spacing-xl;
+  
+  .statusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: $spacing-md;
+  }
+  
+  .statusItem {
+    @include manhattan-bg-card;
+    padding: $spacing-md;
+    border-radius: $border-radius-lg;
+    border: 1px solid rgba(98, 125, 152, 0.12);
+    transition: all $timing-quick $manhattan-ease-out;
+    
+    &:hover {
+      @include manhattan-hover-subtle;
+      transform: translateY(-2px);
+    }
+    
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    .statusIcon {
+      width: 36px;
+      height: 36px;
+      border-radius: $border-radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .statusContent {
+      flex: 1;
+      
+      .statusNumber {
+        @include manhattan-heading-primary;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        margin-bottom: 2px;
+      }
+      
+      .statusLabel {
+        @include manhattan-text-caption;
+        font-size: $font-size-xs;
+      }
+    }
+    
+    &.responsibilities {
+      .statusIcon {
+        background: rgba($manhattan-navy, 0.1);
+        svg { color: $manhattan-navy; }
+      }
+    }
+    
+    &.management {
+      .statusIcon {
+        background: rgba($manhattan-blue, 0.1);
+        svg { color: $manhattan-blue; }
+      }
+    }
+    
+    &.complete {
+      .statusIcon {
+        background: rgba($manhattan-success, 0.1);
+        svg { color: $manhattan-success; }
+      }
+    }
+    
+    &.pending {
+      .statusIcon {
+        background: rgba($manhattan-warning, 0.1);
+        svg { color: $manhattan-warning; }
+      }
+    }
+    
+    &.inappropriate {
+      .statusIcon {
+        background: rgba($manhattan-error, 0.1);
+        svg { color: $manhattan-error; }
+      }
+    }
+  }
+}
+
+// ===================================
+// 책무-관리의무 이행 현황
+// ===================================
+
+.implementationStatus {
+  @include manhattan-card-section;
+  padding: $spacing-xl;
+  
+  .implementationMatrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .matrixRow {
+    display: flex;
+    gap: $spacing-md;
+  }
+  
+  .matrixCell {
+    @include manhattan-bg-card;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    border: 1px solid rgba(98, 125, 152, 0.12);
+    text-align: center;
+    flex: 1;
+    
+    .matrixLabel {
+      @include manhattan-text-caption;
+      margin-bottom: $spacing-xs;
+    }
+    
+    .matrixValue {
+      @include manhattan-heading-primary;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+    }
+  }
+  
+  .expandedView {
+    @include manhattan-bg-overlay;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .expandedContent {
+      @include manhattan-text-caption;
+      text-align: center;
+    }
+  }
+}
+
+// ===================================
+// 차트 공통 스타일
+// ===================================
+
+.complianceChart,
+.distributionChart {
+  @include manhattan-card-section;
+  padding: $spacing-xl;
+  
+  .chartLegend {
+    display: flex;
+    gap: $spacing-md;
+    
+    .legendItem {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      @include manhattan-text-caption;
+      
+      .legendDot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: $manhattan-navy;
+      }
+    }
+  }
+  
+  .chartContainer {
+    margin-top: $spacing-md;
+    @include manhattan-bg-overlay;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+  }
+  
+  .chartSvg {
+    width: 100%;
+    height: 250px;
+    
+    .axisLabel {
+      font-size: 12px;
+      fill: $manhattan-slate;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+.distributionChart {
+  .donutContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    @include manhattan-bg-overlay;
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    margin-top: $spacing-md;
+  }
+  
+  .donutSvg {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+// ===================================
+// 퀵 액세스 그리드
+// ===================================
+
+.quickAccessGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-lg;
+  grid-column: 1 / -1;
+  
+  @include responsive-breakpoint($breakpoint-mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quickAccessCard {
+  @include manhattan-card-content;
+  padding: $spacing-xl;
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all $timing-standard $manhattan-ease-out;
+  
+  &:hover {
+    @include manhattan-hover-lift;
+  }
+  
+  .quickAccessIcon {
+    width: 64px;
+    height: 64px;
+    border-radius: $border-radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .quickAccessContent {
+    flex: 1;
+    
+    h4 {
+      @include manhattan-heading-primary;
+      font-size: $font-size-base;
+      margin-bottom: $spacing-xs;
+    }
+    
+    p {
+      @include manhattan-text-caption;
+      font-size: $font-size-xs;
+      line-height: 1.4;
+      margin: 0;
+    }
+  }
+  
+  &.responsibilityCard {
+    .quickAccessIcon {
+      background: rgba($manhattan-navy, 0.1);
+      svg { color: $manhattan-navy; }
+    }
+  }
+  
+  &.specificationCard {
+    .quickAccessIcon {
+      background: rgba($manhattan-warning, 0.1);
+      svg { color: $manhattan-warning; }
+    }
+  }
+}
+
+// ===================================
+// 모달 스타일
+// ===================================
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(16, 42, 67, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-lg;
+}
+
+.modalContent {
+  @include manhattan-bg-section;
+  border-radius: $border-radius-xl;
+  max-width: 800px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid rgba(98, 125, 152, 0.12);
+  
+  h2 {
+    @include manhattan-heading-primary;
+    margin: 0;
+  }
+  
+  .closeButton {
+    @include manhattan-button-secondary;
+    padding: $spacing-sm;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.modalBody {
+  padding: $spacing-xl;
+  overflow-y: auto;
+  flex: 1;
+}
+
+// ===================================
+// 반응형 디자인
+// ===================================
+
+@include responsive-breakpoint($breakpoint-tablet) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .statusGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .implementationMatrix {
+    grid-template-columns: 1fr;
+  }
+  
+  .quickAccessGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .flowChart {
+    font-size: $font-size-sm;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .homeDashboard {
+    padding: $spacing-md;
+  }
+  
+  .statusGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .notificationPanel {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+  
+  .flowEndNodes,
+  .flowBottomNodes {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+// ===================================
+// 애니메이션
+// ===================================
+
+.welcomeCard,
+.teamStatusCard,
+.responsibilityFlow,
+.implementationStatus,
+.complianceChart,
+.distributionChart {
+  @include manhattan-fade-in;
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+  &:nth-child(5) { animation-delay: 0.5s; }
+  &:nth-child(6) { animation-delay: 0.6s; }
+}
+
+.quickAccessCard {
+  @include manhattan-fade-in(0.3s);
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.7s; }
+  &:nth-child(2) { animation-delay: 0.8s; }
+}

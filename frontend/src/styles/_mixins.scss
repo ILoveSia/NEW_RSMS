@@ -53,6 +53,13 @@
   }
 }
 
+// Responsive breakpoint mixin (호환성을 위해 추가)
+@mixin responsive-breakpoint($size) {
+  @media (max-width: #{$size - 1px}) {
+    @content;
+  }
+}
+
 // 🎨 Flexbox Mixins
 @mixin flex-center {
   display: flex;

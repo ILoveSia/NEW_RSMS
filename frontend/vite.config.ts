@@ -46,7 +46,9 @@ export default defineConfig({
         additionalData: `
           @import "@/styles/variables";
           @import "@/styles/mixins";
-        `
+        `,
+        // SCSS 경고 메시지 숨기기
+        silenceDeprecations: ['legacy-js-api', 'import']
       }
     },
     modules: {
@@ -57,13 +59,13 @@ export default defineConfig({
   },
 
   server: {
-    port: 3000,
+    port: 4000,
     open: true,
     cors: true,
     proxy: {
       // API 프록시 설정 (백엔드 서버 연결 시 사용)
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false
       }

@@ -70,7 +70,7 @@ a {
   @include transition(color);
   
   &:hover {
-    color: $color-primary-dark;
+    color: $color-primary-700;
     text-decoration: underline;
   }
   

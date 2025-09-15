@@ -3,35 +3,88 @@
 // CSS Modules + SCSS Architecture
 // ===================================
 
-// 📍 Color System
-// Primary Colors
-$color-primary: #1976d2;
-$color-primary-light: #42a5f5;
-$color-primary-dark: #1565c0;
+// 🏙️ 맨하탄 금융센터 전용 색상 시스템 (Wall Street Digital Excellence)
+// Professional Trust - 메인 색상 (블루 그레이 계열)
+$color-primary: #627d98;
+$color-primary-50: #f0f4f8;
+$color-primary-100: #d9e2ec;
+$color-primary-200: #bcccdc;
+$color-primary-300: #9fb3c8;
+$color-primary-400: #829ab1;
+$color-primary-500: #627d98;   // 메인 색상
+$color-primary-600: #486581;
+$color-primary-700: #334e68;
+$color-primary-800: #243b53;
+$color-primary-900: #102a43;   // 딥 네이비 (Header)
 $color-primary-contrast: #ffffff;
 
-// Secondary Colors
-$color-secondary: #dc004e;
-$color-secondary-light: #ff5983;
-$color-secondary-dark: #9a0036;
+// 🏛️ Executive Level Colors (C-Suite 전용)
+$color-executive: #0f1419;        // 블랙에 가까운 딥 네이비 (최고 권위)
+$color-executive-light: #1a2332;   // 약간 연한 버전
+$color-executive-contrast: #ffffff;
+
+// 💎 Platinum Tier Colors (관리자급)  
+$color-platinum: #334e68;         // 현재 primary-700
+$color-platinum-light: #486581;   // 현재 primary-600
+$color-platinum-contrast: #ffffff;
+
+// 📊 Trading Floor Blue (실시간 데이터용)
+$color-trading: #0284c7;          // 현재 info 색상 유지
+$color-trading-active: #0ea5e9;   // 활성 상태
+$color-trading-urgent: #0369a1;   // 긴급 알림
+$color-trading-contrast: #ffffff;
+
+// 💰 Gold Accent (VIP/프리미엄 기능 - 매우 절제됨)
+$color-gold: #b45309;             // 매우 절제된 골드
+$color-gold-light: #d97706;       // 현재 warning 색상과 연동
+$color-gold-subtle: #fef3c7;      // 미묘한 골드 배경
+$color-gold-contrast: #ffffff;
+
+// Neutral Elegance - 보조 색상 (그레이 계열)
+$color-secondary: #71717a;
+$color-secondary-50: #fafafa;
+$color-secondary-100: #f4f4f5;
+$color-secondary-200: #e4e4e7;
+$color-secondary-300: #d4d4d8;
+$color-secondary-400: #a1a1aa;
+$color-secondary-500: #71717a;   // 메인 보조색
+$color-secondary-600: #52525b;
+$color-secondary-700: #3f3f46;
+$color-secondary-800: #27272a;
+$color-secondary-900: #18181b;   // 최고 명도 텍스트
 $color-secondary-contrast: #ffffff;
 
-// Status Colors
-$color-success: #2e7d32;
-$color-success-light: #4caf50;
-$color-success-dark: #1b5e20;
+// 📈 책무구조도 특화 상태 색상 (Wall Street Status System)
+// 책무 이행 상태
+$color-responsibility-assigned: #0284c7;    // 배정됨 (파란색)
+$color-responsibility-progress: #d97706;    // 진행중 (오렌지) 
+$color-responsibility-completed: #059669;   // 완료됨 (그린)
+$color-responsibility-overdue: #dc2626;     // 지연됨 (레드)
+$color-responsibility-delegated: #7c3aed;   // 위임됨 (퍼플)
 
-$color-warning: #ed6c02;
-$color-warning-light: #ff9800;
-$color-warning-dark: #e65100;
+// 권한 레벨별 색상 (조직 계층 표현)
+$color-authority-ceo: #0f1419;         // 최고경영자 (블랙)
+$color-authority-executive: #334e68;   // 임원급 (다크 블루) 
+$color-authority-director: #486581;    // 부장급 (미디엄 블루)
+$color-authority-manager: #627d98;     // 팀장급 (메인 블루)
+$color-authority-staff: #829ab1;       // 직원급 (라이트 블루)
 
-$color-error: #d32f2f;
-$color-error-light: #ef5350;
-$color-error-dark: #c62828;
+// 기능별 색상 (채도 대폭 낮춤 - 금융권 특화)
+$color-success: #059669;      // 차분한 그린 (승인, 완료)
+$color-success-light: #10b981;
+$color-success-dark: #047857;
 
-$color-info: #0288d1;
-$color-info-light: #03a9f4;
-$color-info-dark: #01579b;
+$color-warning: #d97706;      // 차분한 오렌지 (경고, 대기)  
+$color-warning-light: #f59e0b;
+$color-warning-dark: #b45309;
+
+$color-error: #dc2626;        // 차분한 레드 (오류, 반려)
+$color-error-light: #ef4444;
+$color-error-dark: #b91c1c;
+
+$color-info: #0284c7;         // 차분한 블루 (정보, 알림)
+$color-info-light: #0ea5e9;
+$color-info-dark: #0369a1;
 
 // Gray Scale
 $color-gray-50: #fafafa;
@@ -47,21 +100,30 @@ $color-gray-900: #212121;
 
 $color-gray-25: #fcfcfc; // 매우 연한 배경용
 
-// Text Colors
-$color-text-primary: rgba(0, 0, 0, 0.87);
-$color-text-secondary: rgba(0, 0, 0, 0.6);
-$color-text-disabled: rgba(0, 0, 0, 0.38);
-$color-text-hint: rgba(0, 0, 0, 0.38);
+// 텍스트 색상 (금융권 최적화 - 높은 대비비 확보)
+$color-text-primary: $color-secondary-900;    // #18181b (16.68:1 대비비)
+$color-text-secondary: $color-secondary-500;  // #71717a (5.74:1 대비비)  
+$color-text-disabled: $color-secondary-400;   // #a1a1aa (3.03:1 대비비)
+$color-text-hint: $color-secondary-400;
+$color-text-inverse: #ffffff;
 
-// Background Colors
-$color-background-default: #ffffff;
-$color-background-paper: #ffffff;
-$color-background-neutral: $color-gray-50;
+// 배경 색상 (레이어별 구분)
+$color-background-default: $color-secondary-50;      // #fafafa (앱 전체 배경)
+$color-background-paper: #ffffff;                    // 카드/패널 배경
+$color-background-neutral: $color-secondary-100;     // #f4f4f5 (섹션 배경)
+$color-background-header: $color-primary-900;        // #102a43 (TopHeader)
+$color-background-sidebar: $color-secondary-100;     // #f4f4f5 (LeftMenu)
 
-// Border Colors
-$color-border-default: $color-gray-300;
-$color-border-light: $color-gray-200;
-$color-border-dark: $color-gray-400;
+// 상태별 배경 색상
+$color-background-hover: $color-primary-50;          // #f0f4f8 (호버)
+$color-background-selected: $color-primary-100;      // #d9e2ec (선택)
+$color-background-disabled: $color-secondary-100;    // #f4f4f5 (비활성)
+
+// 경계선 색상 (미묘한 구분)
+$color-border-default: $color-secondary-200;         // #e4e4e7 (기본)
+$color-border-light: $color-secondary-100;           // #f4f4f5 (연한)
+$color-border-dark: $color-secondary-300;            // #d4d4d8 (진한)
+$color-border-focus: $color-primary-500;             // #627d98 (포커스)
 
 // 📏 Spacing System (8px base)
 $spacing-xs: 4px;
@@ -121,14 +183,32 @@ $breakpoint-lg: 1280px;
 $breakpoint-xl: 1440px;
 $breakpoint-2xl: 1920px;
 
-// ⏱️ Transitions
-$transition-fast: 150ms;
-$transition-base: 300ms;
-$transition-slow: 500ms;
+// 호환성을 위한 별칭
+$breakpoint-mobile: $breakpoint-xs;
+$breakpoint-tablet: $breakpoint-sm;
+$breakpoint-desktop: $breakpoint-md;
 
+// ⚡ 맨하탄 금융센터 전용 트랜지션 (Wall Street Timing Standards)
+// "Efficiency Over Flash" - 금융권 철학 반영
+$timing-instant: 50ms;        // 버튼 클릭 즉시 반응 
+$timing-quick: 150ms;         // 호버 효과 (기존 transition-fast)
+$timing-standard: 300ms;      // 탭 전환, 페이지 변경 (기존 transition-base)
+$timing-deliberate: 500ms;    // 중요한 상태 변화만 (기존 transition-slow)
+$timing-careful: 800ms;       // 매우 중요한 변화 (승인/거부 등)
+
+// 기존 변수 유지 (하위 호환성)
+$transition-fast: $timing-quick;
+$transition-base: $timing-standard;
+$transition-slow: $timing-deliberate;
+
+// 금융권 전용 이징 (절제된 움직임)
 $transition-ease-in: cubic-bezier(0.4, 0, 1, 1);
 $transition-ease-out: cubic-bezier(0, 0, 0.2, 1);
 $transition-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// 맨하탄 전용 이징 (더욱 절제됨)
+$manhattan-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);  // 자연스럽고 빠른 감속
+$manhattan-ease-in-out: cubic-bezier(0.165, 0.84, 0.44, 1); // 부드러운 가속/감속
 
 // 📊 Z-Index Scale
 $z-index-dropdown: 1000;
@@ -167,8 +247,41 @@ $card-border: $color-border-light;
 $card-shadow: $shadow-base;
 $card-padding: $spacing-md;
 
-// Layout 관련
-$header-height: 64px;
-$sidebar-width: 280px;
-$sidebar-collapsed-width: 64px;
-$footer-height: 48px;
+// 🏗️ 맨하탄 금융센터 레이아웃 시스템 (Wall Street Layout Standards)
+// 기본 레이아웃 (금융권 표준 치수)
+$header-height: 64px;                    // TopHeader 고정 높이
+$sidebar-width: 280px;                   // LeftMenu 기본 너비
+$sidebar-collapsed-width: 60px;          // LeftMenu 접힌 너비
+$tab-height: 40px;                       // TabContext 탭 높이
+$page-header-height: 60px;               // 페이지 헤더 높이
+$action-bar-height: 50px;                // 액션 바 높이
+$footer-height: 40px;                    // Footer 높이
+
+// 🏛️ Executive Dashboard Layout (임원급 레이아웃)
+$executive-padding: 48px;                // 매우 넓은 패딩
+$executive-card-height: 160px;           // 큰 카드 크기
+$executive-font-size: 24px;              // 큰 글씨
+
+// 📊 Trading Floor Layout (실시간 거래용)
+$trading-padding: 16px;                  // 최소한의 패딩
+$trading-row-height: 32px;               // 조밀한 행 높이
+$ticker-strip-height: 40px;              // 실시간 정보 띠
+
+// 📐 Wall Street Grid System (24열 그리드)
+$grid-columns: 24;                       // 24열 시스템 (12열보다 정교함)
+$grid-gap: 16px;                         // 그리드 간격
+
+// 황금비 기반 레이아웃 비율
+$golden-primary: 62.5%;                  // 15/24 = 62.5% (황금비)
+$golden-secondary: 37.5%;                // 9/24 = 37.5%
+$triple-column: 33.33%;                  // 8/24 = 33.33% (3등분)
+
+// 📦 표면별 색상 (레이아웃 전용)
+$surface-app-background: $color-background-default;     // #fafafa
+$surface-header-background: $color-background-header;   // #102a43
+$surface-sidebar-background: $color-background-sidebar; // #f4f4f5  
+$surface-content-background: $color-background-paper;   // #ffffff
+$surface-card-background: $color-background-paper;      // #ffffff
+$surface-hover-background: $color-background-hover;     // #f0f4f8
+$surface-selected-background: $color-background-selected; // #d9e2ec
+$surface-disabled-background: $color-background-disabled; // #f4f4f5

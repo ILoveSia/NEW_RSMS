@@ -8,7 +8,7 @@ import { CssBaseline } from '@mui/material';
 import { ToastContainer } from 'react-toastify';
 
 import App from './App';
-import { theme } from './styles/theme';
+import { financialTheme } from './styles/theme';
 import { validateEnv } from './app/config/env';
 
 // 글로벌 스타일
@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={financialTheme}>
           <CssBaseline />
           <App />
           <ToastContainer

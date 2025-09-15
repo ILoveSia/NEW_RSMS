@@ -1,0 +1,378 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.matrix {
+  background: $color-background-paper;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  border: 1px solid $color-border-light;
+  
+  // 맨하탄 금융센터 스타일 그림자
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  
+  // 인터랙티브 모드
+  &.interactive {
+    .roleHeader,
+    .responsibilityHeader,
+    .matrixCell.assigned {
+      cursor: pointer;
+      transition: all $timing-quick $manhattan-ease-out;
+      
+      &:hover {
+        background-color: $color-background-hover;
+        transform: scale(1.02);
+      }
+    }
+  }
+}
+
+// 계층별 크기 조정
+.hierarchy-executive {
+  .table {
+    font-size: $executive-font-size;
+  }
+  
+  .matrixCell,
+  .roleHeader,
+  .responsibilityHeader {
+    padding: $executive-padding / 2;
+    min-height: $executive-card-height / 3;
+  }
+}
+
+.hierarchy-director {
+  .table {
+    font-size: 18px;
+  }
+  
+  .matrixCell,
+  .roleHeader,
+  .responsibilityHeader {
+    padding: $spacing-md;
+    min-height: 48px;
+  }
+}
+
+.hierarchy-manager {
+  .table {
+    font-size: $font-size-base;
+  }
+  
+  .matrixCell,
+  .roleHeader,
+  .responsibilityHeader {
+    padding: $spacing-sm;
+    min-height: 40px;
+  }
+}
+
+.hierarchy-staff {
+  .table {
+    font-size: $font-size-sm;
+  }
+  
+  .matrixCell,
+  .roleHeader,
+  .responsibilityHeader {
+    padding: $spacing-xs;
+    min-height: $trading-row-height;
+  }
+}
+
+// 헤더
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: $color-background-neutral;
+  border-bottom: 2px solid $color-border-default;
+}
+
+.title {
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+  margin: 0;
+}
+
+.legend {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.legendChip {
+  font-size: $font-size-xs;
+  height: 24px;
+  
+  // 상태별 색상은 아래에서 정의
+}
+
+// 테이블 컨테이너
+.tableContainer {
+  overflow: auto;
+  max-height: 600px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $color-background-paper;
+}
+
+// 코너 셀 (좌상단)
+.cornerCell {
+  background: $color-background-header;
+  color: $color-text-inverse;
+  padding: $spacing-sm;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  text-align: center;
+  min-width: 160px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+// 역할 헤더 (좌측)
+.roleHeader {
+  background: $color-background-neutral;
+  padding: $spacing-sm;
+  border-right: 1px solid $color-border-default;
+  border-bottom: 1px solid $color-border-light;
+  min-width: 160px;
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  
+  transition: all $timing-quick $manhattan-ease-out;
+}
+
+.roleName {
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-xs / 2;
+}
+
+.roleDepartment {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+// 책무 헤더 (상단)
+.responsibilityHeader {
+  background: $color-background-neutral;
+  padding: $spacing-sm;
+  border-bottom: 1px solid $color-border-default;
+  border-right: 1px solid $color-border-light;
+  min-width: 120px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  
+  transition: all $timing-quick $manhattan-ease-out;
+}
+
+.responsibilityTitle {
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  font-size: $font-size-xs;
+  margin-bottom: $spacing-xs / 2;
+  line-height: $line-height-tight;
+}
+
+.responsibilityCategory {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  opacity: 0.8;
+}
+
+// 매트릭스 셀
+.matrixCell {
+  padding: $spacing-xs;
+  border-right: 1px solid $color-border-light;
+  border-bottom: 1px solid $color-border-light;
+  text-align: center;
+  vertical-align: middle;
+  background: $color-background-paper;
+  
+  &.assigned {
+    .statusIndicator {
+      width: 8px;
+      height: 8px;
+      border-radius: $border-radius-full;
+      margin: 0 auto;
+    }
+  }
+  
+  // 호버 시 Wall Street 스타일
+  &:hover {
+    background: $color-background-hover;
+  }
+}
+
+.cellContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+// 📈 책무구조도 특화 상태 색상 (Wall Street Status System)
+// 책무 이행 상태
+.statusAssigned {
+  .statusIndicator {
+    background-color: $color-responsibility-assigned;
+  }
+  
+  &.legendChip {
+    background-color: rgba($color-responsibility-assigned, 0.1);
+    color: $color-responsibility-assigned;
+  }
+}
+
+.statusProgress {
+  .statusIndicator {
+    background-color: $color-responsibility-progress;
+  }
+  
+  &.legendChip {
+    background-color: rgba($color-responsibility-progress, 0.1);
+    color: $color-responsibility-progress;
+  }
+}
+
+.statusCompleted {
+  .statusIndicator {
+    background-color: $color-responsibility-completed;
+  }
+  
+  &.legendChip {
+    background-color: rgba($color-responsibility-completed, 0.1);
+    color: $color-responsibility-completed;
+  }
+}
+
+.statusOverdue {
+  .statusIndicator {
+    background-color: $color-responsibility-overdue;
+    animation: urgent-pulse 2s infinite;
+  }
+  
+  &.legendChip {
+    background-color: rgba($color-responsibility-overdue, 0.1);
+    color: $color-responsibility-overdue;
+  }
+}
+
+.statusDelegated {
+  .statusIndicator {
+    background-color: $color-responsibility-delegated;
+  }
+  
+  &.legendChip {
+    background-color: rgba($color-responsibility-delegated, 0.1);
+    color: $color-responsibility-delegated;
+  }
+}
+
+// 권한 레벨별 색상 (조직 계층 표현)
+.authorityCeo {
+  background-color: rgba($color-authority-ceo, 0.05);
+  border-left: 4px solid $color-authority-ceo;
+}
+
+.authorityExecutive {
+  background-color: rgba($color-authority-executive, 0.05);
+  border-left: 4px solid $color-authority-executive;
+}
+
+.authorityDirector {
+  background-color: rgba($color-authority-director, 0.05);
+  border-left: 4px solid $color-authority-director;
+}
+
+.authorityManager {
+  background-color: rgba($color-authority-manager, 0.05);
+  border-left: 4px solid $color-authority-manager;
+}
+
+.authorityStaff {
+  background-color: rgba($color-authority-staff, 0.05);
+  border-left: 4px solid $color-authority-staff;
+}
+
+// 우선순위별 색상
+.priorityCritical {
+  background-color: rgba($color-error, 0.03);
+  border-bottom: 2px solid $color-error;
+}
+
+.priorityHigh {
+  background-color: rgba($color-warning, 0.03);
+  border-bottom: 2px solid $color-warning;
+}
+
+.priorityMedium {
+  background-color: rgba($color-info, 0.03);
+  border-bottom: 2px solid $color-info;
+}
+
+.priorityLow {
+  background-color: rgba($color-success, 0.03);
+  border-bottom: 2px solid $color-success;
+}
+
+// 맨하탄 금융센터 전용 애니메이션
+@keyframes urgent-pulse {
+  0%, 100% { 
+    background-color: $color-responsibility-overdue; 
+  }
+  50% { 
+    background-color: lighten($color-responsibility-overdue, 20%); 
+  }
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .matrix {
+    .table {
+      font-size: $font-size-sm;
+    }
+    
+    .cornerCell,
+    .roleHeader {
+      min-width: 140px;
+    }
+    
+    .responsibilityHeader {
+      min-width: 100px;
+    }
+  }
+  
+  .hierarchy-executive {
+    .table {
+      font-size: $font-size-lg;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .header {
+    flex-direction: column;
+    gap: $spacing-sm;
+    text-align: center;
+  }
+  
+  .legend {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .tableContainer {
+    max-height: 400px;
+  }
+}

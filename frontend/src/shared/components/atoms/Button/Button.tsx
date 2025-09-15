@@ -6,9 +6,9 @@ import styles from './Button.module.scss';
 
 export interface ButtonProps extends Omit<MuiButtonProps, 'size' | 'variant'> {
   /** 버튼 크기 */
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'executive';
   /** 버튼 스타일 변형 */
-  variant?: 'contained' | 'outlined' | 'text' | 'ghost';
+  variant?: 'contained' | 'outlined' | 'text' | 'ghost' | 'corporate' | 'trading';
   /** 로딩 상태 */
   loading?: boolean;
   /** 로딩 중 표시 텍스트 */
@@ -19,6 +19,10 @@ export interface ButtonProps extends Omit<MuiButtonProps, 'size' | 'variant'> {
   startIcon?: React.ReactNode;
   /** 아이콘 (우측) */
   endIcon?: React.ReactNode;
+  /** 권한 레벨 (맨하탄 스타일 적용) */
+  authorityLevel?: 'ceo' | 'executive' | 'director' | 'manager' | 'staff';
+  /** 확인 필요 여부 (중요한 액션용) */
+  confirmationRequired?: boolean;
   /** 커스텀 className */
   className?: string;
   /** 테스트 id */
@@ -26,19 +30,30 @@ export interface ButtonProps extends Omit<MuiButtonProps, 'size' | 'variant'> {
 }
 
 /**
- * Button - 확장 가능한 버튼 컴포넌트
+ * Button - 맨하탄 금융센터 스타일 버튼 컴포넌트
  * 
- * UI 디자인 시스템 적용 시 스타일만 교체하면 됨
+ * Wall Street Digital Excellence 적용
+ * 즉시 반응 + 절제된 세련미 + 권한 레벨별 차별화
  * 
  * @example
  * // 기본 사용
  * <Button>클릭</Button>
  * 
- * // 로딩 상태
- * <Button loading loadingText="저장 중...">저장</Button>
+ * // Executive Level (C-Suite 전용)
+ * <Button 
+ *   variant="corporate" 
+ *   size="executive" 
+ *   authorityLevel="ceo"
+ *   confirmationRequired
+ * >
+ *   중요 결정
+ * </Button>
  * 
- * // 아이콘 포함
- * <Button startIcon={<AddIcon />}>추가</Button>
+ * // Trading Floor 스타일
+ * <Button variant="trading" size="small">실시간 거래</Button>
+ * 
+ * // 로딩 상태
+ * <Button loading loadingText="처리 중...">처리</Button>
  */
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -49,6 +64,8 @@ const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   startIcon,
   endIcon,
+  authorityLevel = 'manager',
+  confirmationRequired = false,
   disabled,
   className,
   'data-testid': dataTestId = 'button',
@@ -68,14 +85,21 @@ const Button: React.FC<ButtonProps> = ({
   // 로딩 중일 때 텍스트 처리
   const displayText = loading && loadingText ? loadingText : children;
 
-  // variant가 'ghost'인 경우 Material-UI의 'text'로 매핑
-  const muiVariant = variant === 'ghost' ? 'text' : variant;
+  // 맨하탄 스타일 variant를 Material-UI variant로 매핑
+  const getMuiVariant = () => {
+    switch (variant) {
+      case 'ghost': return 'text';
+      case 'corporate': return 'contained';
+      case 'trading': return 'outlined';
+      default: return variant;
+    }
+  };
 
   return (
     <MuiButton
       {...muiProps}
-      size={size}
-      variant={muiVariant}
+      size={size === 'executive' ? 'large' : size}
+      variant={getMuiVariant()}
       disabled={isDisabled}
       fullWidth={fullWidth}
       startIcon={finalStartIcon}
@@ -84,10 +108,12 @@ const Button: React.FC<ButtonProps> = ({
         styles.button,
         styles[`variant-${variant}`],
         styles[`size-${size}`],
+        styles[`authority-${authorityLevel}`],
         {
           [styles.loading]: loading,
           [styles.disabled]: isDisabled,
           [styles.fullWidth]: fullWidth,
+          [styles.confirmationRequired]: confirmationRequired,
         },
         className
       )}

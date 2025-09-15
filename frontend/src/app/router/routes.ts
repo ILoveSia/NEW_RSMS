@@ -60,6 +60,34 @@ export const routes = {
     categories: '/risks/categories',
   },
   
+  // 책무 관리 (auth - 원장관리)
+  resps: {
+    // 원장관리
+    ledgerOrders: '/resps/ledger-orders',
+    ledgerOrderDetail: '/resps/ledger-orders/:id',
+    ledgerOrderCreate: '/resps/ledger-orders/create',
+    ledgerOrderEdit: '/resps/ledger-orders/:id/edit',
+    
+    // 책무관리
+    responsibilities: '/resps/responsibilities',
+    responsibilityDetail: '/resps/responsibilities/:id',
+    responsibilityCreate: '/resps/responsibilities/create',
+    responsibilityEdit: '/resps/responsibilities/:id/edit',
+    
+    // 책무기술서관리
+    specifications: '/resps/specifications',
+    specificationDetail: '/resps/specifications/:id',
+    specificationCreate: '/resps/specifications/create',
+    specificationEdit: '/resps/specifications/:id/edit',
+    specificationGenerate: '/resps/specifications/:id/generate',
+    
+    // 부서장업무메뉴얼관리
+    departmentManuals: '/resps/department-manuals',
+    departmentManualDetail: '/resps/department-manuals/:id',
+    departmentManualCreate: '/resps/department-manuals/create',
+    departmentManualEdit: '/resps/department-manuals/:id/edit',
+  },
+  
   // 보고서 (auth)
   reports: {
     list: '/reports',

@@ -1,0 +1,300 @@
+// ===================================
+// LoginPage.module.scss
+// 금융권 전용 로그인 페이지 스타일
+// ===================================
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+  position: relative;
+  
+  // 🏙️ Manhattan Financial District 배경 이미지 (로컬)
+  background-image: 
+    linear-gradient(rgba($color-platinum, 0.85), rgba($color-executive, 0.9)),
+    url('@/assets/images/background01.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+  // Wall Street 스타일 오버레이
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba($color-platinum-light, 0.3) 0%,
+      rgba($color-executive, 0.4) 25%,
+      rgba($color-platinum, 0.5) 50%,
+      rgba($color-trading, 0.3) 75%,
+      rgba($color-gold, 0.2) 100%
+    );
+    z-index: 1;
+  }
+  
+  // 모바일에서 배경 최적화
+  @media (max-width: $breakpoint-tablet) {
+    background-attachment: scroll;
+    background-image: 
+      linear-gradient(rgba($color-platinum, 0.9), rgba($color-executive, 0.95)),
+      url('@/assets/images/background01.jpg');
+  }
+}
+
+.loginContainer {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2; // 배경 오버레이 위에 표시
+}
+
+.loginPaper {
+  padding: $spacing-2xl;
+  border-radius: $border-radius-xl;
+  background: rgba($color-background-paper, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  // Manhattan Financial Center 프리미엄 스타일
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba($color-platinum, 0.3);
+  border: 2px solid rgba($color-platinum, 0.2);
+  
+  // Wall Street 고급스러운 그라데이션 보더
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(
+      135deg,
+      rgba($color-gold, 0.3) 0%,
+      rgba($color-platinum, 0.2) 25%,
+      rgba($color-executive, 0.1) 50%,
+      rgba($color-platinum, 0.2) 75%,
+      rgba($color-gold, 0.3) 100%
+    );
+    border-radius: $border-radius-xl;
+    z-index: -1;
+  }
+  
+  @media (max-width: $breakpoint-sm) {
+    padding: $spacing-xl;
+    margin: $spacing-md;
+    background: rgba($color-background-paper, 0.98);
+  }
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: $spacing-2xl;
+  position: relative;
+  
+  .logo {
+    font-size: 56px;
+    margin-bottom: $spacing-md;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: $breakpoint-sm) {
+      font-size: 48px;
+    }
+  }
+  
+  .title {
+    color: $color-text-primary;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-xs;
+    letter-spacing: -0.5px;
+    
+    // Manhattan Financial Center 타이틀 스타일
+    background: linear-gradient(
+      135deg,
+      $color-executive 0%,
+      $color-platinum 50%,
+      $color-gold 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba($color-executive, 0.1);
+  }
+  
+  .subtitle {
+    color: $color-executive;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-semibold;
+    font-size: 1.1rem;
+  }
+  
+  .description {
+    color: $color-text-secondary;
+    opacity: 0.9;
+    font-style: italic;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    
+    // 고급스러운 구분선
+    &::before {
+      content: '·';
+      margin: 0 $spacing-xs;
+      color: $color-gold;
+      font-weight: bold;
+    }
+    
+    &::after {
+      content: '·';
+      margin: 0 $spacing-xs;
+      color: $color-gold;
+      font-weight: bold;
+    }
+  }
+}
+
+.loginForm {
+  .errorAlert {
+    margin-bottom: $spacing-md;
+    border-radius: $border-radius-md;
+  }
+  
+  .loginButton {
+    margin-top: $spacing-lg;
+    margin-bottom: $spacing-xl;
+    height: 56px;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    border-radius: $border-radius-lg;
+    
+    // Manhattan Financial Center 프리미엄 버튼
+    background: linear-gradient(
+      135deg,
+      $color-executive 0%,
+      $color-platinum 50%,
+      $color-executive 100%
+    );
+    box-shadow: 
+      0 4px 12px rgba($color-executive, 0.25),
+      inset 0 1px 0 rgba($color-platinum, 0.3);
+    border: 1px solid rgba($color-executive, 0.3);
+    
+    // Wall Street 타이밍 시스템 적용
+    transition: all $timing-quick $manhattan-ease-out;
+    
+    &:hover:not(:disabled) {
+      background: linear-gradient(
+        135deg,
+        lighten($color-executive, 5%) 0%,
+        $color-platinum-light 50%,
+        lighten($color-executive, 5%) 100%
+      );
+      box-shadow: 
+        0 6px 16px rgba($color-executive, 0.35),
+        inset 0 1px 0 rgba($color-platinum, 0.4);
+      transform: translateY(-1px);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      transition: all $timing-instant ease-out;
+    }
+    
+    &:disabled {
+      background: $color-gray-300;
+      box-shadow: none;
+      border-color: $color-gray-300;
+    }
+  }
+}
+
+.devInfo {
+  text-align: center;
+  padding: $spacing-lg;
+  background-color: $color-gray-50;
+  border-radius: $border-radius-lg;
+  border: 1px solid $color-border-light;
+  
+  > :first-child {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-weight: $font-weight-medium;
+    color: $color-primary-700;
+  }
+  
+  > :last-child {
+    line-height: 1.6;
+    
+    strong {
+      color: $color-primary-700;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: $font-size-sm;
+      background-color: $color-primary-50;
+      padding: 2px 6px;
+      border-radius: $border-radius-sm;
+    }
+  }
+}
+
+// 애니메이션 효과
+.loginPaper {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Material-UI 컴포넌트 오버라이드
+.loginForm {
+  :global {
+    .MuiTextField-root {
+      .MuiOutlinedInput-root {
+        border-radius: $border-radius-lg;
+        
+        &.Mui-focused {
+          .MuiOutlinedInput-notchedOutline {
+            border-color: $color-primary-500;
+            border-width: 2px;
+          }
+        }
+      }
+      
+      .MuiInputLabel-root {
+        &.Mui-focused {
+          color: $color-primary-500;
+        }
+      }
+    }
+    
+    .MuiButton-root {
+      text-transform: none;
+      box-shadow: $shadow-sm;
+      
+      &:hover {
+        box-shadow: $shadow-md;
+        transform: translateY(-1px);
+        transition: all $transition-base;
+      }
+    }
+  }
+}

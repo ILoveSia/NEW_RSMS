@@ -1,0 +1,1106 @@
+// ===================================
+// ExecutiveDashboard.module.scss
+// 맨하탄 금융센터 임원급 대시보드 스타일
+// ===================================
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+@import '@/styles/manhattan-professional';
+
+.executiveDashboard {
+  min-height: 100vh;
+  background: $surface-app-background;
+  padding: $executive-padding;
+  
+  // 맨하탄 금융센터 전문 배경 - 매우 연한 그레이
+  background: linear-gradient(
+    135deg,
+    #fafbfc 0%,
+    #f8f9fa 50%,
+    #fafbfc 100%
+  );
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-lg;
+  }
+  
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-md;
+  }
+}
+
+// ===================================
+// Executive Header Section
+// ===================================
+
+.executiveHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $executive-padding;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+.welcomeSection {
+  .welcomeTitle {
+    font-size: $executive-font-size + 8px; // 32px
+    font-weight: $font-weight-bold;
+    color: $color-authority-executive;
+    margin-bottom: $spacing-sm;
+    letter-spacing: -0.5px;
+    
+    // 맨하탄 금융센터 프리미엄 텍스트 효과
+    text-shadow: 0 2px 4px rgba($color-executive, 0.1);
+    
+    @include responsive-breakpoint($breakpoint-tablet) {
+      font-size: $font-size-2xl;
+    }
+  }
+  
+  .welcomeSubtitle {
+    font-size: $font-size-lg;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    opacity: 0.9;
+  }
+}
+
+// ===================================
+// Real-time Controls Section
+// ===================================
+
+.realtimeControls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.connectionStatus {
+  .statusIndicator {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: $border-radius-md;
+    border: 1px solid rgba(98, 125, 152, 0.12);
+    backdrop-filter: blur(6px);
+    
+    &.connected {
+      border-color: rgba($color-success, 0.3);
+      background: rgba($color-success, 0.05);
+      
+      svg {
+        color: $color-success;
+      }
+      
+      .statusText {
+        color: $color-success-dark;
+      }
+    }
+    
+    &.connecting {
+      border-color: rgba($color-warning, 0.3);
+      background: rgba($color-warning, 0.05);
+      
+      svg {
+        color: $color-warning;
+      }
+      
+      .statusText {
+        color: $color-warning-dark;
+      }
+    }
+    
+    &.disconnected {
+      border-color: rgba($color-error, 0.3);
+      background: rgba($color-error, 0.05);
+      
+      svg {
+        color: $color-error;
+      }
+      
+      .statusText {
+        color: $color-error-dark;
+      }
+    }
+    
+    .statusText {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+.realtimeToggle {
+  .realtimeButton {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(98, 125, 152, 0.12);
+    border-radius: $border-radius-md;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $timing-quick $manhattan-ease-out;
+    backdrop-filter: blur(6px);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(98, 125, 152, 0.25);
+      color: $manhattan-navy;
+    }
+    
+    &.active {
+      background: rgba($color-success, 0.1);
+      border-color: rgba($color-success, 0.3);
+      color: $color-success-dark;
+      
+      svg {
+        color: $color-success;
+      }
+    }
+  }
+}
+
+.dataQuality {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(98, 125, 152, 0.12);
+  border-radius: $border-radius-md;
+  backdrop-filter: blur(6px);
+  
+  svg {
+    color: $color-info;
+  }
+  
+  .qualityText {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.timeframeSelector {
+  display: flex;
+  gap: $spacing-xs;
+  background: rgba(255, 255, 255, 0.9);
+  padding: $spacing-xs;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba(98, 125, 152, 0.12);
+  backdrop-filter: blur(6px);
+  
+  .timeframeButton {
+    padding: $spacing-sm $spacing-md;
+    border: none;
+    background: transparent;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    border-radius: $border-radius-md;
+    cursor: pointer;
+    transition: all $timing-quick $manhattan-ease-out;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.7);
+      color: $color-text-primary;
+    }
+    
+    &.active {
+      background: $manhattan-navy;
+      color: white;
+      box-shadow: 0 2px 4px rgba($manhattan-navy, 0.2);
+    }
+  }
+}
+
+// ===================================
+// Metrics Grid Section
+// ===================================
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: $spacing-xl;
+  margin-bottom: $executive-padding;
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+.metricCard {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: $border-radius-xl;
+  padding: $spacing-xl;
+  height: $executive-card-height;
+  
+  // 맨하탄 금융센터 전문 카드 스타일 - 미니멀하고 깔끔
+  box-shadow: 
+    0 2px 12px rgba(16, 42, 67, 0.08),
+    0 1px 4px rgba(16, 42, 67, 0.04);
+  border: 1px solid rgba(98, 125, 152, 0.12);
+  backdrop-filter: blur(8px);
+  
+  // 임원급 호버 효과
+  transition: all $timing-standard $manhattan-ease-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba($color-platinum, 0.2);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  
+  .cardIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-lg;
+    background: linear-gradient(135deg, $color-authority-executive, $color-platinum);
+    color: $color-executive-contrast;
+    box-shadow: 0 4px 12px rgba($color-authority-executive, 0.25);
+  }
+  
+  .cardTitle {
+    flex: 1;
+    
+    h3 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+      margin-bottom: $spacing-xs;
+    }
+    
+    .cardSubtitle {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      font-weight: $font-weight-medium;
+      opacity: 0.8;
+    }
+  }
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  
+  .primaryValue {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $executive-font-size + 4px; // 28px
+    font-weight: $font-weight-bold;
+    color: $manhattan-navy;
+    
+    .unit {
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $color-text-secondary;
+      margin-left: $spacing-xs;
+    }
+    
+    .liveIndicator {
+      width: 8px;
+      height: 8px;
+      background: $color-success;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      margin-left: $spacing-xs;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: rgba($color-success, 0.3);
+        border-radius: 50%;
+        animation: ripple 2s infinite;
+      }
+    }
+  }
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  
+  .status {
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-weight: $font-weight-medium;
+    
+    &.good {
+      background: rgba($color-success, 0.1);
+      color: $color-success-dark;
+    }
+    
+    &.warning {
+      background: rgba($color-warning, 0.1);
+      color: $color-warning-dark;
+    }
+    
+    &.critical {
+      background: rgba($color-error, 0.1);
+      color: $color-error-dark;
+    }
+  }
+  
+  .overdue {
+    color: $color-error;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ===================================
+// Card Specific Styles
+// ===================================
+
+.riskCard {
+  .cardIcon {
+    background: linear-gradient(135deg, $color-authority-executive, $color-platinum);
+  }
+}
+
+.responsibilityCard {
+  .cardIcon {
+    background: linear-gradient(135deg, $color-success, lighten($color-success, 10%));
+  }
+}
+
+.healthCard {
+  .cardIcon {
+    background: linear-gradient(135deg, $color-trading, lighten($color-trading, 10%));
+  }
+}
+
+.financialCard {
+  .cardIcon {
+    background: linear-gradient(135deg, $color-gold, lighten($color-gold, 15%));
+  }
+}
+
+// ===================================
+// Change Indicators
+// ===================================
+
+.changeIndicator {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  
+  &.up, &.positive {
+    color: $color-success;
+  }
+  
+  &.down {
+    color: $color-success; // 리스크 감소는 좋은 것
+  }
+  
+  &.negative {
+    color: $color-error;
+  }
+}
+
+.positiveIcon {
+  color: $color-success;
+}
+
+.negativeIcon {
+  color: $color-error;
+}
+
+// ===================================
+// Progress Ring Component
+// ===================================
+
+.progressRing {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  
+  .progressSvg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  
+  .progressBackground {
+    fill: none;
+    stroke: $color-border-light;
+  }
+  
+  .progressForeground {
+    fill: none;
+    stroke: $color-success;
+    stroke-linecap: round;
+    transition: stroke-dasharray $timing-standard ease-out;
+  }
+}
+
+// ===================================
+// Health Metrics
+// ===================================
+
+.healthMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  
+  .healthItem {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    
+    svg {
+      color: $color-trading;
+    }
+  }
+}
+
+// ===================================
+// Financial Grid
+// ===================================
+
+.financialGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+  
+  .financialItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .label {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      font-weight: $font-weight-medium;
+    }
+    
+    .value {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+    }
+    
+    .change {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-medium;
+      
+      &.positive {
+        color: $color-success;
+      }
+      
+      &.negative {
+        color: $color-error;
+      }
+    }
+  }
+}
+
+// ===================================
+// Alerts Section
+// ===================================
+
+.alertsSection {
+  margin-bottom: $executive-padding;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: $border-radius-xl;
+  padding: $spacing-xl;
+  box-shadow: 0 1px 8px rgba(16, 42, 67, 0.06);
+  border: 1px solid rgba(98, 125, 152, 0.08);
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    margin-bottom: $spacing-xl;
+    padding: $spacing-lg;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  
+  .sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    
+    svg {
+      color: $color-warning;
+    }
+  }
+  
+  .viewAllButton {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: transparent;
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-md;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $timing-quick ease-out;
+    
+    &:hover {
+      background: $surface-hover-background;
+      border-color: $color-authority-executive;
+      color: $color-authority-executive;
+    }
+  }
+}
+
+.alertsList {
+  display: grid;
+  gap: $spacing-md;
+}
+
+.alertItem {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: $border-radius-lg;
+  border-left: 4px solid;
+  box-shadow: 0 1px 6px rgba(16, 42, 67, 0.04);
+  transition: all $timing-quick ease-out;
+  backdrop-filter: blur(4px);
+  
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
+  
+  &.critical {
+    border-left-color: $color-error;
+    background: rgba($color-error, 0.02);
+  }
+  
+  &.high {
+    border-left-color: $color-warning;
+    background: rgba($color-warning, 0.02);
+  }
+  
+  &.medium {
+    border-left-color: $color-info;
+    background: rgba($color-info, 0.02);
+  }
+  
+  .alertIcon {
+    margin-top: $spacing-xs;
+    
+    .criticalIcon {
+      color: $color-error;
+    }
+    
+    .highIcon {
+      color: $color-warning;
+    }
+    
+    .mediumIcon {
+      color: $color-info;
+    }
+    
+    .lowIcon {
+      color: $color-success;
+    }
+  }
+  
+  .alertContent {
+    flex: 1;
+    
+    .alertHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: $spacing-xs;
+      
+      .alertTitle {
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $color-text-primary;
+        margin: 0;
+      }
+      
+      .alertDepartment {
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        background: $color-background-neutral;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-sm;
+      }
+    }
+    
+    .alertDescription {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      line-height: 1.5;
+      margin-bottom: $spacing-sm;
+    }
+    
+    .alertFooter {
+      display: flex;
+      justify-content: space-between;
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      
+      .alertAssignee {
+        font-weight: $font-weight-medium;
+      }
+      
+      .alertDueDate {
+        color: $color-warning-dark;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+  
+  .alertActions {
+    display: flex;
+    gap: $spacing-xs;
+    
+    .alertButton {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid $color-border-light;
+      border-radius: $border-radius-sm;
+      color: $color-text-secondary;
+      cursor: pointer;
+      transition: all $timing-quick ease-out;
+      
+      &:hover {
+        background: $surface-hover-background;
+        border-color: $color-authority-executive;
+        color: $color-authority-executive;
+      }
+    }
+  }
+}
+
+// ===================================
+// Trend Analysis Section
+// ===================================
+
+.trendSection {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: $border-radius-xl;
+  padding: $spacing-xl;
+  margin-bottom: $executive-padding;
+  box-shadow: 0 1px 8px rgba(16, 42, 67, 0.06);
+  border: 1px solid rgba(98, 125, 152, 0.08);
+  backdrop-filter: blur(8px);
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    margin-bottom: $spacing-xl;
+    padding: $spacing-lg;
+  }
+}
+
+.chartControls {
+  display: flex;
+  gap: $spacing-xs;
+  background: rgba(255, 255, 255, 0.9);
+  padding: $spacing-xs;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(98, 125, 152, 0.12);
+  
+  .chartButton {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    border: none;
+    background: transparent;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+    transition: all $timing-quick $manhattan-ease-out;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.7);
+      color: $color-text-primary;
+    }
+    
+    &.active {
+      background: $manhattan-navy;
+      color: white;
+      box-shadow: 0 1px 3px rgba($manhattan-navy, 0.3);
+    }
+  }
+}
+
+.trendChart {
+  margin-top: $spacing-lg;
+  
+  .chartContainer {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: $border-radius-lg;
+    padding: $spacing-lg;
+    border: 1px solid rgba(98, 125, 152, 0.1);
+    backdrop-filter: blur(6px);
+  }
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid rgba(98, 125, 152, 0.12);
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.chartLegend {
+  display: flex;
+  gap: $spacing-lg;
+  
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+  
+  .legendItem {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    
+    .legendDot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      
+      &.completed {
+        background: #137333;
+      }
+      
+      &.assigned {
+        background: #1a73e8;
+      }
+      
+      &.overdue {
+        background: #d93025;
+      }
+    }
+  }
+}
+
+.chartMetrics {
+  display: flex;
+  gap: $spacing-lg;
+  
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+  
+  .metric {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    
+    strong {
+      color: $color-text-primary;
+      font-weight: $font-weight-semibold;
+      
+      &.positive {
+        color: $color-success;
+      }
+      
+      &.negative {
+        color: $color-error;
+      }
+    }
+  }
+}
+
+.svgChart {
+  width: 100%;
+  height: 300px;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  
+  .chartSvg {
+    width: 100%;
+    height: 100%;
+    
+    .axisLabel {
+      font-size: 12px;
+      fill: $color-text-secondary;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// ===================================
+// Quick Actions Section
+// ===================================
+
+.quickActions {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: $border-radius-xl;
+  padding: $spacing-xl;
+  box-shadow: 0 1px 8px rgba(16, 42, 67, 0.06);
+  border: 1px solid rgba(98, 125, 152, 0.08);
+  
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-lg;
+  }
+  
+  .sectionTitle {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .actionGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $spacing-lg;
+    
+    @include responsive-breakpoint($breakpoint-tablet) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include responsive-breakpoint($breakpoint-mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .actionCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-xl;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(98, 125, 152, 0.1);
+    border-radius: $border-radius-lg;
+    cursor: pointer;
+    transition: all $timing-standard $manhattan-ease-out;
+    backdrop-filter: blur(6px);
+    
+    // 맨하탄 금융센터 전문 호버 효과 - 절제되고 우아함
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 4px 16px rgba(16, 42, 67, 0.12),
+        0 1px 6px rgba(16, 42, 67, 0.08);
+      border-color: rgba(98, 125, 152, 0.25);
+      background: rgba(255, 255, 255, 0.95);
+      
+      svg {
+        color: $color-authority-executive;
+        transform: scale(1.1);
+      }
+      
+      span {
+        color: $color-authority-executive;
+      }
+    }
+    
+    svg {
+      color: $color-text-secondary;
+      transition: all $timing-quick ease-out;
+    }
+    
+    span {
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
+      transition: all $timing-quick ease-out;
+    }
+  }
+}
+
+// ===================================
+// Responsive Design Adjustments
+// ===================================
+
+@include responsive-breakpoint($breakpoint-tablet) {
+  .executiveDashboard {
+    padding: $spacing-lg;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricCard {
+    height: auto;
+    min-height: 120px;
+  }
+  
+  .alertItem {
+    flex-direction: column;
+    gap: $spacing-sm;
+    
+    .alertActions {
+      align-self: flex-end;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .executiveDashboard {
+    padding: $spacing-md;
+  }
+  
+  .timeframeSelector {
+    flex-wrap: wrap;
+  }
+  
+  .cardContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+  
+  .primaryValue {
+    font-size: $font-size-xl;
+  }
+}
+
+// ===================================
+// Animation Keyframes
+// ===================================
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metricCard {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+.alertItem {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+}
+
+.actionCard {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}

@@ -1,0 +1,409 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.card {
+  background: $color-background-paper;
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  
+  // 맨하탄 금융센터 스타일 - 두꺼운 보더와 미묘한 그림자
+  border: 2px solid $color-border-light;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  // Wall Street 스타일 트랜지션
+  transition: all $timing-quick $manhattan-ease-out;
+  
+  // 클릭 가능한 카드
+  &.clickable {
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: $color-primary;
+    }
+    
+    &:active {
+      transform: translateY(-1px);
+      transition: all $timing-instant ease-out;
+    }
+  }
+  
+  // 기밀 정보 카드
+  &.confidential {
+    border-color: $color-gold;
+    box-shadow: 0 4px 12px rgba($color-gold, 0.15);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        $color-gold 0%,
+        $color-gold-light 50%,
+        $color-gold 100%
+      );
+    }
+  }
+}
+
+.content {
+  padding: $spacing-lg !important; // Material-UI override
+  position: relative;
+}
+
+// 헤더 섹션
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.title {
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+  margin: 0 0 $spacing-xs 0;
+  line-height: $line-height-tight;
+}
+
+.subtitle {
+  color: $color-text-secondary;
+  margin: 0;
+  font-weight: $font-weight-normal;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-left: $spacing-sm;
+}
+
+.priorityChip {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  height: 24px;
+}
+
+.visibilityButton {
+  color: $color-text-secondary;
+  transition: all $timing-quick $manhattan-ease-out;
+  
+  &:hover {
+    color: $color-primary;
+    transform: scale(1.1);
+  }
+}
+
+// 메인 값 섹션
+.valueSection {
+  margin-bottom: $spacing-md;
+}
+
+.mainValue {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.value {
+  color: $color-text-primary;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  margin: 0;
+  
+  // 숫자 폰트 최적화 (금융권 표준)
+  font-variant-numeric: tabular-nums;
+  font-family: $font-family-monospace;
+}
+
+.unit {
+  color: $color-text-secondary;
+  font-weight: $font-weight-normal;
+  margin: 0;
+}
+
+// 변화량 섹션
+.changeSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.trendIcon {
+  font-size: 20px;
+}
+
+.trendUp {
+  color: $color-success;
+}
+
+.trendDown {
+  color: $color-error;
+}
+
+.trendNeutral {
+  color: $color-text-secondary;
+}
+
+.change {
+  font-weight: $font-weight-medium;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.changePositive {
+  color: $color-success;
+}
+
+.changeNegative {
+  color: $color-error;
+}
+
+.changeNeutral {
+  color: $color-text-secondary;
+}
+
+// 기밀 정보 숨김 상태
+.hiddenValue {
+  text-align: center;
+  padding: $spacing-md 0;
+}
+
+.confidentialText {
+  color: $color-text-disabled;
+  font-weight: $font-weight-normal;
+  letter-spacing: 4px;
+  margin: 0 0 $spacing-xs 0;
+}
+
+.confidentialNotice {
+  color: $color-gold;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+// 설명
+.description {
+  color: $color-text-secondary;
+  line-height: $line-height-base;
+  margin: 0;
+  border-top: 1px solid $color-border-light;
+  padding-top: $spacing-sm;
+}
+
+// 📈 우선순위별 스타일 (Wall Street Priority System)
+.priorityCritical {
+  border-left-color: $color-error;
+  
+  .priorityChip {
+    background-color: rgba($color-error, 0.1);
+    color: $color-error;
+  }
+}
+
+.priorityHigh {
+  border-left-color: $color-warning;
+  
+  .priorityChip {
+    background-color: rgba($color-warning, 0.1);
+    color: $color-warning;
+  }
+}
+
+.priorityMedium {
+  border-left-color: $color-info;
+  
+  .priorityChip {
+    background-color: rgba($color-info, 0.1);
+    color: $color-info;
+  }
+}
+
+.priorityLow {
+  border-left-color: $color-success;
+  
+  .priorityChip {
+    background-color: rgba($color-success, 0.1);
+    color: $color-success;
+  }
+}
+
+// 🏛️ 권한 레벨별 크기 및 스타일 (Executive Hierarchy)
+.authorityCeo {
+  // CEO 전용 - 최대 크기와 프리미엄 스타일
+  min-height: $executive-card-height * 1.2;
+  
+  .title {
+    font-size: $font-size-xl;
+  }
+  
+  .value {
+    font-size: 3.5rem;
+  }
+  
+  .content {
+    padding: $executive-padding !important;
+  }
+  
+  // 프리미엄 골드 악센트
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      $color-gold 0%,
+      $color-gold-light 50%,
+      $color-gold 100%
+    );
+  }
+}
+
+.authorityExecutive {
+  // 임원급 - 큰 크기
+  min-height: $executive-card-height;
+  
+  .title {
+    font-size: $font-size-lg;
+  }
+  
+  .value {
+    font-size: 3rem;
+  }
+  
+  .content {
+    padding: $spacing-xl !important;
+  }
+}
+
+.authorityDirector {
+  // 부장급 - 중간 크기
+  min-height: 120px;
+  
+  .title {
+    font-size: $font-size-base;
+  }
+  
+  .value {
+    font-size: 2.5rem;
+  }
+  
+  .content {
+    padding: $spacing-lg !important;
+  }
+}
+
+.authorityManager {
+  // 팀장급 - 표준 크기
+  min-height: 100px;
+  
+  .title {
+    font-size: $font-size-sm;
+  }
+  
+  .value {
+    font-size: 2rem;
+  }
+  
+  .content {
+    padding: $spacing-md !important;
+  }
+}
+
+.authorityStaff {
+  // 직원급 - 작은 크기 (Trading Floor 스타일)
+  min-height: 80px;
+  
+  .title {
+    font-size: $font-size-xs;
+  }
+  
+  .value {
+    font-size: 1.5rem;
+  }
+  
+  .content {
+    padding: $spacing-sm !important;
+  }
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .card {
+    .mainValue {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs / 2;
+    }
+  }
+  
+  // 태블릿에서는 권한 레벨별 크기 조정
+  .authorityCeo {
+    .value {
+      font-size: 3rem;
+    }
+  }
+  
+  .authorityExecutive {
+    .value {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .authorityDirector {
+    .value {
+      font-size: 2rem;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .card {
+    min-height: auto;
+    
+    .header {
+      flex-direction: column;
+      gap: $spacing-sm;
+      align-items: flex-start;
+    }
+    
+    .controls {
+      margin-left: 0;
+      align-self: flex-end;
+    }
+  }
+  
+  // 모바일에서는 모든 권한 레벨 통일
+  .authorityCeo,
+  .authorityExecutive,
+  .authorityDirector,
+  .authorityManager,
+  .authorityStaff {
+    min-height: 120px;
+    
+    .value {
+      font-size: 2rem;
+    }
+    
+    .content {
+      padding: $spacing-md !important;
+    }
+  }
+}

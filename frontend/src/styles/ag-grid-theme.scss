@@ -131,7 +131,7 @@
     @include transition(background-color);
     
     &:hover {
-      background-color: $color-primary-dark;
+      background-color: $color-primary-700;
     }
   }
   
