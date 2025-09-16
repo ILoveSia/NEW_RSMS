@@ -1,43 +1,38 @@
-2025-09-09T12:38:31.365+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Starting RsmsApplication using Java 21.0.8 with PID 23733 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
-2025-09-09T12:38:31.367+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Running with Spring Boot v3.3.5, Spring v6.1.14
-2025-09-09T12:38:31.368+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : The following 1 profile is active: "local"
-2025-09-09T12:38:31.406+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2025-09-09T12:38:31.406+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2025-09-09T12:38:32.106+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-09-09T12:38:32.117+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 0 JPA repository interfaces.
-2025-09-09T12:38:33.271+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-09-09T12:38:33.306+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-09-09T12:38:33.308+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
-2025-09-09T12:38:33.371+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2025-09-09T12:38:33.371+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1964 ms
-2025-09-09T12:38:33.554+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] o.s.w.f.ServerHttpObservationFilter      : Filter 'webMvcObservationFilter' configured for use
-2025-09-09T12:38:33.744+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Starting...
-2025-09-09T12:38:33.967+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : RSMS-HikariPool-Local - Added connection org.postgresql.jdbc.PgConnection@691dcb44
-2025-09-09T12:38:33.969+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Start completed.
-2025-09-09T12:38:33.989+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://172.21.174.2:5432/postgres (PostgreSQL 17.6)
-2025-09-09T12:38:33.997+09:00  WARN 23733 --- [RSMS-Backend] [restartedMain] o.f.c.internal.database.base.Database    : Flyway upgrade recommended: PostgreSQL 17.6 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
-2025-09-09T12:38:34.026+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 3 migrations (execution time 00:00.020s)
-2025-09-09T12:38:34.063+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 2
-2025-09-09T12:38:34.065+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
-2025-09-09T12:38:34.155+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-09-09T12:38:34.222+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
-2025-09-09T12:38:34.252+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2025-09-09T12:38:34.511+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-09-09T12:38:34.566+09:00  WARN 23733 --- [RSMS-Backend] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-09-09T12:38:34.856+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-09-09T12:38:34.861+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-09-09T12:38:35.287+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2025-09-09T12:38:35.470+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 6 mappings in 'requestMappingHandlerMapping'
-2025-09-09T12:38:35.631+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
-2025-09-09T12:38:36.042+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 17 endpoints beneath base path '/actuator'
-2025-09-09T12:38:36.190+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, UsernamePasswordAuthenticationFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, ConcurrentSessionFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
-2025-09-09T12:38:36.397+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2025-09-09T12:38:36.432+09:00 DEBUG 23733 --- [RSMS-Backend] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
-2025-09-09T12:38:36.887+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2025-09-09T12:38:37.026+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2025-09-09T12:38:37.053+09:00  INFO 23733 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Started RsmsApplication in 6.107 seconds (process running for 6.499)
-2025-09-09T12:55:30.646+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
-2025-09-09T12:55:30.651+09:00  INFO 23733 --- [RSMS-Backend] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
-2025-09-09T12:55:30.662+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-09-09T12:55:30.669+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Shutdown initiated...
-2025-09-09T12:55:30.677+09:00  INFO 23733 --- [RSMS-Backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Shutdown completed.
+2025-09-15T13:08:14.325+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Starting RsmsApplication using Java 21.0.8 with PID 8051 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-09-15T13:08:14.334+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-09-15T13:08:14.334+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : The following 1 profile is active: "local"
+2025-09-15T13:08:14.384+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-09-15T13:08:14.385+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-09-15T13:08:15.096+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-15T13:08:15.107+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 3 ms. Found 0 JPA repository interfaces.
+2025-09-15T13:08:16.273+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-09-15T13:08:16.300+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-15T13:08:16.301+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2025-09-15T13:08:16.358+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-15T13:08:16.358+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1973 ms
+2025-09-15T13:08:16.542+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] o.s.w.f.ServerHttpObservationFilter      : Filter 'webMvcObservationFilter' configured for use
+2025-09-15T13:08:16.727+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Starting...
+2025-09-15T13:08:17.024+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : RSMS-HikariPool-Local - Added connection org.postgresql.jdbc.PgConnection@76bac30d
+2025-09-15T13:08:17.025+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.zaxxer.hikari.HikariDataSource       : RSMS-HikariPool-Local - Start completed.
+2025-09-15T13:08:17.050+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://172.21.174.2:5432/postgres (PostgreSQL 17.6)
+2025-09-15T13:08:17.057+09:00  WARN 8051 --- [RSMS-Backend] [restartedMain] o.f.c.internal.database.base.Database    : Flyway upgrade recommended: PostgreSQL 17.6 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2025-09-15T13:08:17.096+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 3 migrations (execution time 00:00.023s)
+2025-09-15T13:08:17.133+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 2
+2025-09-15T13:08:17.137+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2025-09-15T13:08:17.228+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-15T13:08:17.295+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-09-15T13:08:17.327+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-15T13:08:17.611+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-15T13:08:17.665+09:00  WARN 8051 --- [RSMS-Backend] [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-15T13:08:17.978+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-15T13:08:17.982+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-15T13:08:18.472+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-09-15T13:08:18.604+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 6 mappings in 'requestMappingHandlerMapping'
+2025-09-15T13:08:18.738+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-09-15T13:08:19.178+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 17 endpoints beneath base path '/actuator'
+2025-09-15T13:08:19.293+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, UsernamePasswordAuthenticationFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, ConcurrentSessionFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-09-15T13:08:19.419+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-09-15T13:08:19.450+09:00 DEBUG 8051 --- [RSMS-Backend] [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-09-15T13:08:19.836+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-09-15T13:08:19.897+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2025-09-15T13:08:19.910+09:00  INFO 8051 --- [RSMS-Backend] [restartedMain] com.rsms.RsmsApplication                 : Started RsmsApplication in 5.98 seconds (process running for 6.374)

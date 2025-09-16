@@ -1,5 +1,6 @@
-@import '@/styles/variables';
-@import '@/styles/mixins';
+@use 'sass:color';
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .modal {
   // UI 디자인 나오면 전체 스타일 교체 예정
@@ -103,7 +104,7 @@
       border-radius: 3px;
       
       &:hover {
-        background: darken($color-border, 10%);
+        background: color.adjust($color-border, $lightness: -10%);
       }
     }
   }

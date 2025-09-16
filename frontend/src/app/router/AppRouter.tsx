@@ -99,13 +99,23 @@ const AppRouter: React.FC = () => {
           />
         } />
 
+        {/* 홈페이지 - 로그인 페이지로 리다이렉트 */}
+        <Route path="/" element={<Navigate to={routes.auth.login} replace />} />
+
+        {/* 레거시 라우트 리다이렉션 (이전 경로 호환성) */}
+        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/dashboard/*" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/resps/*" element={<Navigate to="/app/resps/ledger-orders" replace />} />
+        <Route path="/risks/*" element={<Navigate to="/app/risks" replace />} />
+        <Route path="/users/*" element={<Navigate to="/app/users" replace />} />
+        <Route path="/reports/*" element={<Navigate to="/app/reports" replace />} />
+        <Route path="/settings/*" element={<Navigate to="/app/settings" replace />} />
+
         {/* 메인 애플리케이션 라우트 (레이아웃 포함) */}
-        <Route path="/" element={<FinancialLayout />}>
-          {/* 홈페이지 - 대시보드로 리다이렉트 */}
-          <Route index element={<Navigate to={routes.dashboard.main} replace />} />
+        <Route path="/app" element={<FinancialLayout />}>
           
           {/* 대시보드 (인증 필요) */}
-          <Route path="/dashboard/*" element={
+          <Route path="dashboard/*" element={
             <AuthGuard>
               <Routes>
                 <Route index element={
@@ -134,7 +144,7 @@ const AppRouter: React.FC = () => {
           } />
 
           {/* 책무 관리 (인증 필요 - 핵심 도메인) */}
-          <Route path="/resps/*" element={
+          <Route path="resps/*" element={
             <AuthGuard>
               <Routes>
                 {/* 원장관리 */}
@@ -233,13 +243,13 @@ const AppRouter: React.FC = () => {
                 } />
 
                 {/* 기본 리다이렉트 */}
-                <Route index element={<Navigate to="/resps/ledger-orders" replace />} />
+                <Route index element={<Navigate to="/app/resps/ledger-orders" replace />} />
               </Routes>
             </AuthGuard>
           } />
 
           {/* 리스크 관리 (인증 필요) */}
-          <Route path="/risks/*" element={
+          <Route path="risks/*" element={
             <AuthGuard>
               <Routes>
                 <Route index element={
@@ -277,7 +287,7 @@ const AppRouter: React.FC = () => {
           } />
 
           {/* 사용자 관리 (매니저 이상) */}
-          <Route path="/users/*" element={
+          <Route path="users/*" element={
             <ManagerGuard>
               <Routes>
                 <Route index element={
@@ -303,7 +313,7 @@ const AppRouter: React.FC = () => {
           } />
 
           {/* 보고서 (인증 필요) */}
-          <Route path="/reports/*" element={
+          <Route path="reports/*" element={
             <AuthGuard>
               <Routes>
                 <Route index element={
@@ -341,7 +351,7 @@ const AppRouter: React.FC = () => {
           } />
 
           {/* 설정 */}
-          <Route path="/settings/*" element={
+          <Route path="settings/*" element={
             <Routes>
               {/* 개인 설정 (인증 필요) */}
               <Route path="profile" element={

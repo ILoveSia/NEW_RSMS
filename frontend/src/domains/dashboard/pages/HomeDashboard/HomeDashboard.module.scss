@@ -1,674 +1,832 @@
-// ===================================
-// HomeDashboard.module.scss
-// RSMS 책무구조도 이행관리시스템 홈 대시보드
-// 뉴욕 맨하탄 금융센터 전문 UI/UX 디자인 시스템
-// ===================================
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+@use '@/styles/manhattan-professional' as *;
 
-@import '@/styles/variables';
-@import '@/styles/mixins';
-@import '@/styles/manhattan-professional';
+// ===================================
+// HomeDashboard.module.scss - 이미지 기반 정확한 재현
+// 참고: img/00/00.홈_대시보드.png
+// ===================================
 
 .homeDashboard {
-  min-height: 100vh;
+  height: 90vh;
+  overflow: hidden;
   @include manhattan-bg-primary;
-  padding: $spacing-xl;
-  
-  @include responsive-breakpoint($breakpoint-tablet) {
-    padding: $spacing-lg;
-  }
-  
-  @include responsive-breakpoint($breakpoint-mobile) {
-    padding: $spacing-md;
-  }
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 // ===================================
-// 대시보드 헤더
+// 상단 섹션 레이아웃 (좌측 환영카드, 중앙 플로우차트, 우측 팀현황)
 // ===================================
 
-.dashboardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: $spacing-xl;
-  padding: $spacing-lg $spacing-xl;
-  @include manhattan-bg-section;
-  border-radius: $border-radius-xl;
-  
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex-direction: column;
-    gap: $spacing-lg;
-    padding: $spacing-lg;
-  }
-}
-
-.headerLeft {
-  .dashboardTitle {
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
-    @include manhattan-heading-primary;
-    font-size: $font-size-2xl;
-    margin-bottom: $spacing-sm;
-    
-    svg {
-      color: $manhattan-navy;
-    }
-    
-    @include responsive-breakpoint($breakpoint-tablet) {
-      font-size: $font-size-xl;
-    }
-  }
-  
-  .dashboardSubtitle {
-    @include manhattan-text-caption;
-    font-size: $font-size-base;
-    margin: 0;
-  }
-}
-
-.headerControls {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-  
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex-wrap: wrap;
-    gap: $spacing-sm;
-  }
-}
-
-.periodControl,
-.orgControl {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  @include manhattan-bg-card;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $border-radius-md;
-  border: 1px solid rgba(98, 125, 152, 0.12);
-  
-  svg {
-    color: $manhattan-slate;
-  }
-  
-  select {
-    border: none;
-    background: transparent;
-    color: $manhattan-charcoal;
-    font-weight: $font-weight-medium;
-    font-size: $font-size-sm;
-    cursor: pointer;
-    
-    &:focus {
-      outline: none;
-    }
-  }
-}
-
-.refreshButton {
-  @include manhattan-button-secondary;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-  
-  .spinning {
-    animation: spin 1s linear infinite;
-  }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-// ===================================
-// 대시보드 그리드 레이아웃
-// ===================================
-
-.dashboardGrid {
+.topSection {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: $spacing-xl;
-  max-width: 1920px;
-  margin: 0 auto;
-  
-  @include responsive-breakpoint($breakpoint-tablet) {
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
-  }
+  grid-template-columns: 280px 1fr 1fr;
+  gap: 16px;
+  height: calc(90vh - 32px);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.centerColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 // ===================================
-// 공통 카드 스타일
+// 하단 섹션 레이아웃 (4개 차트)
 // ===================================
 
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-lg;
-  
-  h3 {
-    @include manhattan-heading-primary;
-    font-size: $font-size-lg;
-    margin: 0;
-  }
-}
-
-.addButton,
-.viewAllButton,
-.filterButton,
-.downloadButton {
-  @include manhattan-button-secondary;
-  padding: $spacing-sm;
-  width: auto;
-  height: auto;
-  min-width: 32px;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  font-size: $font-size-sm;
-}
-
-.headerActions {
-  display: flex;
-  gap: $spacing-xs;
+.bottomSection {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  height: calc(100vh - 432px);
+  min-height: 200px;
 }
 
 // ===================================
-// 웰컴 카드
+// 좌측 환영 카드 (이미지 기반)
 // ===================================
 
 .welcomeCard {
-  @include manhattan-card-section;
-  padding: $spacing-xl;
-  
-  .welcomeHeader {
-    display: flex;
-    align-items: center;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
-    
-    .welcomeIcon {
-      width: 48px;
-      height: 48px;
-      @include manhattan-bg-card;
-      border-radius: $border-radius-lg;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(98, 125, 152, 0.15);
-      
-      svg {
-        color: $manhattan-navy;
-      }
-    }
-    
-    .welcomeInfo {
-      flex: 1;
-      
-      h2 {
-        @include manhattan-heading-primary;
-        font-size: $font-size-xl;
-        margin-bottom: $spacing-xs;
-      }
-      
-      p {
-        @include manhattan-text-caption;
-        margin: 0;
-      }
-    }
-  }
-  
-  .notificationPanel {
-    display: flex;
-    gap: $spacing-lg;
-    
-    @include responsive-breakpoint($breakpoint-mobile) {
-      flex-direction: column;
-      gap: $spacing-md;
-    }
-  }
-  
-  .notificationItem {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    flex: 1;
-    
-    .notificationIcon {
-      width: 36px;
-      height: 36px;
-      @include manhattan-bg-overlay;
-      border-radius: $border-radius-md;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      svg {
-        color: $manhattan-blue;
-      }
-    }
-    
-    .notificationContent {
-      display: flex;
-      flex-direction: column;
-      
-      .notificationLabel {
-        @include manhattan-text-caption;
-        margin-bottom: 2px;
-      }
-      
-      .notificationValue {
-        @include manhattan-heading-secondary;
-        font-size: $font-size-lg;
-        font-weight: $font-weight-bold;
-      }
-    }
-  }
-}
-
-// ===================================
-// 책무 현황 플로우 차트
-// ===================================
-
-.responsibilityFlow {
-  @include manhattan-card-section;
-  padding: $spacing-xl;
-  
-  .flowChart {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-lg;
-    overflow-x: auto;
-    padding: $spacing-md 0;
-  }
-  
-  .flowLevel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .flowNode {
-    @include manhattan-bg-card;
-    padding: $spacing-md;
-    border-radius: $border-radius-lg;
-    border: 2px solid rgba(98, 125, 152, 0.15);
-    text-align: center;
-    min-width: 120px;
-    transition: all $timing-quick $manhattan-ease-out;
-    
-    &:hover {
-      @include manhattan-hover-subtle;
-      transform: translateY(-2px);
-    }
-    
-    .nodeLabel {
-      @include manhattan-text-caption;
-      margin-bottom: $spacing-xs;
-      font-weight: $font-weight-semibold;
-    }
-    
-    .nodeValue {
-      @include manhattan-heading-primary;
-      font-size: $font-size-xl;
-      font-weight: $font-weight-bold;
-    }
-  }
-  
-  .flowConnector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: $spacing-sm 0;
-    
-    svg {
-      color: $manhattan-slate;
-    }
-  }
-  
-  .flowSplit {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    
-    .flowConnector {
-      flex: 1;
-    }
-  }
-  
-  .flowEndNodes,
-  .flowBottomNodes {
-    display: flex;
-    gap: $spacing-md;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .flowEndNode,
-  .flowBottomNode {
-    @include manhattan-bg-overlay;
-    padding: $spacing-sm $spacing-md;
-    border-radius: $border-radius-md;
-    border: 1px solid rgba(98, 125, 152, 0.12);
-    text-align: center;
-    min-width: 100px;
-    
-    .nodeLabel {
-      @include manhattan-text-caption;
-      margin-bottom: 4px;
-      font-size: $font-size-xs;
-    }
-    
-    .nodeValue {
-      @include manhattan-heading-secondary;
-      font-size: $font-size-sm;
-      font-weight: $font-weight-semibold;
-    }
-  }
-  
-  .flowBottom {
-    margin-top: $spacing-md;
-  }
-}
-
-// ===================================
-// 팀가드팀 책무현황
-// ===================================
-
-.teamStatusCard {
-  @include manhattan-card-section;
-  padding: $spacing-xl;
-  
-  .statusGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: $spacing-md;
-  }
-  
-  .statusItem {
-    @include manhattan-bg-card;
-    padding: $spacing-md;
-    border-radius: $border-radius-lg;
-    border: 1px solid rgba(98, 125, 152, 0.12);
-    transition: all $timing-quick $manhattan-ease-out;
-    
-    &:hover {
-      @include manhattan-hover-subtle;
-      transform: translateY(-2px);
-    }
-    
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    
-    .statusIcon {
-      width: 36px;
-      height: 36px;
-      border-radius: $border-radius-md;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .statusContent {
-      flex: 1;
-      
-      .statusNumber {
-        @include manhattan-heading-primary;
-        font-size: $font-size-xl;
-        font-weight: $font-weight-bold;
-        margin-bottom: 2px;
-      }
-      
-      .statusLabel {
-        @include manhattan-text-caption;
-        font-size: $font-size-xs;
-      }
-    }
-    
-    &.responsibilities {
-      .statusIcon {
-        background: rgba($manhattan-navy, 0.1);
-        svg { color: $manhattan-navy; }
-      }
-    }
-    
-    &.management {
-      .statusIcon {
-        background: rgba($manhattan-blue, 0.1);
-        svg { color: $manhattan-blue; }
-      }
-    }
-    
-    &.complete {
-      .statusIcon {
-        background: rgba($manhattan-success, 0.1);
-        svg { color: $manhattan-success; }
-      }
-    }
-    
-    &.pending {
-      .statusIcon {
-        background: rgba($manhattan-warning, 0.1);
-        svg { color: $manhattan-warning; }
-      }
-    }
-    
-    &.inappropriate {
-      .statusIcon {
-        background: rgba($manhattan-error, 0.1);
-        svg { color: $manhattan-error; }
-      }
-    }
-  }
-}
-
-// ===================================
-// 책무-관리의무 이행 현황
-// ===================================
-
-.implementationStatus {
-  @include manhattan-card-section;
-  padding: $spacing-xl;
-  
-  .implementationMatrix {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $spacing-md;
-    margin-bottom: $spacing-lg;
-  }
-  
-  .matrixRow {
-    display: flex;
-    gap: $spacing-md;
-  }
-  
-  .matrixCell {
-    @include manhattan-bg-card;
-    padding: $spacing-md;
-    border-radius: $border-radius-md;
-    border: 1px solid rgba(98, 125, 152, 0.12);
-    text-align: center;
-    flex: 1;
-    
-    .matrixLabel {
-      @include manhattan-text-caption;
-      margin-bottom: $spacing-xs;
-    }
-    
-    .matrixValue {
-      @include manhattan-heading-primary;
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
-    }
-  }
-  
-  .expandedView {
-    @include manhattan-bg-overlay;
-    border-radius: $border-radius-md;
-    padding: $spacing-lg;
-    min-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    .expandedContent {
-      @include manhattan-text-caption;
-      text-align: center;
-    }
-  }
-}
-
-// ===================================
-// 차트 공통 스타일
-// ===================================
-
-.complianceChart,
-.distributionChart {
-  @include manhattan-card-section;
-  padding: $spacing-xl;
-  
-  .chartLegend {
-    display: flex;
-    gap: $spacing-md;
-    
-    .legendItem {
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-      @include manhattan-text-caption;
-      
-      .legendDot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: $manhattan-navy;
-      }
-    }
-  }
-  
-  .chartContainer {
-    margin-top: $spacing-md;
-    @include manhattan-bg-overlay;
-    border-radius: $border-radius-md;
-    padding: $spacing-md;
-  }
-  
-  .chartSvg {
-    width: 100%;
-    height: 250px;
-    
-    .axisLabel {
-      font-size: 12px;
-      fill: $manhattan-slate;
-      font-weight: $font-weight-medium;
-    }
-  }
-}
-
-.distributionChart {
-  .donutContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    @include manhattan-bg-overlay;
-    border-radius: $border-radius-md;
-    padding: $spacing-lg;
-    margin-top: $spacing-md;
-  }
-  
-  .donutSvg {
-    width: 200px;
-    height: 200px;
-  }
-}
-
-// ===================================
-// 퀵 액세스 그리드
-// ===================================
-
-.quickAccessGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $spacing-lg;
-  grid-column: 1 / -1;
-  
-  @include responsive-breakpoint($breakpoint-mobile) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.quickAccessCard {
-  @include manhattan-card-content;
-  padding: $spacing-xl;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+  border-radius: 16px;
+  padding: 16px;
+  color: white;
   display: flex;
-  align-items: center;
-  gap: $spacing-lg;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: all $timing-standard $manhattan-ease-out;
-  
-  &:hover {
-    @include manhattan-hover-lift;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  height: 620px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+    pointer-events: none;
   }
-  
-  .quickAccessIcon {
-    width: 64px;
-    height: 64px;
-    border-radius: $border-radius-lg;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .welcomeHeader {
+    position: relative;
+    z-index: 1;
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.9;
+    }
+  }
+
+  .notificationIcons {
+    position: relative;
+    z-index: 1;
+
+    .iconGroup {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .iconItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        opacity: 0.9;
+      }
+
+      .iconCount {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 16px;
+        font-weight: 700;
+        min-width: 40px;
+        text-align: center;
+      }
+
+      .iconLabel {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+// ===================================
+// 액세스 버튼 가로 배치
+// ===================================
+
+.accessButtonsHorizontal {
+  display: flex;
+  gap: 16px; // 우측 chartsHorizontal과 동일한 간격
+  height: 200px; // 우측 chartCard와 동일한 높이
+  margin-top: 24px; // 버튼들을 아래로 이동
+}
+
+.accessButton {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  flex: 1;
+  height: 100%; // 컨테이너 전체 높이 사용
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: #2196f3;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: #1e3a5f;
     flex-shrink: 0;
   }
-  
-  .quickAccessContent {
-    flex: 1;
-    
-    h4 {
-      @include manhattan-heading-primary;
-      font-size: $font-size-base;
-      margin-bottom: $spacing-xs;
+
+  span {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e3a5f;
+    letter-spacing: -0.3px;
+  }
+}
+
+// ===================================
+// 중앙 컬럼 - 새로운 책무현황 (이미지 기반)
+// ===================================
+
+.responsibilityFlowNew {
+  background: linear-gradient(135deg, #2d5a87 0%, #1e3a5f 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  margin-bottom: 16px;
+  height: 620px;
+  box-shadow: 0 8px 32px rgba(30, 58, 95, 0.15);
+
+  .flowHeaderNew {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .headerControls {
+      display: flex;
+      gap: 16px;
     }
-    
-    p {
-      @include manhattan-text-caption;
-      font-size: $font-size-xs;
-      line-height: 1.4;
+
+    .periodSelect,
+    .positionSelect {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      option {
+        background: #1e3a5f;
+        color: white;
+      }
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .addButton {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  .flowChartNew {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .flowLevel1,
+  .flowLevel2,
+  .flowLevel3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flowLevel4 {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flowLevel5 {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    // 카드들을 중앙과 우측에 배치
+    .flowCard:first-child {
+      margin-left: 60px; // 첫 번째 카드(개선완료)를 중앙으로
+    }
+
+    .flowCard:last-child {
+      margin-right: 0; // 두 번째 카드(개선진행)를 우측으로
+    }
+  }
+
+  // 수직 화살표 스타일
+  .verticalArrow {
+    width: 2px;
+    height: 15px;
+    background: rgba(255, 255, 255, 0.7);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 6px solid rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  // 3방향 분기 연결선
+  .branchConnectionContainer {
+    width: 100%;
+    height: 25px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    .branchMainLine {
+      width: 2px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .branchHorizontalLine {
+      width: 200px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .branchVerticalLines {
+      position: absolute;
+      top: 15px;
+      width: 200px;
+      height: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .leftBranchLine,
+      .centerBranchLine,
+      .rightBranchLine {
+        width: 2px;
+        height: 15px;
+        background: rgba(255, 255, 255, 0.7);
+        position: absolute;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 6px solid rgba(255, 255, 255, 0.7);
+        }
+      }
+
+      .leftBranchLine {
+        left: 0;
+      }
+
+      .centerBranchLine {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .rightBranchLine {
+        right: 0;
+      }
+    }
+  }
+
+  // 하단 2방향 연결선 (적정과 부적절에서)
+  .bottomConnectionContainer {
+    width: 100%;
+    height: 25px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    // 적정(CEO) 카드에서 내려오는 수직선
+    .centerMainLine {
+      width: 2px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 0;
+      left: 50%; // 중앙 카드 (적정) 위치
+      transform: translateX(-50%);
+    }
+
+    // 부적절(CEO) 카드에서 내려오는 수직선
+    .rightMainLine {
+      width: 2px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 0;
+      left: calc(50% + 120px); // 오른쪽 카드 (부적절) 위치
+    }
+
+    .bottomHorizontalLine {
+      width: 180px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .bottomVerticalLines {
+      position: absolute;
+      top: 12px;
+      width: 180px;
+      height: 13px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .leftBottomLine,
+      .rightBottomLine {
+        width: 2px;
+        height: 13px;
+        background: rgba(255, 255, 255, 0.7);
+        position: absolute;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-top: 6px solid rgba(255, 255, 255, 0.7);
+        }
+      }
+
+      .leftBottomLine {
+        left: 30px;
+      }
+
+      .rightBottomLine {
+        right: 30px;
+      }
+    }
+  }
+
+  .flowCard {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 12px;
+    padding: 8px 16px;
+    text-align: center;
+    min-width: 110px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(30, 58, 95, 0.1);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .cardTitle {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .cardNumber {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e3a5f;
+
+      .subNumber {
+        font-size: 16px;
+        font-weight: 500;
+        margin-left: 2px;
+      }
+    }
+
+    .cardNumberBlue {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2196f3;
+
+      .subNumber {
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 2px;
+      }
+    }
+
+    .cardNumberRed {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f44336;
+
+      .subNumber {
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 2px;
+      }
+    }
+  }
+
+  .flowArrowDown {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+  }
+}
+
+// ===================================
+// 차트 가로 배치
+// ===================================
+
+.chartsHorizontal {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  flex: 1;
+  height: 200px;
+  border: 1px solid rgba(30, 58, 95, 0.08);
+
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .lineChart {
+    width: 100%;
+    height: 100px;
+  }
+
+  .pieChart {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+  }
+
+  .chartSvg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ===================================
+// 우측 컬럼 - 뱅가드팀 책무현황 + 이행현황 (이미지 기반)
+// ===================================
+
+.vanguardTeamStatus {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(30, 58, 95, 0.15);
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .statusBoxesHorizontal {
+    display: flex;
+    gap: 12px;
+  }
+
+  .statusBox {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 18px 12px;
+    text-align: center;
+    flex: 1;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    &.highlight {
+      background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+    }
+
+    &.danger {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+    }
+
+    .boxNumber {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .boxLabel {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.95;
+      letter-spacing: -0.3px;
+    }
+  }
+}
+
+.implementationStatusLarge {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  flex: 1;
+  height: 300px;
+  box-shadow: 0 8px 32px rgba(25, 118, 210, 0.15);
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .statusTags {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .statusTag {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .tagLabel {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .tagNumber {
+      font-size: 16px;
+      font-weight: 700;
+    }
+  }
+
+  .largeChartArea {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 24px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chartPlaceholder {
+      font-size: 18px;
+      font-weight: 600;
+      opacity: 0.8;
+      letter-spacing: -0.3px;
+    }
+  }
+}
+
+// ===================================
+// 하단 차트 섹션들 (이미지 기반)
+// ===================================
+
+.implementationChart,
+.complianceChart,
+.distributionChart {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  .chartHeader {
+    margin-bottom: 8px;
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e3a5f;
       margin: 0;
     }
   }
-  
-  &.responsibilityCard {
-    .quickAccessIcon {
-      background: rgba($manhattan-navy, 0.1);
-      svg { color: $manhattan-navy; }
-    }
-  }
-  
-  &.specificationCard {
-    .quickAccessIcon {
-      background: rgba($manhattan-warning, 0.1);
-      svg { color: $manhattan-warning; }
-    }
+
+  .chartContent {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
+.implementationChart {
+  .barChart {
+    display: flex;
+    gap: 24px;
+    align-items: end;
+    height: 120px;
+  }
+
+  .barItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .barValue {
+    width: 40px;
+    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .barLabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6c757d;
+  }
+}
+
+.complianceChart {
+  .lineChart {
+    width: 100%;
+    height: 120px;
+  }
+
+  .chartSvg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.distributionChart {
+  .pieChart {
+    width: 100px;
+    height: 100px;
+  }
+
+  .chartSvg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
 // ===================================
-// 모달 스타일
+// 모달 스타일 (기존 유지)
 // ===================================
 
 .modalOverlay {
@@ -683,118 +841,302 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: $spacing-lg;
+  padding: 24px;
 }
 
 .modalContent {
-  @include manhattan-bg-section;
-  border-radius: $border-radius-xl;
+  background: white;
+  border-radius: 16px;
   max-width: 800px;
   width: 100%;
   max-height: 80vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $spacing-lg $spacing-xl;
-  border-bottom: 1px solid rgba(98, 125, 152, 0.12);
-  
+  padding: 24px;
+  border-bottom: 1px solid #e9ecef;
+
   h2 {
-    @include manhattan-heading-primary;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e3a5f;
     margin: 0;
   }
-  
+
   .closeButton {
-    @include manhattan-button-secondary;
-    padding: $spacing-sm;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px;
     width: 40px;
     height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+
+    &:hover {
+      background: #e9ecef;
+    }
   }
 }
 
 .modalBody {
-  padding: $spacing-xl;
+  padding: 24px;
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  gap: 24px;
+}
+
+// 책무체계도 스타일 (기존 유지하되 간소화)
+.hierarchyContainer {
+  flex: 2;
+
+  .hierarchyHeader {
+    margin-bottom: 24px;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1e3a5f;
+    }
+
+    .hierarchySubtitle {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      color: #6c757d;
+    }
+
+    .hierarchyDate {
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 500;
+    }
+  }
+
+  .orgChart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ceoLevel,
+  .managementLevel,
+  .staffLevel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .ceoNode,
+  .managementNode {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #1e3a5f;
+    text-align: center;
+    min-width: 140px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    .nodeTitle {
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 4px;
+    }
+
+    .nodePosition {
+      font-size: 12px;
+      margin-bottom: 2px;
+      color: #6c757d;
+    }
+
+    .nodeDate {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 4px;
+    }
+
+    .nodeCode {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196f3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+  }
+
+  .connectionLine {
+    width: 2px;
+    height: 30px;
+    background: #6c757d;
+    opacity: 0.5;
+  }
+
+  .staffLevel {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .branchContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    .branchTitle {
+      font-size: 14px;
+      color: #1e3a5f;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .staffNodes {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  .staffNode {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    min-width: 100px;
+
+    .nodeTitle {
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .nodeDate {
+      font-size: 10px;
+      color: #6c757d;
+      margin-bottom: 4px;
+    }
+
+    .nodeCode {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+  }
+}
+
+.responsibilityTags {
+  flex: 1;
+
+  .tagGroup {
+    margin-bottom: 24px;
+
+    h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #1e3a5f;
+      font-weight: 600;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+
+      &.guidance {
+        background: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+        border: 1px solid rgba(244, 67, 54, 0.2);
+      }
+
+      &.financial {
+        background: rgba(33, 150, 243, 0.1);
+        color: #2196f3;
+        border: 1px solid rgba(33, 150, 243, 0.2);
+      }
+
+      &.management {
+        background: rgba(255, 152, 0, 0.1);
+        color: #ff9800;
+        border: 1px solid rgba(255, 152, 0, 0.2);
+      }
+
+      &.common {
+        background: rgba(76, 175, 80, 0.1);
+        color: #4caf50;
+        border: 1px solid rgba(76, 175, 80, 0.2);
+      }
+    }
+  }
 }
 
 // ===================================
 // 반응형 디자인
 // ===================================
 
-@include responsive-breakpoint($breakpoint-tablet) {
-  .dashboardGrid {
+@media (max-width: 1200px) {
+  .topSection {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 16px;
+  }
+
+  .bottomSection {
+    grid-template-columns: repeat(2, 1fr);
+    height: auto;
+    gap: 16px;
+  }
+
+  .teamStatusCard .statusBoxes {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .homeDashboard {
+    padding: 16px;
+  }
+
+  .bottomSection {
     grid-template-columns: 1fr;
   }
-  
-  .statusGrid {
+
+  .teamStatusCard .statusBoxes {
     grid-template-columns: repeat(3, 1fr);
   }
-  
-  .implementationMatrix {
-    grid-template-columns: 1fr;
-  }
-  
-  .quickAccessGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .flowChart {
-    font-size: $font-size-sm;
-  }
-}
 
-@include responsive-breakpoint($breakpoint-mobile) {
-  .homeDashboard {
-    padding: $spacing-md;
-  }
-  
-  .statusGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .notificationPanel {
+  .welcomeCard .notificationIcons .iconGroup {
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: 12px;
   }
-  
-  .flowEndNodes,
-  .flowBottomNodes {
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-}
-
-// ===================================
-// 애니메이션
-// ===================================
-
-.welcomeCard,
-.teamStatusCard,
-.responsibilityFlow,
-.implementationStatus,
-.complianceChart,
-.distributionChart {
-  @include manhattan-fade-in;
-  animation-fill-mode: both;
-  
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
-  &:nth-child(5) { animation-delay: 0.5s; }
-  &:nth-child(6) { animation-delay: 0.6s; }
-}
-
-.quickAccessCard {
-  @include manhattan-fade-in(0.3s);
-  animation-fill-mode: both;
-  
-  &:nth-child(1) { animation-delay: 0.7s; }
-  &:nth-child(2) { animation-delay: 0.8s; }
 }

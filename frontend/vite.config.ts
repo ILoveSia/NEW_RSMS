@@ -42,12 +42,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        // SCSS 글로벌 변수와 믹신을 모든 .scss 파일에 자동 import
-        additionalData: `
-          @import "@/styles/variables";
-          @import "@/styles/mixins";
-        `,
-        // SCSS 경고 메시지 숨기기
+        // SCSS 경고 메시지 숨기기 (Dart Sass 3.0 호환)
         silenceDeprecations: ['legacy-js-api', 'import']
       }
     },

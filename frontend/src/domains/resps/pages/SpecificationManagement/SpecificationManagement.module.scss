@@ -1,5 +1,6 @@
-@import '@/styles/variables';
-@import '@/styles/mixins';
+@use 'sass:color';
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .container {
   padding: $spacing-lg;
@@ -47,7 +48,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: darken($color-primary, 8%);
+    background: color.adjust($color-primary, $lightness: -8%);
     transform: translateY(-1px);
   }
 
@@ -452,7 +453,7 @@
       border-color: $color-secondary;
 
       &:hover {
-        background: darken($color-secondary, 8%);
+        background: color.adjust($color-secondary, $lightness: -8%);
       }
     }
 
@@ -462,7 +463,7 @@
       border-color: $color-primary;
 
       &:hover {
-        background: darken($color-primary, 8%);
+        background: color.adjust($color-primary, $lightness: -8%);
       }
     }
 
@@ -472,7 +473,7 @@
       border-color: #4caf50;
 
       &:hover {
-        background: darken(#4caf50, 8%);
+        background: color.adjust(#4caf50, $lightness: -8%);
       }
     }
 
@@ -482,7 +483,7 @@
       border-color: #ff9800;
 
       &:hover {
-        background: darken(#ff9800, 8%);
+        background: color.adjust(#ff9800, $lightness: -8%);
       }
     }
   }

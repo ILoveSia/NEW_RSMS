@@ -1,5 +1,5 @@
-@import '@/styles/variables';
-@import '@/styles/mixins';
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .button {
   // 🏙️ 맨하탄 금융센터 스타일 (Wall Street Digital Excellence)

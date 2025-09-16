@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
   });
 
   // 로그인 전에 접근하려던 페이지가 있으면 그곳으로, 없으면 대시보드로
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+  const from = (location.state as any)?.from?.pathname || '/app/dashboard';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;

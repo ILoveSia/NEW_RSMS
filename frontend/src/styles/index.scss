@@ -1,3 +1,7 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use './base' as *;
+
 // ===================================
 // RSMS Main Styles Entry Point
 // CSS Modules + SCSS Architecture
@@ -7,13 +11,8 @@
 // Variables must come first, then mixins, then base styles
 
 // 1️⃣ Variables (색상, 폰트, 스페이싱 등)
-@import './variables';
-
 // 2️⃣ Mixins (재사용 가능한 스타일 함수들)
-@import './mixins';
-
 // 3️⃣ Base styles (리셋, 기본 스타일, 유틸리티)
-@import './base';
 
 // 4️⃣ AG Grid 테마 (전역으로 적용) - 임시 비활성화
 // @import './ag-grid-theme';
@@ -53,7 +52,7 @@
 .router-link {
   text-decoration: none;
   color: inherit;
-  
+
   &:hover {
     text-decoration: none;
   }

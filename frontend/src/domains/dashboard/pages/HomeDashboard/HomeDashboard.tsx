@@ -4,36 +4,18 @@
  * 책무 현황 중심의 깔끔하고 전문적인 인터페이스
  */
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Calendar,
+import {
   Bell,
+  BookOpen,
+  Building,
+  Calendar,
   CheckCircle2,
   Clock,
-  Users,
-  Building,
-  TrendingUp,
-  TrendingDown,
   Eye,
-  FileText,
-  Settings,
-  X,
-  AlertTriangle,
-  Activity,
-  BarChart3,
-  PieChart,
-  Target,
-  Shield,
-  BookOpen,
-  Plus,
-  ArrowRight,
-  Filter,
-  Download,
-  RefreshCw
+  X
 } from 'lucide-react';
+import React, { useState } from 'react';
 import styles from './HomeDashboard.module.scss';
-import { ResponsibilityMatrix } from '@/shared/components/organisms/ResponsibilityMatrix';
-import { ResponsibilityItem } from '@/shared/components/organisms/ResponsibilityMatrix/ResponsibilityMatrix';
 
 // 타입 정의
 interface WelcomeCardData {
@@ -81,6 +63,36 @@ const mockWelcomeData: WelcomeCardData = {
   }
 };
 
+// 책무체계도 실제 데이터 구조
+const responsibilityHierarchyData = {
+  '김정식': {
+    position: '대표이사',
+    code: 'CEO',
+    responsibilities: [{
+      id: 'R01',
+      title: '지침책임자 관련 업무',
+      count: 2,
+      children: [{
+        id: 'R01-01',
+        title: '내부통제 관련 업무',
+        count: 1
+      }]
+    }],
+    subordinates: {
+      '고병익': {
+        position: '이사',
+        code: 'DIR',
+        responsibilities: []
+      },
+      '김우진': {
+        position: '상무',
+        code: 'EXEC',
+        responsibilities: []
+      }
+    }
+  }
+};
+
 const mockResponsibilityStatus: ResponsibilityStatus = {
   responsibilities: 9,
   managementDuties: 14,
@@ -112,7 +124,7 @@ const mockOrgData: OrganizationNode = {
       count: 2,
     },
     {
-      id: 'manage2', 
+      id: 'manage2',
       name: '관리의무2',
       position: '관리의무',
       count: 3,
@@ -120,60 +132,100 @@ const mockOrgData: OrganizationNode = {
   ]
 };
 
-const mockResponsibilityData: ResponsibilityItem[] = [
-  {
-    id: 'R01',
-    title: '지침책임자 관련 업무',
-    department: '리스크관리부',
-    assignee: '김부장',
-    priority: 'high',
-    status: 'in_progress',
-    progress: 75,
-    dueDate: '2024-09-20',
-    category: '지침책임자'
-  },
-  {
-    id: 'F01', 
-    title: '금융업무 관련 업무',
-    department: '금융사업부',
-    assignee: '이차장',
-    priority: 'medium',
-    status: 'completed',
-    progress: 100,
-    dueDate: '2024-09-18',
-    category: '금융업무'
-  }
-];
 
 const HomeDashboard: React.FC = () => {
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState('2026년 07월');
   const [selectedOrg, setSelectedOrg] = useState('대표이사');
   const [showOrgModal, setShowOrgModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  const renderOrganizationChart = (node: OrganizationNode, level = 0) => {
+  const renderResponsibilityHierarchy = () => {
     return (
-      <div key={node.id} className={`${styles.orgNode} ${styles[`level${level}`]}`}>
-        <div className={styles.nodeContent}>
-          <div className={styles.nodeTitle}>{node.position}</div>
-          <div className={styles.nodeCount}>{node.count}</div>
+      <div className={styles.hierarchyContainer}>
+        <div className={styles.hierarchyHeader}>
+          <h3>광주은행 책무체계도</h3>
+          <p className={styles.hierarchySubtitle}>
+            책무구조도 대상 인원은 총 20명이며, 내부통제 책무담당자 미터 책무업무를 적정상담, 내부통제 적정완화 및 법제비교는 수행합니다.
+          </p>
+          <div className={styles.hierarchyDate}>기준일: 2024-12-30</div>
         </div>
-        {node.children && (
-          <div className={styles.nodeChildren}>
-            {node.children.map(child => renderOrganizationChart(child, level + 1))}
+
+        <div className={styles.orgChart}>
+          {/* CEO 레벨 */}
+          <div className={styles.ceoLevel}>
+            <div className={styles.ceoNode}>
+              <div className={styles.nodeTitle}>김정식</div>
+              <div className={styles.nodePosition}>대표이사(CEO)</div>
+              <div className={styles.nodeDate}>2025-01-01</div>
+              <div className={styles.nodeCode}>R01</div>
+            </div>
           </div>
-        )}
+
+          {/* 연결선 */}
+          <div className={styles.connectionLine}></div>
+
+          {/* 관리의무 레벨 */}
+          <div className={styles.managementLevel}>
+            <div className={styles.managementNode}>
+              <div className={styles.nodeTitle}>윤창의</div>
+              <div className={styles.nodePosition}>상무대행</div>
+              <div className={styles.nodeDate}>2025-01-01</div>
+              <div className={styles.nodeCode}>G01</div>
+            </div>
+
+            <div className={styles.managementNode}>
+              <div className={styles.nodeTitle}>고병익</div>
+              <div className={styles.nodePosition}>이사</div>
+              <div className={styles.nodeDate}>2025-01-01</div>
+              <div className={styles.nodeCode}>R01 R06 R18 C01</div>
+            </div>
+          </div>
+
+          {/* 실무진 레벨 */}
+          <div className={styles.staffLevel}>
+            <div className={styles.branchContainer}>
+              <div className={styles.branchTitle}>감사업무팀</div>
+              <div className={styles.staffNodes}>
+                <div className={styles.staffNode}>
+                  <div className={styles.nodeTitle}>정일성</div>
+                  <div className={styles.nodeDate}>2025-01-01</div>
+                  <div className={styles.nodeCode}>C01 C02 F01 C01</div>
+                </div>
+                <div className={styles.staffNode}>
+                  <div className={styles.nodeTitle}>김종민</div>
+                  <div className={styles.nodeDate}>2025-01-01</div>
+                  <div className={styles.nodeCode}>F01 F03 F10 C01</div>
+                </div>
+                <div className={styles.staffNode}>
+                  <div className={styles.nodeTitle}>임영수</div>
+                  <div className={styles.nodeDate}>2025-01-01</div>
+                  <div className={styles.nodeCode}>F02 F10 F14 C01</div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.branchContainer}>
+              <div className={styles.branchTitle}>리스크관리</div>
+              <div className={styles.staffNodes}>
+                <div className={styles.staffNode}>
+                  <div className={styles.nodeTitle}>변동하</div>
+                  <div className={styles.nodeDate}>2025-01-01</div>
+                  <div className={styles.nodeCode}>F15 F16 F18 C01</div>
+                </div>
+                <div className={styles.staffNode}>
+                  <div className={styles.nodeTitle}>김제준</div>
+                  <div className={styles.nodeDate}>2025-01-01</div>
+                  <div className={styles.nodeCode}>C01 C02</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -190,54 +242,54 @@ const HomeDashboard: React.FC = () => {
               <X size={24} />
             </button>
           </div>
-          
+
           <div className={styles.modalBody}>
-            <div className={styles.orgChart}>
-              {renderOrganizationChart(mockOrgData)}
-            </div>
-            
+            {/* 실제 데이터 기반 책무체계도 */}
+            {renderResponsibilityHierarchy()}
+
+            {/* 우측 책무 목록 */}
             <div className={styles.responsibilityTags}>
               <div className={styles.tagGroup}>
-                <h4>지침책임자 관련 (12개)</h4>
+                <h4>지침책임자 관련 책무(12)</h4>
                 <div className={styles.tags}>
-                  {Array.from({length: 12}, (_, i) => (
-                    <span key={i} className={`${styles.tag} ${styles.guidance}`}>
-                      R{String(i + 1).padStart(2, '0')}
-                    </span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R02</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R03</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R04</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R05</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R06</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R07</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R08</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R09</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R10</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R11</span>
+                  <span className={`${styles.tag} ${styles.guidance}`}>R12</span>
+                </div>
+              </div>
+
+              <div className={styles.tagGroup}>
+                <h4>금융업무 관련 책무(23)</h4>
+                <div className={styles.tags}>
+                  {['F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23'].map(code => (
+                    <span key={code} className={`${styles.tag} ${styles.financial}`}>{code}</span>
                   ))}
                 </div>
               </div>
-              
+
               <div className={styles.tagGroup}>
-                <h4>금융업무 관련 (23개)</h4>
+                <h4>경영관리 관련 책무(17)</h4>
                 <div className={styles.tags}>
-                  {Array.from({length: 23}, (_, i) => (
-                    <span key={i} className={`${styles.tag} ${styles.financial}`}>
-                      F{String(i + 1).padStart(2, '0')}
-                    </span>
+                  {['M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17'].map(code => (
+                    <span key={code} className={`${styles.tag} ${styles.management}`}>{code}</span>
                   ))}
                 </div>
               </div>
-              
+
               <div className={styles.tagGroup}>
-                <h4>경영관리 관련 (17개)</h4>
+                <h4>공통 책무(2)</h4>
                 <div className={styles.tags}>
-                  {Array.from({length: 17}, (_, i) => (
-                    <span key={i} className={`${styles.tag} ${styles.management}`}>
-                      M{String(i + 1).padStart(2, '0')}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div className={styles.tagGroup}>
-                <h4>공통 (2개)</h4>
-                <div className={styles.tags}>
-                  {Array.from({length: 2}, (_, i) => (
-                    <span key={i} className={`${styles.tag} ${styles.common}`}>
-                      C{String(i + 1).padStart(2, '0')}
-                    </span>
-                  ))}
+                  <span className={`${styles.tag} ${styles.common}`}>C01</span>
+                  <span className={`${styles.tag} ${styles.common}`}>C02</span>
                 </div>
               </div>
             </div>
@@ -249,430 +301,276 @@ const HomeDashboard: React.FC = () => {
 
   return (
     <div className={styles.homeDashboard}>
-      {/* 대시보드 헤더 */}
-      <div className={styles.dashboardHeader}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.dashboardTitle}>
-            <Target size={28} />
-            책무구조도 이행관리시스템
-          </h1>
-          <p className={styles.dashboardSubtitle}>
-            {currentTime.toLocaleDateString('ko-KR', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric',
-              weekday: 'long'
-            })} • {mockWelcomeData.userName}님 ({mockWelcomeData.department})
-          </p>
-        </div>
-        
-        <div className={styles.headerControls}>
-          <div className={styles.periodControl}>
-            <Calendar size={16} />
-            <select 
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className={styles.periodSelect}
-            >
-              <option value="2026년 07월">2026년 07월</option>
-              <option value="2026년 06월">2026년 06월</option>
-              <option value="2026년 05월">2026년 05월</option>
-            </select>
-          </div>
-          
-          <div className={styles.orgControl}>
-            <Building size={16} />
-            <select
-              value={selectedOrg}
-              onChange={(e) => setSelectedOrg(e.target.value)}
-              className={styles.orgSelect}
-            >
-              <option value="대표이사">대표이사</option>
-              <option value="관리의무">관리의무</option>
-            </select>
-          </div>
-          
-          <button 
-            className={styles.refreshButton}
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            <RefreshCw size={16} className={refreshing ? styles.spinning : ''} />
-          </button>
-        </div>
-      </div>
+      {/* 상단 섹션 */}
+      <div className={styles.topSection}>
 
-      {/* 메인 대시보드 그리드 */}
-      <div className={styles.dashboardGrid}>
-        
-        {/* 환영 카드 */}
-        <div className={styles.welcomeCard}>
-          <div className={styles.welcomeHeader}>
-            <div className={styles.welcomeIcon}>
-              <Users size={24} />
+        {/* 좌측 컬럼 */}
+        <div className={styles.leftColumn}>
+          {/* 환영 카드 */}
+          <div className={styles.welcomeCard}>
+            <div className={styles.welcomeHeader}>
+              <h2>반갑습니다!</h2>
+              <p>관리자님.</p>
             </div>
-            <div className={styles.welcomeInfo}>
-              <h2>반갑습니다! {mockWelcomeData.userName}님</h2>
-              <p>{mockWelcomeData.department} • {mockWelcomeData.userId} • 관리자</p>
-            </div>
-          </div>
-          
-          <div className={styles.notificationPanel}>
-            <div className={styles.notificationItem}>
-              <div className={styles.notificationIcon}>
-                <Bell size={18} />
-              </div>
-              <div className={styles.notificationContent}>
-                <span className={styles.notificationLabel}>알림</span>
-                <span className={styles.notificationValue}>{mockWelcomeData.notifications.alerts}</span>
-              </div>
-            </div>
-            
-            <div className={styles.notificationItem}>
-              <div className={styles.notificationIcon}>
-                <CheckCircle2 size={18} />
-              </div>
-              <div className={styles.notificationContent}>
-                <span className={styles.notificationLabel}>결재</span>
-                <span className={styles.notificationValue}>{mockWelcomeData.notifications.approvals}</span>
-              </div>
-            </div>
-            
-            <div className={styles.notificationItem}>
-              <div className={styles.notificationIcon}>
-                <Clock size={18} />
-              </div>
-              <div className={styles.notificationContent}>
-                <span className={styles.notificationLabel}>할일</span>
-                <span className={styles.notificationValue}>{mockWelcomeData.notifications.todos}</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* 책무 현황 플로우 차트 */}
-        <div className={styles.responsibilityFlow}>
-          <div className={styles.cardHeader}>
-            <h3>책무 현황</h3>
-            <button className={styles.addButton}>
-              <Plus size={16} />
+            <div className={styles.notificationIcons}>
+              <div className={styles.iconGroup}>
+                <div className={styles.iconItem}>
+                  <Bell size={24} />
+                  <span className={styles.iconCount}>0</span>
+                  <span className={styles.iconLabel}>알림</span>
+                </div>
+
+                <div className={styles.iconItem}>
+                  <CheckCircle2 size={24} />
+                  <span className={styles.iconCount}>0</span>
+                  <span className={styles.iconLabel}>결재</span>
+                </div>
+
+                <div className={styles.iconItem}>
+                  <Clock size={24} />
+                  <span className={styles.iconCount}>0</span>
+                  <span className={styles.iconLabel}>할일</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 액세스 버튼 - 가로 배치 */}
+          <div className={styles.accessButtonsHorizontal}>
+            <button
+              className={styles.accessButton}
+              onClick={() => setShowOrgModal(true)}
+            >
+              <Building size={18} />
+              <span>책무체계도</span>
+            </button>
+
+            <button className={styles.accessButton}>
+              <BookOpen size={18} />
+              <span>책무기술서</span>
             </button>
           </div>
-          
-          <div className={styles.flowChart}>
-            <div className={styles.flowLevel}>
-              <div className={styles.flowNode}>
-                <div className={styles.nodeLabel}>책무</div>
-                <div className={styles.nodeValue}>1</div>
-              </div>
-            </div>
-            
-            <div className={styles.flowConnector}>
-              <ArrowRight size={20} />
-            </div>
-            
-            <div className={styles.flowLevel}>
-              <div className={styles.flowNode}>
-                <div className={styles.nodeLabel}>관리의무(CEO)</div>
-                <div className={styles.nodeValue}>2(2)</div>
-              </div>
-            </div>
-            
-            <div className={styles.flowConnector}>
-              <ArrowRight size={20} />
-            </div>
-            
-            <div className={styles.flowLevel}>
-              <div className={styles.flowNode}>
-                <div className={styles.nodeLabel}>이행점검(CEO)</div>
-                <div className={styles.nodeValue}>2(1)</div>
-              </div>
-            </div>
-            
-            <div className={styles.flowSplit}>
-              <div className={styles.flowConnector}>
-                <ArrowRight size={20} />
-              </div>
-              <div className={styles.flowConnector}>
-                <ArrowRight size={20} />
-              </div>
-              <div className={styles.flowConnector}>
-                <ArrowRight size={20} />
-              </div>
-            </div>
-            
-            <div className={styles.flowLevel}>
-              <div className={styles.flowEndNodes}>
-                <div className={styles.flowEndNode}>
-                  <div className={styles.nodeLabel}>미점검(CEO)</div>
-                  <div className={styles.nodeValue}>2(1)</div>
-                </div>
-                <div className={styles.flowEndNode}>
-                  <div className={styles.nodeLabel}>적정(CEO)</div>
-                  <div className={styles.nodeValue}>0(0)</div>
-                </div>
-                <div className={styles.flowEndNode}>
-                  <div className={styles.nodeLabel}>부적절(CEO)</div>
-                  <div className={styles.nodeValue}>0(0)</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className={styles.flowBottom}>
-              <div className={styles.flowBottomNodes}>
-                <div className={styles.flowBottomNode}>
-                  <div className={styles.nodeLabel}>개선완료(CEO)</div>
-                  <div className={styles.nodeValue}>0(0)</div>
-                </div>
-                <div className={styles.flowBottomNode}>
-                  <div className={styles.nodeLabel}>개선진행중(CEO)</div>
-                  <div className={styles.nodeValue}>0(0)</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* 팀가드팀 책무현황 */}
-        <div className={styles.teamStatusCard}>
-          <div className={styles.cardHeader}>
-            <h3>팀가드팀 책무현황</h3>
-            <button className={styles.viewAllButton}>
-              <Eye size={16} />
-              전체보기
-            </button>
-          </div>
-          
-          <div className={styles.statusGrid}>
-            <div className={`${styles.statusItem} ${styles.responsibilities}`}>
-              <div className={styles.statusIcon}>
-                <Target size={20} />
+        {/* 중앙 컬럼 */}
+        <div className={styles.centerColumn}>
+          {/* 책무 현황 (이미지 기반) */}
+          <div className={styles.responsibilityFlowNew}>
+            <div className={styles.flowHeaderNew}>
+              <div className={styles.headerControls}>
+                <select className={styles.periodSelect} value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value)}>
+                  <option value="2026년 07월">2026년 07월</option>
+                  <option value="2026년 06월">2026년 06월</option>
+                </select>
+                <select className={styles.positionSelect} value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)}>
+                  <option value="대표이사">대표이사</option>
+                  <option value="상무">상무</option>
+                </select>
               </div>
-              <div className={styles.statusContent}>
-                <div className={styles.statusNumber}>{mockResponsibilityStatus.responsibilities}</div>
-                <div className={styles.statusLabel}>책무</div>
-              </div>
+              <h3>책무 현황</h3>
+              <button className={styles.addButton}>+</button>
             </div>
-            
-            <div className={`${styles.statusItem} ${styles.management}`}>
-              <div className={styles.statusIcon}>
-                <Users size={20} />
-              </div>
-              <div className={styles.statusContent}>
-                <div className={styles.statusNumber}>{mockResponsibilityStatus.managementDuties}</div>
-                <div className={styles.statusLabel}>관리의무</div>
-              </div>
-            </div>
-            
-            <div className={`${styles.statusItem} ${styles.complete}`}>
-              <div className={styles.statusIcon}>
-                <CheckCircle2 size={20} />
-              </div>
-              <div className={styles.statusContent}>
-                <div className={styles.statusNumber}>{mockResponsibilityStatus.inspectionComplete}</div>
-                <div className={styles.statusLabel}>이행점검</div>
-              </div>
-            </div>
-            
-            <div className={`${styles.statusItem} ${styles.pending}`}>
-              <div className={styles.statusIcon}>
-                <Clock size={20} />
-              </div>
-              <div className={styles.statusContent}>
-                <div className={styles.statusNumber}>{mockResponsibilityStatus.inspectionPending}</div>
-                <div className={styles.statusLabel}>미점검</div>
-              </div>
-            </div>
-            
-            <div className={`${styles.statusItem} ${styles.inappropriate}`}>
-              <div className={styles.statusIcon}>
-                <AlertTriangle size={20} />
-              </div>
-              <div className={styles.statusContent}>
-                <div className={styles.statusNumber}>{mockResponsibilityStatus.inappropriate}</div>
-                <div className={styles.statusLabel}>부적절</div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* 책무-관리의무 이행 현황 */}
-        <div className={styles.implementationStatus}>
-          <div className={styles.cardHeader}>
-            <h3>책무-관리의무 이행 현황</h3>
-            <div className={styles.headerActions}>
-              <button className={styles.filterButton}>
-                <Filter size={16} />
-              </button>
-              <button className={styles.downloadButton}>
-                <Download size={16} />
-              </button>
-            </div>
-          </div>
-          
-          <div className={styles.implementationMatrix}>
-            <div className={styles.matrixRow}>
-              <div className={styles.matrixCell}>
-                <div className={styles.matrixLabel}>적정</div>
-                <div className={styles.matrixValue}>0</div>
+            <div className={styles.flowChartNew}>
+              {/* 첫 번째 단계: 책무 */}
+              <div className={styles.flowLevel1}>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>책무</span>
+                  <span className={styles.cardNumber}>1</span>
+                </div>
               </div>
-              <div className={styles.matrixCell}>
-                <div className={styles.matrixLabel}>부적절</div>
-                <div className={styles.matrixValue}>0</div>
-              </div>
-            </div>
-            <div className={styles.matrixRow}>
-              <div className={styles.matrixCell}>
-                <div className={styles.matrixLabel}>적정</div>
-                <div className={styles.matrixValue}>0</div>
-              </div>
-              <div className={styles.matrixCell}>
-                <div className={styles.matrixLabel}>부적절</div>
-                <div className={styles.matrixValue}>0</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className={styles.expandedView}>
-            <div className={styles.expandedContent}>
-              {/* 상세 매트릭스 표시 영역 */}
-            </div>
-          </div>
-        </div>
+              <div className={styles.verticalArrow}></div>
 
-        {/* 주요업점별 이행점검 현황 차트 */}
-        <div className={styles.complianceChart}>
-          <div className={styles.cardHeader}>
-            <h3>주요업점별 이행점검 현황</h3>
-            <div className={styles.chartLegend}>
-              <span className={styles.legendItem}>
-                <div className={styles.legendDot}></div>
-                이행률
-              </span>
+              {/* 두 번째 단계: 관리의무(CEO) */}
+              <div className={styles.flowLevel2}>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>관리의무(CEO)</span>
+                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(2)</span></span>
+                </div>
+              </div>
+              <div className={styles.verticalArrow}></div>
+
+              {/* 세 번째 단계: 이행점검(CEO) */}
+              <div className={styles.flowLevel3}>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>이행점검(CEO)</span>
+                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
+                </div>
+              </div>
+
+              {/* 3방향 분기 연결선 */}
+              <div className={styles.branchConnectionContainer}>
+                <div className={styles.branchMainLine}></div>
+                <div className={styles.branchHorizontalLine}></div>
+                <div className={styles.branchVerticalLines}>
+                  <div className={styles.leftBranchLine}></div>
+                  <div className={styles.centerBranchLine}></div>
+                  <div className={styles.rightBranchLine}></div>
+                </div>
+              </div>
+
+              {/* 네 번째 단계: 3방향 분기 */}
+              <div className={styles.flowLevel4}>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>미점검(CEO)</span>
+                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
+                </div>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>적정(CEO)</span>
+                  <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
+                </div>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>부적절(CEO)</span>
+                  <span className={styles.cardNumberRed}>0<span className={styles.subNumber}>(0)</span></span>
+                </div>
+              </div>
+
+              {/* 하단 2방향 연결선 (적정과 부적절에서) */}
+              <div className={styles.bottomConnectionContainer}>
+                <div className={styles.centerMainLine}></div>
+                <div className={styles.rightMainLine}></div>
+                <div className={styles.bottomHorizontalLine}></div>
+                <div className={styles.bottomVerticalLines}>
+                  <div className={styles.leftBottomLine}></div>
+                  <div className={styles.rightBottomLine}></div>
+                </div>
+              </div>
+
+              {/* 최종 단계: 2개 카드 */}
+              <div className={styles.flowLevel5}>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>개선완료(CEO)</span>
+                  <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
+                </div>
+                <div className={styles.flowCard}>
+                  <span className={styles.cardTitle}>개선진행(CEO)</span>
+                  <span className={styles.cardNumberRed}>0<span className={styles.subNumber}>(0)</span></span>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className={styles.chartContainer}>
-            <svg className={styles.chartSvg} viewBox="0 0 400 250">
-              {/* 그리드 라인 */}
-              <defs>
-                <pattern id="manhattanGrid" width="50" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 50 0 L 0 0 0 40" fill="none" stroke="rgba(98, 125, 152, 0.1)" strokeWidth="1"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#manhattanGrid)" />
-              
-              {/* Y축 레이블 */}
-              {[0, 1, 2, 3, 4].map((y, index) => (
-                <g key={index}>
-                  <text x="20" y={220 - y * 40} textAnchor="middle" className={styles.axisLabel}>
-                    {y}
+
+          {/* 차트 섹션 - 가로 배치 */}
+          <div className={styles.chartsHorizontal}>
+            {/* 이행점검차트 */}
+            <div className={styles.chartCard}>
+              <h4>이행점검 현황</h4>
+              <div className={styles.lineChart}>
+                <svg viewBox="0 0 300 120" className={styles.chartSvg}>
+                  <polyline
+                    fill="none"
+                    stroke="#2563eb"
+                    strokeWidth="2"
+                    points="20,100 60,60 100,70 140,40 180,50 220,20 260,30"
+                  />
+                  <circle cx="20" cy="100" r="3" fill="#2563eb" />
+                  <circle cx="60" cy="60" r="3" fill="#2563eb" />
+                  <circle cx="100" cy="70" r="3" fill="#2563eb" />
+                  <circle cx="140" cy="40" r="3" fill="#2563eb" />
+                  <circle cx="180" cy="50" r="3" fill="#2563eb" />
+                  <circle cx="220" cy="20" r="3" fill="#2563eb" />
+                  <circle cx="260" cy="30" r="3" fill="#2563eb" />
+                </svg>
+              </div>
+            </div>
+
+            {/* 배분현황차트 */}
+            <div className={styles.chartCard}>
+              <h4>배분 현황</h4>
+              <div className={styles.pieChart}>
+                <svg viewBox="0 0 120 120" className={styles.chartSvg}>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="40"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="16"
+                  />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="40"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="16"
+                    strokeDasharray="125 125"
+                    strokeDashoffset="31.25"
+                    transform="rotate(-90 60 60)"
+                  />
+                  <text x="60" y="60" textAnchor="middle" dy="0.35em" fontSize="14" fill="#374151">
+                    75%
                   </text>
-                  <line x1="35" y1={220 - y * 40} x2="380" y2={220 - y * 40} stroke="rgba(98, 125, 152, 0.1)" strokeWidth="1" />
-                </g>
-              ))}
-              
-              {/* X축 레이블 */}
-              {mockLineChartData.map((point, index) => (
-                <text key={index} x={50 + index * 50} y="240" textAnchor="middle" className={styles.axisLabel}>
-                  {index}
-                </text>
-              ))}
-              
-              {/* 차트 라인 */}
-              <polyline
-                fill="none"
-                stroke="#102a43"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                points={mockLineChartData.map((point, index) => 
-                  `${50 + index * 50},${220 - point.y * 40}`
-                ).join(' ')}
-              />
-              
-              {/* 데이터 포인트 */}
-              {mockLineChartData.map((point, index) => (
-                <circle
-                  key={index}
-                  cx={50 + index * 50}
-                  cy={220 - point.y * 40}
-                  r="4"
-                  fill="#102a43"
-                  stroke="white"
-                  strokeWidth="2"
-                />
-              ))}
-            </svg>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 부점별 관리의무 배분 현황 */}
-        <div className={styles.distributionChart}>
-          <div className={styles.cardHeader}>
-            <h3>부점별 관리의무 배분 현황</h3>
-            <div className={styles.chartLegend}>
-              <span className={styles.legendItem}>
-                <div className={styles.legendDot} style={{backgroundColor: '#627d98'}}></div>
-                팀가드팀
-              </span>
-            </div>
-          </div>
-          
-          <div className={styles.donutContainer}>
-            <svg className={styles.donutSvg} viewBox="0 0 200 200">
-              <circle
-                cx="100"
-                cy="100"
-                r="70"
-                fill="none"
-                stroke="#627d98"
-                strokeWidth="20"
-                strokeDasharray="220 220"
-                transform="rotate(-90 100 100)"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r="70"
-                fill="none"
-                stroke="#334e68"
-                strokeWidth="20"
-                strokeDasharray="110 330"
-                strokeDashoffset="-220"
-                transform="rotate(-90 100 100)"
-              />
-              <text x="100" y="100" textAnchor="middle" dy="0.3em" fontSize="14" fill="#102a43" fontWeight="600">
-                팀가드팀
-              </text>
-            </svg>
-          </div>
-        </div>
+        {/* 우측 컬럼 */}
+        <div className={styles.rightColumn}>
+          {/* 뱅가드팀 책무현황 */}
+          <div className={styles.vanguardTeamStatus}>
+            <h3>뱅가드팀 책무현황</h3>
+            <div className={styles.statusBoxesHorizontal}>
+              <div className={styles.statusBox}>
+                <div className={styles.boxNumber}>9</div>
+                <div className={styles.boxLabel}>책무</div>
+              </div>
 
-        {/* 퀵 액세스 버튼 */}
-        <div className={styles.quickAccessGrid}>
-          <button 
-            className={`${styles.quickAccessCard} ${styles.responsibilityCard}`}
-            onClick={() => setShowOrgModal(true)}
-          >
-            <div className={styles.quickAccessIcon}>
-              <Building size={32} />
+              <div className={styles.statusBox}>
+                <div className={styles.boxNumber}>14</div>
+                <div className={styles.boxLabel}>관리의무</div>
+              </div>
+
+              <div className={styles.statusBox}>
+                <div className={styles.boxNumber}>5</div>
+                <div className={styles.boxLabel}>이행점검</div>
+              </div>
+
+              <div className={`${styles.statusBox} ${styles.highlight}`}>
+                <div className={styles.boxNumber}>4</div>
+                <div className={styles.boxLabel}>미점검</div>
+              </div>
+
+              <div className={`${styles.statusBox} ${styles.danger}`}>
+                <div className={styles.boxNumber}>1</div>
+                <div className={styles.boxLabel}>부적절</div>
+              </div>
             </div>
-            <div className={styles.quickAccessContent}>
-              <h4>책무체계도</h4>
-              <p>책무체계도 클라우드시스템<br />접속 책무체계도 클라우드시스템<br />클릭 후 이동가능</p>
+          </div>
+
+          {/* 책무-관리의무 이행 현황 */}
+          <div className={styles.implementationStatusLarge}>
+            <h3>책무-관리의무 이행 현황</h3>
+
+            <div className={styles.statusTags}>
+              <div className={styles.statusTag}>
+                <span className={styles.tagLabel}>적정</span>
+                <span className={styles.tagNumber}>0</span>
+              </div>
+              <div className={styles.statusTag}>
+                <span className={styles.tagLabel}>부적절</span>
+                <span className={styles.tagNumber}>0</span>
+              </div>
+              <div className={styles.statusTag}>
+                <span className={styles.tagLabel}>적정</span>
+                <span className={styles.tagNumber}>0</span>
+              </div>
+              <div className={styles.statusTag}>
+                <span className={styles.tagLabel}>부적절</span>
+                <span className={styles.tagNumber}>0</span>
+              </div>
             </div>
-          </button>
-          
-          <button className={`${styles.quickAccessCard} ${styles.specificationCard}`}>
-            <div className={styles.quickAccessIcon}>
-              <BookOpen size={32} />
+
+            <div className={styles.largeChartArea}>
+              {/* 큰 차트 영역 */}
+              <div className={styles.chartPlaceholder}>
+                차트 영역
+              </div>
             </div>
-            <div className={styles.quickAccessContent}>
-              <h4>책무기술서</h4>
-              <p>책무기술서를 클라우드시스템<br />접속 책무기술서 클라우드시스템<br />클릭 후 이동가능</p>
-            </div>
-          </button>
+          </div>
         </div>
       </div>
 

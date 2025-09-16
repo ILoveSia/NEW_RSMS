@@ -1,6 +1,7 @@
-@import '@/styles/variables';
-@import '@/styles/mixins';
-@import '@/styles/ag-grid-theme';
+@use 'sass:color';
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+@use '@/styles/ag-grid-theme' as *;
 
 .container {
   width: 100%;
@@ -160,8 +161,8 @@
   
   // 고대비 모드 지원
   @media (prefers-contrast: high) {
-    --ag-border-color: #{darken($color-border, 20%)};
-    --ag-foreground-color: #{darken($color-text-primary, 10%)};
+    --ag-border-color: #{color.adjust($color-border, $lightness: -20%)};
+    --ag-foreground-color: #{color.adjust($color-text-primary, $lightness: -10%)};
     
     .ag-header {
       font-weight: 700;

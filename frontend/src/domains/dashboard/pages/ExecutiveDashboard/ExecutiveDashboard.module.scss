@@ -1,11 +1,11 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+@use '@/styles/manhattan-professional' as *;
+
 // ===================================
 // ExecutiveDashboard.module.scss
 // 맨하탄 금융센터 임원급 대시보드 스타일
 // ===================================
-
-@import '@/styles/variables';
-@import '@/styles/mixins';
-@import '@/styles/manhattan-professional';
 
 .executiveDashboard {
   min-height: 100vh;

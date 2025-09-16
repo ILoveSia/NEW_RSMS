@@ -27,8 +27,8 @@ export const FinancialLayout: React.FC<FinancialLayoutProps> = ({ children }) =>
         <div className={styles.brandSection}>
           <div className={styles.logo}>🏢</div>
           <div className={styles.brandInfo}>
-            <div className={styles.title}>RSMS</div>
-            <div className={styles.subtitle}>통합관리시스템</div>
+            <div className={styles.title}>ITCEN ENTEC</div>
+            <div className={styles.subtitle}>책무구조도 관리시스템</div>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export const FinancialLayout: React.FC<FinancialLayoutProps> = ({ children }) =>
         {/* LeftMenu - 280px 기본 너비 */}
         <aside className={`${styles.leftMenu} ${sidebarCollapsed ? styles.collapsed : ''}`}>
           <div className={styles.menuHeader}>
-            <button 
+            <button
               className={styles.collapseButton}
               onClick={toggleSidebar}
               aria-label={sidebarCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
@@ -94,16 +94,16 @@ export const FinancialLayout: React.FC<FinancialLayoutProps> = ({ children }) =>
               </div>
               {!sidebarCollapsed && (
                 <div className={styles.submenu}>
-                  <button className={styles.submenuItem} onClick={() => window.location.href = '/resps/ledger-orders'}>
+                  <button className={styles.submenuItem} onClick={() => window.location.href = '/app/resps/ledger-orders'}>
                     원장차수관리
                   </button>
-                  <button className={styles.submenuItem} onClick={() => window.location.href = '/resps/responsibilities'}>
+                  <button className={styles.submenuItem} onClick={() => window.location.href = '/app/resps/responsibilities'}>
                     책무관리
                   </button>
-                  <button className={styles.submenuItem} onClick={() => window.location.href = '/resps/specifications'}>
+                  <button className={styles.submenuItem} onClick={() => window.location.href = '/app/resps/specifications'}>
                     기술서관리
                   </button>
-                  <button className={styles.submenuItem} onClick={() => window.location.href = '/resps/department-manuals'}>
+                  <button className={styles.submenuItem} onClick={() => window.location.href = '/app/resps/department-manuals'}>
                     부서장메뉴얼
                   </button>
                 </div>

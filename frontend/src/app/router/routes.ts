@@ -15,7 +15,7 @@ export type RoutePermission =
 export const routes = {
   // 메인
   home: '/',
-  
+
   // 인증 관련 (public)
   auth: {
     login: '/auth/login',
@@ -26,106 +26,106 @@ export const routes = {
     changePassword: '/auth/change-password',
     profile: '/auth/profile',
   },
-  
+
   // 대시보드 (auth)
   dashboard: {
-    main: '/dashboard',
-    analytics: '/dashboard/analytics',
-    reports: '/dashboard/reports',
-    alerts: '/dashboard/alerts',
+    main: '/app/dashboard',
+    analytics: '/app/dashboard/analytics',
+    reports: '/app/dashboard/reports',
+    alerts: '/app/dashboard/alerts',
   },
   
   // 사용자 관리 (manager)
   users: {
-    list: '/users',
-    detail: '/users/:id',
-    create: '/users/create',
-    edit: '/users/:id/edit',
-    profile: '/users/:id/profile',
-    roles: '/users/:id/roles',
-    history: '/users/:id/history',
+    list: '/app/users',
+    detail: '/app/users/:id',
+    create: '/app/users/create',
+    edit: '/app/users/:id/edit',
+    profile: '/app/users/:id/profile',
+    roles: '/app/users/:id/roles',
+    history: '/app/users/:id/history',
   },
-  
+
   // 리스크 관리 (auth - 핵심 도메인)
   risks: {
-    list: '/risks',
-    detail: '/risks/:id',
-    create: '/risks/create',
-    edit: '/risks/:id/edit',
-    assessment: '/risks/:id/assessment',
-    mitigation: '/risks/:id/mitigation',
-    monitoring: '/risks/:id/monitoring',
-    history: '/risks/:id/history',
-    templates: '/risks/templates',
-    categories: '/risks/categories',
+    list: '/app/risks',
+    detail: '/app/risks/:id',
+    create: '/app/risks/create',
+    edit: '/app/risks/:id/edit',
+    assessment: '/app/risks/:id/assessment',
+    mitigation: '/app/risks/:id/mitigation',
+    monitoring: '/app/risks/:id/monitoring',
+    history: '/app/risks/:id/history',
+    templates: '/app/risks/templates',
+    categories: '/app/risks/categories',
   },
-  
+
   // 책무 관리 (auth - 원장관리)
   resps: {
     // 원장관리
-    ledgerOrders: '/resps/ledger-orders',
-    ledgerOrderDetail: '/resps/ledger-orders/:id',
-    ledgerOrderCreate: '/resps/ledger-orders/create',
-    ledgerOrderEdit: '/resps/ledger-orders/:id/edit',
-    
+    ledgerOrders: '/app/resps/ledger-orders',
+    ledgerOrderDetail: '/app/resps/ledger-orders/:id',
+    ledgerOrderCreate: '/app/resps/ledger-orders/create',
+    ledgerOrderEdit: '/app/resps/ledger-orders/:id/edit',
+
     // 책무관리
-    responsibilities: '/resps/responsibilities',
-    responsibilityDetail: '/resps/responsibilities/:id',
-    responsibilityCreate: '/resps/responsibilities/create',
-    responsibilityEdit: '/resps/responsibilities/:id/edit',
-    
+    responsibilities: '/app/resps/responsibilities',
+    responsibilityDetail: '/app/resps/responsibilities/:id',
+    responsibilityCreate: '/app/resps/responsibilities/create',
+    responsibilityEdit: '/app/resps/responsibilities/:id/edit',
+
     // 책무기술서관리
-    specifications: '/resps/specifications',
-    specificationDetail: '/resps/specifications/:id',
-    specificationCreate: '/resps/specifications/create',
-    specificationEdit: '/resps/specifications/:id/edit',
-    specificationGenerate: '/resps/specifications/:id/generate',
-    
+    specifications: '/app/resps/specifications',
+    specificationDetail: '/app/resps/specifications/:id',
+    specificationCreate: '/app/resps/specifications/create',
+    specificationEdit: '/app/resps/specifications/:id/edit',
+    specificationGenerate: '/app/resps/specifications/:id/generate',
+
     // 부서장업무메뉴얼관리
-    departmentManuals: '/resps/department-manuals',
-    departmentManualDetail: '/resps/department-manuals/:id',
-    departmentManualCreate: '/resps/department-manuals/create',
-    departmentManualEdit: '/resps/department-manuals/:id/edit',
+    departmentManuals: '/app/resps/department-manuals',
+    departmentManualDetail: '/app/resps/department-manuals/:id',
+    departmentManualCreate: '/app/resps/department-manuals/create',
+    departmentManualEdit: '/app/resps/department-manuals/:id/edit',
   },
-  
+
   // 보고서 (auth)
   reports: {
-    list: '/reports',
-    detail: '/reports/:id',
-    create: '/reports/create',
-    edit: '/reports/:id/edit',
-    generate: '/reports/:id/generate',
-    schedule: '/reports/:id/schedule',
-    history: '/reports/history',
-    templates: '/reports/templates',
-    dashboard: '/reports/dashboard',
+    list: '/app/reports',
+    detail: '/app/reports/:id',
+    create: '/app/reports/create',
+    edit: '/app/reports/:id/edit',
+    generate: '/app/reports/:id/generate',
+    schedule: '/app/reports/:id/schedule',
+    history: '/app/reports/history',
+    templates: '/app/reports/templates',
+    dashboard: '/app/reports/dashboard',
   },
-  
+
   // 설정 (admin/manager)
   settings: {
     // 개인 설정 (auth)
-    profile: '/settings/profile',
-    preferences: '/settings/preferences',
-    notifications: '/settings/notifications',
-    security: '/settings/security',
-    
+    profile: '/app/settings/profile',
+    preferences: '/app/settings/preferences',
+    notifications: '/app/settings/notifications',
+    security: '/app/settings/security',
+
     // 시스템 설정 (admin)
     system: {
-      general: '/settings/system/general',
-      users: '/settings/system/users',
-      roles: '/settings/system/roles',
-      permissions: '/settings/system/permissions',
-      audit: '/settings/system/audit',
-      backup: '/settings/system/backup',
-      integrations: '/settings/system/integrations',
+      general: '/app/settings/system/general',
+      users: '/app/settings/system/users',
+      roles: '/app/settings/system/roles',
+      permissions: '/app/settings/system/permissions',
+      audit: '/app/settings/system/audit',
+      backup: '/app/settings/system/backup',
+      integrations: '/app/settings/system/integrations',
     },
-    
+
     // 리스크 설정 (manager)
     risks: {
-      categories: '/settings/risks/categories',
-      templates: '/settings/risks/templates',
-      workflows: '/settings/risks/workflows',
-      thresholds: '/settings/risks/thresholds',
+      categories: '/app/settings/risks/categories',
+      templates: '/app/settings/risks/templates',
+      workflows: '/app/settings/risks/workflows',
+      thresholds: '/app/settings/risks/thresholds',
     },
   },
   
@@ -174,26 +174,28 @@ export const routePermissions: Record<string, RoutePermission> = {
   '/403': 'public',
   '/500': 'public',
   '/maintenance': 'public',
-  
+
   // Auth required routes
-  '/dashboard': 'auth',
-  '/dashboard/*': 'auth',
-  '/risks': 'auth',
-  '/risks/*': 'auth',
-  '/reports': 'auth',
-  '/reports/*': 'auth',
-  '/settings/profile': 'auth',
-  '/settings/preferences': 'auth',
-  '/settings/notifications': 'auth',
-  '/settings/security': 'auth',
-  
+  '/app/dashboard': 'auth',
+  '/app/dashboard/*': 'auth',
+  '/app/risks': 'auth',
+  '/app/risks/*': 'auth',
+  '/app/resps': 'auth',
+  '/app/resps/*': 'auth',
+  '/app/reports': 'auth',
+  '/app/reports/*': 'auth',
+  '/app/settings/profile': 'auth',
+  '/app/settings/preferences': 'auth',
+  '/app/settings/notifications': 'auth',
+  '/app/settings/security': 'auth',
+
   // Manager level routes
-  '/users': 'manager',
-  '/users/*': 'manager',
-  '/settings/risks/*': 'manager',
-  
+  '/app/users': 'manager',
+  '/app/users/*': 'manager',
+  '/app/settings/risks/*': 'manager',
+
   // Admin level routes
-  '/settings/system/*': 'admin',
+  '/app/settings/system/*': 'admin',
 };
 
 // 라우트 메타데이터
@@ -210,27 +212,32 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     title: 'RSMS',
     permission: 'public',
   },
-  '/dashboard': {
+  '/app/dashboard': {
     title: '대시보드',
     permission: 'auth',
     breadcrumb: ['대시보드'],
   },
-  '/users': {
+  '/app/users': {
     title: '사용자 관리',
     permission: 'manager',
     breadcrumb: ['사용자 관리'],
   },
-  '/risks': {
+  '/app/risks': {
     title: '리스크 관리',
     permission: 'auth',
     breadcrumb: ['리스크 관리'],
   },
-  '/reports': {
+  '/app/resps': {
+    title: '책무 관리',
+    permission: 'auth',
+    breadcrumb: ['책무 관리'],
+  },
+  '/app/reports': {
     title: '보고서',
     permission: 'auth',
     breadcrumb: ['보고서'],
   },
-  '/settings': {
+  '/app/settings': {
     title: '설정',
     permission: 'auth',
     breadcrumb: ['설정'],
