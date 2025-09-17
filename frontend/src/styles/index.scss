@@ -1,6 +1,6 @@
-@use './variables' as *;
-@use './mixins' as *;
-@use './base' as *;
+@import './variables';
+@import './mixins';
+@import './base';
 
 // ===================================
 // RSMS Main Styles Entry Point

@@ -1,6 +1,7 @@
 // Organisms - 복잡한 유기체 컴포넌트
 // BaseDataGrid, Navigation, Chart, Modal 등
 export * from './BaseDataGrid';
+export * from './LeftMenu';
 export * from './Navigation';
 export * from './Chart';
 export * from './Modal';

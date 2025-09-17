@@ -1,13 +1,13 @@
 import React, { useMemo, useCallback, useState } from 'react';
-import { 
-  AgGridReact, 
-  AgGridReactProps 
+import {
+  AgGridReact,
+  AgGridReactProps
 } from 'ag-grid-react';
-import { 
-  ColDef, 
-  GridOptions, 
-  GridReadyEvent, 
-  GridApi, 
+import {
+  ColDef,
+  GridOptions,
+  GridReadyEvent,
+  GridApi,
   ColumnApi,
   SelectionChangedEvent,
   CellClickedEvent,
@@ -15,6 +15,10 @@ import {
 } from 'ag-grid-community';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import clsx from 'clsx';
+
+// AG-Grid CSS imports
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { LoadingSpinner } from '../../atoms/LoadingSpinner';
 import styles from './BaseDataGrid.module.scss';

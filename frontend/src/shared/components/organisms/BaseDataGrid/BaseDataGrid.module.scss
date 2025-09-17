@@ -1,7 +1,6 @@
 @use 'sass:color';
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
-@use '@/styles/ag-grid-theme' as *;
+@import '@/styles/variables';
+@import '@/styles/mixins';
 
 .container {
   width: 100%;
@@ -10,11 +9,11 @@
   overflow: hidden;
   
   // UI 디자인 나오면 전체 스타일 교체 예정
-  border: 1px solid $color-border;
+  border: 1px solid $color-border-default;
   background: $color-background-paper;
   
   // 그림자 효과
-  @include card-shadow;
+  box-shadow: $shadow-sm;
   
   &.loadingState,
   &.errorState {
@@ -29,8 +28,7 @@
   
   // AG-Grid 기본 스타일 오버라이드 (UI 디자인에 따라 조정)
   &.ag-theme-rsms {
-    // 커스텀 RSMS 테마 (기본 alpine 기반)
-    @extend .ag-theme-alpine;
+    // 커스텀 RSMS 테마 (ag-grid-community/styles/ag-theme-alpine.css 기반)
     
     // 색상 변수 커스터마이징
     --ag-foreground-color: #{$color-text-primary};
@@ -40,7 +38,7 @@
     --ag-odd-row-background-color: #{rgba($color-primary, 0.02)};
     --ag-row-hover-color: #{rgba($color-primary, 0.04)};
     --ag-selected-row-background-color: #{rgba($color-primary, 0.08)};
-    --ag-border-color: #{$color-border};
+    --ag-border-color: #{$color-border-default};
     --ag-primary-color: #{$color-primary};
     --ag-secondary-color: #{$color-secondary};
     
@@ -54,13 +52,13 @@
     --ag-header-height: 48px;
     
     // 테두리 설정
-    --ag-borders: solid 1px #{$color-border};
+    --ag-borders: solid 1px #{$color-border-default};
     --ag-border-radius: #{$border-radius-sm};
     
     // 헤더 스타일
     .ag-header {
       font-weight: 600;
-      border-bottom: 2px solid $color-border;
+      border-bottom: 2px solid $color-border-default;
     }
     
     // 체크박스 스타일
@@ -77,7 +75,7 @@
     
     // 페이지네이션 스타일
     .ag-paging-panel {
-      border-top: 1px solid $color-border;
+      border-top: 1px solid $color-border-default;
       background: $color-background-default;
       padding: $spacing-sm $spacing-md;
       
@@ -91,7 +89,7 @@
     // 필터 스타일
     .ag-filter-wrapper {
       border-radius: $border-radius-sm;
-      border: 1px solid $color-border;
+      border: 1px solid $color-border-default;
     }
     
     // 로딩 오버레이
@@ -161,9 +159,9 @@
   
   // 고대비 모드 지원
   @media (prefers-contrast: high) {
-    --ag-border-color: #{color.adjust($color-border, $lightness: -20%)};
+    --ag-border-color: #{color.adjust($color-border-default, $lightness: -20%)};
     --ag-foreground-color: #{color.adjust($color-text-primary, $lightness: -10%)};
-    
+
     .ag-header {
       font-weight: 700;
     }

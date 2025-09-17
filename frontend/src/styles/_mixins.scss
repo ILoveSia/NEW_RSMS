@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use 'variables' as *;
+@import 'variables';
 
 // ===================================
 // RSMS SCSS Mixins
@@ -101,6 +101,11 @@
 @mixin flex-column-center {
   @include flex-center;
   @include flex-column;
+}
+
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
 }
 
 // 🎭 Animation & Transition Mixins
@@ -409,8 +414,10 @@
   @media (prefers-color-scheme: dark) {
     @content;
   }
-  
-  [data-theme="dark"] & {
+}
+
+@mixin theme-dark-selector {
+  :global([data-theme="dark"]) & {
     @content;
   }
 }

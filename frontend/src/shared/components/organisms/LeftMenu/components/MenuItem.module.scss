@@ -1,0 +1,84 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.menuItem {
+  margin: 2px 0;
+
+  &.active {
+    .menuButton {
+      background-color: rgba($color-primary, 0.08);
+      border-right: 3px solid $color-primary;
+
+      &:hover {
+        background-color: rgba($color-primary, 0.12);
+      }
+    }
+
+    .menuIcon {
+      color: $color-primary;
+    }
+  }
+}
+
+.menuButton {
+  min-height: 40px;
+  border-radius: 0 20px 20px 0;
+  margin-right: 8px;
+  @include transition(all);
+
+  &:hover {
+    background-color: rgba($color-primary, 0.04);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.menuIcon {
+  min-width: 40px;
+  color: $color-text-secondary;
+  @include transition(color);
+
+  .MuiBadge-root {
+    .MuiBadge-badge {
+      font-size: 10px;
+      height: 16px;
+      min-width: 16px;
+    }
+  }
+}
+
+.menuText {
+  margin: 0;
+
+  .MuiListItemText-primary {
+    @include transition(color);
+  }
+}
+
+.collapsedBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  .MuiBadge-badge {
+    font-size: 9px;
+    height: 14px;
+    min-width: 14px;
+  }
+}
+
+// 반응형 조정
+@include mobile {
+  .menuButton {
+    min-height: 44px; // 터치 친화적 크기
+    border-radius: 0;
+    margin-right: 0;
+  }
+
+  .menuIcon {
+    min-width: 44px;
+  }
+}

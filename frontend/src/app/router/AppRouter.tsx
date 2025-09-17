@@ -6,12 +6,13 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import { FinancialLayout } from '@/shared/components/templates/FinancialLayout';
+import { Layout } from '@/shared/components/templates/Layout';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { LoginPage } from '@/domains/auth/pages/LoginPage';
 import { LedgerOrderManagement } from '@/domains/resps/pages/LedgerOrderManagement';
 import { ResponsibilityManagement } from '@/domains/resps/pages/ResponsibilityManagement';
 import { SpecificationManagement } from '@/domains/resps/pages/SpecificationManagement';
+import PositionMgmt from '@/domains/resps/pages/PositionMgmt/PositionMgmt';
 import HomeDashboard from '@/domains/dashboard/pages/HomeDashboard/HomeDashboard';
 import { routes } from './routes';
 import { 
@@ -99,8 +100,8 @@ const AppRouter: React.FC = () => {
           />
         } />
 
-        {/* 홈페이지 - 로그인 페이지로 리다이렉트 */}
-        <Route path="/" element={<Navigate to={routes.auth.login} replace />} />
+        {/* 홈페이지 - 대시보드로 리다이렉트 (인증된 경우) */}
+        <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
 
         {/* 레거시 라우트 리다이렉션 (이전 경로 호환성) */}
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
@@ -112,7 +113,7 @@ const AppRouter: React.FC = () => {
         <Route path="/settings/*" element={<Navigate to="/app/settings" replace />} />
 
         {/* 메인 애플리케이션 라우트 (레이아웃 포함) */}
-        <Route path="/app" element={<FinancialLayout />}>
+        <Route path="/app" element={<Layout />}>
           
           {/* 대시보드 (인증 필요) */}
           <Route path="dashboard/*" element={
@@ -165,6 +166,27 @@ const AppRouter: React.FC = () => {
                   <TemporaryPage 
                     title="원장차수 편집" 
                     description="기존 원장차수 정보를 수정하는 페이지입니다."
+                  />
+                } />
+
+                {/* 직책관리 */}
+                <Route path="positions" element={<PositionMgmt />} />
+                <Route path="positions/:id" element={
+                  <TemporaryPage
+                    title="직책 상세"
+                    description="직책의 상세 정보와 관련 조직 정보를 확인하는 페이지입니다."
+                  />
+                } />
+                <Route path="positions/create" element={
+                  <TemporaryPage
+                    title="직책 생성"
+                    description="새로운 직책을 생성하는 페이지입니다."
+                  />
+                } />
+                <Route path="positions/:id/edit" element={
+                  <TemporaryPage
+                    title="직책 편집"
+                    description="기존 직책 정보를 수정하는 페이지입니다."
                   />
                 } />
 
@@ -412,6 +434,9 @@ const AppRouter: React.FC = () => {
               } />
             </Routes>
           } />
+
+          {/* 앱 기본 경로 - 대시보드로 리다이렉트 */}
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
 
           {/* 404 처리 */}
           <Route path="*" element={<Navigate to="/404" replace />} />

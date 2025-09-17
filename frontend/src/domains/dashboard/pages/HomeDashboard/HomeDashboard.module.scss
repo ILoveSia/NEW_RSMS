@@ -1,6 +1,6 @@
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
-@use '@/styles/manhattan-professional' as *;
+@import '@/styles/variables';
+@import '@/styles/mixins';
+@import '@/styles/manhattan-professional';
 
 // ===================================
 // HomeDashboard.module.scss - 이미지 기반 정확한 재현

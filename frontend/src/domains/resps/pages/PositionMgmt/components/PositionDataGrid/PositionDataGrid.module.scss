@@ -1,0 +1,227 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $color-background-paper;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+// 직책명 셀 스타일 (중요한 컬럼이므로 강조)
+.positionNameCell {
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+
+  &:hover {
+    color: $color-primary-700;
+    cursor: pointer;
+  }
+}
+
+// Chip 컨테이너 (Material-UI Chip이 그리드 셀에 맞게 정렬되도록)
+.chipContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: $spacing-xs 0;
+}
+
+// AG-Grid 커스텀 스타일 (RSMS 테마 확장)
+:global(.ag-theme-rsms) {
+
+  // 헤더 스타일
+  .ag-header-cell {
+    background-color: $color-background-neutral;
+    border-bottom: 2px solid $color-primary-200;
+
+    .ag-header-cell-label {
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+    }
+  }
+
+  // 행 스타일
+  .ag-row {
+    border-bottom: 1px solid $color-border-light;
+
+    &:hover {
+      background-color: $color-background-hover;
+    }
+
+    &.ag-row-selected {
+      background-color: $color-background-selected;
+      border-color: $color-primary-300;
+    }
+
+    // 짝수 행 스타일
+    &.ag-row-even {
+      background-color: $color-background-paper;
+    }
+
+    // 홀수 행 스타일
+    &.ag-row-odd {
+      background-color: $color-gray-25;
+    }
+  }
+
+  // 셀 스타일
+  .ag-cell {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm;
+    border-right: 1px solid $color-border-light;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+
+    &:focus {
+      outline: 2px solid $color-primary-300;
+      outline-offset: -2px;
+    }
+  }
+
+  // 고정된 컬럼 스타일
+  .ag-pinned-left-cols-container {
+    border-right: 2px solid $color-primary-200;
+
+    .ag-cell {
+      background-color: $color-background-paper;
+
+      &.ag-cell-focus {
+        outline-color: $color-primary-500;
+      }
+    }
+  }
+
+  // 페이징 스타일
+  .ag-paging-panel {
+    background-color: $color-background-neutral;
+    border-top: 1px solid $color-border-default;
+    padding: $spacing-sm $spacing-md;
+
+    .ag-paging-button,
+    .ag-paging-description {
+      color: $color-text-primary;
+    }
+
+    .ag-paging-button {
+      border: 1px solid $color-border-default;
+      background-color: $color-background-paper;
+
+      &:hover:not(.ag-disabled) {
+        background-color: $color-background-hover;
+        border-color: $color-primary-300;
+      }
+
+      &.ag-disabled {
+        color: $color-text-disabled;
+        background-color: $color-background-disabled;
+        border-color: $color-border-light;
+      }
+    }
+  }
+
+  // 체크박스 스타일
+  .ag-checkbox-input-wrapper {
+    .ag-checkbox-input {
+      &:checked + .ag-checkbox-label::before {
+        background-color: $color-primary;
+        border-color: $color-primary;
+      }
+
+      &:focus + .ag-checkbox-label::before {
+        outline: 2px solid $color-primary-300;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // 필터 스타일
+  .ag-filter-toolpanel-search {
+    .ag-filter-toolpanel-search-input {
+      border: 1px solid $color-border-default;
+      border-radius: $border-radius-sm;
+      padding: $spacing-xs $spacing-sm;
+
+      &:focus {
+        border-color: $color-primary;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+      }
+    }
+  }
+
+  // 정렬 아이콘 스타일
+  .ag-header-cell {
+    .ag-sort-ascending-icon,
+    .ag-sort-descending-icon {
+      color: $color-primary;
+    }
+  }
+
+  // 로딩 오버레이 스타일
+  .ag-overlay-loading-wrapper {
+    background-color: rgba($color-background-paper, 0.9);
+
+    .ag-overlay-loading-center {
+      color: $color-text-primary;
+    }
+  }
+
+  // 빈 상태 오버레이 스타일
+  .ag-overlay-no-rows-wrapper {
+    .ag-overlay-no-rows-center {
+      color: $color-text-secondary;
+      font-style: italic;
+    }
+  }
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .container {
+    border-radius: $border-radius-sm;
+  }
+
+  :global(.ag-theme-rsms) {
+    .ag-cell {
+      padding: $spacing-xs;
+      font-size: $font-size-xs;
+    }
+
+    .ag-header-cell {
+      .ag-header-cell-label {
+        font-size: $font-size-xs;
+      }
+    }
+
+    .ag-paging-panel {
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  :global(.ag-theme-rsms) {
+    .ag-cell {
+      padding: $spacing-xs $spacing-xs;
+    }
+
+    // 모바일에서는 체크박스 컬럼 너비 조정
+    .ag-pinned-left-cols-container {
+      min-width: 40px;
+    }
+
+    // 칩 컴포넌트 크기 조정
+    .chipContainer {
+      .MuiChip-root {
+        font-size: 0.65rem;
+        height: 20px;
+      }
+    }
+  }
+}

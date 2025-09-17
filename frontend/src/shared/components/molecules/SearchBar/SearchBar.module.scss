@@ -1,6 +1,6 @@
 @use 'sass:color';
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@import '@/styles/variables';
+@import '@/styles/mixins';
 
 .searchBar {
   display: flex;

@@ -68,6 +68,12 @@ export const routes = {
     ledgerOrderCreate: '/app/resps/ledger-orders/create',
     ledgerOrderEdit: '/app/resps/ledger-orders/:id/edit',
 
+    // 직책관리
+    positions: '/app/resps/positions',
+    positionDetail: '/app/resps/positions/:id',
+    positionCreate: '/app/resps/positions/create',
+    positionEdit: '/app/resps/positions/:id/edit',
+
     // 책무관리
     responsibilities: '/app/resps/responsibilities',
     responsibilityDetail: '/app/resps/responsibilities/:id',
@@ -146,7 +152,7 @@ export const createRoute = {
   userProfile: (id: string | number) => `/users/${id}/profile`,
   userRoles: (id: string | number) => `/users/${id}/roles`,
   userHistory: (id: string | number) => `/users/${id}/history`,
-  
+
   // 리스크 관리
   riskDetail: (id: string | number) => `/risks/${id}`,
   riskEdit: (id: string | number) => `/risks/${id}/edit`,
@@ -154,13 +160,17 @@ export const createRoute = {
   riskMitigation: (id: string | number) => `/risks/${id}/mitigation`,
   riskMonitoring: (id: string | number) => `/risks/${id}/monitoring`,
   riskHistory: (id: string | number) => `/risks/${id}/history`,
-  
+
+  // 책무 관리 - 직책관리
+  positionDetail: (id: string | number) => `/app/resps/positions/${id}`,
+  positionEdit: (id: string | number) => `/app/resps/positions/${id}/edit`,
+
   // 보고서
   reportDetail: (id: string | number) => `/reports/${id}`,
   reportEdit: (id: string | number) => `/reports/${id}/edit`,
   reportGenerate: (id: string | number) => `/reports/${id}/generate`,
   reportSchedule: (id: string | number) => `/reports/${id}/schedule`,
-  
+
   // 인증
   resetPassword: (token: string) => `/auth/reset-password/${token}`,
 };

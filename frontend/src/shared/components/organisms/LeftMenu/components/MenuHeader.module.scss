@@ -1,0 +1,183 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.menuHeader {
+  @include flex-column;
+  padding: $spacing-md;
+  border-bottom: 1px solid rgba($color-border-default, 0.5);
+  margin-bottom: $spacing-sm;
+}
+
+.logoSection {
+  @include flex-between;
+  @include flex-align-center;
+  margin-bottom: $spacing-md;
+
+  .logoContent {
+    @include flex-column;
+    flex: 1;
+
+    .logoTitle {
+      font-weight: 700;
+      color: $color-primary;
+      line-height: 1.2;
+    }
+
+    .logoSubtitle {
+      color: $color-text-secondary;
+      font-size: 11px;
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+  }
+
+  .toggleButton {
+    color: $color-text-secondary;
+    background-color: rgba($color-gray-100, 0.5);
+    @include transition(all);
+
+    &:hover {
+      background-color: $color-gray-100;
+      color: $color-primary;
+    }
+
+    svg {
+      font-size: 18px;
+    }
+  }
+}
+
+.userSection {
+  .userInfo {
+    @include flex-start;
+    @include flex-align-center;
+    gap: $spacing-sm;
+
+    .userAvatar {
+      background-color: $color-primary;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .userDetails {
+      @include flex-column;
+      flex: 1;
+      min-width: 0; // overflow 방지
+
+      .userName {
+        font-weight: 600;
+        color: $color-text-primary;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .userRole {
+        color: $color-text-secondary;
+        font-size: 10px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.collapsedUserSection {
+  @include flex-center;
+  margin-top: $spacing-sm;
+
+  .collapsedAvatar {
+    background-color: $color-primary;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    @include transition(transform);
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+// 다크모드 대응 (미래 확장)
+@include theme-dark {
+  .menuHeader {
+    border-bottom-color: rgba($color-border-default, 0.3);
+  }
+
+  .logoSection {
+    .toggleButton {
+      background-color: rgba($color-gray-700, 0.5);
+      color: $color-text-secondary;
+
+      &:hover {
+        background-color: $color-gray-700;
+        color: $color-primary;
+      }
+    }
+  }
+}
+
+// 반응형 조정
+@include mobile {
+  .menuHeader {
+    padding: $spacing-sm;
+  }
+
+  .logoSection {
+    margin-bottom: $spacing-sm;
+
+    .logoContent {
+      .logoTitle {
+        font-size: 1.1rem;
+      }
+
+      .logoSubtitle {
+        font-size: 10px;
+      }
+    }
+
+    .toggleButton {
+      padding: 6px;
+
+      svg {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .userSection {
+    .userInfo {
+      gap: $spacing-xs;
+
+      .userAvatar {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+      }
+
+      .userDetails {
+        .userName {
+          font-size: 13px;
+        }
+
+        .userRole {
+          font-size: 9px;
+        }
+      }
+    }
+  }
+
+  .collapsedUserSection {
+    .collapsedAvatar {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+  }
+}

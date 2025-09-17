@@ -1,0 +1,228 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// ===================================
+// TopHeader.module.scss
+// RSMS 상단 헤더 스타일
+// ===================================
+
+.topHeader {
+  height: $header-height;
+  background: $surface-header-background;
+  color: $color-text-inverse;
+  display: grid;
+  align-items: center;
+  padding: 0 $spacing-md;
+  box-shadow: $shadow-md;
+  z-index: $z-index-header;
+  position: relative;
+
+  // 브랜딩 영역
+  .brandSection {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: 0 $spacing-md;
+    min-width: 280px; // 최소 너비 보장
+    flex-shrink: 0; // 축소되지 않도록
+
+    .logo {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .brandInfo {
+      flex: 1;
+      min-width: 0; // flexbox 텍스트 오버플로우 방지
+
+      .title {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
+        white-space: nowrap; // 한 줄로 표시
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .subtitle {
+        font-size: $font-size-xs;
+        opacity: 0.85;
+        font-weight: $font-weight-normal;
+        line-height: 1;
+        margin-top: 2px;
+        white-space: nowrap; // 한 줄로 표시
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  // 탭 네비게이션
+  .tabNavigation {
+    display: flex;
+    gap: 2px;
+    padding: 0 $spacing-lg;
+    overflow-x: auto;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      padding: $spacing-xs $spacing-sm;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: $border-radius-lg $border-radius-lg 0 0;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: $font-size-sm;
+      cursor: pointer;
+      @include transition(all);
+      min-width: 120px;
+      max-width: 180px;
+      position: relative;
+
+      .tabIcon {
+        font-size: $font-size-base;
+        flex-shrink: 0;
+      }
+
+      .tabTitle {
+        flex: 1;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tabBadge {
+        background: $color-error;
+        color: white;
+        font-size: $font-size-xs;
+        padding: 2px 6px;
+        border-radius: $border-radius-full;
+        line-height: 1;
+        font-weight: $font-weight-medium;
+      }
+
+      .closeButton {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: $border-radius-sm;
+        opacity: 0.6;
+        @include transition(opacity);
+        margin-left: $spacing-xs;
+
+        &:hover {
+          opacity: 1;
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      &.active {
+        background: $surface-content-background;
+        color: $color-text-primary;
+
+        .closeButton {
+          color: $color-text-secondary;
+        }
+      }
+    }
+  }
+
+  // 사용자 영역
+  .userSection {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: 0 $spacing-sm;
+
+    .iconButton {
+      color: inherit;
+      padding: $spacing-xs;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .userProfile {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      cursor: pointer;
+      padding: $spacing-xs;
+      border-radius: $border-radius-md;
+      @include transition(background);
+
+      .userInfo {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        .userName {
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          line-height: 1.2;
+        }
+
+        .userRole {
+          font-size: $font-size-xs;
+          opacity: 0.75;
+          line-height: 1;
+          margin-top: 2px;
+        }
+      }
+
+      .userAvatar {
+        font-size: 24px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  // 반응형 디자인
+  @include mobile {
+    padding: 0 $spacing-sm;
+
+    .brandSection {
+      .brandInfo .subtitle {
+        display: none;
+      }
+    }
+
+    .tabNavigation {
+      padding: 0 $spacing-sm;
+
+      .tab {
+        min-width: 100px;
+
+        .tabTitle {
+          display: none;
+        }
+      }
+    }
+
+    .userSection {
+      gap: $spacing-sm;
+
+      .userProfile .userInfo {
+        display: none;
+      }
+    }
+  }
+}

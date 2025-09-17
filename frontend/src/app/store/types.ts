@@ -3,7 +3,26 @@
 
 import { Role, User, UserRoleCode } from '@/domains/auth/types';
 import { DashboardTheme } from '@/domains/dashboard/types';
-import { NotificationSettings, UserProfile } from '@/domains/users/types';
+
+// 임시 타입 정의 (users 도메인이 삭제되어 로컬에서 정의)
+interface NotificationSettings {
+  email: boolean;
+  push: boolean;
+  sms: boolean;
+  desktop: boolean;
+}
+
+interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+  department?: string;
+  position?: string;
+  lastLoginAt?: Date;
+}
 
 // ===== 전역 상태 인터페이스 =====
 

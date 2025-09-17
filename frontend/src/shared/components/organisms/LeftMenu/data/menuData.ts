@@ -1,0 +1,302 @@
+/**
+ * RSMS LeftMenu 메뉴 구조 데이터
+ * 사용자가 제공한 정확한 메뉴 구조를 기반으로 구성
+ */
+
+import { MenuItem } from '../types/menu.types';
+
+export const MENU_DATA: MenuItem[] = [
+  {
+    id: 'dashboard',
+    title: '대시보드',
+    path: '/app/dashboard',
+    icon: 'Dashboard',
+    permission: 'auth'
+  },
+  {
+    id: 'resp-ledger',
+    title: '책무구조도 원장 관리',
+    icon: 'FolderOpen',
+    permission: 'auth',
+    children: [
+      {
+        id: 'position-management',
+        title: '직책관리',
+        path: '/app/resps/positions',
+        permission: 'auth'
+      },
+      {
+        id: 'position-concurrent',
+        title: '직책겸직관리',
+        path: '/app/resps/position-concurrent',
+        permission: 'auth'
+      },
+      {
+        id: 'meeting-management',
+        title: '회의체관리',
+        path: '/app/resps/meetings',
+        permission: 'auth'
+      },
+      {
+        id: 'responsibility-management',
+        title: '책무관리',
+        path: '/app/resps/responsibilities',
+        permission: 'auth'
+      },
+      {
+        id: 'specification-management',
+        title: '책무기술서관리',
+        path: '/app/resps/specifications',
+        permission: 'auth'
+      },
+      {
+        id: 'board-history',
+        title: '이사회이력관리',
+        path: '/app/resps/board-history',
+        permission: 'manager'
+      },
+      {
+        id: 'executive-info',
+        title: '임원정보관리',
+        path: '/app/resps/executive-info',
+        permission: 'manager'
+      },
+      {
+        id: 'department-manual',
+        title: '부서장업무메뉴얼관리',
+        path: '/app/resps/department-manuals',
+        permission: 'manager'
+      },
+      {
+        id: 'ceo-management',
+        title: 'CEO총괄관리의무조회',
+        path: '/app/resps/ceo-management',
+        permission: 'executive'
+      }
+    ]
+  },
+  {
+    id: 'resp-activity',
+    title: '책무구조도 관리 활동',
+    icon: 'Assignment',
+    permission: 'auth',
+    children: [
+      {
+        id: 'performer-assignment',
+        title: '수행자지정',
+        path: '/app/activity/performer-assignment',
+        permission: 'manager'
+      },
+      {
+        id: 'activity-execution',
+        title: '관리활동 수행',
+        path: '/app/activity/execution',
+        permission: 'auth'
+      },
+      {
+        id: 'manual-inquiry',
+        title: '업무메뉴얼조회',
+        path: '/app/activity/manual-inquiry',
+        permission: 'auth'
+      },
+      {
+        id: 'internal-control-register',
+        title: '내부통제장치등록',
+        path: '/app/activity/internal-control-register',
+        permission: 'manager'
+      },
+      {
+        id: 'internal-control-management',
+        title: '내부통제장치관리',
+        path: '/app/activity/internal-control-management',
+        permission: 'manager'
+      }
+    ]
+  },
+  {
+    id: 'compliance-management',
+    title: '이행점검 관리',
+    icon: 'Assessment',
+    permission: 'manager',
+    children: [
+      {
+        id: 'period-setting',
+        title: '기간설정',
+        path: '/app/compliance/period-setting',
+        permission: 'manager'
+      },
+      {
+        id: 'inspector-assignment',
+        title: '점검자지정',
+        path: '/app/compliance/inspector-assignment',
+        permission: 'manager'
+      },
+      {
+        id: 'execution-approval',
+        title: '점검수행 및 결재',
+        path: '/app/compliance/execution-approval',
+        permission: 'manager'
+      },
+      {
+        id: 'rejection-management',
+        title: '반려관리',
+        path: '/app/compliance/rejection-management',
+        permission: 'manager'
+      }
+    ]
+  },
+  {
+    id: 'compliance-report',
+    title: '이행점검보고서',
+    icon: 'Description',
+    permission: 'manager',
+    children: [
+      {
+        id: 'executive-report',
+        title: '임원이행점검보고서',
+        path: '/app/reports/executive',
+        permission: 'manager'
+      },
+      {
+        id: 'ceo-report',
+        title: 'CEO이행점검보고서',
+        path: '/app/reports/ceo',
+        permission: 'executive'
+      },
+      {
+        id: 'report-list',
+        title: '보고서목록',
+        path: '/app/reports/list',
+        permission: 'manager'
+      }
+    ]
+  },
+  {
+    id: 'improvement',
+    title: '개선이행',
+    icon: 'TrendingUp',
+    permission: 'manager',
+    children: [
+      {
+        id: 'activity-compliance-improvement',
+        title: '관리활동/이행점검 개선이행',
+        path: '/app/improvement/activity-compliance',
+        permission: 'manager'
+      },
+      {
+        id: 'report-improvement',
+        title: '이행점검 보고서 개선이행',
+        path: '/app/improvement/report',
+        permission: 'manager'
+      }
+    ]
+  },
+  {
+    id: 'approval-management',
+    title: '결재관리',
+    icon: 'Approval',
+    permission: 'auth',
+    children: [
+      {
+        id: 'approval-box',
+        title: '결재함',
+        path: '/app/approval/box',
+        permission: 'auth',
+        badge: 0 // 실제로는 API에서 가져올 미처리 결재 건수
+      },
+      {
+        id: 'approval-line',
+        title: '결재선관리',
+        path: '/app/approval/line-management',
+        permission: 'manager'
+      }
+    ]
+  },
+  {
+    id: 'system-management',
+    title: '시스템관리',
+    icon: 'Settings',
+    permission: 'admin',
+    children: [
+      {
+        id: 'code-management',
+        title: '코드관리',
+        path: '/app/system/code-management',
+        permission: 'admin'
+      },
+      {
+        id: 'menu-management',
+        title: '메뉴관리',
+        path: '/app/system/menu-management',
+        permission: 'admin'
+      },
+      {
+        id: 'role-management',
+        title: '역활관리',
+        path: '/app/system/role-management',
+        permission: 'admin'
+      },
+      {
+        id: 'user-management',
+        title: '사용자관리',
+        path: '/app/system/user-management',
+        permission: 'admin'
+      },
+      {
+        id: 'access-log',
+        title: '접근로그',
+        path: '/app/system/access-log',
+        permission: 'admin'
+      }
+    ]
+  }
+];
+
+// 메뉴 ID로 메뉴 찾기 헬퍼 함수
+export const findMenuById = (menuId: string, menuData: MenuItem[] = MENU_DATA): MenuItem | null => {
+  for (const item of menuData) {
+    if (item.id === menuId) {
+      return item;
+    }
+    if (item.children) {
+      const found = findMenuById(menuId, item.children);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+// 경로로 메뉴 찾기 헬퍼 함수
+export const findMenuByPath = (path: string, menuData: MenuItem[] = MENU_DATA): MenuItem | null => {
+  for (const item of menuData) {
+    if (item.path === path) {
+      return item;
+    }
+    if (item.children) {
+      const found = findMenuByPath(path, item.children);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+// 권한에 따른 메뉴 필터링
+export const filterMenuByPermission = (
+  menuData: MenuItem[],
+  userRoles: string[]
+): MenuItem[] => {
+  return menuData.filter(item => {
+    // 권한 체크 로직 (실제로는 더 복잡한 권한 체크 필요)
+    if (!item.permission || item.permission === 'public') return true;
+
+    // 간단한 권한 체크 (실제로는 백엔드에서 처리)
+    if (item.permission === 'auth' && userRoles.includes('USER')) return true;
+    if (item.permission === 'manager' && userRoles.includes('MANAGER')) return true;
+    if (item.permission === 'admin' && userRoles.includes('ADMIN')) return true;
+
+    return false;
+  }).map(item => ({
+    ...item,
+    children: item.children ? filterMenuByPermission(item.children, userRoles) : undefined
+  }));
+};
