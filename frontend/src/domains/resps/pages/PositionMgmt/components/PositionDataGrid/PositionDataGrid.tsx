@@ -1,6 +1,6 @@
-import React, { useMemo, useCallback } from 'react';
-import { ColDef, CellClickedEvent, RowDoubleClickedEvent } from 'ag-grid-community';
-import { Chip, Box } from '@mui/material';
+import { Box, Chip } from '@mui/material';
+import { CellClickedEvent, ColDef, RowDoubleClickedEvent } from 'ag-grid-community';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // AG-Grid CSS imports
@@ -78,7 +78,7 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
   // AG-Grid 컬럼 정의
   const columnDefs = useMemo<ColDef<Position>[]>(() => [
     {
-      headerName: t('position.grid.positionName'),
+      headerName: t('직책'),
       field: 'positionName',
       sortable: true,
       filter: true,
@@ -87,28 +87,28 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       cellClass: styles.positionNameCell
     },
     {
-      headerName: t('position.grid.headquarters'),
+      headerName: t('본부구분'),
       field: 'headquarters',
       sortable: true,
       filter: true,
       width: 120
     },
     {
-      headerName: t('position.grid.departmentName'),
+      headerName: t('부서명'),
       field: 'departmentName',
       sortable: true,
       filter: true,
       width: 150
     },
     {
-      headerName: t('position.grid.divisionName'),
+      headerName: t('부점명'),
       field: 'divisionName',
       sortable: true,
       filter: true,
       width: 150
     },
     {
-      headerName: t('position.grid.status'),
+      headerName: t('상태'),
       field: 'status',
       sortable: true,
       filter: true,
@@ -128,7 +128,7 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       }
     },
     {
-      headerName: t('position.grid.isActive'),
+      headerName: t('활성여부'),
       field: 'isActive',
       sortable: true,
       filter: true,
@@ -149,7 +149,7 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       }
     },
     {
-      headerName: t('position.grid.approvalStatus'),
+      headerName: t('결재상태'),
       field: 'approvalStatus',
       sortable: true,
       filter: true,
@@ -169,7 +169,7 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       }
     },
     {
-      headerName: t('position.grid.registrationDate'),
+      headerName: t('등록일자'),
       field: 'registrationDate',
       sortable: true,
       filter: 'agDateColumnFilter',
@@ -180,21 +180,21 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       }
     },
     {
-      headerName: t('position.grid.registrar'),
+      headerName: t('등록자'),
       field: 'registrar',
       sortable: true,
       filter: true,
       width: 120
     },
     {
-      headerName: t('position.grid.registrarPosition'),
+      headerName: t('변경자'),
       field: 'registrarPosition',
       sortable: true,
       filter: true,
       width: 130
     },
     {
-      headerName: t('position.grid.modificationDate'),
+      headerName: t('변경일자'),
       field: 'modificationDate',
       sortable: true,
       filter: 'agDateColumnFilter',
@@ -205,14 +205,14 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       }
     },
     {
-      headerName: t('position.grid.modifier'),
+      headerName: t('변경자'),
       field: 'modifier',
       sortable: true,
       filter: true,
       width: 120
     },
     {
-      headerName: t('position.grid.modifierPosition'),
+      headerName: t('변경자직책'),
       field: 'modifierPosition',
       sortable: true,
       filter: true,

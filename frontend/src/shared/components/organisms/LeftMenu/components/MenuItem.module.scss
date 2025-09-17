@@ -2,7 +2,7 @@
 @import '@/styles/mixins';
 
 .menuItem {
-  margin: 2px 0;
+  margin: 0;
 
   &.active {
     .menuButton {
@@ -21,7 +21,7 @@
 }
 
 .menuButton {
-  min-height: 40px;
+  min-height: 36px;
   border-radius: 0 20px 20px 0;
   margin-right: 8px;
   @include transition(all);

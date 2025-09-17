@@ -30,6 +30,14 @@
       font-size: 24px;
       line-height: 1;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+
+      .logoImage {
+        height: 32px;
+        width: auto;
+        object-fit: contain;
+      }
     }
 
     .brandInfo {
@@ -37,22 +45,21 @@
       min-width: 0; // flexbox 텍스트 오버플로우 방지
 
       .title {
-        font-size: $font-size-lg;
+        font-size: $font-size-xl;
         font-weight: $font-weight-bold;
         letter-spacing: -0.5px;
-        line-height: 1.1;
-        white-space: nowrap; // 한 줄로 표시
+        line-height: 1.2;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .subtitle {
-        font-size: $font-size-xs;
+        font-size: $font-size-sm;
         opacity: 0.85;
-        font-weight: $font-weight-normal;
         line-height: 1;
         margin-top: 2px;
-        white-space: nowrap; // 한 줄로 표시
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -109,6 +116,9 @@
       }
 
       .closeButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         background: none;
         border: none;
         color: inherit;
@@ -118,10 +128,18 @@
         opacity: 0.6;
         @include transition(opacity);
         margin-left: $spacing-xs;
+        user-select: none;
 
-        &:hover {
+        &:hover,
+        &:focus {
           opacity: 1;
           background: rgba(255, 255, 255, 0.1);
+          outline: none;
+        }
+
+        &:focus-visible {
+          outline: 2px solid rgba(255, 255, 255, 0.3);
+          outline-offset: 1px;
         }
       }
 
@@ -155,6 +173,10 @@
       &:hover {
         background: rgba(255, 255, 255, 0.1);
       }
+
+      svg {
+        font-size: 28px;
+      }
     }
 
     .userProfile {
@@ -172,13 +194,13 @@
         align-items: flex-end;
 
         .userName {
-          font-size: $font-size-sm;
+          font-size: $font-size-base;
           font-weight: $font-weight-medium;
           line-height: 1.2;
         }
 
-        .userRole {
-          font-size: $font-size-xs;
+        .userEmployeeId {
+          font-size: $font-size-sm;
           opacity: 0.75;
           line-height: 1;
           margin-top: 2px;
@@ -186,7 +208,7 @@
       }
 
       .userAvatar {
-        font-size: 24px;
+        font-size: 32px;
       }
 
       &:hover {
@@ -204,6 +226,7 @@
         display: none;
       }
     }
+
 
     .tabNavigation {
       padding: 0 $spacing-sm;

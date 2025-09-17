@@ -2,38 +2,10 @@
 @import '@/styles/mixins';
 
 .container {
-  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
-  border-radius: 16px;
-  padding: $spacing-lg;
-  border: 1px solid rgba(255, 153, 0, 0.1);
-  box-shadow:
-    0 8px 32px rgba(255, 153, 0, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #ff9900 0%, #ffb366 50%, #ff9900 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-  }
-
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.2);
-    box-shadow:
-      0 12px 48px rgba(255, 153, 0, 0.12),
-      0 4px 12px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    transform: translateY(-2px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+  padding: $spacing-md;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 @keyframes shimmer {
@@ -59,11 +31,12 @@
   font-weight: 600;
   font-size: 0.875rem;
   border-radius: 12px;
-  border: none;
-  background: linear-gradient(135deg, #ff9900 0%, #ff7700 100%);
+  border: 1px solid rgba(255, 153, 0, 0.3);
+  background: linear-gradient(135deg, rgba(255, 153, 0, 0.9) 0%, rgba(255, 119, 0, 0.9) 100%);
+  backdrop-filter: blur(10px);
   color: white;
   box-shadow:
-    0 4px 14px rgba(255, 153, 0, 0.3),
+    0 4px 16px rgba(255, 153, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0 16px;
@@ -82,7 +55,7 @@
   }
 
   &:hover {
-    background: linear-gradient(135deg, #e68900 0%, #cc6600 100%);
+    background: linear-gradient(135deg, rgba(230, 137, 0, 0.95) 0%, rgba(204, 102, 0, 0.95) 100%);
     transform: translateY(-2px);
     box-shadow:
       0 8px 25px rgba(255, 153, 0, 0.4),

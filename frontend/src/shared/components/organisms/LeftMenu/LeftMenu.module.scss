@@ -103,7 +103,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 $spacing-xs;
+  padding: 0;
 
   // 커스텀 스크롤바
   &::-webkit-scrollbar {
@@ -126,7 +126,7 @@
 
 // 메뉴 리스트
 .menuList {
-  padding: $spacing-xs 0;
+  padding: 0;
 
   // 리스트 아이템 간격 조정
   .MuiListItem-root {
@@ -136,7 +136,7 @@
 
 // 드로어 하단 여백
 .drawerFooter {
-  height: $spacing-md;
+  height: $spacing-xs;
   flex-shrink: 0;
 }
 
@@ -177,11 +177,11 @@
   }
 
   .menuContainer {
-    padding: 0 $spacing-xs;
+    padding: 0;
   }
 
   .menuList {
-    padding: $spacing-sm 0;
+    padding: 0;
   }
 
   .drawerFooter {

@@ -25,6 +25,7 @@ export interface MenuActions {
   toggleSidebar: () => void;
   toggleGroup: (groupId: string) => void;
   setActiveMenu: (menuId: string) => void;
+  expandGroup: (groupId: string) => void;
 }
 
 export type LeftMenuStore = MenuState & MenuActions;

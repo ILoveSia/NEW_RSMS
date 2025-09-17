@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import React from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Box, useTheme, useMediaQuery } from '@mui/material';
 import { LeftMenu, useMenuState } from '@/shared/components/organisms/LeftMenu';
-import { TopHeader, Tab } from '@/shared/components/organisms/TopHeader';
+import { TopHeader } from '@/shared/components/organisms/TopHeader';
+import { useTabStore } from '@/app/store/tabStore';
+import { useAutoTabs } from '@/app/hooks/useAutoTabs';
 
 import styles from './Layout.module.scss';
 
 export const Layout: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
   const { isCollapsed } = useMenuState();
 
-  // 탭 상태 관리
-  const [activeTabs, setActiveTabs] = useState<Tab[]>([
-    { id: 'dashboard', title: '대시보드', icon: '📊', isActive: true, path: '/app/dashboard' },
-  ]);
+  // 탭 상태 관리 (전역 상태 사용)
+  const { tabs, closeTab, navigateToTab } = useTabStore();
+
+  // 자동 탭 관리
+  useAutoTabs();
 
   // 사이드바 너비 계산
   const getSidebarWidth = () => {
@@ -24,15 +28,15 @@ export const Layout: React.FC = () => {
 
   // TopHeader 이벤트 핸들러
   const handleTabClick = (tabId: string) => {
-    const tab = activeTabs.find(t => t.id === tabId);
+    const tab = tabs.find(t => t.id === tabId);
     if (tab?.path) {
-      // 라우터 네비게이션은 향후 구현
-      console.log('Navigate to:', tab.path);
+      navigateToTab(tabId);
+      navigate(tab.path);
     }
   };
 
   const handleTabClose = (tabId: string) => {
-    setActiveTabs(tabs => tabs.filter(tab => tab.id !== tabId));
+    closeTab(tabId);
   };
 
   const handleNotificationClick = () => {
@@ -51,7 +55,7 @@ export const Layout: React.FC = () => {
     <div className={styles.layout}>
       {/* 상단 헤더 */}
       <TopHeader
-        activeTabs={activeTabs}
+        activeTabs={tabs}
         userProfile={{ name: '김철수', role: '관리자' }}
         notificationCount={5}
         onTabClick={handleTabClick}

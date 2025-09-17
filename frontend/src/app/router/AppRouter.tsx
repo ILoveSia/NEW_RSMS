@@ -100,8 +100,8 @@ const AppRouter: React.FC = () => {
           />
         } />
 
-        {/* 홈페이지 - 대시보드로 리다이렉트 (인증된 경우) */}
-        <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+        {/* 홈페이지 - 로그인 페이지로 리다이렉트 */}
+        <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
         {/* 레거시 라우트 리다이렉션 (이전 경로 호환성) */}
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />

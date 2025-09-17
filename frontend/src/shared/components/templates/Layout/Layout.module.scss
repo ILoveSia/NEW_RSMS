@@ -15,6 +15,7 @@
   display: grid;
   height: calc(100vh - $header-height);
   overflow: hidden;
+  gap: 0; // LeftMenu와 content 사이 간격 제거
 
   @include mobile {
     grid-template-columns: 1fr !important;
@@ -28,16 +29,16 @@
 
   .content {
     flex: 1;
-    padding: $spacing-lg;
+    padding: $spacing-sm;
     background-color: $color-background-default;
     overflow-y: auto;
 
     @include md {
-      padding: $spacing-xl;
+      padding: $spacing-md;
     }
 
     @include mobile {
-      padding: $spacing-md;
+      padding: $spacing-xs;
     }
   }
 }

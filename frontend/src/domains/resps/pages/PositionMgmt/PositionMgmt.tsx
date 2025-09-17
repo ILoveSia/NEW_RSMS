@@ -146,10 +146,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   // Mock data loading
   React.useEffect(() => {
-    setLoading(true);
     // TODO: Replace with actual API call
-    setTimeout(() => {
-      const mockPositions: Position[] = [
+    const mockPositions: Position[] = [
         {
           id: '1',
           positionName: '경영진단본부장',
@@ -165,30 +163,165 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           status: '정상',
           isActive: true,
           approvalStatus: '승인완료'
+        },
+        {
+          id: '2',
+          positionName: '총합기획부장',
+          headquarters: '본부부서',
+          departmentName: '총합기획부',
+          divisionName: '총합기획부',
+          registrationDate: '2024-02-01',
+          registrar: '시스템관리자',
+          registrarPosition: '시스템관리자',
+          modificationDate: '2024-04-10',
+          modifier: '김철수',
+          modifierPosition: '인사팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '3',
+          positionName: '영업본부장',
+          headquarters: '본부부서',
+          departmentName: '영업본부',
+          divisionName: '영업본부',
+          registrationDate: '2024-01-20',
+          registrar: '관리자',
+          registrarPosition: '시스템관리자',
+          modificationDate: '2024-05-15',
+          modifier: '박영희',
+          modifierPosition: '영업기획팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '4',
+          positionName: '기술개발팀장',
+          headquarters: '팀단위',
+          departmentName: '기술개발부',
+          divisionName: '기술개발팀',
+          registrationDate: '2024-03-05',
+          registrar: '홍길동',
+          registrarPosition: '총합기획부',
+          modificationDate: '2024-06-01',
+          modifier: '이민수',
+          modifierPosition: '기술개발팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '5',
+          positionName: '마케팅팀장',
+          headquarters: '팀단위',
+          departmentName: '마케팅부',
+          divisionName: '마케팅팀',
+          registrationDate: '2024-02-15',
+          registrar: '김철수',
+          registrarPosition: '인사팀',
+          modificationDate: '2024-05-20',
+          modifier: '정수진',
+          modifierPosition: '마케팅팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '6',
+          positionName: '인사팀장',
+          headquarters: '팀단위',
+          departmentName: '인사부',
+          divisionName: '인사팀',
+          registrationDate: '2024-01-10',
+          registrar: '관리자',
+          registrarPosition: '시스템관리자',
+          modificationDate: '2024-04-25',
+          modifier: '한상훈',
+          modifierPosition: '인사팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '7',
+          positionName: '재무팀장',
+          headquarters: '팀단위',
+          departmentName: '재무부',
+          divisionName: '재무팀',
+          registrationDate: '2024-02-28',
+          registrar: '박영희',
+          registrarPosition: '영업기획팀',
+          modificationDate: '2024-06-10',
+          modifier: '윤미래',
+          modifierPosition: '재무팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '8',
+          positionName: '품질보증팀장',
+          headquarters: '팀단위',
+          departmentName: '품질보증부',
+          divisionName: '품질보증팀',
+          registrationDate: '2024-03-15',
+          registrar: '이민수',
+          registrarPosition: '기술개발팀',
+          modificationDate: '2024-05-30',
+          modifier: '최영수',
+          modifierPosition: '품질보증팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인완료'
+        },
+        {
+          id: '9',
+          positionName: '고객서비스팀장',
+          headquarters: '팀단위',
+          departmentName: '고객서비스부',
+          divisionName: '고객서비스팀',
+          registrationDate: '2024-04-01',
+          registrar: '정수진',
+          registrarPosition: '마케팅팀',
+          modificationDate: '2024-06-15',
+          modifier: '서현아',
+          modifierPosition: '고객서비스팀',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '검토중'
+        },
+        {
+          id: '10',
+          positionName: '연구개발팀장',
+          headquarters: '팀단위',
+          departmentName: '연구개발부',
+          divisionName: '연구개발팀',
+          registrationDate: '2024-03-20',
+          registrar: '한상훈',
+          registrarPosition: '인사팀',
+          modificationDate: '2024-05-10',
+          modifier: '김도현',
+          modifierPosition: '연구개발팀',
+          status: '정상',
+          isActive: false,
+          approvalStatus: '보류'
         }
       ];
 
-      setPositions(mockPositions);
-      setPagination(prev => ({
-        ...prev,
-        total: mockPositions.length,
-        totalPages: Math.ceil(mockPositions.length / prev.size)
-      }));
-      setLoading(false);
-    }, 1000);
-  }, [filters, pagination.page, pagination.size]);
+    setPositions(mockPositions);
+    setPagination(prev => ({
+      ...prev,
+      total: mockPositions.length,
+      totalPages: Math.ceil(mockPositions.length / prev.size)
+    }));
+  }, []);
 
-  if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <LoadingSpinner centered text="맨하탄 금융센터 시스템 로딩 중..." />
-      </div>
-    );
-  }
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 맨하탄 금융센터 스타일 헤더 */}
+      {/* 🏗️ 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
           <div className={styles.titleSection}>
@@ -198,7 +331,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
                 {t('position.management.title', '직책관리 시스템')}
               </h1>
               <p className={styles.pageDescription}>
-                {t('position.management.description', 'Manhattan Financial Center • Position Management System')}
+                {t('position.management.description', '조직의 직책 정보를 체계적으로 관리합니다')}
               </p>
             </div>
           </div>
@@ -242,13 +375,15 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
         {/* 🔍 프리미엄 검색 필터 */}
-        <PositionSearchFilter
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onSearch={handleSearch}
-          onClear={handleClearFilters}
-          loading={loading}
-        />
+        <div className={styles.searchSection}>
+          <PositionSearchFilter
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onSearch={handleSearch}
+            onClear={handleClearFilters}
+            loading={loading}
+          />
+        </div>
 
         {/* 💎 액션 바 - 프리미엄 스타일 */}
         <div className={styles.actionBar}>
@@ -324,7 +459,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalPlaceholder}>
             <h3>🏗️ 새 직책 추가</h3>
-            <p>Manhattan Financial Center Position Management</p>
+            <p>직책 등록 모달</p>
             <p>PositionAddModal 컴포넌트 구현 예정</p>
             <button onClick={handleModalClose}>닫기</button>
           </div>
@@ -335,7 +470,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalPlaceholder}>
             <h3>📋 직책 상세 정보</h3>
-            <p>Manhattan Financial Center Position Details</p>
+            <p>직책 정보 상세 보기</p>
             <p><strong>선택된 직책:</strong> {modalState.selectedPosition.positionName}</p>
             <p><strong>소속 부서:</strong> {modalState.selectedPosition.departmentName}</p>
             <button onClick={handleModalClose}>닫기</button>

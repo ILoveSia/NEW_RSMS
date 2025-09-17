@@ -421,3 +421,26 @@
     @content;
   }
 }
+
+// 🔺 배경 점(dots) 패턴 믹스인 - 환영카드 표준 사이즈 (통일된 크기)
+@mixin dots-pattern-background($pattern-id: 'dots-standard') {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="#{$pattern-id}" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="1.5" fill="rgba(255,255,255,0.15)"/></pattern></defs><rect width="100" height="100" fill="url(%23#{$pattern-id})"/></svg>');
+    pointer-events: none;
+  }
+}
+
+// 컨텐츠가 패턴 위에 표시되도록 하는 믹스인
+@mixin dots-content-layer {
+  position: relative;
+  z-index: 1;
+}

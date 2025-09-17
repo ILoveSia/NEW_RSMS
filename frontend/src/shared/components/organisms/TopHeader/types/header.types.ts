@@ -8,22 +8,21 @@ export interface Tab {
   icon: string;
   isActive: boolean;
   badge?: number;
-  path?: string;
+  path: string;
 }
 
 export interface UserProfile {
   name: string;
   role: string;
+  employeeId: string;
   avatar?: string;
 }
 
 export interface TopHeaderProps {
   activeTabs?: Tab[];
   userProfile?: UserProfile;
-  notificationCount?: number;
   onTabClick?: (tabId: string) => void;
   onTabClose?: (tabId: string) => void;
-  onNotificationClick?: () => void;
-  onSettingsClick?: () => void;
   onUserClick?: () => void;
+  onLogoutClick?: () => void;
 }

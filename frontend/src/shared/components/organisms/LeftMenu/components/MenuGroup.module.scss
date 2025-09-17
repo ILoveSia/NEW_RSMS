@@ -2,13 +2,13 @@
 @import '@/styles/mixins';
 
 .menuGroup {
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .groupHeader {
   .groupButton {
-    min-height: 48px;
-    padding: 8px 16px;
+    min-height: 40px;
+    padding: 6px 16px;
     border-radius: 0 24px 24px 0;
     margin-right: 8px;
     @include transition(all);

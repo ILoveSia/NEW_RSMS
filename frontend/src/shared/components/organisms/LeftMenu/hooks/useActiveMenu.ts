@@ -10,7 +10,7 @@ import { findMenuByPath } from '../data/menuData';
 
 export const useActiveMenu = () => {
   const location = useLocation();
-  const { setActiveMenu, toggleGroup } = useMenuState();
+  const { setActiveMenu, expandGroup } = useMenuState();
 
   useEffect(() => {
     // 현재 경로에 해당하는 메뉴 찾기
@@ -35,20 +35,20 @@ export const useActiveMenu = () => {
             pathSegments.includes('executive-info') ||
             pathSegments.includes('department-manuals') ||
             pathSegments.includes('ceo-management')) {
-          toggleGroup('resp-ledger');
+          expandGroup('resp-ledger');
         }
       } else if (pathSegments.includes('activity')) {
-        toggleGroup('resp-activity');
+        expandGroup('resp-activity');
       } else if (pathSegments.includes('compliance')) {
-        toggleGroup('compliance-management');
+        expandGroup('compliance-management');
       } else if (pathSegments.includes('reports')) {
-        toggleGroup('compliance-report');
+        expandGroup('compliance-report');
       } else if (pathSegments.includes('improvement')) {
-        toggleGroup('improvement');
+        expandGroup('improvement');
       } else if (pathSegments.includes('approval')) {
-        toggleGroup('approval-management');
+        expandGroup('approval-management');
       } else if (pathSegments.includes('system')) {
-        toggleGroup('system-management');
+        expandGroup('system-management');
       }
     } else {
       // 정확한 매치가 없는 경우 경로 기반으로 추론
@@ -56,7 +56,7 @@ export const useActiveMenu = () => {
         setActiveMenu('dashboard');
       }
     }
-  }, [location.pathname, setActiveMenu, toggleGroup]);
+  }, [location.pathname, setActiveMenu, expandGroup]);
 
   return {
     currentPath: location.pathname,

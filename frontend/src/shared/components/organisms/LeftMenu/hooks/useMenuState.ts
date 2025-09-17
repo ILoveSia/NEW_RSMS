@@ -35,6 +35,17 @@ export const useMenuState = create<LeftMenuStore>()(
       // 활성 메뉴 설정
       setActiveMenu: (menuId: string) => {
         set({ activeMenuItem: menuId });
+      },
+
+      // 메뉴 그룹 확장 (강제)
+      expandGroup: (groupId: string) => {
+        set(state => {
+          const isExpanded = state.expandedGroups.includes(groupId);
+          if (!isExpanded) {
+            return { expandedGroups: [...state.expandedGroups, groupId] };
+          }
+          return state;
+        });
       }
     }),
     {
