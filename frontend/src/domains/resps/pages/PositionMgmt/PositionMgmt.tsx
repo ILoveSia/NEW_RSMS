@@ -1,4 +1,6 @@
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
+import { Button } from '@/shared/components/atoms/Button';
+import toast from '@/shared/utils/toast';
 import AddIcon from '@mui/icons-material/Add';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -7,10 +9,8 @@ import ExcelIcon from '@mui/icons-material/FileDownload';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { Chip } from '@mui/material';
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/shared/components/atoms/Button';
-import toast from '@/shared/utils/toast';
 import styles from './PositionMgmt.module.scss';
 
 // Types
@@ -617,7 +617,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               onRowClick={handleRowClick}
               onRowDoubleClick={handleRowDoubleClick}
               onSelectionChange={handleSelectionChange}
-              height="calc(100vh - 400px)"
+              height="calc(100vh - 350px)"
             />
           </React.Suspense>
         </div>
