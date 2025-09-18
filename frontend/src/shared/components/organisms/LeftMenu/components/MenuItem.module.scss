@@ -6,16 +6,16 @@
 
   &.active {
     .menuButton {
-      background-color: rgba($color-primary, 0.08);
-      border-right: 3px solid $color-primary;
+      background-color: var(--theme-menu-active);
+      border-right: 3px solid var(--theme-menu-active);
 
       &:hover {
-        background-color: rgba($color-primary, 0.12);
+        background-color: var(--theme-menu-hover);
       }
     }
 
     .menuIcon {
-      color: $color-primary;
+      color: var(--theme-menu-active);
     }
   }
 }
@@ -27,7 +27,7 @@
   @include transition(all);
 
   &:hover {
-    background-color: rgba($color-primary, 0.04);
+    background-color: var(--theme-menu-hover);
   }
 
   &:disabled {
@@ -38,7 +38,7 @@
 
 .menuIcon {
   min-width: 40px;
-  color: $color-text-secondary;
+  color: var(--theme-menu-text);
   @include transition(color);
 
   .MuiBadge-root {

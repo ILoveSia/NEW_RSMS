@@ -6,43 +6,166 @@
   padding: $spacing-md;
   border-bottom: 1px solid rgba($color-border-default, 0.5);
   margin-bottom: $spacing-sm;
+  background: var(--theme-menu-bg);
 }
 
-.logoSection {
+.themeSection {
   @include flex-between;
   @include flex-align-center;
   margin-bottom: $spacing-md;
 
-  .logoContent {
-    @include flex-column;
+  // 커스텀 드롭다운
+  .customDropdown {
     flex: 1;
+    margin-right: $spacing-sm;
+    position: relative;
 
-    .logoTitle {
-      font-weight: 700;
-      color: $color-primary;
-      line-height: 1.2;
+    .dropdownButton {
+      @include flex-between;
+      @include flex-align-center;
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid;
+      border-radius: $border-radius-md;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.875rem;
+      @include transition(all);
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      .selectedTheme {
+        @include flex-start;
+        @include flex-align-center;
+        gap: $spacing-xs;
+        flex: 1;
+
+        .themeIcon {
+          font-size: 1rem;
+          width: 20px;
+          text-align: center;
+        }
+
+        .themeName {
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+      }
+
+      .expandIcon {
+        font-size: 1.2rem;
+        @include transition(transform);
+
+        &.expanded {
+          transform: rotate(180deg);
+        }
+      }
     }
 
-    .logoSubtitle {
-      color: $color-text-secondary;
-      font-size: 11px;
-      line-height: 1.2;
+    .dropdownOptions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border: 1px solid;
+      border-radius: $border-radius-md;
       margin-top: 2px;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: $shadow-lg;
+
+      .dropdownOption {
+        @include flex-start;
+        @include flex-align-center;
+        gap: $spacing-xs;
+        padding: $spacing-xs $spacing-sm;
+        cursor: pointer;
+        font-size: 0.875rem;
+        @include transition(background-color);
+
+        .themeIcon {
+          font-size: 1rem;
+          width: 20px;
+          text-align: center;
+        }
+
+        .themeName {
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        &.selected {
+          font-weight: 600;
+        }
+
+        &:first-child {
+          border-top-left-radius: $border-radius-md;
+          border-top-right-radius: $border-radius-md;
+        }
+
+        &:last-child {
+          border-bottom-left-radius: $border-radius-md;
+          border-bottom-right-radius: $border-radius-md;
+        }
+      }
     }
   }
 
   .toggleButton {
-    color: $color-text-secondary;
-    background-color: rgba($color-gray-100, 0.5);
+    color: var(--theme-menu-text);
+    background-color: transparent;
     @include transition(all);
+    flex-shrink: 0;
 
     &:hover {
-      background-color: $color-gray-100;
-      color: $color-primary;
+      background-color: var(--theme-menu-hover);
     }
 
     svg {
       font-size: 18px;
+    }
+  }
+}
+
+// 반응형 조정
+@include mobile {
+  .menuHeader {
+    padding: $spacing-sm;
+  }
+
+  .themeSection {
+    margin-bottom: $spacing-sm;
+
+    .themeSelector {
+      .themeSelect {
+        font-size: 0.8rem;
+      }
+
+      .themeOption {
+        .themeIcon {
+          font-size: 1rem;
+          width: 20px;
+        }
+
+        .themeName {
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .toggleButton {
+      padding: 6px;
+
+      svg {
+        font-size: 20px;
+      }
     }
   }
 }

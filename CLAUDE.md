@@ -26,6 +26,102 @@ RSMS/
 
 ---
 
+## 🎨 개발 표준 및 템플릿
+
+### 페이지 개발 표준 템플릿
+- **기본 템플릿**: `src/domains/resps/pages/PositionMgmt/PositionMgmt.tsx`
+- **모든 새로운 페이지는 PositionMgmt.tsx 구조를 참고하여 개발**
+
+**PositionMgmt.tsx 템플릿 구조:**
+```tsx
+// 1. 페이지 헤더 (통계 카드 포함)
+<div className={styles.pageHeader}>
+  <div className={styles.headerContent}>
+    <div className={styles.titleSection}>...</div>
+    <div className={styles.headerStats}>
+      <div className={styles.statCard}>...</div>
+    </div>
+  </div>
+</div>
+
+// 2. 검색 필터 섹션
+<div className={styles.searchSection}>
+  <ComponentSearchFilter ... />
+</div>
+
+// 3. 액션 바 (총 개수, 상태 표시, 액션 버튼들)
+<div className={styles.actionBar}>
+  <div className={styles.actionLeft}>...</div>
+  <div className={styles.actionRight}>
+    <Button variant="contained">엑셀다운로드</Button>
+    <Button variant="contained">등록</Button>
+    <Button variant="contained">삭제</Button>
+  </div>
+</div>
+
+// 4. 데이터 그리드
+<div className={styles.gridSection}>
+  <ComponentDataGrid ... />
+</div>
+```
+
+### 테마 시스템 (필수 준수)
+- **8가지 브랜드 테마**: 기본, 넷플릭스, 아마존, 인스타그램, 맨하탄, WhatsApp, 애플, 구글
+- **테마 적용 영역**: TopHeader, LeftMenu, PageHeader, Button
+- **중요**: 모든 Button은 `@/shared/components/atoms/Button` 사용 (Material-UI Button 직접 사용 금지)
+- **CSS 변수**: `var(--theme-button-primary)`, `var(--theme-button-primary-text)` 등 사용
+
+**테마 시스템 파일 위치:**
+- 테마 스토어: `src/app/store/themeStore.ts`
+- 테마 선택: LeftMenu 상단 드롭다운 (RSMS 텍스트를 커스텀 드롭다운으로 교체)
+
+**8가지 테마 상세:**
+1. 🎨 **기본 스타일**: 차분한 슬레이트 그레이 (#64748b header, #f1f5f9 menu)
+2. 🎬 **넷플릭스 스타일**: 다크 테마 (#141414 + #e50914 액센트)
+3. 📦 **아마존 스타일**: 오렌지 액센트 (#232f3e + #ff9900 그라데이션) - 기본값
+4. 📷 **인스타그램 스타일**: 그라데이션 컨셉 (밝은 배경 + 컬러풀 그라데이션)
+5. 🏢 **맨하탄 금융센터 스타일**: 금융 느낌 블루 (#0a1428 + #3b82f6)
+6. 💬 **WhatsApp 스타일**: 그린 테마 (#075e54 + #128c7e)
+7. 🍎 **애플 스타일**: 미니멀 그레이/블루 (#f6f6f6 + #007aff) - 유튜브 대체
+8. 🔍 **구글 스타일**: 클린 모던 (흰색 + 구글 컬러 그라데이션)
+
+**테마 시스템 구현 완료 사항:**
+- ✅ 동적 테마 변경 시스템 구축
+- ✅ LeftMenu 커스텀 드롭다운 구현 (Material-UI Select 문제 해결)
+- ✅ 모든 UI 영역 테마 적용 (TopHeader, LeftMenu, PageHeader, Button)
+- ✅ 스마트 텍스트 컬러링 (배경에 따른 자동 텍스트 색상 조정)
+- ✅ PositionMgmt 페이지 Button 테마 통합 완료
+- ✅ TopHeader 로고 이미지 자연스럽게 개선 (크기, 그림자, 호버 효과)
+
+### 🚀 오늘의 주요 개발 성과 (2025-09-17)
+
+**1. 동적 테마 시스템 완성**
+- 8가지 브랜드 테마 구현 (기본, 넷플릭스, 아마존, 인스타그램, 맨하탄, WhatsApp, 애플, 구글)
+- LeftMenu 상단 RSMS 텍스트 → 테마 선택 커스텀 드롭다운으로 교체
+- Material-UI Select 텍스트 표시 문제 해결 (커스텀 HTML/CSS 드롭다운으로 대체)
+- TopHeader, LeftMenu, PageHeader, Button 전 영역 테마 적용
+
+**2. Button 테마 통합 완료**
+- PositionMgmt 페이지 모든 버튼 테마 시스템 적용
+- PositionSearchFilter Material-UI Button → 테마 적용 Button 교체
+- CSS `!important` 고정 색상 → 테마 변수 사용으로 변경
+- 검색버튼, 엑셀다운로드, 등록, 삭제 버튼 모두 테마 색상 적용
+
+**3. 테마 추가/변경 이력**
+- "유튜브 스타일" 삭제 → "애플 스타일" 추가
+- "기본 스타일" 신규 추가 (차분한 슬레이트 그레이)
+- 기본 스타일 LeftMenu 색상 미세 조정 (#f1f5f9)
+
+**4. UI/UX 개선**
+- TopHeader 로고 이미지 자연스럽게 개선 (크기 38px, 둥근 모서리, 그림자, 호버 효과)
+- 모든 테마에서 일관된 사용자 경험 제공
+
+**5. 개발 표준 확립**
+- PositionMgmt.tsx를 표준 페이지 템플릿으로 확정
+- 모든 신규 페이지는 이 구조를 따라 개발하도록 가이드 수립
+
+---
+
 ## 📚 필수 참조 문서 체계 (5개 핵심 문서)
 
 ### 1. **FRONTEND_ARCHITECTURE.md** 📱
@@ -80,6 +176,8 @@ RSMS/
   - 전체 아키텍처 작업 시: 모든 문서
 
 ### Phase 2: 기존 코드 분석
+- [ ] **PositionMgmt.tsx 템플릿 구조 확인** (새 페이지 개발 시 필수)
+- [ ] **테마 시스템 적용 확인** (Button 컴포넌트, CSS 변수 사용)
 - [ ] 기존 코드 패턴 분석 후 작업 시작
 - [ ] 중복 컴포넌트/기능 존재 여부 확인
 - [ ] shared/components, domain 구조 파악
@@ -737,6 +835,7 @@ npm run build        # 빌드 테스트
 
 ---
 
-**📅 마지막 업데이트**: 2025-09-08  
-**🎯 프로젝트 상태**: 문서 체계 완성, 개발 준비 완료  
+**📅 마지막 업데이트**: 2025-09-17
+**🎯 프로젝트 상태**: 동적 테마 시스템 완성, 개발 표준 템플릿 확립
+**🚀 주요 성과**: 8가지 브랜드 테마, Button 테마 통합, PositionMgmt 표준 템플릿
 **📝 작성자**: Claude AI (RSMS 마스터 가이드)

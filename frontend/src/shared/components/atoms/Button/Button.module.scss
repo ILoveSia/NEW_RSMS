@@ -87,40 +87,52 @@
   letter-spacing: 0.5px;
 }
 
-// 🎯 맨하탄 금융센터 변형 스타일 (Wall Street Button Variants)
+// 🎯 테마 적용 변형 스타일 (Themed Button Variants)
 .variant-contained {
-  // Material-UI 기본 스타일을 맨하탄 스타일로 강화
-  background: $color-primary;
-  
+  // 테마 Primary 색상 적용
+  background: var(--theme-button-primary);
+  color: var(--theme-button-primary-text);
+
   &:hover {
-    background: $color-primary-600;
+    background: var(--theme-button-primary);
+    opacity: 0.9;
   }
 }
 
 .variant-outlined {
-  // Material-UI 기본 스타일을 맨하탄 스타일로 강화  
-  border-color: $color-primary;
-  color: $color-primary;
+  // 테마 Secondary 색상 적용
+  border-color: var(--theme-button-secondary);
+  color: var(--theme-button-secondary-text);
+  background: var(--theme-button-secondary);
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .variant-text {
-  // Material-UI 기본 스타일 유지
-  color: $color-primary;
+  // 테마 Primary 텍스트 색상 적용
+  color: var(--theme-button-primary);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
 }
 
 .variant-ghost {
-  // 미묘한 투명 버튼 (기존 유지)
+  // 미묘한 투명 버튼 - 테마 적용
   background: transparent;
   border: none;
-  color: $color-text-secondary;
-  
+  color: var(--theme-button-secondary-text);
+
   &:hover {
-    background: rgba($color-primary, 0.04);
-    color: $color-primary;
+    background: var(--theme-button-secondary);
+    color: var(--theme-button-primary);
+    opacity: 0.8;
   }
-  
+
   &:active {
-    background: rgba($color-primary, 0.08);
+    opacity: 0.6;
   }
 }
 

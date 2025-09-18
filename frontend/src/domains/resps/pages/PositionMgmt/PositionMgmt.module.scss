@@ -9,12 +9,12 @@
   flex-direction: column;
 }
 
-// 🎯 아마존 스타일 헤더
+// 🎯 테마 적용 헤더
 .pageHeader {
   position: relative;
   z-index: 2;
-  background: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
-  color: white;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
   padding: $spacing-sm $spacing-md;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -256,17 +256,17 @@
   gap: $spacing-md;
 }
 
-// 🚀 프리미엄 글래스 버튼
+// 🚀 프리미엄 글래스 버튼 (테마 적용)
 .actionButton {
-  background: linear-gradient(135deg, rgba(255, 153, 0, 0.9) 0%, rgba(255, 119, 0, 0.9) 100%) !important;
+  background: var(--theme-button-primary) !important;
   backdrop-filter: blur(10px) !important;
-  color: white !important;
+  color: var(--theme-button-primary-text) !important;
   font-weight: 600 !important;
   padding: 8px 16px !important;
   border-radius: 12px !important;
-  border: 1px solid rgba(255, 153, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   box-shadow:
-    0 4px 16px rgba(255, 153, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   font-size: 0.875rem !important;

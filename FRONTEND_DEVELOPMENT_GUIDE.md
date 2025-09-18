@@ -31,6 +31,28 @@ const handleData = (data: UserData | unknown) => {}
 - ❌ 기존 shared/components 무시하고 새로 만들기
 - ❌ TypeScript 인터페이스 없는 컴포넌트
 - ❌ CSS Module 없이 컴포넌트 개발
+- ❌ Material-UI Button 직접 사용 (테마 시스템 미적용)
+
+### 테마 시스템 금지사항
+```typescript
+// ❌ 절대 금지 - Material-UI Button 직접 사용
+import { Button } from '@mui/material';
+
+// ❌ 절대 금지 - 고정 색상 스타일 !important 사용
+.actionButton {
+  background: #ff9900 !important;
+  color: white !important;
+}
+
+// ✅ 반드시 이렇게 - 테마 적용 Button 사용
+import { Button } from '@/shared/components/atoms/Button';
+
+// ✅ 반드시 이렇게 - 테마 변수 사용
+.actionButton {
+  background: var(--theme-button-primary) !important;
+  color: var(--theme-button-primary-text) !important;
+}
+```
 
 ---
 
@@ -65,7 +87,84 @@ shared/components/
 └── templates/      # Layout, ListPageTemplate
 ```
 
-### 3. CSS Modules + SCSS 스타일링
+### 3. 표준 페이지 템플릿 (PositionMgmt.tsx)
+**모든 새로운 페이지는 PositionMgmt.tsx 구조를 참고하여 개발**
+
+```tsx
+// 표준 페이지 구조
+const PageComponent: React.FC = () => {
+  return (
+    <div className={styles.container}>
+      {/* 1. 페이지 헤더 (통계 카드 포함) */}
+      <div className={styles.pageHeader}>
+        <div className={styles.headerContent}>
+          <div className={styles.titleSection}>
+            <DashboardIcon className={styles.headerIcon} />
+            <div>
+              <h1 className={styles.pageTitle}>{t('page.title')}</h1>
+              <p className={styles.pageDescription}>{t('page.description')}</p>
+            </div>
+          </div>
+          <div className={styles.headerStats}>
+            <div className={styles.statCard}>...</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 검색 필터 섹션 */}
+      <div className={styles.searchSection}>
+        <ComponentSearchFilter ... />
+      </div>
+
+      {/* 3. 액션 바 */}
+      <div className={styles.actionBar}>
+        <div className={styles.actionLeft}>...</div>
+        <div className={styles.actionRight}>
+          <Button variant="contained">엑셀다운로드</Button>
+          <Button variant="contained">등록</Button>
+          <Button variant="contained">삭제</Button>
+        </div>
+      </div>
+
+      {/* 4. 데이터 그리드 */}
+      <div className={styles.gridSection}>
+        <ComponentDataGrid ... />
+      </div>
+    </div>
+  );
+};
+```
+
+### 4. 테마 시스템 (필수 적용)
+**8가지 브랜드 테마를 지원하는 동적 테마 시스템**
+
+```typescript
+// 테마 적용 Button 사용 (필수)
+import { Button } from '@/shared/components/atoms/Button';
+
+// 테마 변수 CSS 사용
+.actionButton {
+  background: var(--theme-button-primary);
+  color: var(--theme-button-primary-text);
+  // 고정 색상 금지!
+}
+
+// 테마 스토어 사용
+import { useThemeStore } from '@/app/store/themeStore';
+const { currentTheme, setTheme } = useThemeStore();
+```
+
+**지원 테마 목록:**
+- 🎨 기본 스타일 (슬레이트 그레이)
+- 🎬 넷플릭스 스타일 (다크 + 레드)
+- 📦 아마존 스타일 (오렌지) - 기본값
+- 📷 인스타그램 스타일 (그라데이션)
+- 🏢 맨하탄 금융센터 스타일 (금융 블루)
+- 💬 WhatsApp 스타일 (그린)
+- 🍎 애플 스타일 (미니멀 블루)
+- 🔍 구글 스타일 (클린 모던)
+
+### 5. CSS Modules + SCSS 스타일링
 ```scss
 // Component.module.scss
 @import '@/styles/variables';
@@ -840,11 +939,21 @@ npm run build
 ### 아키텍처 확인 사항
 - [ ] Domain-Driven Design 구조 준수
 - [ ] Atomic Design Pattern 레벨 적절성
+- [ ] **PositionMgmt.tsx 표준 템플릿 구조 준수** (신규 페이지)
+- [ ] **테마 시스템 적용** (Button 컴포넌트, CSS 변수 사용)
 - [ ] 컴포넌트 재사용성 고려
 - [ ] 상태 관리 적절성 (Zustand vs TanStack Query)
 
+### 테마 시스템 확인 사항
+- [ ] Material-UI Button 직접 사용 금지 확인
+- [ ] `@/shared/components/atoms/Button` 사용 확인
+- [ ] CSS 변수 (`var(--theme-button-primary)`) 사용 확인
+- [ ] 고정 색상 `!important` 사용 금지 확인
+- [ ] 8가지 테마에서 정상 작동 확인
+
 ---
 
-**📅 작성일**: 2025-09-08  
+**📅 작성일**: 2025-09-08
+**📅 마지막 업데이트**: 2025-09-17 (테마 시스템 및 표준 템플릿 추가)
 **✍️ 작성자**: Claude AI (Claude Code 참조용 통합 문서)  
 **🔄 버전**: 1.0.0

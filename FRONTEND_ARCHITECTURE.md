@@ -24,9 +24,17 @@ CSS Modules + SCSS     # 스타일 캡슐화
 
 ### State Management
 ```yaml
-Zustand: 4.5.2         # 경량 상태 관리
+Zustand: 4.5.2         # 경량 상태 관리 (테마 스토어)
 TanStack Query: 5.45.1 # 서버 상태 관리
 React Hook Form: 7.52.0 # 폼 관리
+```
+
+### 테마 시스템
+```yaml
+Dynamic Theme System: 8가지 브랜드 테마
+CSS Variables: 동적 색상 변경
+Custom Dropdown: LeftMenu 테마 선택기
+Zustand Persistence: 테마 상태 영속화
 ```
 
 ### Internationalization
@@ -70,7 +78,8 @@ src/
 │
 ├── app/                        # 🚀 애플리케이션 설정
 │   ├── router/                 # AppRouter, routes, guards
-│   ├── store/                  # rootStore, authStore, uiStore
+│   ├── store/                  # themeStore, authStore, uiStore
+│   │   └── themeStore.ts       # 📝 동적 테마 시스템 (8가지 브랜드 테마)
 │   └── config/                 # env, api, theme, i18n, constants
 │
 ├── styles/                     # 🎨 전역 스타일
@@ -135,6 +144,89 @@ interface ListPageTemplateProps {
 ---
 
 ## 🎨 스타일 시스템
+
+### 🌈 동적 테마 시스템 아키텍처
+
+**8가지 브랜드 테마를 지원하는 완전한 동적 테마 시스템**
+
+```typescript
+// src/app/store/themeStore.ts
+export type ThemeType = 'default' | 'netflix' | 'amazon' | 'instagram' |
+                       'manhattan' | 'whatsapp' | 'apple' | 'google';
+
+export interface ThemeColors {
+  // TopHeader 색상
+  headerBackground: string;
+  headerText: string;
+
+  // LeftMenu 색상
+  menuBackground: string;
+  menuText: string;
+  menuHover: string;
+  menuActive: string;
+
+  // PageHeader 색상
+  pageHeaderBackground: string;
+  pageHeaderText: string;
+
+  // Button 색상
+  buttonPrimary: string;
+  buttonPrimaryText: string;
+  buttonSecondary: string;
+  buttonSecondaryText: string;
+}
+
+// Zustand 스토어 with Persistence
+const useThemeStore = create<ThemeStore>()(
+  persist(
+    (set, get) => ({
+      currentTheme: 'amazon',
+      colors: THEME_COLORS.amazon,
+      setTheme: (theme: ThemeType) => {
+        const colors = THEME_COLORS[theme];
+        set({ currentTheme: theme, colors });
+        updateCSSVariables(colors); // CSS 변수 실시간 업데이트
+      }
+    }),
+    { name: 'theme-storage' }
+  )
+);
+```
+
+**CSS 변수 시스템:**
+```css
+:root {
+  /* 테마 변수 (JavaScript에서 동적 업데이트) */
+  --theme-header-bg: #232f3e;
+  --theme-header-text: #ffffff;
+  --theme-menu-bg: #37475a;
+  --theme-menu-text: #ffffff;
+  --theme-menu-hover: #485769;
+  --theme-menu-active: #ff9900;
+  --theme-page-header-bg: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
+  --theme-page-header-text: #ffffff;
+  --theme-button-primary: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
+  --theme-button-primary-text: #ffffff;
+  --theme-button-secondary: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
+  --theme-button-secondary-text: #ffffff;
+}
+```
+
+**테마 적용 영역:**
+- 🎯 **TopHeader**: 브랜딩 영역, 탭 네비게이션
+- 🎯 **LeftMenu**: 사이드바, 메뉴 항목, 테마 선택 드롭다운
+- 🎯 **PageHeader**: 페이지 제목, 통계 카드 영역
+- 🎯 **Button**: 모든 액션 버튼 (검색, 등록, 삭제, 엑셀다운로드)
+
+**지원 테마 목록:**
+1. 🎨 **기본 스타일**: 차분한 슬레이트 그레이
+2. 🎬 **넷플릭스 스타일**: 다크 테마 + 레드 액센트
+3. 📦 **아마존 스타일**: 오렌지 액센트 (기본값)
+4. 📷 **인스타그램 스타일**: 밝은 배경 + 그라데이션
+5. 🏢 **맨하탄 금융센터 스타일**: 금융 느낌 블루
+6. 💬 **WhatsApp 스타일**: 그린 테마
+7. 🍎 **애플 스타일**: 미니멀 그레이/블루
+8. 🔍 **구글 스타일**: 클린 모던 디자인
 
 ### SCSS 변수 시스템
 ```scss
@@ -395,6 +487,8 @@ const API_BASE_URL = {
 
 ---
 
-**📅 작성일**: 2025-09-08  
+**📅 작성일**: 2025-09-08
+**📅 마지막 업데이트**: 2025-09-17 (동적 테마 시스템 아키텍처 추가)
+**🌈 주요 업데이트**: 8가지 브랜드 테마, Zustand 테마 스토어, CSS 변수 시스템
 **✍️ 작성자**: Claude AI (Claude Code 참조용 통합 문서)  
 **🔄 버전**: 1.0.0

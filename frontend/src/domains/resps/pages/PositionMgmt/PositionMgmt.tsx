@@ -7,9 +7,10 @@ import {
   Security as SecurityIcon,
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
-import { Button, Chip } from '@mui/material';
+import { Chip } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/shared/components/atoms/Button';
 import styles from './PositionMgmt.module.scss';
 
 // Types
@@ -413,7 +414,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
           <div className={styles.actionRight}>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<ExcelIcon />}
               onClick={handleExcelDownload}
               className={styles.actionButton}
@@ -421,7 +422,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               엑셀다운로드
             </Button>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddPosition}
               className={styles.actionButton}
@@ -430,7 +431,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               등록
             </Button>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<DeleteIcon />}
               onClick={handleDeletePositions}
               disabled={selectedPositions.length === 0}

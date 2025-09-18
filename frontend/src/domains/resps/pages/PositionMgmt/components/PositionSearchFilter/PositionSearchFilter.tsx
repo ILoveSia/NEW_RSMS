@@ -6,9 +6,9 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Button,
   Box
 } from '@mui/material';
+import { Button } from '@/shared/components/atoms/Button';
 import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import styles from './PositionSearchFilter.module.scss';
@@ -158,7 +158,7 @@ const PositionSearchFilter: React.FC<PositionSearchFilterProps> = ({
         <Grid item xs={12} md={3}>
           <Box className={styles.buttonGroup}>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<SearchIcon />}
               onClick={onSearch}
               disabled={loading}
