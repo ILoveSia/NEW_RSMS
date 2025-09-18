@@ -5,16 +5,25 @@
 .container {
   width: 100%;
   position: relative;
-  border-radius: $border-radius-md;
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  border-radius: $border-radius-xl;
+  border: 3px solid #cbd5e1;
+  box-shadow:
+    0 8px 24px rgba(100, 116, 139, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
-  
-  // UI 디자인 나오면 전체 스타일 교체 예정
-  border: 1px solid $color-border-default;
-  background: $color-background-paper;
-  
-  // 그림자 효과
-  box-shadow: $shadow-sm;
-  
+
+  &:hover {
+    border-color: #627d98;
+    box-shadow:
+      0 16px 40px rgba(100, 116, 139, 0.16),
+      0 4px 8px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   &.loadingState,
   &.errorState {
     @include flex-center;
@@ -44,12 +53,10 @@
     
     // 폰트 설정
     --ag-font-family: inherit;
-    --ag-font-size: 14px;
-    
-    // 간격 설정
+    --ag-font-size: 0.875rem;
+
+    // 간격 설정 (AG-Grid 기본값 사용)
     --ag-grid-size: 8px;
-    --ag-row-height: 48px;
-    --ag-header-height: 48px;
     
     // 테두리 설정
     --ag-borders: solid 1px #{$color-border-default};
@@ -100,10 +107,33 @@
     // 빈 상태 오버레이
     .ag-overlay-no-rows-wrapper {
       background: $color-background-default;
-      
+
       .ag-overlay-no-rows-center {
         color: $color-text-secondary;
         font-size: 1rem;
+      }
+    }
+
+    // 셀 스타일 (기존 PositionMgmt와 동일)
+    .ag-cell {
+      font-size: 0.875rem;
+      padding: 10px 14px;
+      font-weight: 400;
+      color: #334e68;
+
+      &:focus {
+        outline: 2px solid #627d98;
+        outline-offset: -2px;
+        background: rgba(98, 125, 152, 0.05);
+      }
+    }
+
+    // 헤더 셀 스타일
+    .ag-header-cell {
+      .ag-header-cell-label {
+        font-weight: 600;
+        color: #334e68;
+        font-size: 0.875rem;
       }
     }
   }

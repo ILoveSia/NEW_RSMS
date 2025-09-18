@@ -1,14 +1,9 @@
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
-import { Button } from '@/shared/components/atoms/Button';
 import toast from '@/shared/utils/toast';
-import AddIcon from '@mui/icons-material/Add';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExcelIcon from '@mui/icons-material/FileDownload';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { Chip } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './PositionMgmt.module.scss';
@@ -17,16 +12,22 @@ import styles from './PositionMgmt.module.scss';
 import type {
   Position,
   PositionFilters,
+  PositionFormData,
   PositionModalState,
   PositionPagination
 } from './types/position.types';
 
-// Components
+// Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
-import { PositionSearchFilter } from './components/PositionSearchFilter';
+import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
+import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+
+// Position specific components
+import { positionColumns } from './components/PositionDataGrid/positionColumns';
 
 // Lazy-loaded components for performance optimization
-const PositionDataGrid = React.lazy(() => import('./components/PositionDataGrid/PositionDataGrid'));
+const PositionFormModal = React.lazy(() => import('./components/PositionFormModal'));
 
 interface PositionMgmtProps {
   className?: string;
@@ -71,9 +72,6 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
-  const handlePaginationChange = useCallback((newPagination: Partial<PositionPagination>) => {
-    setPagination(prev => ({ ...prev, ...newPagination }));
-  }, []);
 
   const handleAddPosition = useCallback(() => {
     setModalState(prev => ({
@@ -148,13 +146,6 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     }
   }, [selectedPositions]);
 
-  const handleViewPosition = useCallback((position: Position) => {
-    setModalState(prev => ({
-      ...prev,
-      detailModal: true,
-      selectedPosition: position
-    }));
-  }, []);
 
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({
@@ -165,18 +156,85 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     }));
   }, []);
 
-  const handlePositionUpdate = useCallback((updatedPosition: Position) => {
-    setPositions(prev =>
-      prev.map(pos => pos.id === updatedPosition.id ? updatedPosition : pos)
-    );
-    handleModalClose();
+  // 폼 모달 핸들러들
+  const handlePositionSave = useCallback(async (formData: PositionFormData) => {
+    try {
+      setLoading(true);
+      // TODO: API 호출로 직책 생성
+      // const response = await positionApi.create(formData);
+
+      // 임시로 새 직책 객체 생성
+      const newPosition: Position = {
+        id: Date.now().toString(),
+        positionName: formData.positionName,
+        headquarters: formData.headquarters,
+        departmentName: formData.departmentName,
+        divisionName: formData.divisionName,
+        registrationDate: new Date().toISOString().split('T')[0],
+        registrar: '현재사용자',
+        registrarPosition: '관리자',
+        modificationDate: new Date().toISOString().split('T')[0],
+        modifier: '현재사용자',
+        modifierPosition: '관리자',
+        status: '정상',
+        isActive: true,
+        approvalStatus: '승인',
+        dual: '단일'
+      };
+
+      setPositions(prev => [newPosition, ...prev]);
+      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
+      handleModalClose();
+      toast.success('직책이 성공적으로 등록되었습니다.');
+    } catch (error) {
+      console.error('직책 등록 실패:', error);
+      toast.error('직책 등록에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }, [handleModalClose]);
 
-  const handlePositionCreate = useCallback((newPosition: Position) => {
-    setPositions(prev => [newPosition, ...prev]);
-    setPagination(prev => ({ ...prev, total: prev.total + 1 }));
-    handleModalClose();
+  const handlePositionUpdate = useCallback(async (id: string, formData: PositionFormData) => {
+    try {
+      setLoading(true);
+      // TODO: API 호출로 직책 수정
+      // const response = await positionApi.update(id, formData);
+
+      // 임시로 기존 직책 업데이트
+      setPositions(prev =>
+        prev.map(pos =>
+          pos.id === id
+            ? {
+                ...pos,
+                positionName: formData.positionName,
+                headquarters: formData.headquarters,
+                departmentName: formData.departmentName,
+                divisionName: formData.divisionName,
+                modificationDate: new Date().toISOString().split('T')[0],
+                modifier: '현재사용자',
+                modifierPosition: '관리자'
+              }
+            : pos
+        )
+      );
+
+      handleModalClose();
+      toast.success('직책이 성공적으로 수정되었습니다.');
+    } catch (error) {
+      console.error('직책 수정 실패:', error);
+      toast.error('직책 수정에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }, [handleModalClose]);
+
+  const handlePositionDetail = useCallback((position: Position) => {
+    setModalState(prev => ({
+      ...prev,
+      detailModal: true,
+      selectedPosition: position
+    }));
+  }, []);
 
   const handleSearch = useCallback(async () => {
     setLoading(true);
@@ -221,8 +279,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   }, []);
 
   const handleRowDoubleClick = useCallback((position: Position) => {
-    handleViewPosition(position);
-  }, [handleViewPosition]);
+    handlePositionDetail(position);
+  }, [handlePositionDetail]);
 
   const handleSelectionChange = useCallback((selected: Position[]) => {
     setSelectedPositions(selected);
@@ -248,6 +306,91 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   const displayPositions = useMemo(() => {
     return positions; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
   }, [positions]);
+
+  // BaseSearchFilter용 필드 정의
+  const searchFields = useMemo<FilterField[]>(() => [
+    {
+      key: 'positionName',
+      type: 'text',
+      label: '직책명',
+      placeholder: '직책명을 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 3 }
+    },
+    {
+      key: 'headquarters',
+      type: 'select',
+      label: '본부구분',
+      options: [
+        { value: '', label: '전체' },
+        { value: '본부부서', label: '본부부서' },
+        { value: '지역본부', label: '지역본부' },
+        { value: '영업점', label: '영업점' },
+        { value: '센터', label: '센터' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 2 }
+    },
+    {
+      key: 'status',
+      type: 'select',
+      label: '상태',
+      options: [
+        { value: '', label: '전체' },
+        { value: '완료', label: '완료' },
+        { value: '반영필요', label: '반영필요' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 2 }
+    },
+    {
+      key: 'isActive',
+      type: 'select',
+      label: '사용여부',
+      options: [
+        { value: '', label: '전체' },
+        { value: 'Y', label: '사용' },
+        { value: 'N', label: '미사용' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 2 }
+    }
+  ], []);
+
+  // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
+  const actionButtons = useMemo<ActionButton[]>(() => [
+    {
+      key: 'excel',
+      type: 'excel',
+      onClick: handleExcelDownload,
+      disabled: loadingStates.excel,
+      loading: loadingStates.excel
+    },
+    {
+      key: 'add',
+      type: 'add',
+      onClick: handleAddPosition
+    },
+    {
+      key: 'delete',
+      type: 'delete',
+      onClick: handleDeletePositions,
+      disabled: selectedPositions.length === 0 || loadingStates.delete,
+      loading: loadingStates.delete,
+      confirmationRequired: true
+    }
+  ], [handleExcelDownload, handleAddPosition, handleDeletePositions, selectedPositions.length, loadingStates]);
+
+  // BaseActionBar용 상태 정보 정의
+  const statusInfo = useMemo<StatusInfo[]>(() => [
+    {
+      label: '활성',
+      value: statistics.activeCount,
+      color: 'success',
+      icon: <SecurityIcon />
+    },
+    {
+      label: '비활성',
+      value: statistics.inactiveCount,
+      color: 'default'
+    }
+  ], [statistics]);
 
   // 성능 모니터링 함수
   const onRenderProfiler = useCallback((
@@ -542,120 +685,58 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
-        {/* 🔍 프리미엄 검색 필터 */}
-        <div className={styles.searchSection}>
-          <PositionSearchFilter
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onSearch={handleSearch}
-            onClear={handleClearFilters}
-            loading={loading}
-          />
-        </div>
+        {/* 🔍 공통 검색 필터 */}
+        <BaseSearchFilter
+          fields={searchFields}
+          values={filters as unknown as FilterValues}
+          onValuesChange={(values) => handleFiltersChange(values as unknown as Partial<PositionFilters>)}
+          onSearch={handleSearch}
+          onClear={handleClearFilters}
+          loading={loading}
+          searchLoading={loadingStates.search}
+          showClearButton={true}
+        />
 
-        {/* 💎 액션 바 - 프리미엄 스타일 */}
-        <div className={styles.actionBar}>
-          <div className={styles.actionLeft}>
-            <div className={styles.totalCount}>
-              <span className={styles.label}>총 직책 수:</span>
-              <span className={styles.count}>{statistics.total}</span>
-              <span className={styles.unit}>개</span>
-            </div>
+        {/* 💎 공통 액션 바 */}
+        <BaseActionBar
+          totalCount={statistics.total}
+          totalLabel="총 직책 수"
+          selectedCount={selectedPositions.length}
+          statusInfo={statusInfo}
+          actions={actionButtons}
+          loading={loading}
+        />
 
-            <div className={styles.statusIndicators}>
-              <Chip
-                icon={<SecurityIcon />}
-                label={`활성 ${statistics.activeCount}개`}
-                color="success"
-                variant="filled"
-                size="small"
-              />
-              <Chip
-                label={`비활성 ${statistics.inactiveCount}개`}
-                color="default"
-                variant="outlined"
-                size="small"
-              />
-            </div>
-          </div>
-
-          <div className={styles.actionRight}>
-            <Button
-              variant="contained"
-              startIcon={<ExcelIcon />}
-              onClick={handleExcelDownload}
-              className={styles.actionButton}
-            >
-              엑셀다운로드
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddPosition}
-              className={styles.actionButton}
-              data-testid="add-position-button"
-            >
-              등록
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeletePositions}
-              disabled={selectedPositions.length === 0}
-              className={styles.actionButton}
-            >
-              삭제
-            </Button>
-          </div>
-        </div>
-
-        {/* 🎯 데이터 그리드 - 프로페셔널 스타일 (지연 로딩 최적화) */}
-        <div className={styles.gridSection}>
-          <React.Suspense
-            fallback={
-              <div className={styles.gridLoadingContainer}>
-                <LoadingSpinner
-                  size="large"
-                  text="데이터 그리드를 로딩 중입니다..."
-                />
-              </div>
-            }
-          >
-            <PositionDataGrid
-              data={displayPositions}
-              loading={loading}
-              onRowClick={handleRowClick}
-              onRowDoubleClick={handleRowDoubleClick}
-              onSelectionChange={handleSelectionChange}
-              height="calc(100vh - 350px)"
-            />
-          </React.Suspense>
-        </div>
+        {/* 🎯 공통 데이터 그리드 */}
+        <BaseDataGrid
+          data={displayPositions}
+          columns={positionColumns}
+          loading={loading}
+          theme="alpine"
+          onRowClick={(data) => handleRowClick(data)}
+          onRowDoubleClick={(data) => handleRowDoubleClick(data)}
+          onSelectionChange={handleSelectionChange}
+          height="calc(100vh - 370px)"
+          pagination={true}
+          pageSize={25}
+          rowSelection="multiple"
+          checkboxSelection={true}
+          headerCheckboxSelection={true}
+        />
       </div>
 
-      {/* 🎭 프리미엄 모달들 */}
-      {modalState.addModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalPlaceholder}>
-            <h3>🏗️ 새 직책 추가</h3>
-            <p>직책 등록 모달</p>
-            <p>PositionAddModal 컴포넌트 구현 예정</p>
-            <button onClick={handleModalClose}>닫기</button>
-          </div>
-        </div>
-      )}
-
-      {modalState.detailModal && modalState.selectedPosition && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalPlaceholder}>
-            <h3>📋 직책 상세 정보</h3>
-            <p>직책 정보 상세 보기</p>
-            <p><strong>선택된 직책:</strong> {modalState.selectedPosition.positionName}</p>
-            <p><strong>소속 부서:</strong> {modalState.selectedPosition.departmentName}</p>
-            <button onClick={handleModalClose}>닫기</button>
-          </div>
-        </div>
-      )}
+      {/* 직책 등록/상세 모달 */}
+      <React.Suspense fallback={<LoadingSpinner />}>
+        <PositionFormModal
+          open={modalState.addModal || modalState.detailModal}
+          mode={modalState.addModal ? 'create' : 'detail'}
+          position={modalState.selectedPosition}
+          onClose={handleModalClose}
+          onSave={handlePositionSave}
+          onUpdate={handlePositionUpdate}
+          loading={loading}
+        />
+      </React.Suspense>
       </div>
     </React.Profiler>
   );

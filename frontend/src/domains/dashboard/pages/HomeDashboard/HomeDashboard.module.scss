@@ -66,7 +66,7 @@
 
 .welcomeCard {
   background: linear-gradient(135deg, $color-primary-900 0%, $color-primary-700 100%);
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   padding: 16px;
   color: white;
   display: flex;
@@ -117,7 +117,7 @@
 
       .iconCount {
         background: rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
+        border-radius: $border-radius-lg;
         padding: 4px 12px;
         font-size: 16px;
         font-weight: 700;
@@ -146,7 +146,7 @@
 }
 
 .accessButton {
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -230,7 +230,7 @@
 
 .responsibilityFlowNew {
   background: linear-gradient(135deg, $color-primary-700 0%, $color-primary-900 100%);
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   padding: 20px;
   color: white;
   margin-bottom: 16px;
@@ -594,7 +594,7 @@
 
   .flowCard {
     background: rgba(255, 255, 255, 0.98);
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     padding: 8px 16px;
     text-align: center;
     min-width: 110px;
@@ -672,7 +672,7 @@
 
 .chartCard {
   background: white;
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   flex: 1;
@@ -711,7 +711,7 @@
 
 .vanguardTeamStatus {
   background: linear-gradient(135deg, $color-primary-900 0%, $color-primary-700 100%);
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   padding: 20px;
   color: white;
   margin-bottom: 3px;
@@ -732,7 +732,7 @@
 
   .statusBox {
     background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     padding: 18px 12px;
     text-align: center;
     flex: 1;
@@ -773,7 +773,7 @@
 
 .implementationStatusLarge {
   background: linear-gradient(135deg, $color-primary-600 0%, $color-primary-700 100%);
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   padding: 12px;
   color: white;
   flex: 1;
@@ -797,7 +797,7 @@
 
   .statusTag {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
+    border-radius: $border-radius-xl;
     padding: 12px 20px;
     display: flex;
     align-items: center;
@@ -850,7 +850,7 @@
 
   .mainCard, .subCard {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.2s ease;
     display: flex;
@@ -892,7 +892,7 @@
         background: #FF9800;
         color: white;
         border: none;
-        border-radius: 20px;
+        border-radius: $border-radius-xl;
         padding: 8px 16px;
         font-size: 13px;
         font-weight: 600;
@@ -945,7 +945,7 @@
 .complianceChart,
 .distributionChart {
   background: white;
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   height: 100%;
@@ -1049,7 +1049,7 @@
 
 .modalContent {
   background: white;
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   max-width: 800px;
   width: 100%;
   max-height: 80vh;
@@ -1076,7 +1076,7 @@
   .closeButton {
     background: $color-background-neutral;
     border: 1px solid $color-border-default;
-    border-radius: 8px;
+    border-radius: $border-radius-lg;
     padding: 8px;
     width: 40px;
     height: 40px;
@@ -1149,7 +1149,7 @@
   .managementNode {
     background: white;
     padding: 16px;
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     border: 2px solid $color-primary-900;
     text-align: center;
     min-width: 140px;
@@ -1219,7 +1219,7 @@
   .staffNode {
     background: $color-background-neutral;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: $border-radius-lg;
     border: 1px solid $color-border-default;
     text-align: center;
     min-width: 100px;
@@ -1308,7 +1308,7 @@
 
 .newModalContent {
   background: white;
-  border-radius: 16px;
+  border-radius: $border-radius-xl;
   width: 95vw;
   height: 90vh;
   max-width: 1400px;
@@ -1378,7 +1378,7 @@
       object-fit: contain;
       background: white;
       padding: 8px;
-      border-radius: 8px;
+      border-radius: $border-radius-lg;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
@@ -1458,7 +1458,7 @@
 
 .newOrgChart {
   background: white;
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   padding: 20px;
   border: 1px solid #e0e0e0;
 }
@@ -1522,7 +1522,7 @@
 .orgNode {
   background: white;
   border: 2px solid #007bff;
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   padding: 10px;
   width: 140px;
   max-width: 140px;

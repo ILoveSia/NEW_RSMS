@@ -197,9 +197,9 @@
     &:hover:not(:disabled) {
       background: linear-gradient(
         135deg,
-        lighten($color-executive, 5%) 0%,
+        #1f2332 0%,
         $color-platinum-light 50%,
-        lighten($color-executive, 5%) 100%
+        #1f2332 100%
       );
       box-shadow: 
         0 6px 16px rgba($color-executive, 0.35),

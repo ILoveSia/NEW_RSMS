@@ -136,9 +136,9 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     headerBackground: '#1e3a8a',
     headerText: '#ffffff',
 
-    menuBackground: '#f8fafc',
+    menuBackground: '#e2e8f0',
     menuText: '#1f2937',
-    menuHover: '#e2e8f0',
+    menuHover: '#cbd5e1',
     menuActive: '#93c5fd',
 
     pageHeaderBackground: 'linear-gradient(135deg, #1e3a8a 0%, #374151 100%)',

@@ -160,12 +160,12 @@ $line-height-tight: 1.25;
 $line-height-base: 1.5;
 $line-height-relaxed: 1.75;
 
-// 📐 Border Radius
+// 📐 Border Radius (더 절제된 둥근 모서리)
 $border-radius-none: 0;
 $border-radius-sm: 2px;
 $border-radius-md: 4px;
-$border-radius-lg: 8px;
-$border-radius-xl: 12px;
+$border-radius-lg: 6px;  // 8px → 6px로 줄임
+$border-radius-xl: 8px;  // 12px → 8px로 줄임
 $border-radius-full: 50%;
 
 // 🌫️ Shadows

@@ -22,7 +22,7 @@
 
 .menuButton {
   min-height: 36px;
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 $border-radius-xl $border-radius-xl 0;
   margin-right: 8px;
   @include transition(all);
 

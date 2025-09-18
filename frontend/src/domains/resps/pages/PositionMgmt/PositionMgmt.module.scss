@@ -18,7 +18,7 @@
   padding: $spacing-sm $spacing-md;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: $border-radius-lg;
   margin-bottom: $spacing-sm;
 }
 
@@ -61,7 +61,7 @@
 
 .statCard {
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
+  border-radius: $border-radius-lg;
   padding: $spacing-sm $spacing-md;
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
@@ -132,213 +132,7 @@
   background: #fafbfc;
 }
 
-// 🔍 검색 필터 영역 - 세련된 테두리
-.searchSection {
-  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
-  border-radius: 16px;
-  border: 3px solid #cbd5e1;
-  box-shadow:
-    0 8px 24px rgba(100, 116, 139, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  overflow: hidden;
-  position: relative;
 
-
-  &:hover {
-    border-color: #627d98;
-    box-shadow:
-      0 16px 40px rgba(100, 116, 139, 0.16),
-      0 4px 8px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    transform: translateY(-2px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
-
-// 💎 액션 바 - 프리미엄 글래스모피즘 스타일
-.actionBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $spacing-sm $spacing-md;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  border: 3px solid #cbd5e1;
-  box-shadow:
-    0 12px 36px rgba(98, 125, 152, 0.12),
-    0 4px 8px rgba(255, 153, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(98, 125, 152, 0.05), transparent);
-    transition: left 2s ease;
-  }
-
-  &:hover {
-    border-color: #627d98;
-    box-shadow:
-      0 16px 48px rgba(98, 125, 152, 0.16),
-      0 6px 16px rgba(255, 153, 0, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.95);
-    transform: translateY(-2px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &::before {
-      left: 100%;
-    }
-  }
-}
-
-.actionLeft {
-  display: flex;
-  align-items: center;
-  gap: $spacing-lg;
-}
-
-.totalCount {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  font-size: 0.875rem;
-  font-weight: 500;
-
-  .label {
-    color: #64748b;
-  }
-
-  .count {
-    color: #ff9900;
-    font-weight: 600;
-  }
-
-  .unit {
-    color: #64748b;
-  }
-}
-
-.statusIndicators {
-  display: flex;
-  gap: $spacing-xs;
-  margin-left: $spacing-sm;
-
-  .MuiChip-root {
-    font-weight: 500;
-    font-size: 0.75rem;
-    height: 24px;
-
-    &.MuiChip-colorSuccess {
-      background: #10b981;
-      color: white;
-
-      .MuiChip-icon {
-        color: rgba(255, 255, 255, 0.9) !important;
-      }
-    }
-
-    &.MuiChip-outlined {
-      border-color: #cbd5e1;
-      color: #64748b;
-    }
-  }
-}
-
-.actionRight {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-}
-
-// 🚀 프리미엄 글래스 버튼 (테마 적용)
-.actionButton {
-  background: var(--theme-button-primary) !important;
-  backdrop-filter: blur(10px) !important;
-  color: var(--theme-button-primary-text) !important;
-  font-weight: 600 !important;
-  padding: 8px 16px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-size: 0.875rem !important;
-  text-transform: none !important;
-  min-height: 40px !important;
-  position: relative !important;
-  overflow: hidden !important;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-  }
-
-  &:hover {
-    background: linear-gradient(135deg, rgba(230, 137, 0, 0.95) 0%, rgba(204, 102, 0, 0.95) 100%) !important;
-    box-shadow:
-      0 8px 32px rgba(255, 153, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-    transform: translateY(-2px) scale(1.02) !important;
-    border-color: rgba(255, 153, 0, 0.5) !important;
-
-    &::before {
-      left: 100%;
-    }
-  }
-
-  &:active {
-    transform: translateY(0) scale(0.98) !important;
-    box-shadow:
-      0 2px 8px rgba(255, 153, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  }
-
-  &:disabled {
-    opacity: 0.5 !important;
-    background: rgba(200, 200, 200, 0.8) !important;
-    transform: none !important;
-    backdrop-filter: blur(5px) !important;
-  }
-}
-
-// 🎯 데이터 그리드 - 프리미엄 카드 스타일
-.gridSection {
-  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
-  border-radius: 16px;
-  border: 3px solid #cbd5e1;
-  box-shadow:
-    0 8px 24px rgba(100, 116, 139, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  overflow: hidden;
-  position: relative;
-
-
-  &:hover {
-    border-color: #627d98;
-    box-shadow:
-      0 16px 40px rgba(100, 116, 139, 0.16),
-      0 4px 8px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    transform: translateY(-2px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
 
 // AG-Grid 모던 플랫 스타일
 :global(.ag-theme-alpine) {
@@ -446,7 +240,7 @@
   height: 400px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: $border-radius-xl;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   margin: $spacing-xl;
   position: relative;
@@ -476,7 +270,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   padding: $spacing-2xl;
-  border-radius: 24px;
+  border-radius: $border-radius-xl;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -509,7 +303,7 @@
     color: white;
     border: none;
     padding: $spacing-md $spacing-xl;
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
     font-weight: 700;
     cursor: pointer;
     margin-top: $spacing-lg;
@@ -589,13 +383,13 @@
   }
 
   .gridSection {
-    border-radius: 8px;
+    border-radius: $border-radius-lg;
   }
 
   .modalPlaceholder {
     width: 95%;
     padding: $spacing-lg;
-    border-radius: 12px;
+    border-radius: $border-radius-lg;
   }
 
   .headerStats {

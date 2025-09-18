@@ -97,7 +97,7 @@ const BaseDataGrid = <TData = any,>({
   columns,
   loading = false,
   height = 400,
-  theme = 'rsms',
+  theme = 'alpine',
   pagination = false,
   pageSize = 25,
   pageSizeOptions = [10, 25, 50, 100],
