@@ -26,27 +26,8 @@
   font-family: $font-family-base;
 }
 
-// Toast 스타일링
-.Toastify__toast {
-  font-family: $font-family-base;
-  border-radius: $border-radius-lg;
-}
-
-.Toastify__toast--success {
-  background-color: $color-success;
-}
-
-.Toastify__toast--error {
-  background-color: $color-error;
-}
-
-.Toastify__toast--warning {
-  background-color: $color-warning;
-}
-
-.Toastify__toast--info {
-  background-color: $color-info;
-}
+// Component Styles
+@import './components/toast';
 
 // React Router 링크 기본 스타일 제거
 .router-link {

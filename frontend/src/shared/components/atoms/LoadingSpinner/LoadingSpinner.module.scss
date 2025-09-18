@@ -18,9 +18,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     z-index: 9999;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
+    @include transition(all);
   }
 }
 
@@ -32,14 +33,14 @@
 }
 
 .text {
-  color: $color-text-secondary;
+  color: var(--theme-menu-text, #{$color-text-secondary});
   font-size: 0.875rem;
   text-align: center;
   margin-top: $spacing-sm;
-
-  // UI 디자인 나오면 이 부분만 수정하면 됨
   font-family: inherit;
   line-height: 1.5;
+  font-weight: 500;
+  @include transition(color);
 }
 
 // 다크 테마 지원 (추후 UI 디자인에 따라 조정)

@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -70,19 +71,59 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // 번들 크기 최적화
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // 운영 환경에서 console.log 제거
+        drop_debugger: true
+      }
+    },
     rollupOptions: {
       output: {
+        // 청크 분할 최적화 (더 세밀한 분할)
         manualChunks: {
-          // 청크 분할 최적화
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@mui/material', '@mui/icons-material'],
-          grid: ['ag-grid-react', 'ag-grid-community'],
-          forms: ['react-hook-form', '@hookform/resolvers', 'yup'],
-          state: ['zustand', '@tanstack/react-query'],
-          utils: ['axios', 'date-fns', 'clsx']
-        }
+          // React 생태계
+          'react-vendor': ['react', 'react-dom'],
+          'react-router': ['react-router-dom'],
+
+          // UI 라이브러리
+          'mui-core': ['@mui/material', '@emotion/react', '@emotion/styled'],
+          'mui-icons': ['@mui/icons-material'],
+
+          // 데이터 그리드
+          'ag-grid': ['ag-grid-react', 'ag-grid-community'],
+
+          // 차트 라이브러리
+          'charts': ['recharts'],
+
+          // 폼 관리
+          'forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+
+          // 상태 관리
+          'state-management': ['zustand', '@tanstack/react-query'],
+
+          // 국제화
+          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
+
+          // 유틸리티
+          'utils': ['axios', 'date-fns', 'clsx', 'web-vitals'],
+
+          // 아이콘
+          'icons': ['lucide-react'],
+
+          // 토스트
+          'toast': ['react-toastify']
+        },
+        // 파일명 최적화
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
-    }
+    },
+    // 청크 크기 경고 임계값 증가
+    chunkSizeWarningLimit: 1000
   },
 
   test: {

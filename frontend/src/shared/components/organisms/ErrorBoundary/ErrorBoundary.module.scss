@@ -1,0 +1,253 @@
+/**
+ * ErrorBoundary 스타일
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.errorBoundary {
+  @include flex-center;
+  min-height: 100vh;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.errorContainer {
+  max-width: 600px;
+  width: 100%;
+  padding: $spacing-xl;
+  text-align: center;
+  border-radius: $border-radius-xl;
+  background: var(--theme-menu-bg, white);
+  border: 1px solid var(--theme-menu-active, #e2e8f0);
+  @include transition(all);
+
+  &:hover {
+    box-shadow: $shadow-xl;
+    transform: translateY(-2px);
+  }
+}
+
+.errorContent {
+  @include flex-column;
+  gap: $spacing-lg;
+  align-items: center;
+}
+
+.errorIcon {
+  font-size: 4rem !important;
+  color: var(--theme-menu-active, $color-error);
+  margin-bottom: $spacing-md;
+  @include transition(color);
+}
+
+.errorTitle {
+  color: var(--theme-menu-text, $color-text-primary);
+  font-weight: 600;
+  margin-bottom: $spacing-sm;
+  @include transition(color);
+}
+
+.errorDescription {
+  color: var(--theme-menu-text, $color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: $spacing-md;
+  @include transition(color);
+}
+
+.errorId {
+  color: var(--theme-menu-text, $color-text-disabled);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: rgba(0, 0, 0, 0.05);
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-lg;
+  @include transition(all);
+}
+
+.errorActions {
+  @include flex-center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-lg;
+
+  .retryButton {
+    background: var(--theme-button-primary, linear-gradient(135deg, #3b82f6 0%, #2563eb 100%));
+    color: var(--theme-button-primary-text, white);
+    border: none;
+    @include transition(all);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  .refreshButton {
+    border-color: var(--theme-menu-active, #3b82f6);
+    color: var(--theme-menu-active, #3b82f6);
+    @include transition(all);
+
+    &:hover {
+      background: var(--theme-menu-hover, rgba(59, 130, 246, 0.1));
+      transform: translateY(-1px);
+    }
+  }
+
+  .homeButton {
+    color: var(--theme-menu-text, $color-text-secondary);
+    @include transition(all);
+
+    &:hover {
+      color: var(--theme-menu-active, #3b82f6);
+      background: var(--theme-menu-hover, rgba(59, 130, 246, 0.05));
+    }
+  }
+}
+
+.errorDetails {
+  width: 100%;
+  margin-top: $spacing-lg;
+  text-align: left;
+
+  .copyButton {
+    margin-bottom: $spacing-md;
+    font-size: 0.75rem;
+    color: var(--theme-menu-text, $color-text-secondary);
+    @include transition(color);
+
+    &:hover {
+      color: var(--theme-menu-active, #3b82f6);
+    }
+  }
+
+  .errorDetailsContent {
+    width: 100%;
+
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--theme-menu-text, $color-text-primary);
+      margin-bottom: $spacing-sm;
+      padding: $spacing-sm;
+      border-radius: $border-radius-sm;
+      background: var(--theme-menu-hover, rgba(0, 0, 0, 0.05));
+      @include transition(all);
+
+      &:hover {
+        background: var(--theme-menu-active, rgba(59, 130, 246, 0.1));
+      }
+    }
+
+    .errorStack {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      border: 1px solid #333;
+      margin-top: $spacing-sm;
+
+      strong {
+        color: #569cd6;
+      }
+    }
+  }
+}
+
+// 반응형 조정
+@include mobile {
+  .errorBoundary {
+    padding: $spacing-md;
+    min-height: 100vh;
+  }
+
+  .errorContainer {
+    padding: $spacing-lg;
+  }
+
+  .errorIcon {
+    font-size: 3rem !important;
+  }
+
+  .errorTitle {
+    font-size: 1.5rem;
+  }
+
+  .errorActions {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .errorDetailsContent {
+    .errorStack {
+      font-size: 0.6rem;
+      padding: $spacing-sm;
+    }
+  }
+}
+
+// 테마별 색상 조정
+.theme-netflix {
+  .errorContainer {
+    background: #141414;
+    border-color: #333333;
+  }
+}
+
+.theme-amazon {
+  .errorActions .retryButton {
+    background: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
+  }
+}
+
+.theme-manhattan {
+  .errorActions .retryButton {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  }
+}
+
+.theme-whatsapp {
+  .errorActions .retryButton {
+    background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
+  }
+}
+
+.theme-itcen {
+  .errorActions .retryButton {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  }
+}
+
+// 다크모드 대응
+@include theme-dark {
+  .errorBoundary {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  }
+
+  .errorContainer {
+    background: var(--theme-menu-bg, #1f2937);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .errorId {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .errorDetailsContent {
+    .errorStack {
+      background: #0d1117;
+      border-color: #30363d;
+    }
+  }
+}

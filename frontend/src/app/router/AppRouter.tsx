@@ -8,12 +8,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { Layout } from '@/shared/components/templates/Layout';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
-import { LoginPage } from '@/domains/auth/pages/LoginPage';
-import { LedgerOrderManagement } from '@/domains/resps/pages/LedgerOrderManagement';
-import { ResponsibilityManagement } from '@/domains/resps/pages/ResponsibilityManagement';
-import { SpecificationManagement } from '@/domains/resps/pages/SpecificationManagement';
-import PositionMgmt from '@/domains/resps/pages/PositionMgmt/PositionMgmt';
-import HomeDashboard from '@/domains/dashboard/pages/HomeDashboard/HomeDashboard';
+// Lazy-loaded pages for better performance
+const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage').then(module => ({ default: module.LoginPage })));
+const LedgerOrderManagement = React.lazy(() => import('@/domains/resps/pages/LedgerOrderManagement').then(module => ({ default: module.LedgerOrderManagement })));
+const ResponsibilityManagement = React.lazy(() => import('@/domains/resps/pages/ResponsibilityManagement').then(module => ({ default: module.ResponsibilityManagement })));
+const SpecificationManagement = React.lazy(() => import('@/domains/resps/pages/SpecificationManagement').then(module => ({ default: module.SpecificationManagement })));
+const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
+const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
 import { routes } from './routes';
 import { 
   RouteGuard,
@@ -71,11 +72,13 @@ const AppRouter: React.FC = () => {
       <Routes>
         {/* 인증 라우트 (Public) */}
         <Route path="/auth/*" element={
-          <Routes>
-            <Route path="login" element={<LoginPage />} />
-            <Route index element={<Navigate to="/auth/login" replace />} />
-            <Route path="*" element={<Navigate to="/auth/login" replace />} />
-          </Routes>
+          <Suspense fallback={<LoadingSpinner text="로그인 페이지 로딩 중..." />}>
+            <Routes>
+              <Route path="login" element={<LoginPage />} />
+              <Route index element={<Navigate to="/auth/login" replace />} />
+              <Route path="*" element={<Navigate to="/auth/login" replace />} />
+            </Routes>
+          </Suspense>
         } />
 
         {/* 에러 페이지들 (Public) */}
@@ -118,155 +121,159 @@ const AppRouter: React.FC = () => {
           {/* 대시보드 (인증 필요) */}
           <Route path="dashboard/*" element={
             <AuthGuard>
-              <Routes>
-                <Route index element={
-                  <HomeDashboard />
-                } />
-                <Route path="analytics" element={
-                  <TemporaryPage 
-                    title="분석 대시보드" 
-                    description="리스크 분석, 트렌드, 예측 등의 고급 분석 기능이 제공될 예정입니다."
-                  />
-                } />
-                <Route path="reports" element={
-                  <TemporaryPage 
-                    title="보고서 대시보드" 
-                    description="주요 보고서들을 요약하여 보여주는 대시보드입니다."
-                  />
-                } />
-                <Route path="alerts" element={
-                  <TemporaryPage 
-                    title="알림 센터" 
-                    description="시스템 알림, 리스크 경고, 승인 요청 등을 관리하는 페이지입니다."
-                  />
-                } />
-              </Routes>
+              <Suspense fallback={<LoadingSpinner text="대시보드 로딩 중..." />}>
+                <Routes>
+                  <Route index element={
+                    <HomeDashboard />
+                  } />
+                  <Route path="analytics" element={
+                    <TemporaryPage
+                      title="분석 대시보드"
+                      description="리스크 분석, 트렌드, 예측 등의 고급 분석 기능이 제공될 예정입니다."
+                    />
+                  } />
+                  <Route path="reports" element={
+                    <TemporaryPage
+                      title="보고서 대시보드"
+                      description="주요 보고서들을 요약하여 보여주는 대시보드입니다."
+                    />
+                  } />
+                  <Route path="alerts" element={
+                    <TemporaryPage
+                      title="알림 센터"
+                      description="시스템 알림, 리스크 경고, 승인 요청 등을 관리하는 페이지입니다."
+                    />
+                  } />
+                </Routes>
+              </Suspense>
             </AuthGuard>
           } />
 
           {/* 책무 관리 (인증 필요 - 핵심 도메인) */}
           <Route path="resps/*" element={
             <AuthGuard>
-              <Routes>
-                {/* 원장관리 */}
-                <Route path="ledger-orders" element={<LedgerOrderManagement />} />
-                <Route path="ledger-orders/:id" element={
-                  <TemporaryPage 
-                    title="원장차수 상세" 
-                    description="원장차수의 상세 정보와 관련 책무들을 관리하는 페이지입니다."
-                  />
-                } />
-                <Route path="ledger-orders/create" element={
-                  <TemporaryPage 
-                    title="원장차수 생성" 
-                    description="새로운 원장차수를 생성하는 페이지입니다."
-                  />
-                } />
-                <Route path="ledger-orders/:id/edit" element={
-                  <TemporaryPage 
-                    title="원장차수 편집" 
-                    description="기존 원장차수 정보를 수정하는 페이지입니다."
-                  />
-                } />
+              <Suspense fallback={<LoadingSpinner text="책무 관리 로딩 중..." />}>
+                <Routes>
+                  {/* 원장관리 */}
+                  <Route path="ledger-orders" element={<LedgerOrderManagement />} />
+                  <Route path="ledger-orders/:id" element={
+                    <TemporaryPage
+                      title="원장차수 상세"
+                      description="원장차수의 상세 정보와 관련 책무들을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="ledger-orders/create" element={
+                    <TemporaryPage
+                      title="원장차수 생성"
+                      description="새로운 원장차수를 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="ledger-orders/:id/edit" element={
+                    <TemporaryPage
+                      title="원장차수 편집"
+                      description="기존 원장차수 정보를 수정하는 페이지입니다."
+                    />
+                  } />
 
-                {/* 직책관리 */}
-                <Route path="positions" element={<PositionMgmt />} />
-                <Route path="positions/:id" element={
-                  <TemporaryPage
-                    title="직책 상세"
-                    description="직책의 상세 정보와 관련 조직 정보를 확인하는 페이지입니다."
-                  />
-                } />
-                <Route path="positions/create" element={
-                  <TemporaryPage
-                    title="직책 생성"
-                    description="새로운 직책을 생성하는 페이지입니다."
-                  />
-                } />
-                <Route path="positions/:id/edit" element={
-                  <TemporaryPage
-                    title="직책 편집"
-                    description="기존 직책 정보를 수정하는 페이지입니다."
-                  />
-                } />
+                  {/* 직책관리 */}
+                  <Route path="positions" element={<PositionMgmt />} />
+                  <Route path="positions/:id" element={
+                    <TemporaryPage
+                      title="직책 상세"
+                      description="직책의 상세 정보와 관련 조직 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="positions/create" element={
+                    <TemporaryPage
+                      title="직책 생성"
+                      description="새로운 직책을 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="positions/:id/edit" element={
+                    <TemporaryPage
+                      title="직책 편집"
+                      description="기존 직책 정보를 수정하는 페이지입니다."
+                    />
+                  } />
 
-                {/* 책무관리 */}
-                <Route path="responsibilities" element={<ResponsibilityManagement />} />
-                <Route path="responsibilities/:id" element={
-                  <TemporaryPage 
-                    title="책무 상세" 
-                    description="개별 책무의 상세 정보와 진행 상황을 관리하는 페이지입니다."
-                  />
-                } />
-                <Route path="responsibilities/create" element={
-                  <TemporaryPage 
-                    title="책무 생성" 
-                    description="새로운 책무를 생성하고 할당하는 페이지입니다."
-                  />
-                } />
-                <Route path="responsibilities/:id/edit" element={
-                  <TemporaryPage 
-                    title="책무 편집" 
-                    description="기존 책무 정보를 수정하는 페이지입니다."
-                  />
-                } />
+                  {/* 책무관리 */}
+                  <Route path="responsibilities" element={<ResponsibilityManagement />} />
+                  <Route path="responsibilities/:id" element={
+                    <TemporaryPage
+                      title="책무 상세"
+                      description="개별 책무의 상세 정보와 진행 상황을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilities/create" element={
+                    <TemporaryPage
+                      title="책무 생성"
+                      description="새로운 책무를 생성하고 할당하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilities/:id/edit" element={
+                    <TemporaryPage
+                      title="책무 편집"
+                      description="기존 책무 정보를 수정하는 페이지입니다."
+                    />
+                  } />
 
-                {/* 책무기술서관리 */}
-                <Route path="specifications" element={<SpecificationManagement />} />
-                <Route path="specifications/:id" element={
-                  <TemporaryPage 
-                    title="기술서 상세" 
-                    description="기술서의 상세 내용과 버전 이력을 관리하는 페이지입니다."
-                  />
-                } />
-                <Route path="specifications/create" element={
-                  <TemporaryPage 
-                    title="기술서 작성" 
-                    description="새로운 기술서를 작성하는 페이지입니다."
-                  />
-                } />
-                <Route path="specifications/:id/edit" element={
-                  <TemporaryPage 
-                    title="기술서 편집" 
-                    description="기존 기술서를 편집하는 페이지입니다."
-                  />
-                } />
-                <Route path="specifications/:id/generate" element={
-                  <TemporaryPage 
-                    title="기술서 생성" 
-                    description="템플릿을 기반으로 기술서를 자동 생성하는 페이지입니다."
-                  />
-                } />
+                  {/* 책무기술서관리 */}
+                  <Route path="specifications" element={<SpecificationManagement />} />
+                  <Route path="specifications/:id" element={
+                    <TemporaryPage
+                      title="기술서 상세"
+                      description="기술서의 상세 내용과 버전 이력을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="specifications/create" element={
+                    <TemporaryPage
+                      title="기술서 작성"
+                      description="새로운 기술서를 작성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="specifications/:id/edit" element={
+                    <TemporaryPage
+                      title="기술서 편집"
+                      description="기존 기술서를 편집하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="specifications/:id/generate" element={
+                    <TemporaryPage
+                      title="기술서 생성"
+                      description="템플릿을 기반으로 기술서를 자동 생성하는 페이지입니다."
+                    />
+                  } />
 
-                {/* 부서장업무메뉴얼관리 */}
-                <Route path="department-manuals" element={
-                  <TemporaryPage 
-                    title="부서장업무메뉴얼 관리" 
-                    description="부서장을 위한 업무 메뉴얼을 관리하는 페이지입니다."
-                  />
-                } />
-                <Route path="department-manuals/:id" element={
-                  <TemporaryPage 
-                    title="부서장메뉴얼 상세" 
-                    description="부서장 업무 메뉴얼의 상세 내용을 확인하는 페이지입니다."
-                  />
-                } />
-                <Route path="department-manuals/create" element={
-                  <TemporaryPage 
-                    title="부서장메뉴얼 작성" 
-                    description="새로운 부서장 업무 메뉴얼을 작성하는 페이지입니다."
-                  />
-                } />
-                <Route path="department-manuals/:id/edit" element={
-                  <TemporaryPage 
-                    title="부서장메뉴얼 편집" 
-                    description="기존 부서장 업무 메뉴얼을 편집하는 페이지입니다."
-                  />
-                } />
+                  {/* 부서장업무메뉴얼관리 */}
+                  <Route path="department-manuals" element={
+                    <TemporaryPage
+                      title="부서장업무메뉴얼 관리"
+                      description="부서장을 위한 업무 메뉴얼을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="department-manuals/:id" element={
+                    <TemporaryPage
+                      title="부서장메뉴얼 상세"
+                      description="부서장 업무 메뉴얼의 상세 내용을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="department-manuals/create" element={
+                    <TemporaryPage
+                      title="부서장메뉴얼 작성"
+                      description="새로운 부서장 업무 메뉴얼을 작성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="department-manuals/:id/edit" element={
+                    <TemporaryPage
+                      title="부서장메뉴얼 편집"
+                      description="기존 부서장 업무 메뉴얼을 편집하는 페이지입니다."
+                    />
+                  } />
 
-                {/* 기본 리다이렉트 */}
-                <Route index element={<Navigate to="/app/resps/ledger-orders" replace />} />
-              </Routes>
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/resps/ledger-orders" replace />} />
+                </Routes>
+              </Suspense>
             </AuthGuard>
           } />
 

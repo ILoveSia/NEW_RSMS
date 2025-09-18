@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
   Grid,
   TextField,
@@ -9,7 +9,7 @@ import {
   Box
 } from '@mui/material';
 import { Button } from '@/shared/components/atoms/Button';
-import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
 import styles from './PositionSearchFilter.module.scss';
 
@@ -26,58 +26,63 @@ interface PositionSearchFilterProps {
   onSearch: () => void;
   onClear: () => void;
   loading?: boolean;
+  searchLoading?: boolean;
 }
 
-const PositionSearchFilter: React.FC<PositionSearchFilterProps> = ({
+const PositionSearchFilter: React.FC<PositionSearchFilterProps> = React.memo(({
   filters,
   onFiltersChange,
   onSearch,
   onClear,
-  loading = false
+  loading = false,
+  searchLoading = false
 }) => {
   const { t } = useTranslation('resps');
 
-  // 본부구분 옵션 (실제로는 API에서 가져올 데이터)
-  const headquartersOptions: HeadquartersOption[] = [
+  // 본부구분 옵션 메모이제이션 (번역 변경 시에만 재계산)
+  const headquartersOptions: HeadquartersOption[] = useMemo(() => [
     { value: '', label: t('common.all', '전체') },
     { value: '본부부서', label: '본부부서' },
     { value: '지역본부', label: '지역본부' },
     { value: '영업점', label: '영업점' },
     { value: '센터', label: '센터' }
-  ];
+  ], [t]);
 
-  // 상태 옵션
-  const statusOptions: StatusOption[] = [
+  // 상태 옵션 메모이제이션
+  const statusOptions: StatusOption[] = useMemo(() => [
     { value: '', label: t('common.all', '전체') },
     { value: '정상', label: '정상' },
     { value: '임시정지', label: '임시정지' },
     { value: '폐지', label: '폐지' }
-  ];
+  ], [t]);
 
-  // 사용여부 옵션
-  const activeOptions: ActiveOption[] = [
+  // 사용여부 옵션 메모이제이션
+  const activeOptions: ActiveOption[] = useMemo(() => [
     { value: '', label: t('common.all', '전체') },
     { value: 'Y', label: t('common.active', '사용') },
     { value: 'N', label: t('common.inactive', '미사용') }
-  ];
+  ], [t]);
 
-  const handleInputChange = (field: keyof PositionFilters) => (
+  // 입력 변경 핸들러 메모이제이션
+  const handleInputChange = useCallback((field: keyof PositionFilters) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     onFiltersChange({ [field]: event.target.value });
-  };
+  }, [onFiltersChange]);
 
-  const handleSelectChange = (field: keyof PositionFilters) => (
+  // 선택 변경 핸들러 메모이제이션
+  const handleSelectChange = useCallback((field: keyof PositionFilters) => (
     event: { target: { value: string } }
   ) => {
     onFiltersChange({ [field]: event.target.value });
-  };
+  }, [onFiltersChange]);
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
+  // 키보드 이벤트 핸들러 메모이제이션
+  const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       onSearch();
     }
-  };
+  }, [onSearch]);
 
   return (
     <div className={styles.container}>
@@ -171,6 +176,9 @@ const PositionSearchFilter: React.FC<PositionSearchFilterProps> = ({
       </Grid>
     </div>
   );
-};
+});
+
+// React.memo 컴포넌트의 displayName 설정 (디버깅용)
+PositionSearchFilter.displayName = 'PositionSearchFilter';
 
 export default PositionSearchFilter;

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -42,6 +43,7 @@
     "react-router-dom": "^6.24.1",
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",
+    "web-vitals": "^5.1.0",
     "yup": "^1.4.0",
     "zustand": "^4.5.2"
   },
@@ -75,6 +77,7 @@
     "sass": "^1.77.5",
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
+    "vite-bundle-analyzer": "^1.2.3",
     "vitest": "^1.6.0"
   },
   "lint-staged": {

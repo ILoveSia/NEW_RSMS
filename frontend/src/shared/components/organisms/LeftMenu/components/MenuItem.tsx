@@ -36,6 +36,13 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleClick();
+    }
+  };
+
   const indentStyle = {
     paddingLeft: isCollapsed ? 0 : `${16 + (level * 16)}px`
   };
@@ -47,9 +54,14 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     >
       <ListItemButton
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         className={styles.menuButton}
         style={indentStyle}
         disabled={!item.path} // path가 없으면 비활성화
+        tabIndex={0}
+        role="menuitem"
+        aria-label={item.title}
+        aria-current={isActive ? 'page' : undefined}
       >
         {/* 아이콘 */}
         {IconComponent && (

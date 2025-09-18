@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 // 테마 타입 정의
-export type ThemeType = 'default' | 'netflix' | 'amazon' | 'instagram' | 'manhattan' | 'whatsapp' | 'apple' | 'google';
+export type ThemeType = 'default' | 'netflix' | 'amazon' | 'manhattan' | 'whatsapp' | 'itcen';
 
 // 테마별 색상 정의
 export interface ThemeColors {
@@ -42,7 +42,7 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     menuBackground: '#f1f5f9',
     menuText: '#334155',
     menuHover: '#e2e8f0',
-    menuActive: '#3b82f6',
+    menuActive: '#cbd5e1',
 
     pageHeaderBackground: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
     pageHeaderText: '#ffffff',
@@ -91,24 +91,6 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     buttonSecondaryText: '#ffffff'
   },
 
-  instagram: {
-    // 인스타그램 스타일 - 그라데이션 컨셉
-    headerBackground: '#ffffff',
-    headerText: '#262626',
-
-    menuBackground: '#fafafa',
-    menuText: '#262626',
-    menuHover: '#f0f0f0',
-    menuActive: '#e1306c',
-
-    pageHeaderBackground: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-    pageHeaderText: '#ffffff',
-
-    buttonPrimary: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-    buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-    buttonSecondaryText: '#ffffff'
-  },
 
   manhattan: {
     // 맨하탄 금융센터 스타일 - 금융 느낌의 다크 블루
@@ -148,41 +130,23 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     buttonSecondaryText: '#ffffff'
   },
 
-  apple: {
-    // 애플 스타일 - 미니멀 그레이/블루 액센트
-    headerBackground: '#f6f6f6',
-    headerText: '#1d1d1f',
 
-    menuBackground: '#ffffff',
-    menuText: '#1d1d1f',
-    menuHover: '#f5f5f7',
-    menuActive: '#007aff',
+  itcen: {
+    // 아이티센 스타일 - 프로페셔널한 IT 솔루션 테마
+    headerBackground: '#1e3a8a',
+    headerText: '#ffffff',
 
-    pageHeaderBackground: 'linear-gradient(135deg, #007aff 0%, #0051d5 100%)',
+    menuBackground: '#f8fafc',
+    menuText: '#1f2937',
+    menuHover: '#e2e8f0',
+    menuActive: '#93c5fd',
+
+    pageHeaderBackground: 'linear-gradient(135deg, #1e3a8a 0%, #374151 100%)',
     pageHeaderText: '#ffffff',
 
-    buttonPrimary: 'linear-gradient(135deg, #007aff 0%, #0051d5 100%)',
+    buttonPrimary: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
     buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #007aff 0%, #0051d5 100%)',
-    buttonSecondaryText: '#ffffff'
-  },
-
-  google: {
-    // 구글 스타일 - 클린하고 모던한 스타일
-    headerBackground: '#ffffff',
-    headerText: '#202124',
-
-    menuBackground: '#f8f9fa',
-    menuText: '#202124',
-    menuHover: '#e8eaed',
-    menuActive: '#4285f4',
-
-    pageHeaderBackground: 'linear-gradient(135deg, #4285f4 0%, #34a853 50%, #ea4335 100%)',
-    pageHeaderText: '#ffffff',
-
-    buttonPrimary: 'linear-gradient(135deg, #4285f4 0%, #34a853 50%, #ea4335 100%)',
-    buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #4285f4 0%, #34a853 50%, #ea4335 100%)',
+    buttonSecondary: 'linear-gradient(135deg, #374151 0%, #4b5563 100%)',
     buttonSecondaryText: '#ffffff'
   }
 };
@@ -215,12 +179,6 @@ export const THEME_OPTIONS: ThemeInfo[] = [
     icon: '📦'
   },
   {
-    id: 'instagram',
-    name: '인스타그램 스타일',
-    description: '밝고 모던한 그라데이션',
-    icon: '📷'
-  },
-  {
     id: 'manhattan',
     name: '맨하탄 금융센터 스타일',
     description: '금융 전문가 느낌의 블루',
@@ -233,16 +191,10 @@ export const THEME_OPTIONS: ThemeInfo[] = [
     icon: '💬'
   },
   {
-    id: 'apple',
-    name: '애플 스타일',
-    description: '미니멀하고 깔끔한 디자인',
-    icon: '🍎'
-  },
-  {
-    id: 'google',
-    name: '구글 스타일',
-    description: '클린하고 모던한 디자인',
-    icon: '🔍'
+    id: 'itcen',
+    name: '아이티센 스타일',
+    description: '프로페셔널한 IT 솔루션 테마',
+    icon: '💻'
   }
 ];
 
@@ -274,13 +226,20 @@ export const useThemeStore = create<ThemeStore>()(
 
       getThemeInfo: () => {
         const currentTheme = get().currentTheme;
-        return THEME_OPTIONS.find(theme => theme.id === currentTheme) || THEME_OPTIONS[1]; // 아마존이 기본값
+        return THEME_OPTIONS.find(theme => theme.id === currentTheme) || THEME_OPTIONS[2]; // 아마존이 기본값
       }
     }),
     {
       name: 'theme-storage',
       onRehydrateStorage: () => (state) => {
         if (state) {
+          // 저장된 테마가 유효한지 확인
+          const validThemes: ThemeType[] = ['default', 'netflix', 'amazon', 'manhattan', 'whatsapp', 'itcen'];
+          if (!validThemes.includes(state.currentTheme)) {
+            // 유효하지 않은 테마면 기본값으로 리셋
+            state.currentTheme = 'amazon';
+            state.colors = THEME_COLORS.amazon;
+          }
           // 페이지 로드 시 CSS 변수 적용
           updateCSSVariables(state.colors);
         }

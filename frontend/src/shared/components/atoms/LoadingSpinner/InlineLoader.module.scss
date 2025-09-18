@@ -1,0 +1,38 @@
+/**
+ * InlineLoader 스타일
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  @include flex-center;
+  gap: $spacing-xs;
+  min-height: 20px;
+
+  .text {
+    font-size: 0.75rem;
+    color: var(--theme-menu-text, #{$color-text-secondary});
+    font-weight: 500;
+    white-space: nowrap;
+    @include transition(color);
+  }
+}
+
+// 흰색 스피너 (어두운 배경용)
+.whiteSpinner {
+  color: white !important;
+
+  .MuiCircularProgress-svg {
+    color: white;
+  }
+}
+
+// 버튼 내부에서 사용될 때
+.container:has(+ *),
+*:has(.container) {
+  .container {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+}

@@ -36,6 +36,23 @@
         opacity: 0.8;
       }
 
+      &:focus {
+        outline: 2px solid var(--theme-menu-active);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+      }
+
+      &:focus:not(:focus-visible) {
+        outline: none;
+        box-shadow: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--theme-menu-active);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+      }
+
       .selectedTheme {
         @include flex-start;
         @include flex-align-center;
@@ -101,6 +118,22 @@
           background-color: rgba(255, 255, 255, 0.1) !important;
         }
 
+        &:focus {
+          outline: 2px solid var(--theme-menu-active);
+          outline-offset: -2px;
+          background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        &:focus:not(:focus-visible) {
+          outline: none;
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--theme-menu-active);
+          outline-offset: -2px;
+          background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
         &.selected {
           font-weight: 600;
         }
@@ -126,6 +159,23 @@
 
     &:hover {
       background-color: var(--theme-menu-hover);
+    }
+
+    &:focus {
+      outline: 2px solid var(--theme-menu-active);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--theme-menu-active);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
     }
 
     svg {

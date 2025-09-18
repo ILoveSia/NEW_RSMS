@@ -18,6 +18,8 @@
   padding: $spacing-sm $spacing-md;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: $spacing-sm;
 }
 
 .headerContent {
@@ -603,5 +605,21 @@
 
   .statCard {
     min-width: auto;
+  }
+}
+
+// 🔄 지연 로딩 컨테이너 (성능 최적화)
+.gridLoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  // 로딩 애니메이션 스타일
+  .loading-spinner {
+    color: var(--theme-button-primary, $color-primary);
   }
 }

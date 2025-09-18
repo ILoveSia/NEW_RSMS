@@ -75,6 +75,16 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             key={tab.id}
             className={`${styles.tab} ${tab.isActive ? styles.active : ''}`}
             onClick={() => handleTabClick(tab.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleTabClick(tab.id);
+              }
+            }}
+            aria-label={`${tab.title} 탭으로 이동`}
+            aria-current={tab.isActive ? 'page' : undefined}
+            role="tab"
+            tabIndex={0}
           >
             <span className={styles.tabIcon}>{tab.icon}</span>
             <span className={styles.tabTitle}>{tab.title}</span>

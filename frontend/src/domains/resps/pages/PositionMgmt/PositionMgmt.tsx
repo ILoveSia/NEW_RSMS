@@ -1,16 +1,16 @@
-import {
-  Add as AddIcon,
-  Analytics as AnalyticsIcon,
-  Dashboard as DashboardIcon,
-  Delete as DeleteIcon,
-  FileDownload as ExcelIcon,
-  Security as SecurityIcon,
-  TrendingUp as TrendingUpIcon
-} from '@mui/icons-material';
+// 번들 크기 최적화를 위한 개별 import (tree-shaking)
+import AddIcon from '@mui/icons-material/Add';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExcelIcon from '@mui/icons-material/FileDownload';
+import SecurityIcon from '@mui/icons-material/Security';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { Chip } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/components/atoms/Button';
+import toast from '@/shared/utils/toast';
 import styles from './PositionMgmt.module.scss';
 
 // Types
@@ -23,8 +23,10 @@ import type {
 
 // Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
-import { PositionDataGrid } from './components/PositionDataGrid';
 import { PositionSearchFilter } from './components/PositionSearchFilter';
+
+// Lazy-loaded components for performance optimization
+const PositionDataGrid = React.lazy(() => import('./components/PositionDataGrid/PositionDataGrid'));
 
 interface PositionMgmtProps {
   className?: string;
@@ -37,6 +39,13 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedPositions, setSelectedPositions] = useState<Position[]>([]);
+
+  // 개별 로딩 상태
+  const [loadingStates, setLoadingStates] = useState({
+    search: false,
+    excel: false,
+    delete: false,
+  });
   const [filters, setFilters] = useState<PositionFilters>({
     positionName: '',
     headquarters: '',
@@ -72,16 +81,71 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       addModal: true,
       selectedPosition: null
     }));
+    toast.info('새 직책을 등록해주세요.', { autoClose: 2000 });
   }, []);
 
-  const handleExcelDownload = useCallback(() => {
-    // TODO: 엑셀 다운로드 기능 구현
-    console.log('엑셀 다운로드');
+  const handleExcelDownload = useCallback(async () => {
+    setLoadingStates(prev => ({ ...prev, excel: true }));
+
+    // 로딩 토스트 표시
+    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
+
+    try {
+      // TODO: 실제 엑셀 다운로드 API 호출
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+
+      // 성공 토스트로 업데이트
+      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
+      console.log('엑셀 다운로드 완료');
+    } catch (error) {
+      // 에러 토스트로 업데이트
+      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
+      console.error('엑셀 다운로드 실패:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, excel: false }));
+    }
   }, []);
 
-  const handleDeletePositions = useCallback(() => {
-    // TODO: 선택된 직책 삭제 기능 구현
-    console.log('선택된 직책 삭제:', selectedPositions);
+  const handleDeletePositions = useCallback(async () => {
+    if (selectedPositions.length === 0) {
+      toast.warning('삭제할 직책을 선택해주세요.');
+      return;
+    }
+
+    // 확인 메시지
+    const confirmMessage = `선택된 ${selectedPositions.length}개의 직책을 삭제하시겠습니까?`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    setLoadingStates(prev => ({ ...prev, delete: true }));
+
+    // 로딩 토스트 표시
+    const loadingToastId = toast.loading(`${selectedPositions.length}개 직책을 삭제 중입니다...`);
+
+    try {
+      // TODO: 실제 삭제 API 호출
+      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+
+      // 상태 업데이트 (삭제된 항목 제거)
+      setPositions(prev =>
+        prev.filter(pos => !selectedPositions.some(selected => selected.id === pos.id))
+      );
+      setPagination(prev => ({
+        ...prev,
+        total: prev.total - selectedPositions.length
+      }));
+      setSelectedPositions([]);
+
+      // 성공 토스트로 업데이트
+      toast.update(loadingToastId, 'success', `${selectedPositions.length}개 직책이 삭제되었습니다.`);
+    } catch (error) {
+      // 에러 토스트로 업데이트
+      toast.update(loadingToastId, 'error', '직책 삭제에 실패했습니다.');
+      console.error('직책 삭제 실패:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, delete: false }));
+    }
   }, [selectedPositions]);
 
   const handleViewPosition = useCallback((position: Position) => {
@@ -114,11 +178,30 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     handleModalClose();
   }, [handleModalClose]);
 
-  const handleSearch = useCallback(() => {
+  const handleSearch = useCallback(async () => {
     setLoading(true);
+    setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
-    // TODO: 실제 API 호출로 교체
-    console.log('검색 필터:', filters);
+
+    // 로딩 토스트 표시
+    const loadingToastId = toast.loading('직책 정보를 검색 중입니다...');
+
+    try {
+      // TODO: 실제 API 호출로 교체
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+
+      console.log('검색 필터:', filters);
+
+      // 성공 토스트로 업데이트
+      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
+    } catch (error) {
+      // 에러 토스트로 업데이트
+      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
+      console.error('검색 실패:', error);
+    } finally {
+      setLoading(false);
+      setLoadingStates(prev => ({ ...prev, search: false }));
+    }
   }, [filters]);
 
   const handleClearFilters = useCallback(() => {
@@ -129,6 +212,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       isActive: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
+    toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
   // Grid Event Handlers
@@ -138,11 +222,83 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   const handleRowDoubleClick = useCallback((position: Position) => {
     handleViewPosition(position);
-  }, []);
+  }, [handleViewPosition]);
 
   const handleSelectionChange = useCallback((selected: Position[]) => {
     setSelectedPositions(selected);
     console.log('선택된 행:', selected.length);
+  }, []);
+
+  // Memoized computed values (성능 최적화)
+  const statistics = useMemo(() => {
+    const total = pagination.total;
+    const activeCount = positions.filter(p => p.isActive).length;
+    const inactiveCount = positions.filter(p => !p.isActive).length;
+    const systemUptime = 98.5; // TODO: 실제 시스템 가동률 API 연동
+
+    return {
+      total,
+      activeCount,
+      inactiveCount,
+      systemUptime
+    };
+  }, [pagination.total, positions]);
+
+  // Filtered positions for display (성능 최적화)
+  const displayPositions = useMemo(() => {
+    return positions; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
+  }, [positions]);
+
+  // 성능 모니터링 함수
+  const onRenderProfiler = useCallback((
+    id: string,
+    phase: 'mount' | 'update' | 'nested-update',
+    actualDuration: number,
+    baseDuration: number,
+    startTime: number,
+    commitTime: number
+  ) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.group(`🔍 PositionMgmt Performance Profiler`);
+      console.log(`📊 Phase: ${phase}`);
+      console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
+      console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
+      console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
+      console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
+
+      if (actualDuration > 16) { // 60fps 기준 16ms 초과 시 경고
+        console.warn(`⚠️ 성능 주의: 렌더링 시간이 16ms를 초과했습니다 (${actualDuration.toFixed(2)}ms)`);
+      }
+      console.groupEnd();
+    }
+  }, []);
+
+  // Web Performance API를 활용한 페이지 로드 성능 측정
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const measurePageLoad = () => {
+        if (performance.getEntriesByType) {
+          const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+          if (navigation) {
+            console.group(`📊 Page Load Performance`);
+            console.log(`🌐 DNS 조회: ${(navigation.domainLookupEnd - navigation.domainLookupStart).toFixed(2)}ms`);
+            console.log(`🔗 연결 시간: ${(navigation.connectEnd - navigation.connectStart).toFixed(2)}ms`);
+            console.log(`📥 응답 시간: ${(navigation.responseEnd - navigation.responseStart).toFixed(2)}ms`);
+            console.log(`🎨 DOM 로딩: ${(navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart).toFixed(2)}ms`);
+            console.log(`🏁 전체 로딩: ${(navigation.loadEventEnd - navigation.loadEventStart).toFixed(2)}ms`);
+            console.groupEnd();
+          }
+        }
+      };
+
+      // 페이지 로드 완료 후 측정
+      if (document.readyState === 'complete') {
+        measurePageLoad();
+      } else {
+        window.addEventListener('load', measurePageLoad);
+        return () => window.removeEventListener('load', measurePageLoad);
+      }
+    }
   }, []);
 
   // Mock data loading
@@ -321,7 +477,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
 
   return (
-    <div className={`${styles.container} ${className || ''}`}>
+    <React.Profiler id="PositionMgmt" onRender={onRenderProfiler}>
+      <div className={`${styles.container} ${className || ''}`}>
       {/* 🏗️ 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
@@ -343,7 +500,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
                 <TrendingUpIcon />
               </div>
               <div className={styles.statContent}>
-                <div className={styles.statNumber}>{pagination.total}</div>
+                <div className={styles.statNumber}>{statistics.total}</div>
                 <div className={styles.statLabel}>총 직책</div>
               </div>
             </div>
@@ -354,7 +511,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               </div>
               <div className={styles.statContent}>
                 <div className={styles.statNumber}>
-                  {positions.filter(p => p.isActive).length}
+                  {statistics.activeCount}
                 </div>
                 <div className={styles.statLabel}>활성 직책</div>
               </div>
@@ -365,7 +522,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
                 <AnalyticsIcon />
               </div>
               <div className={styles.statContent}>
-                <div className={styles.statNumber}>98.5%</div>
+                <div className={styles.statNumber}>{statistics.systemUptime}%</div>
                 <div className={styles.statLabel}>시스템 가동률</div>
               </div>
             </div>
@@ -391,20 +548,20 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           <div className={styles.actionLeft}>
             <div className={styles.totalCount}>
               <span className={styles.label}>총 직책 수:</span>
-              <span className={styles.count}>{pagination.total}</span>
+              <span className={styles.count}>{statistics.total}</span>
               <span className={styles.unit}>개</span>
             </div>
 
             <div className={styles.statusIndicators}>
               <Chip
                 icon={<SecurityIcon />}
-                label={`활성 ${positions.filter(p => p.isActive).length}개`}
+                label={`활성 ${statistics.activeCount}개`}
                 color="success"
                 variant="filled"
                 size="small"
               />
               <Chip
-                label={`비활성 ${positions.filter(p => !p.isActive).length}개`}
+                label={`비활성 ${statistics.inactiveCount}개`}
                 color="default"
                 variant="outlined"
                 size="small"
@@ -442,16 +599,27 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           </div>
         </div>
 
-        {/* 🎯 데이터 그리드 - 프로페셔널 스타일 */}
+        {/* 🎯 데이터 그리드 - 프로페셔널 스타일 (지연 로딩 최적화) */}
         <div className={styles.gridSection}>
-          <PositionDataGrid
-            data={positions}
-            loading={loading}
-            onRowClick={handleRowClick}
-            onRowDoubleClick={handleRowDoubleClick}
-            onSelectionChange={handleSelectionChange}
-            height="calc(100vh - 400px)"
-          />
+          <React.Suspense
+            fallback={
+              <div className={styles.gridLoadingContainer}>
+                <LoadingSpinner
+                  size="large"
+                  text="데이터 그리드를 로딩 중입니다..."
+                />
+              </div>
+            }
+          >
+            <PositionDataGrid
+              data={displayPositions}
+              loading={loading}
+              onRowClick={handleRowClick}
+              onRowDoubleClick={handleRowDoubleClick}
+              onSelectionChange={handleSelectionChange}
+              height="calc(100vh - 400px)"
+            />
+          </React.Suspense>
         </div>
       </div>
 
@@ -478,7 +646,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </React.Profiler>
   );
 };
 
