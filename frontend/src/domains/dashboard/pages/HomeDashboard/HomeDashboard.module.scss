@@ -8,13 +8,14 @@
 // ===================================
 
 .homeDashboard {
-  height: 90vh;
-  overflow: hidden;
+  min-height: calc(90vh - 300px);
+  overflow-y: auto;
   @include manhattan-bg-primary;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  // padding-bottom: 20px;
 }
 
 // ===================================
@@ -25,9 +26,8 @@
   display: grid;
   grid-template-columns: 280px 1fr 1fr;
   gap: $spacing-sm;
-  height: calc(90vh - 32px);
+  min-height: 650px;
   margin-bottom: $spacing-sm;
-  overflow: hidden;
 }
 
 .leftColumn {
@@ -56,8 +56,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-sm;
-  height: calc(100vh - 432px);
-  min-height: 200px;
+  min-height: 230px; // 하단 4개 차트 높이 240px로 증가
+  margin-bottom: 20px;
 }
 
 // ===================================
@@ -72,7 +72,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 620px;
+  height: 650px;
 
   .welcomeHeader {
 
@@ -141,7 +141,7 @@
 .accessButtonsHorizontal {
   display: flex;
   gap: $spacing-sm; // 우측 chartsHorizontal과 동일한 간격
-  height: 200px; // 우측 chartCard와 동일한 높이
+  height: 230px; // 책무체계도, 책무기술서 높이 증가
   margin-top: $spacing-md; // 버튼들을 아래로 이동
 }
 
@@ -234,7 +234,7 @@
   padding: 20px;
   color: white;
   margin-bottom: 16px;
-  height: 620px;
+  height: 650px;
   box-shadow: 0 8px 32px rgba($color-primary-900, 0.15);
 
   .flowHeaderNew {
@@ -676,25 +676,26 @@
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   flex: 1;
-  height: 200px;
+  height: 230px; // 개별 차트 카드 높이 240px로 증가
   border: 1px solid rgba($color-primary-900, 0.08);
 
   h4 {
     font-size: 16px;
     font-weight: 700;
     color: $color-primary-600;
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0; // 제목과 차트 간격 줄임
     letter-spacing: -0.5px;
   }
 
   .lineChart {
     width: 100%;
-    height: 100px;
+    height: 140px; // 높이 증가
+    padding: 8px 0; // 상하 여백 추가
   }
 
   .pieChart {
-    width: 100px;
-    height: 100px;
+    width: 120px; // 크기 증가
+    height: 120px;
     margin: 0 auto;
   }
 
@@ -717,7 +718,7 @@
   box-shadow: 0 8px 32px rgba($color-primary-900, 0.15);
 
   h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     margin: 0 0 20px 0;
     letter-spacing: -0.5px;
@@ -776,31 +777,31 @@
   padding: 12px;
   color: white;
   flex: 1;
-  height: 660px !important;
-  max-height: 660px !important;
+  height: 720px !important;
+  max-height: 720px !important;
   box-shadow: 0 8px 32px rgba($color-primary-600, 0.15);
 
   h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin: 0 0 8px 0;
+    margin: 0 0 16px 0;
     letter-spacing: -0.5px;
     color: white;
   }
 
   .statusTags {
     display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
+    gap: 20px;
+    margin-bottom: 16px;
   }
 
   .statusTag {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 24px;
-    padding: 10px 18px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex: 1;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
@@ -810,13 +811,13 @@
     }
 
     .tagLabel {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: -0.3px;
     }
 
     .tagNumber {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
     }
   }
@@ -945,8 +946,9 @@
 .distributionChart {
   background: white;
   border-radius: 12px;
-  padding: 12px;
+  padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  height: 100%;
 
   .chartHeader {
     margin-bottom: 8px;
@@ -960,10 +962,11 @@
   }
 
   .chartContent {
-    height: 120px;
+    height: 180px; // 차트 내용 높이 180px로 증가
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 8px 0; // 상하 여백 추가
   }
 }
 
@@ -972,7 +975,8 @@
     display: flex;
     gap: 24px;
     align-items: end;
-    height: 120px;
+    height: 210px; // 바 차트 높이 최대한 크게
+    padding: 5px 0; // 상하 여백 줄임
   }
 
   .barItem {
@@ -984,9 +988,10 @@
   }
 
   .barValue {
-    width: 40px;
+    width: 45px; // 바 너비 증가
     background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
     border-radius: 4px 4px 0 0;
+    min-height: 20px; // 최소 높이 설정
   }
 
   .barLabel {
@@ -999,7 +1004,8 @@
 .complianceChart {
   .lineChart {
     width: 100%;
-    height: 120px;
+    height: 210px; // 라인 차트 높이 최대한 크게
+    padding: 5px 0; // 상하 여백 줄임
   }
 
   .chartSvg {
@@ -1010,8 +1016,9 @@
 
 .distributionChart {
   .pieChart {
-    width: 100px;
-    height: 100px;
+    width: 210px; // 파이 차트 크기 최대한 크게
+    height: 210px;
+    margin: 0 auto; // 중앙 정렬
   }
 
   .chartSvg {

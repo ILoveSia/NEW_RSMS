@@ -335,23 +335,23 @@ const HomeDashboard: React.FC = () => {
                   <div className={styles.responsibilityExplanations}>
                     <div className={styles.explanationItem}>
                       <span className={styles.badgeBlue}>R1</span>
-                      <span>책무개요 : 임 [별표1] 제2조의 경우 구체, 금융상품, 판매책임, 당의자에 등의 구분가준에 따른 개훈적 기준적 가 임시개인의 관리내역 경우 책임 · 3조의 업무범위의 정도 생활을 고서하에 가 개 </span>
+                      <span>책무개요 : 영 [별표1] 제2조의 경우 고객, 금융상품, 판매채널, 담당지역 등의 구분기준에 따른 개요를 기재하고 영 [별표1] · 3호의 업무유형의 경우 책무의 내용을 요약하여 기재 </span>
                     </div>
                     <div className={styles.explanationItem}>
                       <span className={styles.badgeBlue}>R2</span>
-                      <span>책무 배분원자 : 관리의 직책 원칙, 자유의 조직 · 현정 통제 따른 직 책무의 배분원자 기간</span>
+                      <span>책무 배분일자 : 임원의 직책 변경, 책무의 추가 · 변경 등에 따른 현 책무의 배분일자 기재</span>
                     </div>
                     <div className={styles.explanationItem}>
                       <span className={styles.badgeBlue}>R3</span>
-                      <span>책무 : 임 [별표1] 1-6 기업의 크 목의 시기의 간 감찰되어 기관 (* 금융소비자 보호, 업무용도, 업무범위 등의 건개하여 사안 · 감정, 4) 개의 요 조업 가치)</span>
+                      <span>책무 : 영 [별표1.에 기재된 각 항목의 책무를 참고하여 기재 (각 금융화사별 조직, 업무특성, 업무범위 등을 고려하여 세분 · 병합, 추가 등 조정 가능)])</span>
                     </div>
                     <div className={styles.explanationItem}>
                       <span className={styles.badgeBlue}>R4</span>
-                      <span>책무 세부내용 : 순직 내부공시 편업적이 안번 안 수적 · 검정 통제 따른 내구적인 수등 관성자 지상으로 및 제30조의4 통제 계업의 크규저을 매일 안물 기보 개별 매간의 장 해능해고개 실질 직업의 중청에 것이 있는것 또한 한중이 안절 학산의 책무와 등간의 정도 기업별로 관 제30조의 강직에 제30조의4 시대에 번기 방법하는 책무 중 정개 또는 안절된 내용을 완화와 성과형의 조금</span>
+                      <span>책무 세부내용 : 소관책무와 관련하여 임원이 수행 · 운영 · 결정하거나 관리 · 감독할 책임으로서 책임 등 책무의 세부 내용을 기재 (법 제30조2 및 제30조의4 등에서 규정하는 관라의무 등 책임을 수행하는 방범을 기재하는 것이 아님에 유의)하여, 동일 업무와 관련된 책임이 다른 임원과 분할되어 있는 등 제한 또는 한정된 책임을 부담하는 경우 그 제한 또는 한정된 내용을 명확히 설명할 것(예:기업고객 관련 업무에 한함)</span>
                     </div>
                     <div className={styles.explanationItem}>
                       <span className={styles.badgeBlue}>R5</span>
-                      <span>관련 법령 및 내규 : 책무의 구체, 내제, 업무 등의 영의 기늘 등의 완화됨 법중의 더 미지마 법 내제가 기관</span>
+                      <span>관련 법령 및 내규 : 책무의 근거, 내용, 업무수행의 기준 등과 관려된 법령명 및 내규명 기재</span>
                     </div>
                   </div>
                 </div>
@@ -366,7 +366,7 @@ const HomeDashboard: React.FC = () => {
 
                 <div className={styles.dutyExplanation}>
                   <span className={styles.badgeBlue}>R1</span>
-                  <span>책무 이행을 위한 주요 관리의무 : 2. 책무와 관되어진 법 제30조의2 법 제30조의4 시대에 번기 방법하는 주요 관의 제품관리를 (이익 관리체향법)이걸 관리의 내용의 기간</span>
+                  <span>책무 이행을 위한 주요 관리의무 : 2. 책무와 관련하여 법 제30조의2 및 제30조의4 등에 따라 부담하는 주요 관리 · 총괄의무 (이하 관리의무등) 이라 한다 의 내용의 기재</span>
                 </div>
               </div>
 
@@ -408,7 +408,7 @@ const HomeDashboard: React.FC = () => {
                 </div>
                 <div className={styles.chartTitle}>
                   <h3>ITCEN <span className={styles.entecBlue}>ENTEC</span> 책무체계도</h3>
-                  <p>책무구조도 대상 임원은 총 20명이며, 내부통제 책무담당자 따라 책무업무를 적정상담, 내부통제 적정완화 및 법제비교를 수행합니다.</p>
+                  <p>책무구조도 대상 임원은 총 16명이며, 내부통제 책무유형에 따라 책무기술서를 작성하고, 내부통제 책임관리 및 변경관리를 수행합니다.</p>
                   <div className={styles.baseDate}>기준일: 2024-12-30</div>
                 </div>
               </div>
@@ -417,11 +417,11 @@ const HomeDashboard: React.FC = () => {
               <div className={styles.legend}>
                 <div className={styles.legendItem}>
                   <span className={`${styles.legendColor} ${styles.guidance}`}>R</span>
-                  <span>지침책임자 관련 책무</span>
+                  <span>지정책임자 관련 책무</span>
                 </div>
                 <div className={styles.legendItem}>
                   <span className={`${styles.legendColor} ${styles.financial}`}>F</span>
-                  <span>금융업무 관련 책무</span>
+                  <span>금융영업 관련 책무</span>
                 </div>
                 <div className={styles.legendItem}>
                   <span className={`${styles.legendColor} ${styles.management}`}>M</span>
@@ -433,7 +433,7 @@ const HomeDashboard: React.FC = () => {
                 </div>
                 <div className={styles.legendItem}>
                   <span className={styles.legendLine}>—</span>
-                  <span>보고계층</span>
+                  <span>보고체계</span>
                 </div>
               </div>
 
@@ -650,24 +650,24 @@ const HomeDashboard: React.FC = () => {
             {/* 오른쪽: 책무 태그 목록 */}
             <div className={styles.responsibilityTagsSection}>
               <div className={styles.tagGroup}>
-                <h4 className={styles.tagGroupTitle}>지침책임자 관련 책무(12)</h4>
+                <h4 className={styles.tagGroupTitle}>지정책임자 관련 책무(12)</h4>
                 <div className={styles.tagList}>
                   {['R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'R07', 'R08', 'R09', 'R10', 'R11', 'R12'].map(code => (
                     <div key={code} className={`${styles.tagItem} ${styles.guidance}`}>
                       <span className={styles.tagCode}>{code}</span>
                       <span className={styles.tagDesc}>
-                        {code === 'R01' && '책무구조도의 리뷰 · 관리담당자 관련 책무'}
-                        {code === 'R02' && '내부감사업무의 관련한 책무'}
-                        {code === 'R03' && '위험관리업무의 관련한 책무'}
-                        {code === 'R04' && '준법관리업무의 관련한 책무'}
-                        {code === 'R05' && '자금세탁방지업무의 관련한 책무'}
-                        {code === 'R06' && '내부회계업무의 관련한 책무'}
-                        {code === 'R07' && '정보보호업무의 관련한 책무'}
-                        {code === 'R08' && '개인 · 신용 · 고객정보 보호업무의 관련한 책무'}
-                        {code === 'R09' && '금융소비자보호의 관련한 책무'}
-                        {code === 'R10' && '내부통제시스템 관련 보고 책무'}
-                        {code === 'R11' && '내부통제업무의 관련한 책무'}
-                        {code === 'R12' && '안기휴융특별법인 리빌멘터 및 위해관리업무진영의 관련한 책무'}
+                        {code === 'R01' && '책무구조도의 마련 · 관리업무와 관련된 책무'}
+                        {code === 'R02' && '내부감사업무의 관련된 책무'}
+                        {code === 'R03' && '위험관리업무의 관련된 책무'}
+                        {code === 'R04' && '준법관리업무의 관련된 책무'}
+                        {code === 'R05' && '자금세탁방지업무의 관련된 책무'}
+                        {code === 'R06' && '내부회계업무의 관련된 책무'}
+                        {code === 'R07' && '정보보호업무의 관련된 책무'}
+                        {code === 'R08' && '개인 · 신용 · 고객정보 보호업무의 관련된 책무'}
+                        {code === 'R09' && '금융소비자보호의 관련된 책무'}
+                        {code === 'R10' && '내부통제와 관련 총괄 책무'}
+                        {code === 'R11' && '내부통제업무와 관련된 책무'}
+                        {code === 'R12' && '전기통신금융사기 피해방지 및 피해금 환급업무와 관련된 책무'}
                       </span>
                     </div>
                   ))}
@@ -675,7 +675,7 @@ const HomeDashboard: React.FC = () => {
               </div>
 
               <div className={styles.tagGroup}>
-                <h4 className={styles.tagGroupTitle}>금융업무 관련 책무(23)</h4>
+                <h4 className={styles.tagGroupTitle}>금융영업 관련 책무(23)</h4>
                 <div className={styles.tagList}>
                   {['F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23'].map(code => (
                     <div key={code} className={`${styles.tagItem} ${styles.financial}`}>
@@ -809,7 +809,7 @@ const HomeDashboard: React.FC = () => {
                   <span className={styles.buttonTitle}>책무체계도</span>
                   <span className={styles.buttonDescription}>
                     책무체계도를 클릭하셔서<br />
-                    전체 책무체계도를 그려<br />
+                    전체 책무체계도를 크게<br />
                     볼 수 있어요!
                   </span>
                 </div>
@@ -826,7 +826,7 @@ const HomeDashboard: React.FC = () => {
                   <span className={styles.buttonTitle}>책무기술서</span>
                   <span className={styles.buttonDescription}>
                     책무기술서를 클릭하셔서<br />
-                    전체 책무기술서를 그려<br />
+                    전체 책무기술서를 크게<br />
                     볼 수 있어요!
                   </span>
                 </div>

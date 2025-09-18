@@ -78,6 +78,15 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
   // AG-Grid 컬럼 정의
   const columnDefs = useMemo<ColDef<Position>[]>(() => [
     {
+      headerName: t('순번'),
+      field: 'id',
+      sortable: true,
+      filter: true,
+      width: 80,
+      pinned: 'left',
+      cellClass: styles.positionNameCell
+    },
+    {
       headerName: t('직책'),
       field: 'positionName',
       sortable: true,
@@ -108,67 +117,6 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       width: 150
     },
     {
-      headerName: t('상태'),
-      field: 'status',
-      sortable: true,
-      filter: true,
-      width: 100,
-      cellRenderer: (params: any) => {
-        if (!params.value) return '-';
-        return (
-          <Box className={styles.chipContainer}>
-            <Chip
-              label={params.value}
-              color={getStatusColor(params.value)}
-              size="small"
-              variant="filled"
-            />
-          </Box>
-        );
-      }
-    },
-    {
-      headerName: t('활성여부'),
-      field: 'isActive',
-      sortable: true,
-      filter: true,
-      width: 100,
-      cellRenderer: (params: any) => {
-        const isActive = params.value;
-        const label = isActive ? t('common.active') : t('common.inactive');
-        return (
-          <Box className={styles.chipContainer}>
-            <Chip
-              label={label}
-              color={getActiveColor(isActive)}
-              size="small"
-              variant="outlined"
-            />
-          </Box>
-        );
-      }
-    },
-    {
-      headerName: t('결재상태'),
-      field: 'approvalStatus',
-      sortable: true,
-      filter: true,
-      width: 100,
-      cellRenderer: (params: any) => {
-        if (!params.value) return '-';
-        return (
-          <Box className={styles.chipContainer}>
-            <Chip
-              label={params.value}
-              color={getStatusColor(params.value)}
-              size="small"
-              variant="outlined"
-            />
-          </Box>
-        );
-      }
-    },
-    {
       headerName: t('등록일자'),
       field: 'registrationDate',
       sortable: true,
@@ -185,13 +133,6 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       sortable: true,
       filter: true,
       width: 120
-    },
-    {
-      headerName: t('변경자'),
-      field: 'registrarPosition',
-      sortable: true,
-      filter: true,
-      width: 130
     },
     {
       headerName: t('변경일자'),
@@ -212,12 +153,54 @@ const PositionDataGrid: React.FC<PositionDataGridProps> = ({
       width: 120
     },
     {
-      headerName: t('변경자직책'),
-      field: 'modifierPosition',
+      headerName: t('상태'),
+      field: 'status',
       sortable: true,
       filter: true,
-      width: 130
+      width: 100,
+      cellRenderer: (params: any) => {
+        if (!params.value) return '-';
+        return (
+          <Box className={styles.chipContainer}>
+            <Chip
+              label={params.value}
+              color={getStatusColor(params.value)}
+              size="small"
+              variant="filled"
+            />
+          </Box>
+        );
+      }
+    },
+    {
+      headerName: t('사용여부'),
+      field: 'isActive',
+      sortable: true,
+      filter: true,
+      width: 100,
+      cellRenderer: (params: any) => {
+        const isActive = params.value;
+        const label = isActive ? t('사용') : t('미사용');
+        return (
+          <Box className={styles.chipContainer}>
+            <Chip
+              label={label}
+              color={getActiveColor(isActive)}
+              size="small"
+              variant="outlined"
+            />
+          </Box>
+        );
+      }
+    },
+    {
+      headerName: t('겸직여부'),
+      field: 'dual',
+      sortable: true,
+      filter: true,
+      width: 120
     }
+
   ], [t, getStatusColor, getActiveColor]);
 
   // 행 클릭 핸들러

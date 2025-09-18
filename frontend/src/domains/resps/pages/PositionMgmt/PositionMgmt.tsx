@@ -317,9 +317,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-03-20',
           modifier: '홍길동',
           modifierPosition: '총합기획부',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '2',
@@ -333,9 +334,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-04-10',
           modifier: '김철수',
           modifierPosition: '인사팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '3',
@@ -349,9 +351,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-05-15',
           modifier: '박영희',
           modifierPosition: '영업기획팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '4',
@@ -365,9 +368,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-06-01',
           modifier: '이민수',
           modifierPosition: '기술개발팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '5',
@@ -381,9 +385,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-05-20',
           modifier: '정수진',
           modifierPosition: '마케팅팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '6',
@@ -397,9 +402,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-04-25',
           modifier: '한상훈',
           modifierPosition: '인사팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '7',
@@ -413,9 +419,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-06-10',
           modifier: '윤미래',
           modifierPosition: '재무팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'N'
         },
         {
           id: '8',
@@ -429,9 +436,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-05-30',
           modifier: '최영수',
           modifierPosition: '품질보증팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '승인완료'
+          approvalStatus: '승인완료',
+          dual: 'Y'
         },
         {
           id: '9',
@@ -445,9 +453,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-06-15',
           modifier: '서현아',
           modifierPosition: '고객서비스팀',
-          status: '정상',
+          status: '반영필요',
           isActive: true,
-          approvalStatus: '검토중'
+          approvalStatus: '검토중',
+          dual: 'Y'
         },
         {
           id: '10',
@@ -461,9 +470,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           modificationDate: '2024-05-10',
           modifier: '김도현',
           modifierPosition: '연구개발팀',
-          status: '정상',
+          status: '반영필요',
           isActive: false,
-          approvalStatus: '보류'
+          approvalStatus: '보류',
+          dual: 'Y'
         }
       ];
 

@@ -18,6 +18,7 @@ export interface Position {
   status: string;            // 상태
   isActive: boolean;         // 사용여부
   approvalStatus: string;    // 결재여부
+  dual: string;              // 겸직여부
 }
 
 // 직책 생성/수정 DTO

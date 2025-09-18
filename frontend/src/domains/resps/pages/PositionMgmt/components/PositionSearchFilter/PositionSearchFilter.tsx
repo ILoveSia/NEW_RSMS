@@ -1,23 +1,23 @@
-import React, { useMemo, useCallback } from 'react';
-import {
-  Grid,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Box
-} from '@mui/material';
 import { Button } from '@/shared/components/atoms/Button';
 import SearchIcon from '@mui/icons-material/Search';
+import {
+  Box,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField
+} from '@mui/material';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './PositionSearchFilter.module.scss';
 
 import type {
-  PositionFilters,
+  ActiveOption,
   HeadquartersOption,
-  StatusOption,
-  ActiveOption
+  PositionFilters,
+  StatusOption
 } from '../../types/position.types';
 
 interface PositionSearchFilterProps {
@@ -51,9 +51,8 @@ const PositionSearchFilter: React.FC<PositionSearchFilterProps> = React.memo(({
   // 상태 옵션 메모이제이션
   const statusOptions: StatusOption[] = useMemo(() => [
     { value: '', label: t('common.all', '전체') },
-    { value: '정상', label: '정상' },
-    { value: '임시정지', label: '임시정지' },
-    { value: '폐지', label: '폐지' }
+    { value: '완료', label: '완료' },
+    { value: '반영필요', label: '반영필요' }
   ], [t]);
 
   // 사용여부 옵션 메모이제이션
