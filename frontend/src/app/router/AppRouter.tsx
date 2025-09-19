@@ -12,7 +12,7 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage/LoginPage').then(module => ({ default: module.LoginPage })));
 const LedgerOrderManagement = React.lazy(() => import('@/domains/resps/pages/LedgerOrderManagement/LedgerOrderManagement'));
 const ResponsibilityManagement = React.lazy(() => import('@/domains/resps/pages/ResponsibilityMgmt'));
-const SpecificationManagement = React.lazy(() => import('@/domains/resps/pages/SpecificationManagement/SpecificationManagement'));
+const ResponsibilityDocMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityDocMgmt'));
 const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
 const PositionDualMgmt = React.lazy(() => import('@/domains/resps/pages/PositionDualMgmt/PositionDualMgmt'));
 const DeliberativeMgmt = React.lazy(() => import('@/domains/resps/pages/DeliberativeMgmt/DeliberativeMgmt'));
@@ -241,7 +241,7 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 책무기술서관리 */}
-                  <Route path="specifications" element={<SpecificationManagement />} />
+                  <Route path="specifications" element={<ResponsibilityDocMgmt />} />
                   <Route path="specifications/:id" element={
                     <TemporaryPage
                       title="기술서 상세"

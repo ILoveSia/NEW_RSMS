@@ -6,16 +6,16 @@ import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './PositionMgmt.module.scss';
+import styles from './ResponsibilityDocMgmt.module.scss';
 
 // Types
 import type {
-  Position,
-  PositionFilters,
-  PositionFormData,
-  PositionModalState,
-  PositionPagination
-} from './types/position.types';
+  ResponsibilityDoc,
+  ResponsibilityDocFilters,
+  ResponsibilityDocFormData,
+  ResponsibilityDocModalState,
+  ResponsibilityDocPagination
+} from './types/responsibilityDoc.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -23,25 +23,25 @@ import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/comp
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
-// Position specific components
-import { positionColumns } from './components/PositionDataGrid/positionColumns';
+// ResponsibilityDoc specific components
+import { responsibilityDocColumns } from './components/ResponsibilityDocDataGrid/responsibilityDocColumns.tsx';
 
 // Lazy-loaded components for performance optimization
-const PositionFormModal = React.lazy(() =>
-  import('./components/PositionFormModal').then(module => ({ default: module.default }))
+const ResponsibilityDocFormModal = React.lazy(() =>
+  import('./components/ResponsibilityDocFormModal').then(module => ({ default: module.default }))
 );
 
-interface PositionMgmtProps {
+interface ResponsibilityDocMgmtProps {
   className?: string;
 }
 
-const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
+const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className }) => {
   const { t } = useTranslation('resps');
 
   // State Management
-  const [positions, setPositions] = useState<Position[]>([]);
+  const [docs, setDocs] = useState<ResponsibilityDoc[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedPositions, setSelectedPositions] = useState<Position[]>([]);
+  const [selectedDocs, setSelectedDocs] = useState<ResponsibilityDoc[]>([]);
 
   // 개별 로딩 상태
   const [loadingStates, setLoadingStates] = useState({
@@ -49,39 +49,39 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     excel: false,
     delete: false,
   });
-  const [filters, setFilters] = useState<PositionFilters>({
+
+  const [filters, setFilters] = useState<ResponsibilityDocFilters>({
     positionName: '',
-    headquarters: '',
     status: '',
-    isActive: ''
+    isActive: '',
+    approvalStatus: ''
   });
 
-  const [pagination, setPagination] = useState<PositionPagination>({
+  const [pagination, setPagination] = useState<ResponsibilityDocPagination>({
     page: 1,
     size: 20,
     total: 0,
     totalPages: 0
   });
 
-  const [modalState, setModalState] = useState<PositionModalState>({
+  const [modalState, setModalState] = useState<ResponsibilityDocModalState>({
     addModal: false,
     detailModal: false,
-    selectedPosition: null
+    selectedDoc: null
   });
 
   // Event Handlers
-  const handleFiltersChange = useCallback((newFilters: Partial<PositionFilters>) => {
+  const handleFiltersChange = useCallback((newFilters: Partial<ResponsibilityDocFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
-
-  const handleAddPosition = useCallback(() => {
+  const handleAddDoc = useCallback(() => {
     setModalState(prev => ({
       ...prev,
       addModal: true,
-      selectedPosition: null
+      selectedDoc: null
     }));
-    toast.info('새 직책을 등록해주세요.', { autoClose: 2000 });
+    toast.info('새 책무기술서를 생성해주세요.', { autoClose: 2000 });
   }, []);
 
   const handleExcelDownload = useCallback(async () => {
@@ -106,14 +106,14 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     }
   }, []);
 
-  const handleDeletePositions = useCallback(async () => {
-    if (selectedPositions.length === 0) {
-      toast.warning('삭제할 직책을 선택해주세요.');
+  const handleDeleteDocs = useCallback(async () => {
+    if (selectedDocs.length === 0) {
+      toast.warning('삭제할 책무기술서를 선택해주세요.');
       return;
     }
 
     // 확인 메시지
-    const confirmMessage = `선택된 ${selectedPositions.length}개의 직책을 삭제하시겠습니까?`;
+    const confirmMessage = `선택된 ${selectedDocs.length}개의 책무기술서를 삭제하시겠습니까?`;
     if (!window.confirm(confirmMessage)) {
       return;
     }
@@ -121,120 +121,118 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, delete: true }));
 
     // 로딩 토스트 표시
-    const loadingToastId = toast.loading(`${selectedPositions.length}개 직책을 삭제 중입니다...`);
+    const loadingToastId = toast.loading(`${selectedDocs.length}개 책무기술서를 삭제 중입니다...`);
 
     try {
       // TODO: 실제 삭제 API 호출
       await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
 
       // 상태 업데이트 (삭제된 항목 제거)
-      setPositions(prev =>
-        prev.filter(pos => !selectedPositions.some(selected => selected.id === pos.id))
+      setDocs(prev =>
+        prev.filter(doc => !selectedDocs.some(selected => selected.id === doc.id))
       );
       setPagination(prev => ({
         ...prev,
-        total: prev.total - selectedPositions.length
+        total: prev.total - selectedDocs.length
       }));
-      setSelectedPositions([]);
+      setSelectedDocs([]);
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedPositions.length}개 직책이 삭제되었습니다.`);
+      toast.update(loadingToastId, 'success', `${selectedDocs.length}개 책무기술서가 삭제되었습니다.`);
     } catch (error) {
       // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '직책 삭제에 실패했습니다.');
-      console.error('직책 삭제 실패:', error);
+      toast.update(loadingToastId, 'error', '책무기술서 삭제에 실패했습니다.');
+      console.error('책무기술서 삭제 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedPositions]);
-
+  }, [selectedDocs]);
 
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({
       ...prev,
       addModal: false,
       detailModal: false,
-      selectedPosition: null
+      selectedDoc: null
     }));
   }, []);
 
   // 폼 모달 핸들러들
-  const handlePositionSave = useCallback(async (formData: PositionFormData) => {
+  const handleDocSave = useCallback(async (formData: ResponsibilityDocFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 직책 생성
-      // const response = await positionApi.create(formData);
+      // TODO: API 호출로 책무기술서 생성
+      // const response = await responsibilityDocApi.create(formData);
 
-      // 임시로 새 직책 객체 생성
-      const newPosition: Position = {
+      // 임시로 새 책무기술서 객체 생성
+      const newDoc: ResponsibilityDoc = {
         id: Date.now().toString(),
-        positionName: formData.positionName,
-        headquarters: formData.headquarters,
-        departmentName: formData.departmentName,
-        divisionName: formData.divisionName,
+        seq: docs.length + 1,
+        positionName: formData.arbitraryPosition.positionName,
+        requestDate: new Date().toISOString().split('T')[0],
+        requestor: '현재사용자',
+        requestorPosition: '관리자',
+        isChanged: false,
+        isActive: true,
+        status: 'draft',
+        approvalStatus: 'pending',
         registrationDate: new Date().toISOString().split('T')[0],
         registrar: '현재사용자',
         registrarPosition: '관리자',
         modificationDate: new Date().toISOString().split('T')[0],
         modifier: '현재사용자',
-        modifierPosition: '관리자',
-        status: '정상',
-        isActive: true,
-        approvalStatus: '승인',
-        dual: '단일'
+        modifierPosition: '관리자'
       };
 
-      setPositions(prev => [newPosition, ...prev]);
+      setDocs(prev => [newDoc, ...prev]);
       setPagination(prev => ({ ...prev, total: prev.total + 1 }));
       handleModalClose();
-      toast.success('직책이 성공적으로 등록되었습니다.');
+      toast.success('책무기술서가 성공적으로 생성되었습니다.');
     } catch (error) {
-      console.error('직책 등록 실패:', error);
-      toast.error('직책 등록에 실패했습니다.');
+      console.error('책무기술서 생성 실패:', error);
+      toast.error('책무기술서 생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose]);
+  }, [docs.length, handleModalClose]);
 
-  const handlePositionUpdate = useCallback(async (id: string, formData: PositionFormData) => {
+  const handleDocUpdate = useCallback(async (id: string, formData: ResponsibilityDocFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 직책 수정
-      // const response = await positionApi.update(id, formData);
+      // TODO: API 호출로 책무기술서 수정
+      // const response = await responsibilityDocApi.update(id, formData);
 
-      // 임시로 기존 직책 업데이트
-      setPositions(prev =>
-        prev.map(pos =>
-          pos.id === id
+      // 임시로 기존 책무기술서 업데이트
+      setDocs(prev =>
+        prev.map(doc =>
+          doc.id === id
             ? {
-                ...pos,
-                positionName: formData.positionName,
-                headquarters: formData.headquarters,
-                departmentName: formData.departmentName,
-                divisionName: formData.divisionName,
+                ...doc,
+                positionName: formData.arbitraryPosition.positionName,
+                isChanged: true,
                 modificationDate: new Date().toISOString().split('T')[0],
                 modifier: '현재사용자',
                 modifierPosition: '관리자'
               }
-            : pos
+            : doc
         )
       );
 
       handleModalClose();
-      toast.success('직책이 성공적으로 수정되었습니다.');
+      toast.success('책무기술서가 성공적으로 수정되었습니다.');
     } catch (error) {
-      console.error('직책 수정 실패:', error);
-      toast.error('직책 수정에 실패했습니다.');
+      console.error('책무기술서 수정 실패:', error);
+      toast.error('책무기술서 수정에 실패했습니다.');
     } finally {
       setLoading(false);
     }
   }, [handleModalClose]);
 
-  const handlePositionDetail = useCallback((position: Position) => {
+  const handleDocDetail = useCallback((doc: ResponsibilityDoc) => {
     setModalState(prev => ({
       ...prev,
       detailModal: true,
-      selectedPosition: position
+      selectedDoc: doc
     }));
   }, []);
 
@@ -244,7 +242,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     setPagination(prev => ({ ...prev, page: 1 }));
 
     // 로딩 토스트 표시
-    const loadingToastId = toast.loading('직책 정보를 검색 중입니다...');
+    const loadingToastId = toast.loading('책무기술서를 검색 중입니다...');
 
     try {
       // TODO: 실제 API 호출로 교체
@@ -267,47 +265,53 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   const handleClearFilters = useCallback(() => {
     setFilters({
       positionName: '',
-      headquarters: '',
       status: '',
-      isActive: ''
+      isActive: '',
+      approvalStatus: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
   // Grid Event Handlers
-  const handleRowClick = useCallback((position: Position) => {
-    console.log('행 클릭:', position);
+  const handleRowClick = useCallback((doc: ResponsibilityDoc) => {
+    console.log('행 클릭:', doc);
   }, []);
 
-  const handleRowDoubleClick = useCallback((position: Position) => {
-    handlePositionDetail(position);
-  }, [handlePositionDetail]);
+  const handleRowDoubleClick = useCallback((doc: ResponsibilityDoc) => {
+    handleDocDetail(doc);
+  }, [handleDocDetail]);
 
-  const handleSelectionChange = useCallback((selected: Position[]) => {
-    setSelectedPositions(selected);
+  const handleSelectionChange = useCallback((selected: ResponsibilityDoc[]) => {
+    setSelectedDocs(selected);
     console.log('선택된 행:', selected.length);
   }, []);
 
   // Memoized computed values (성능 최적화)
   const statistics = useMemo(() => {
     const total = pagination.total;
-    const activeCount = positions.filter(p => p.isActive).length;
-    const inactiveCount = positions.filter(p => !p.isActive).length;
+    const draftCount = docs.filter(d => d.status === 'draft').length;
+    const pendingCount = docs.filter(d => d.status === 'pending').length;
+    const approvedCount = docs.filter(d => d.status === 'approved').length;
+    const activeCount = docs.filter(d => d.isActive).length;
+    const inactiveCount = docs.filter(d => !d.isActive).length;
     const systemUptime = 98.5; // TODO: 실제 시스템 가동률 API 연동
 
     return {
       total,
+      draftCount,
+      pendingCount,
+      approvedCount,
       activeCount,
       inactiveCount,
       systemUptime
     };
-  }, [pagination.total, positions]);
+  }, [pagination.total, docs]);
 
-  // Filtered positions for display (성능 최적화)
-  const displayPositions = useMemo(() => {
-    return positions; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
-  }, [positions]);
+  // Filtered docs for display (성능 최적화)
+  const displayDocs = useMemo(() => {
+    return docs; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
+  }, [docs]);
 
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
@@ -319,26 +323,15 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'headquarters',
-      type: 'select',
-      label: '본부구분',
-      options: [
-        { value: '', label: '전체' },
-        { value: '본부부서', label: '본부부서' },
-        { value: '지역본부', label: '지역본부' },
-        { value: '영업점', label: '영업점' },
-        { value: '센터', label: '센터' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
       key: 'status',
       type: 'select',
       label: '상태',
       options: [
         { value: '', label: '전체' },
-        { value: '완료', label: '완료' },
-        { value: '반영필요', label: '반영필요' }
+        { value: 'draft', label: '초안' },
+        { value: 'pending', label: '검토중' },
+        { value: 'approved', label: '승인' },
+        { value: 'rejected', label: '반려' }
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
@@ -352,8 +345,21 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         { value: 'N', label: '미사용' }
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
+    },
+    {
+      key: 'approvalStatus',
+      type: 'select',
+      label: '결재상태',
+      options: [
+        { value: '', label: '전체' },
+        { value: 'pending', label: '대기' },
+        { value: 'approved', label: '승인' },
+        { value: 'rejected', label: '반려' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 2 }
     }
   ], []);
+
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -367,17 +373,18 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     {
       key: 'add',
       type: 'add',
-      onClick: handleAddPosition
+      label: '등록',
+      onClick: handleAddDoc
     },
     {
       key: 'delete',
       type: 'delete',
-      onClick: handleDeletePositions,
-      disabled: selectedPositions.length === 0 || loadingStates.delete,
+      onClick: handleDeleteDocs,
+      disabled: selectedDocs.length === 0 || loadingStates.delete,
       loading: loadingStates.delete,
       confirmationRequired: true
     }
-  ], [handleExcelDownload, handleAddPosition, handleDeletePositions, selectedPositions.length, loadingStates]);
+  ], [handleExcelDownload, handleAddDoc, handleDeleteDocs, selectedDocs.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -405,7 +412,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     commitTime: number
   ) => {
     if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 PositionMgmt Performance Profiler`);
+      console.group(`🔍 ResponsibilityDocMgmt Performance Profiler`);
       console.log(`📊 Phase: ${phase}`);
       console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
       console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
@@ -450,190 +457,76 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   // Mock data loading
   React.useEffect(() => {
     // TODO: Replace with actual API call
-    const mockPositions: Position[] = [
-        {
-          id: '1',
-          positionName: '경영진단본부장',
-          headquarters: '본부부서',
-          departmentName: '경영진단본부',
-          divisionName: '경영진단본부',
-          registrationDate: '2024-01-15',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-03-20',
-          modifier: '홍길동',
-          modifierPosition: '총합기획부',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '2',
-          positionName: '총합기획부장',
-          headquarters: '본부부서',
-          departmentName: '총합기획부',
-          divisionName: '총합기획부',
-          registrationDate: '2024-02-01',
-          registrar: '시스템관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-04-10',
-          modifier: '김철수',
-          modifierPosition: '인사팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '3',
-          positionName: '영업본부장',
-          headquarters: '본부부서',
-          departmentName: '영업본부',
-          divisionName: '영업본부',
-          registrationDate: '2024-01-20',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-05-15',
-          modifier: '박영희',
-          modifierPosition: '영업기획팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '4',
-          positionName: '기술개발팀장',
-          headquarters: '팀단위',
-          departmentName: '기술개발부',
-          divisionName: '기술개발팀',
-          registrationDate: '2024-03-05',
-          registrar: '홍길동',
-          registrarPosition: '총합기획부',
-          modificationDate: '2024-06-01',
-          modifier: '이민수',
-          modifierPosition: '기술개발팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '5',
-          positionName: '마케팅팀장',
-          headquarters: '팀단위',
-          departmentName: '마케팅부',
-          divisionName: '마케팅팀',
-          registrationDate: '2024-02-15',
-          registrar: '김철수',
-          registrarPosition: '인사팀',
-          modificationDate: '2024-05-20',
-          modifier: '정수진',
-          modifierPosition: '마케팅팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '6',
-          positionName: '인사팀장',
-          headquarters: '팀단위',
-          departmentName: '인사부',
-          divisionName: '인사팀',
-          registrationDate: '2024-01-10',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-04-25',
-          modifier: '한상훈',
-          modifierPosition: '인사팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '7',
-          positionName: '재무팀장',
-          headquarters: '팀단위',
-          departmentName: '재무부',
-          divisionName: '재무팀',
-          registrationDate: '2024-02-28',
-          registrar: '박영희',
-          registrarPosition: '영업기획팀',
-          modificationDate: '2024-06-10',
-          modifier: '윤미래',
-          modifierPosition: '재무팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '8',
-          positionName: '품질보증팀장',
-          headquarters: '팀단위',
-          departmentName: '품질보증부',
-          divisionName: '품질보증팀',
-          registrationDate: '2024-03-15',
-          registrar: '이민수',
-          registrarPosition: '기술개발팀',
-          modificationDate: '2024-05-30',
-          modifier: '최영수',
-          modifierPosition: '품질보증팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'Y'
-        },
-        {
-          id: '9',
-          positionName: '고객서비스팀장',
-          headquarters: '팀단위',
-          departmentName: '고객서비스부',
-          divisionName: '고객서비스팀',
-          registrationDate: '2024-04-01',
-          registrar: '정수진',
-          registrarPosition: '마케팅팀',
-          modificationDate: '2024-06-15',
-          modifier: '서현아',
-          modifierPosition: '고객서비스팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '검토중',
-          dual: 'Y'
-        },
-        {
-          id: '10',
-          positionName: '연구개발팀장',
-          headquarters: '팀단위',
-          departmentName: '연구개발부',
-          divisionName: '연구개발팀',
-          registrationDate: '2024-03-20',
-          registrar: '한상훈',
-          registrarPosition: '인사팀',
-          modificationDate: '2024-05-10',
-          modifier: '김도현',
-          modifierPosition: '연구개발팀',
-          status: '반영필요',
-          isActive: false,
-          approvalStatus: '보류',
-          dual: 'Y'
-        }
-      ];
+    const mockDocs: ResponsibilityDoc[] = [
+      {
+        id: '1',
+        seq: 1,
+        positionName: '리스크관리본부장',
+        requestDate: '2025-08-21',
+        requestor: '관리자',
+        requestorPosition: '000000',
+        isChanged: false,
+        isActive: true,
+        status: 'draft',
+        approvalStatus: 'pending',
+        registrationDate: '2025-08-21',
+        registrar: '관리자',
+        registrarPosition: '시스템관리자',
+        modificationDate: '2025-08-21',
+        modifier: '관리자',
+        modifierPosition: '시스템관리자'
+      },
+      {
+        id: '2',
+        seq: 2,
+        positionName: '감사본부장',
+        requestDate: '2025-08-18',
+        requestor: '000001',
+        requestorPosition: 'FIT 1',
+        approvalDate: '2025-08-18',
+        approver: '000002',
+        approverPosition: 'FIT 2',
+        isChanged: true,
+        isActive: true,
+        status: 'approved',
+        approvalStatus: 'approved',
+        registrationDate: '2025-08-18',
+        registrar: '관리자',
+        registrarPosition: '시스템관리자',
+        modificationDate: '2025-08-18',
+        modifier: '관리자',
+        modifierPosition: '시스템관리자'
+      },
+      {
+        id: '3',
+        seq: 3,
+        positionName: '오토금융본부장',
+        requestDate: '2025-08-15',
+        requestor: '김철수',
+        requestorPosition: '팀장',
+        isChanged: false,
+        isActive: true,
+        status: 'pending',
+        approvalStatus: 'pending',
+        registrationDate: '2025-08-15',
+        registrar: '김철수',
+        registrarPosition: '팀장',
+        modificationDate: '2025-08-15',
+        modifier: '김철수',
+        modifierPosition: '팀장'
+      }
+    ];
 
-    setPositions(mockPositions);
+    setDocs(mockDocs);
     setPagination(prev => ({
       ...prev,
-      total: mockPositions.length,
-      totalPages: Math.ceil(mockPositions.length / prev.size)
+      total: mockDocs.length,
+      totalPages: Math.ceil(mockDocs.length / prev.size)
     }));
   }, []);
 
-
   return (
-    <React.Profiler id="PositionMgmt" onRender={onRenderProfiler}>
+    <React.Profiler id="ResponsibilityDocMgmt" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
       {/* 🏗️ 페이지 헤더 */}
       <div className={styles.pageHeader}>
@@ -642,10 +535,10 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
             <DashboardIcon className={styles.headerIcon} />
             <div>
               <h1 className={styles.pageTitle}>
-                {t('position.management.title', '직책관리 시스템')}
+                {t('responsibilityDoc.management.title', '책무기술서관리 시스템')}
               </h1>
               <p className={styles.pageDescription}>
-                {t('position.management.description', '조직의 직책 정보를 체계적으로 관리합니다')}
+                {t('responsibilityDoc.management.description', '직책별 책무기술서를 체계적으로 관리합니다')}
               </p>
             </div>
           </div>
@@ -657,7 +550,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               </div>
               <div className={styles.statContent}>
                 <div className={styles.statNumber}>{statistics.total}</div>
-                <div className={styles.statLabel}>총 직책</div>
+                <div className={styles.statLabel}>총 기술서</div>
               </div>
             </div>
 
@@ -669,7 +562,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
                 <div className={styles.statNumber}>
                   {statistics.activeCount}
                 </div>
-                <div className={styles.statLabel}>활성 직책</div>
+                <div className={styles.statLabel}>활성 기술서</div>
               </div>
             </div>
 
@@ -692,7 +585,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         <BaseSearchFilter
           fields={searchFields}
           values={filters as unknown as FilterValues}
-          onValuesChange={(values) => handleFiltersChange(values as unknown as Partial<PositionFilters>)}
+          onValuesChange={(values) => handleFiltersChange(values as unknown as Partial<ResponsibilityDocFilters>)}
           onSearch={handleSearch}
           onClear={handleClearFilters}
           loading={loading}
@@ -703,8 +596,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         {/* 💎 공통 액션 바 */}
         <BaseActionBar
           totalCount={statistics.total}
-          totalLabel="총 직책 수"
-          selectedCount={selectedPositions.length}
+          totalLabel="총 기술서 수"
+          selectedCount={selectedDocs.length}
           statusInfo={statusInfo}
           actions={actionButtons}
           loading={loading}
@@ -712,8 +605,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
         {/* 🎯 공통 데이터 그리드 */}
         <BaseDataGrid
-          data={displayPositions}
-          columns={positionColumns}
+          data={displayDocs}
+          columns={responsibilityDocColumns}
           loading={loading}
           theme="alpine"
           onRowClick={(data) => handleRowClick(data)}
@@ -728,15 +621,15 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         />
       </div>
 
-      {/* 직책 등록/상세 모달 */}
+      {/* 책무기술서 등록/상세 모달 */}
       <React.Suspense fallback={<LoadingSpinner />}>
-        <PositionFormModal
+        <ResponsibilityDocFormModal
           open={modalState.addModal || modalState.detailModal}
           mode={modalState.addModal ? 'create' : 'detail'}
-          position={modalState.selectedPosition}
+          doc={modalState.selectedDoc}
           onClose={handleModalClose}
-          onSave={handlePositionSave}
-          onUpdate={handlePositionUpdate}
+          onSave={handleDocSave}
+          onUpdate={handleDocUpdate}
           loading={loading}
         />
       </React.Suspense>
@@ -745,4 +638,4 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   );
 };
 
-export default PositionMgmt;
+export default ResponsibilityDocMgmt;

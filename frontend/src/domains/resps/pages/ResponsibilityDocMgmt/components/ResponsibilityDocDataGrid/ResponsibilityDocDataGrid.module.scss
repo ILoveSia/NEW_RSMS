@@ -1,0 +1,71 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  height: 100%;
+  width: 100%;
+
+  // AG-Grid 테마 커스터마이징
+  :global(.ag-theme-rsms) {
+    border: 1px solid #e0e0e0;
+    border-radius: $border-radius-sm;
+
+    .ag-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .ag-header-cell {
+      font-weight: 600;
+      color: #333;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .ag-row {
+      border-bottom: 1px solid #f0f0f0;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &.ag-row-selected {
+        background-color: #e3f2fd;
+      }
+    }
+
+    .ag-cell {
+      border-right: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+    }
+
+    .ag-checkbox {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .container {
+    :global(.ag-theme-rsms) {
+      .ag-header-cell,
+      .ag-cell {
+        font-size: 0.875rem;
+        padding: $spacing-xs $spacing-sm;
+      }
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .container {
+    :global(.ag-theme-rsms) {
+      .ag-header-cell,
+      .ag-cell {
+        font-size: 0.75rem;
+        padding: $spacing-xs;
+      }
+    }
+  }
+}

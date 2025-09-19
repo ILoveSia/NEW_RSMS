@@ -381,17 +381,20 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
     {
       label: '총 건수',
       value: responsibilities.length,
-      color: 'primary'
+      color: 'primary',
+      icon: <AssignmentIcon />
     },
     {
       label: '활성',
       value: responsibilities.filter(r => r.status === 'active').length,
-      color: 'success'
+      color: 'success',
+      icon: <SecurityIcon />
     },
     {
       label: '비활성',
       value: responsibilities.filter(r => r.status === 'inactive').length,
-      color: 'warning'
+      color: 'warning',
+      icon: <SecurityIcon />
     }
   ];
 

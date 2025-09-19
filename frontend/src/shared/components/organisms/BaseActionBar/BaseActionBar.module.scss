@@ -98,15 +98,19 @@
   display: flex;
   align-items: center;
   gap: $spacing-xs;
-  padding: 4px 8px;
+  padding: 6px 12px;
   background: rgba($color-primary, 0.1);
   border-radius: $border-radius-md;
   border: 1px solid rgba($color-primary, 0.2);
+  min-width: 80px;
+  min-height: 32px;
+  justify-content: center;
 
   .selectedLabel {
     font-size: 0.75rem;
     color: $color-primary;
     font-weight: 500;
+    flex-shrink: 0;
   }
 
   .selectedValue {
@@ -114,6 +118,8 @@
     color: $color-primary;
     font-weight: 700;
     font-family: 'Monaco', 'Menlo', monospace;
+    min-width: 20px;
+    text-align: center;
   }
 }
 
@@ -122,25 +128,32 @@
   display: flex;
   align-items: center;
   gap: $spacing-xs;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: $border-radius-md;
   border: 1px solid;
+  min-width: 80px;
+  min-height: 32px;
+  justify-content: center;
 
   .statusIcon {
     display: flex;
     align-items: center;
     font-size: 1rem;
+    flex-shrink: 0;
   }
 
   .statusLabel {
     font-size: 0.75rem;
     font-weight: 500;
+    flex-shrink: 0;
   }
 
   .statusValue {
     font-size: 0.875rem;
     font-weight: 600;
     font-family: 'Monaco', 'Menlo', monospace;
+    min-width: 20px;
+    text-align: center;
   }
 }
 

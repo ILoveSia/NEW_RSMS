@@ -438,7 +438,8 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
     {
       label: '비활성',
       value: statistics.inactiveCount,
-      color: 'default'
+      color: 'default',
+      icon: <GroupIcon />
     }
   ], [statistics]);
 
