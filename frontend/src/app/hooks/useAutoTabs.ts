@@ -19,7 +19,7 @@ const PATH_TO_TAB_MAP: Record<string, { id: string; title: string; icon: string 
     title: '직책관리',
     icon: '👥'
   },
-  '/app/resps/position-concurrent': {
+  '/app/resps/position-duals': {
     id: 'position-concurrent',
     title: '직책겸직관리',
     icon: '🔄'

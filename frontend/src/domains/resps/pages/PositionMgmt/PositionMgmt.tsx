@@ -27,7 +27,9 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import { positionColumns } from './components/PositionDataGrid/positionColumns';
 
 // Lazy-loaded components for performance optimization
-const PositionFormModal = React.lazy(() => import('./components/PositionFormModal'));
+const PositionFormModal = React.lazy(() =>
+  import('./components/PositionFormModal').then(module => ({ default: module.default }))
+);
 
 interface PositionMgmtProps {
   className?: string;

@@ -1,0 +1,196 @@
+@use 'sass:color';
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  background: $color-background-paper;
+  border-radius: $border-radius-lg;
+  border: 1px solid $color-border-default;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+
+  &:hover {
+    border-color: $color-border-focus;
+    box-shadow: $shadow-md;
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, $color-background-default 0%, rgba($color-primary, 0.02) 100%);
+  border-bottom: 1px solid $color-border-default;
+  min-height: 60px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(45deg, $color-primary, $color-secondary);
+    border-radius: $border-radius-sm;
+    flex-shrink: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.tableContainer {
+  position: relative;
+  background: $color-background-paper;
+}
+
+.dataGrid {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  // AG-Grid 테마 오버라이드
+  :global(.ag-theme-rsms) {
+    --ag-header-background-color: #{rgba($color-primary, 0.03)};
+    --ag-header-foreground-color: #{$color-text-primary};
+    --ag-border-color: #{$color-border-light};
+    --ag-row-hover-color: #{rgba($color-primary, 0.04)};
+    --ag-selected-row-background-color: #{rgba($color-primary, 0.08)};
+  }
+}
+
+.selectionInfo {
+  padding: $spacing-sm $spacing-lg;
+  background: rgba($color-primary, 0.05);
+  border-top: 1px solid $color-border-light;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectionText {
+  font-size: 0.875rem;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .header {
+    flex-direction: column;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    min-height: auto;
+  }
+
+  .title {
+    font-size: 1rem;
+    align-self: flex-start;
+  }
+
+  .actions {
+    align-self: flex-end;
+    gap: $spacing-xs;
+  }
+
+  .selectionInfo {
+    padding: $spacing-sm $spacing-md;
+    flex-direction: column;
+    gap: $spacing-xs;
+    align-items: flex-start;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .container {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-bottom: $spacing-sm;
+  }
+
+  .header {
+    padding: $spacing-sm;
+  }
+
+  .title {
+    font-size: 0.975rem;
+
+    &::before {
+      width: 3px;
+      height: 16px;
+    }
+  }
+
+  .actions {
+    gap: $spacing-xs;
+  }
+
+  .selectionInfo {
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .selectionText {
+    font-size: 0.8125rem;
+  }
+}
+
+// 접근성 스타일
+@media (prefers-contrast: high) {
+  .container {
+    border-color: #{color.adjust($color-border-default, $lightness: -20%)};
+  }
+
+  .header {
+    background: $color-background-default;
+    border-bottom-color: #{color.adjust($color-border-default, $lightness: -20%)};
+  }
+
+  .title {
+    color: #{color.adjust($color-text-primary, $lightness: -10%)};
+    font-weight: 700;
+  }
+}
+
+// 다크 테마 지원
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1e1e1e;
+    border-color: #333;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #2a2a2a 0%, rgba(25, 118, 210, 0.05) 100%);
+    border-bottom-color: #333;
+  }
+
+  .title {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .tableContainer {
+    background: #1e1e1e;
+  }
+
+  .selectionInfo {
+    background: rgba(25, 118, 210, 0.1);
+    border-top-color: #333;
+  }
+
+  .selectionText {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}

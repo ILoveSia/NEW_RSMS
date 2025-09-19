@@ -28,7 +28,7 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'position-concurrent',
         title: '직책겸직관리',
-        path: '/app/resps/position-concurrent',
+        path: '/app/resps/position-duals',
         permission: 'auth'
       },
       {

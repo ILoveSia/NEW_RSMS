@@ -120,6 +120,8 @@
       padding: 10px 14px;
       font-weight: 400;
       color: #334e68;
+      border-bottom: 1px solid #cbd5e1 !important; // 기본 행 구분선
+      border-right: 1px solid #cbd5e1 !important; // 컬럼 구분선 추가
 
       &:focus {
         outline: 2px solid #627d98;
@@ -128,8 +130,15 @@
       }
     }
 
+    // 행 구분선 (필요에 따라 개별 컬럼에서 조절)
+    .ag-row {
+      // border-bottom: none !important;
+    }
+
     // 헤더 셀 스타일
     .ag-header-cell {
+      border-right: 1px solid #cbd5e1 !important; // 헤더 컬럼 구분선 추가
+
       .ag-header-cell-label {
         font-weight: 600;
         color: #334e68;

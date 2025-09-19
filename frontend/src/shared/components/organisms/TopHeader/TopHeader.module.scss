@@ -10,21 +10,23 @@
   height: $header-height;
   background: var(--theme-header-bg);
   color: var(--theme-header-text);
-  display: grid;
-  align-items: center;
-  padding: 0 $spacing-md;
+  position: relative;
   box-shadow: $shadow-md;
   z-index: $z-index-header;
-  position: relative;
 
-  // 브랜딩 영역
+  // 브랜딩 영역 - 절대 위치로 고정
   .brandSection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
     padding: 0 $spacing-md;
-    min-width: 280px; // 최소 너비 보장
-    flex-shrink: 0; // 축소되지 않도록
+    background: var(--theme-header-bg);
+    z-index: 2; // 탭 영역 위에 표시
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 
     .logo {
       font-size: 24px;
@@ -74,15 +76,16 @@
     }
   }
 
-  // 탭 네비게이션
+  // 탭 네비게이션 - 전체 폭 사용
   .tabNavigation {
     display: flex;
     gap: 2px;
     padding: 0 $spacing-lg;
     overflow-x: auto;
-    flex: 1;
-    justify-content: flex-start;
+    height: $header-height;
     align-items: center;
+    position: relative;
+    transition: margin-left 0.3s ease; // 부드러운 애니메이션
 
     .tab {
       display: flex;
@@ -170,12 +173,18 @@
     }
   }
 
-  // 사용자 영역
+  // 사용자 영역 - 절대 위치로 고정
   .userSection {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
     display: flex;
     align-items: center;
     gap: $spacing-md;
-    padding: 0 $spacing-sm;
+    padding: 0 $spacing-md;
+    background: var(--theme-header-bg);
+    z-index: 2;
 
     .iconButton {
       color: inherit;

@@ -29,7 +29,7 @@ export const positionColumns: ColDef<Position>[] = [
     sortable: true,
     filter: true,
     width: 80,
-    pinned: 'left'
+    //pinned: 'left'
   },
   {
     headerName: '직책',
@@ -37,7 +37,7 @@ export const positionColumns: ColDef<Position>[] = [
     sortable: true,
     filter: true,
     width: 150,
-    pinned: 'left'
+    //pinned: 'left'
   },
   {
     headerName: '본부구분',

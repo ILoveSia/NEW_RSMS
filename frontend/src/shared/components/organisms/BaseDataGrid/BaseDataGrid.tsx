@@ -133,8 +133,6 @@ const BaseDataGrid = <TData = any,>({
       resizable: false,
       sortable: false,
       filter: false,
-      pinned: 'left',
-      lockPosition: 'left',
       suppressMenu: true,
       headerName: '',
     };

@@ -150,7 +150,7 @@ const BaseActionBar: React.FC<BaseActionBarProps> = React.memo(({
         )}
 
         {/* 추가 상태 정보 */}
-        {statusInfo.map((status, index) => (
+        {statusInfo && Array.isArray(statusInfo) && statusInfo.map((status, index) => (
           <div
             key={index}
             className={`${styles.statusItem} ${getStatusColorClass(status.color)}`}
@@ -171,7 +171,7 @@ const BaseActionBar: React.FC<BaseActionBarProps> = React.memo(({
 
       {/* 오른쪽 영역 - 액션 버튼들 */}
       <div className={styles.actionRight}>
-        {actions.map(renderButton)}
+        {actions && Array.isArray(actions) && actions.map(renderButton)}
       </div>
     </div>
   );

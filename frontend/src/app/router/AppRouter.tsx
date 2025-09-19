@@ -9,11 +9,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from '@/shared/components/templates/Layout';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 // Lazy-loaded pages for better performance
-const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage').then(module => ({ default: module.LoginPage })));
-const LedgerOrderManagement = React.lazy(() => import('@/domains/resps/pages/LedgerOrderManagement').then(module => ({ default: module.LedgerOrderManagement })));
-const ResponsibilityManagement = React.lazy(() => import('@/domains/resps/pages/ResponsibilityManagement').then(module => ({ default: module.ResponsibilityManagement })));
-const SpecificationManagement = React.lazy(() => import('@/domains/resps/pages/SpecificationManagement').then(module => ({ default: module.SpecificationManagement })));
+const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage/LoginPage').then(module => ({ default: module.LoginPage })));
+const LedgerOrderManagement = React.lazy(() => import('@/domains/resps/pages/LedgerOrderManagement/LedgerOrderManagement'));
+const ResponsibilityManagement = React.lazy(() => import('@/domains/resps/pages/ResponsibilityMgmt'));
+const SpecificationManagement = React.lazy(() => import('@/domains/resps/pages/SpecificationManagement/SpecificationManagement'));
 const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
+const PositionDualMgmt = React.lazy(() => import('@/domains/resps/pages/PositionDualMgmt/PositionDualMgmt'));
+const DeliberativeMgmt = React.lazy(() => import('@/domains/resps/pages/DeliberativeMgmt/DeliberativeMgmt'));
 const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
 import { routes } from './routes';
 import { 
@@ -196,6 +198,27 @@ const AppRouter: React.FC = () => {
                     />
                   } />
 
+                  {/* 직책겸직관리 */}
+                  <Route path="position-duals" element={<PositionDualMgmt />} />
+                  <Route path="position-duals/:id" element={
+                    <TemporaryPage
+                      title="직책겸직 상세"
+                      description="직책겸직의 상세 정보와 겸직 직책 목록을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="position-duals/create" element={
+                    <TemporaryPage
+                      title="직책겸직 생성"
+                      description="새로운 직책겸직을 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="position-duals/:id/edit" element={
+                    <TemporaryPage
+                      title="직책겸직 편집"
+                      description="기존 직책겸직 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
                   {/* 책무관리 */}
                   <Route path="responsibilities" element={<ResponsibilityManagement />} />
                   <Route path="responsibilities/:id" element={
@@ -241,6 +264,27 @@ const AppRouter: React.FC = () => {
                     <TemporaryPage
                       title="기술서 생성"
                       description="템플릿을 기반으로 기술서를 자동 생성하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 회의체관리 */}
+                  <Route path="meetings" element={<DeliberativeMgmt />} />
+                  <Route path="meetings/:id" element={
+                    <TemporaryPage
+                      title="회의체 상세"
+                      description="회의체의 상세 정보와 위원 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="meetings/create" element={
+                    <TemporaryPage
+                      title="회의체 생성"
+                      description="새로운 회의체를 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="meetings/:id/edit" element={
+                    <TemporaryPage
+                      title="회의체 편집"
+                      description="기존 회의체 정보를 수정하는 페이지입니다."
                     />
                   } />
 

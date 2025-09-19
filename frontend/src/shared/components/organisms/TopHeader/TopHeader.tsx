@@ -43,14 +43,14 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   };
 
   return (
-    <header
-      className={styles.topHeader}
-      style={{
-        gridTemplateColumns: `${getSidebarWidth()} 1fr auto`
-      }}
-    >
-      {/* 브랜딩 영역 */}
-      <div className={styles.brandSection}>
+    <header className={styles.topHeader}>
+      {/* 브랜딩 영역 - 절대 위치로 고정 */}
+      <div
+        className={styles.brandSection}
+        style={{
+          width: getSidebarWidth()
+        }}
+      >
         <div className={styles.logo}>
           <img
             src="/src/assets/images/itcen.jpg"
@@ -68,8 +68,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         </div>
       </div>
 
-      {/* 탭 네비게이션 영역 */}
-      <div className={styles.tabNavigation}>
+      {/* 탭 네비게이션 영역 - 전체 폭 사용하고 브랜딩 영역만큼 마진 */}
+      <div
+        className={styles.tabNavigation}
+        style={{
+          marginLeft: getSidebarWidth()
+        }}
+      >
         {activeTabs.map(tab => (
           <button
             key={tab.id}
@@ -116,7 +121,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         ))}
       </div>
 
-      {/* 사용자 및 도구 영역 */}
+      {/* 사용자 및 도구 영역 - 절대 위치로 고정 */}
       <div className={styles.userSection}>
         <div className={styles.userProfile} onClick={onUserClick}>
           <AccountCircle className={styles.userAvatar} />

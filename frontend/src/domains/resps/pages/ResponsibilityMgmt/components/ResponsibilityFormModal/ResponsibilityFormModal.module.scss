@@ -1,0 +1,65 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// BaseModal 스타일 오버라이드
+.modal {
+  :global(.MuiDialog-paper) {
+    max-width: 1200px;
+    max-height: 90vh;
+    width: 95vw;
+  }
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  min-height: 600px;
+  padding: 0;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    gap: $spacing-md;
+    min-height: 500px;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    gap: $spacing-sm;
+    min-height: 400px;
+  }
+}
+
+.section {
+  padding: $spacing-md $spacing-lg;
+
+  &:first-child {
+    padding-top: $spacing-lg;
+  }
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-sm $spacing-md;
+
+    &:first-child {
+      padding-top: $spacing-md;
+    }
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-xs $spacing-sm;
+
+    &:first-child {
+      padding-top: $spacing-sm;
+    }
+  }
+}
+
+.divider {
+  margin: 0 $spacing-lg;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    margin: 0 $spacing-md;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    margin: 0 $spacing-sm;
+  }
+}

@@ -48,7 +48,7 @@ const schema = yup.object({
     .max(100, '부정명은 100자 이내로 입력해주세요'),
 });
 
-const PositionFormModal: React.FC<PositionFormModalProps> = React.memo(({
+const PositionFormModal: React.FC<PositionFormModalProps> = ({
   open,
   mode,
   position,
@@ -321,7 +321,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = React.memo(({
       )}
     </BaseModal>
   );
-});
+};
 
 PositionFormModal.displayName = 'PositionFormModal';
 
