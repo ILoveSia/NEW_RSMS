@@ -36,19 +36,34 @@ export const Layout: React.FC = () => {
   };
 
   const handleTabClose = (tabId: string) => {
+    const { activeTabId } = useTabStore.getState();
+
+    // 현재 닫으려는 탭이 활성 탭인지 확인
+    const isActiveTab = activeTabId === tabId;
+
+    // 탭 닫기 실행
     closeTab(tabId);
-  };
 
-  const handleNotificationClick = () => {
-    console.log('Notifications clicked');
-  };
+    // 닫은 탭이 활성 탭이었다면, 새로운 활성 탭으로 이동
+    if (isActiveTab) {
+      // 탭 닫기 후의 새로운 상태를 가져옴
+      const { tabs: newTabs, activeTabId: newActiveTabId } = useTabStore.getState();
 
-  const handleSettingsClick = () => {
-    console.log('Settings clicked');
+      if (newActiveTabId && newTabs.length > 0) {
+        const newActiveTab = newTabs.find(t => t.id === newActiveTabId);
+        if (newActiveTab?.path) {
+          navigate(newActiveTab.path);
+        }
+      }
+    }
   };
 
   const handleUserClick = () => {
     console.log('User profile clicked');
+  };
+
+  const handleLogoutClick = () => {
+    console.log('Logout clicked');
   };
 
   return (
@@ -56,13 +71,11 @@ export const Layout: React.FC = () => {
       {/* 상단 헤더 */}
       <TopHeader
         activeTabs={tabs}
-        userProfile={{ name: '김철수', role: '관리자' }}
-        notificationCount={5}
+        userProfile={{ name: '김철수', role: '관리자', employeeId: 'EMP001' }}
         onTabClick={handleTabClick}
         onTabClose={handleTabClose}
-        onNotificationClick={handleNotificationClick}
-        onSettingsClick={handleSettingsClick}
         onUserClick={handleUserClick}
+        onLogoutClick={handleLogoutClick}
       />
 
       {/* Body: LeftMenu + Content */}

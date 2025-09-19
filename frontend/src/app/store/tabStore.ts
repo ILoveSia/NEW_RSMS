@@ -81,10 +81,16 @@ export const useTabStore = create<TabStore>()(
         set(state => {
           const newTabs = state.tabs.filter(tab => tab.id !== tabId);
 
-          // 제거된 탭이 활성 탭이었다면 대시보드를 활성화
+          // 제거된 탭이 활성 탭이었다면 새로운 활성 탭 선택
           let newActiveTabId = state.activeTabId;
           if (state.activeTabId === tabId) {
-            newActiveTabId = newTabs.length > 0 ? newTabs[0].id : null;
+            if (newTabs.length > 0) {
+              // 대시보드 탭이 있으면 대시보드로, 없으면 첫 번째 탭으로
+              const dashboardTab = newTabs.find(tab => tab.id === 'dashboard');
+              newActiveTabId = dashboardTab ? 'dashboard' : newTabs[0].id;
+            } else {
+              newActiveTabId = null;
+            }
           }
 
           return {
