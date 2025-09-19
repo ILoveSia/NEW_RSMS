@@ -1,6 +1,5 @@
 import { Chip } from '@mui/material';
 import type { ColDef } from 'ag-grid-community';
-import React from 'react';
 import type { Position } from '../../types/position.types';
 
 // 상태별 색상 매핑
@@ -141,10 +140,10 @@ export const positionColumns: ColDef<Position>[] = [
     )
   },
   {
-    headerName: '겸직',
+    headerName: '겸직여부',
     field: 'dual',
     sortable: true,
     filter: true,
-    width: 80
+    width: 100
   }
 ];

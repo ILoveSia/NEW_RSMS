@@ -132,21 +132,21 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
 
   itcen: {
-    // 아이티센 스타일 - 프로페셔널한 IT 솔루션 테마
-    headerBackground: '#1e3a8a',
+    // 아이티센 스타일 - 캡처된 이미지 기반 색상 (연한 파란색으로 조정)
+    headerBackground: '#3b82f6', // 연한 파란색으로 조정
     headerText: '#ffffff',
 
-    menuBackground: '#e2e8f0',
-    menuText: '#1f2937',
-    menuHover: '#cbd5e1',
-    menuActive: '#93c5fd',
+    menuBackground: '#f1f5f9', // 조금 더 진한 회색으로 조정
+    menuText: '#374151',
+    menuHover: '#e2e8f0',
+    menuActive: '#60a5fa', // 더 연한 파란색으로 조정
 
-    pageHeaderBackground: 'linear-gradient(135deg, #1e3a8a 0%, #374151 100%)',
+    pageHeaderBackground: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
     pageHeaderText: '#ffffff',
 
-    buttonPrimary: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+    buttonPrimary: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
     buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #374151 0%, #4b5563 100%)',
+    buttonSecondary: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
     buttonSecondaryText: '#ffffff'
   }
 };

@@ -41,12 +41,12 @@
 // 🎯 헤더 영역
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: $spacing-lg $spacing-xl $spacing-md $spacing-xl;
+  padding: $spacing-md $spacing-xl;
   background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
   border-bottom: none;
-  min-height: 80px;
+  min-height: 60px;
 
   .titleSection {
     flex: 1;
@@ -56,7 +56,7 @@
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0;
@@ -74,8 +74,8 @@
     color: #64748b;
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(203, 213, 225, 0.5);
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     transition: all 0.2s ease;
 
     &:hover {
@@ -137,19 +137,22 @@
 
 // 🚀 액션 버튼 영역
 .actions {
-  padding: $spacing-md $spacing-xl $spacing-xl $spacing-xl;
+  padding: $spacing-sm $spacing-xl;
   background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
   border-top: 1px solid #e2e8f0;
   gap: $spacing-sm;
   justify-content: flex-end;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
 
   .actionButton {
-    padding: 10px 20px;
-    border-radius: $border-radius-lg;
+    padding: 8px 16px;
+    border-radius: $border-radius-md;
     font-weight: 600;
     font-size: 0.875rem;
     min-width: 80px;
-    height: 40px;
+    height: 36px;
     border: none;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -300,11 +303,11 @@
   }
 
   .header {
-    padding: $spacing-md $spacing-lg $spacing-sm $spacing-lg;
-    min-height: 60px;
+    padding: $spacing-sm $spacing-lg;
+    min-height: 50px;
 
     .title {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
     }
   }
 
@@ -313,12 +316,14 @@
   }
 
   .actions {
-    padding: $spacing-sm $spacing-lg $spacing-lg $spacing-lg;
+    padding: $spacing-sm $spacing-lg;
     flex-direction: column-reverse;
+    min-height: 56px;
 
     .actionButton {
       width: 100%;
       justify-content: center;
+      height: 36px;
     }
   }
 }
@@ -333,10 +338,10 @@
 
   .header {
     padding: $spacing-sm $spacing-md;
-    min-height: 50px;
+    min-height: 48px;
 
     .title {
-      font-size: 1.125rem;
+      font-size: 1rem;
     }
 
     .closeButton {
@@ -350,7 +355,12 @@
   }
 
   .actions {
-    padding: $spacing-sm $spacing-md $spacing-md $spacing-md;
+    padding: $spacing-sm $spacing-md;
+    min-height: 52px;
+
+    .actionButton {
+      height: 36px;
+    }
   }
 }
 
