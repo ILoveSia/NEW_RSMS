@@ -2,7 +2,7 @@
  * RSMS LeftMenu 타입 정의
  */
 
-export type MenuPermission = 'public' | 'auth' | 'manager' | 'admin';
+export type MenuPermission = 'public' | 'auth' | 'manager' | 'admin' | 'executive';
 
 export interface MenuItem {
   id: string;

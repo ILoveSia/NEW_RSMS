@@ -1,0 +1,303 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🎯 모달 컨테이너
+.modal {
+  .MuiDialog-paper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+    max-width: 1000px;
+    width: 95vw;
+    max-height: 85vh;
+    margin: $spacing-lg;
+  }
+}
+
+.paper {
+  overflow: hidden;
+}
+
+// 🏷️ 모달 타이틀
+.modalTitle {
+  background: linear-gradient(145deg, $color-primary 0%, lighten($color-primary, 10%) 100%);
+  color: white;
+  padding: $spacing-lg $spacing-xl;
+  position: relative;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+
+  .MuiTypography-root {
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1.125rem !important;
+  }
+}
+
+.titleContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.titleIcon {
+  color: white;
+  font-size: 1.5rem !important;
+  opacity: 0.9;
+}
+
+.closeButton {
+  position: absolute !important;
+  top: 50%;
+  right: $spacing-lg;
+  transform: translateY(-50%);
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .MuiSvgIcon-root {
+    font-size: 1.125rem;
+  }
+}
+
+// 🎨 모달 컨텐츠
+.modalContent {
+  padding: $spacing-xl !important;
+  background: $color-background-default;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  overflow: hidden;
+}
+
+// 🔍 검색 영역
+.searchSection {
+  display: flex;
+  gap: $spacing-md;
+  align-items: flex-end;
+  padding: $spacing-md;
+  background: $color-background-paper;
+  border-radius: $border-radius-md;
+  border: 1px solid $color-border-default;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-sm;
+  }
+}
+
+.searchField {
+  flex: 1;
+
+  .MuiInputBase-root {
+    border-radius: $border-radius-md;
+    background: $color-background-default;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: lighten($color-background-default, 2%);
+    }
+
+    &.Mui-focused {
+      background: white;
+      box-shadow: 0 4px 12px rgba($color-primary, 0.15);
+    }
+  }
+
+  .MuiInputLabel-root {
+    color: $color-text-secondary;
+    font-weight: 500;
+
+    &.Mui-focused {
+      color: $color-primary;
+    }
+  }
+}
+
+.searchButton {
+  background: var(--theme-button-primary) !important;
+  color: var(--theme-button-primary-text) !important;
+  border: none !important;
+  padding: $spacing-sm $spacing-lg !important;
+  border-radius: $border-radius-md !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  min-width: 80px;
+  height: 40px;
+
+  &:hover {
+    background: var(--theme-button-primary-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    background: $color-text-disabled !important;
+    color: white !important;
+    transform: none;
+    box-shadow: none;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    width: 100%;
+  }
+}
+
+// 📊 그리드 영역
+.gridSection {
+  flex: 1;
+  background: $color-background-paper;
+  border-radius: $border-radius-md;
+  border: 1px solid $color-border-default;
+  overflow: hidden;
+  min-height: 450px;
+}
+
+// 🎯 모달 액션 영역
+.modalActions {
+  background: linear-gradient(145deg, $color-background-paper 0%, rgba($color-primary, 0.02) 100%);
+  border-top: 1px solid rgba($color-primary, 0.1);
+  padding: $spacing-lg $spacing-xl;
+  gap: $spacing-md;
+  justify-content: flex-end;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column-reverse;
+    padding: $spacing-md $spacing-lg;
+
+    .MuiButton-root {
+      width: 100%;
+    }
+  }
+}
+
+.cancelButton {
+  border-color: rgba($color-text-secondary, 0.3) !important;
+  color: $color-text-secondary !important;
+  padding: $spacing-sm $spacing-lg !important;
+  border-radius: $border-radius-md !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  min-width: 100px;
+
+  &:hover {
+    border-color: $color-text-secondary !important;
+    background: rgba($color-text-secondary, 0.04) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.selectButton {
+  background: $color-primary !important;
+  color: white !important;
+  padding: $spacing-sm $spacing-lg !important;
+  border-radius: $border-radius-md !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  min-width: 100px;
+
+  &:hover {
+    background: darken($color-primary, 8%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    background: $color-text-disabled !important;
+    color: white !important;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// 📱 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modal {
+    .MuiDialog-paper {
+      margin: $spacing-md;
+      width: calc(100vw - #{$spacing-md * 2});
+      max-height: calc(100vh - #{$spacing-md * 2});
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-md $spacing-lg;
+  }
+
+  .modalContent {
+    padding: $spacing-lg;
+    gap: $spacing-md;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modal {
+    .MuiDialog-paper {
+      margin: $spacing-sm;
+      width: calc(100vw - #{$spacing-sm * 2});
+      max-height: calc(100vh - #{$spacing-sm * 2});
+      border-radius: $border-radius-md;
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-sm $spacing-md;
+
+    .MuiTypography-root {
+      font-size: 1rem !important;
+    }
+  }
+
+  .titleIcon {
+    font-size: 1.25rem !important;
+  }
+
+  .closeButton {
+    right: $spacing-md;
+  }
+
+  .modalContent {
+    padding: $spacing-md;
+    gap: $spacing-sm;
+  }
+}
+
+// 💡 접근성 개선
+@media (prefers-reduced-motion: reduce) {
+  .searchButton,
+  .cancelButton,
+  .selectButton,
+  .closeButton {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// 🔧 프린트 스타일
+@media print {
+  .modal {
+    .MuiDialog-paper {
+      box-shadow: none;
+      border: 2px solid $color-text-primary;
+    }
+  }
+
+  .modalTitle {
+    background: $color-text-primary !important;
+    color: white !important;
+  }
+
+  .closeButton,
+  .modalActions {
+    display: none !important;
+  }
+}

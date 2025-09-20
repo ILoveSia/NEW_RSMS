@@ -16,13 +16,16 @@ const ResponsibilityDocMgmt = React.lazy(() => import('@/domains/resps/pages/Res
 const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
 const PositionDualMgmt = React.lazy(() => import('@/domains/resps/pages/PositionDualMgmt/PositionDualMgmt'));
 const DeliberativeMgmt = React.lazy(() => import('@/domains/resps/pages/DeliberativeMgmt/DeliberativeMgmt'));
+const BoardHistoryMgmt = React.lazy(() => import('@/domains/resps/pages/BoardHistoryMgmt/BoardHistoryMgmt'));
+const OfficerInfoMgmt = React.lazy(() => import('@/domains/resps/pages/OfficerInfoMgmt/OfficerInfoMgmt'));
+const DeptOpManualsMgmt = React.lazy(() => import('@/domains/resps/pages/DeptOpManualsMgmt/DeptOpManualsMgmt'));
+const CeoMgmtDutySearch = React.lazy(() => import('@/domains/resps/pages/CeoMgmtDutySearch/CeoMgmtDutySearch'));
+const RoleHistory = React.lazy(() => import('@/domains/resps/pages/RoleHistory/RoleHistory'));
 const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
-import { routes } from './routes';
-import { 
-  RouteGuard,
-  AuthGuard, 
-  ManagerGuard, 
-  AdminGuard 
+import {
+  AuthGuard,
+  ManagerGuard,
+  AdminGuard
 } from './guards';
 
 // 임시 페이지 컴포넌트들 (디자인 완료 후 실제 컴포넌트로 교체)
@@ -178,141 +181,199 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 직책관리 */}
-                  <Route path="positions" element={<PositionMgmt />} />
-                  <Route path="positions/:id" element={
+                  <Route path="positionmgmt" element={<PositionMgmt />} />
+                  <Route path="positionmgmt/:id" element={
                     <TemporaryPage
                       title="직책 상세"
                       description="직책의 상세 정보와 관련 조직 정보를 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="positions/create" element={
-                    <TemporaryPage
-                      title="직책 생성"
-                      description="새로운 직책을 생성하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="positions/:id/edit" element={
-                    <TemporaryPage
-                      title="직책 편집"
-                      description="기존 직책 정보를 수정하는 페이지입니다."
-                    />
-                  } />
+
+                  {/* 기존 URL 호환성 - 직책관리 */}
+                  <Route path="positions" element={<Navigate to="/app/resps/positionmgmt" replace />} />
+                  <Route path="positions/:id" element={<Navigate to="/app/resps/positionmgmt" replace />} />
+                  <Route path="positions/create" element={<Navigate to="/app/resps/positionmgmt" replace />} />
+                  <Route path="positions/:id/edit" element={<Navigate to="/app/resps/positionmgmt" replace />} />
 
                   {/* 직책겸직관리 */}
-                  <Route path="position-duals" element={<PositionDualMgmt />} />
-                  <Route path="position-duals/:id" element={
+                  <Route path="positiondualmgmt" element={<PositionDualMgmt />} />
+                  <Route path="positiondualmgmt/:id" element={
                     <TemporaryPage
                       title="직책겸직 상세"
                       description="직책겸직의 상세 정보와 겸직 직책 목록을 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="position-duals/create" element={
+                  <Route path="positiondualmgmt/create" element={
                     <TemporaryPage
                       title="직책겸직 생성"
                       description="새로운 직책겸직을 생성하는 페이지입니다."
                     />
                   } />
-                  <Route path="position-duals/:id/edit" element={
+                  <Route path="positiondualmgmt/:id/edit" element={
                     <TemporaryPage
                       title="직책겸직 편집"
                       description="기존 직책겸직 정보를 수정하는 페이지입니다."
                     />
                   } />
 
-                  {/* 책무관리 */}
-                  <Route path="responsibilities" element={<ResponsibilityManagement />} />
-                  <Route path="responsibilities/:id" element={
-                    <TemporaryPage
-                      title="책무 상세"
-                      description="개별 책무의 상세 정보와 진행 상황을 관리하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="responsibilities/create" element={
-                    <TemporaryPage
-                      title="책무 생성"
-                      description="새로운 책무를 생성하고 할당하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="responsibilities/:id/edit" element={
-                    <TemporaryPage
-                      title="책무 편집"
-                      description="기존 책무 정보를 수정하는 페이지입니다."
-                    />
-                  } />
-
-                  {/* 책무기술서관리 */}
-                  <Route path="specifications" element={<ResponsibilityDocMgmt />} />
-                  <Route path="specifications/:id" element={
-                    <TemporaryPage
-                      title="기술서 상세"
-                      description="기술서의 상세 내용과 버전 이력을 관리하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="specifications/create" element={
-                    <TemporaryPage
-                      title="기술서 작성"
-                      description="새로운 기술서를 작성하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="specifications/:id/edit" element={
-                    <TemporaryPage
-                      title="기술서 편집"
-                      description="기존 기술서를 편집하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="specifications/:id/generate" element={
-                    <TemporaryPage
-                      title="기술서 생성"
-                      description="템플릿을 기반으로 기술서를 자동 생성하는 페이지입니다."
-                    />
-                  } />
+                  {/* 기존 URL 호환성 - 직책겸직관리 */}
+                  <Route path="position-duals" element={<Navigate to="/app/resps/positiondualmgmt" replace />} />
+                  <Route path="position-duals/:id" element={<Navigate to="/app/resps/positiondualmgmt" replace />} />
+                  <Route path="position-duals/create" element={<Navigate to="/app/resps/positiondualmgmt" replace />} />
+                  <Route path="position-duals/:id/edit" element={<Navigate to="/app/resps/positiondualmgmt" replace />} />
 
                   {/* 회의체관리 */}
-                  <Route path="meetings" element={<DeliberativeMgmt />} />
-                  <Route path="meetings/:id" element={
+                  <Route path="deliberativemgmt" element={<DeliberativeMgmt />} />
+                  <Route path="deliberativemgmt/:id" element={
                     <TemporaryPage
                       title="회의체 상세"
                       description="회의체의 상세 정보와 위원 정보를 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="meetings/create" element={
+                  <Route path="deliberativemgmt/create" element={
                     <TemporaryPage
                       title="회의체 생성"
                       description="새로운 회의체를 생성하는 페이지입니다."
                     />
                   } />
-                  <Route path="meetings/:id/edit" element={
+                  <Route path="deliberativemgmt/:id/edit" element={
                     <TemporaryPage
                       title="회의체 편집"
                       description="기존 회의체 정보를 수정하는 페이지입니다."
                     />
                   } />
 
+                  {/* 책무관리 */}
+                  <Route path="responsibilitymgmt" element={<ResponsibilityManagement />} />
+                  <Route path="responsibilitymgmt/:id" element={
+                    <TemporaryPage
+                      title="책무 상세"
+                      description="개별 책무의 상세 정보와 진행 상황을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilitymgmt/create" element={
+                    <TemporaryPage
+                      title="책무 생성"
+                      description="새로운 책무를 생성하고 할당하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilitymgmt/:id/edit" element={
+                    <TemporaryPage
+                      title="책무 편집"
+                      description="기존 책무 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기존 URL 호환성 - 책무관리 */}
+                  <Route path="responsibilities" element={<Navigate to="/app/resps/responsibilitymgmt" replace />} />
+                  <Route path="responsibilities/:id" element={<Navigate to="/app/resps/responsibilitymgmt" replace />} />
+                  <Route path="responsibilities/create" element={<Navigate to="/app/resps/responsibilitymgmt" replace />} />
+                  <Route path="responsibilities/:id/edit" element={<Navigate to="/app/resps/responsibilitymgmt" replace />} />
+
+                  {/* 책무기술서관리 */}
+                  <Route path="responsibilitydocmgmt" element={<ResponsibilityDocMgmt />} />
+                  <Route path="responsibilitydocmgmt/:id" element={
+                    <TemporaryPage
+                      title="기술서 상세"
+                      description="기술서의 상세 내용과 버전 이력을 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilitydocmgmt/create" element={
+                    <TemporaryPage
+                      title="기술서 작성"
+                      description="새로운 기술서를 작성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilitydocmgmt/:id/edit" element={
+                    <TemporaryPage
+                      title="기술서 편집"
+                      description="기존 기술서를 편집하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="responsibilitydocmgmt/:id/generate" element={
+                    <TemporaryPage
+                      title="기술서 생성"
+                      description="템플릿을 기반으로 기술서를 자동 생성하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기존 URL 호환성 - 책무기술서관리 */}
+                  <Route path="specifications" element={<Navigate to="/app/resps/responsibilitydocmgmt" replace />} />
+                  <Route path="specifications/:id" element={<Navigate to="/app/resps/responsibilitydocmgmt" replace />} />
+                  <Route path="specifications/create" element={<Navigate to="/app/resps/responsibilitydocmgmt" replace />} />
+                  <Route path="specifications/:id/edit" element={<Navigate to="/app/resps/responsibilitydocmgmt" replace />} />
+                  <Route path="specifications/:id/generate" element={<Navigate to="/app/resps/responsibilitydocmgmt" replace />} />
+
+                  {/* 기존 URL 호환성 - 회의체관리 */}
+                  <Route path="meetings" element={<Navigate to="/app/resps/deliberativemgmt" replace />} />
+                  <Route path="meetings/:id" element={<Navigate to="/app/resps/deliberativemgmt" replace />} />
+                  <Route path="meetings/create" element={<Navigate to="/app/resps/deliberativemgmt" replace />} />
+                  <Route path="meetings/:id/edit" element={<Navigate to="/app/resps/deliberativemgmt" replace />} />
+
+                  {/* 이사회이력관리 */}
+                  <Route path="boardhistorymgmt" element={<BoardHistoryMgmt />} />
+                  <Route path="boardhistorymgmt/:id" element={
+                    <TemporaryPage
+                      title="이사회 이력 상세"
+                      description="이사회 이력의 상세 정보와 첨부파일을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="boardhistorymgmt/create" element={
+                    <TemporaryPage
+                      title="이사회 이력 등록"
+                      description="새로운 이사회 이력을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="boardhistorymgmt/:id/edit" element={
+                    <TemporaryPage
+                      title="이사회 이력 편집"
+                      description="기존 이사회 이력 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기존 URL 호환성 - 이사회이력관리 */}
+                  <Route path="board-history" element={<Navigate to="/app/resps/boardhistorymgmt" replace />} />
+                  <Route path="board-history/:id" element={<Navigate to="/app/resps/boardhistorymgmt" replace />} />
+                  <Route path="board-history/create" element={<Navigate to="/app/resps/boardhistorymgmt" replace />} />
+                  <Route path="board-history/:id/edit" element={<Navigate to="/app/resps/boardhistorymgmt" replace />} />
+
+                  {/* 임원정보관리 */}
+                  <Route path="officerinfomgmt" element={<OfficerInfoMgmt />} />
+                  <Route path="officerinfomgmt/:id" element={<OfficerInfoMgmt />} />
+                  <Route path="officerinfomgmt/create" element={<OfficerInfoMgmt />} />
+                  <Route path="officerinfomgmt/:id/edit" element={<OfficerInfoMgmt />} />
+
+                  {/* 기존 URL 호환성 - 임원정보관리 */}
+                  <Route path="executive-info" element={<Navigate to="/app/resps/officerinfomgmt" replace />} />
+                  <Route path="executive-info/:id" element={<Navigate to="/app/resps/officerinfomgmt" replace />} />
+                  <Route path="executive-info/create" element={<Navigate to="/app/resps/officerinfomgmt" replace />} />
+                  <Route path="executive-info/:id/edit" element={<Navigate to="/app/resps/officerinfomgmt" replace />} />
+
                   {/* 부서장업무메뉴얼관리 */}
-                  <Route path="department-manuals" element={
-                    <TemporaryPage
-                      title="부서장업무메뉴얼 관리"
-                      description="부서장을 위한 업무 메뉴얼을 관리하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="department-manuals/:id" element={
-                    <TemporaryPage
-                      title="부서장메뉴얼 상세"
-                      description="부서장 업무 메뉴얼의 상세 내용을 확인하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="department-manuals/create" element={
-                    <TemporaryPage
-                      title="부서장메뉴얼 작성"
-                      description="새로운 부서장 업무 메뉴얼을 작성하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="department-manuals/:id/edit" element={
-                    <TemporaryPage
-                      title="부서장메뉴얼 편집"
-                      description="기존 부서장 업무 메뉴얼을 편집하는 페이지입니다."
-                    />
-                  } />
+                  <Route path="deptopmanualsmgmt" element={<DeptOpManualsMgmt />} />
+                  <Route path="deptopmanualsmgmt/:id" element={<DeptOpManualsMgmt />} />
+                  <Route path="deptopmanualsmgmt/create" element={<DeptOpManualsMgmt />} />
+                  <Route path="deptopmanualsmgmt/:id/edit" element={<DeptOpManualsMgmt />} />
+
+                  {/* 기존 URL 호환성 - 부서장업무메뉴얼관리 */}
+                  <Route path="department-manuals" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="department-manuals/:id" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="department-manuals/create" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="department-manuals/:id/edit" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="dept-op-manuals" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="dept-op-manuals/:id" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="dept-op-manuals/create" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+                  <Route path="dept-op-manuals/:id/edit" element={<Navigate to="/app/resps/deptopmanualsmgmt" replace />} />
+
+
+                  {/* CEO총괄관리의무조회 */}
+                  <Route path="ceomgmtdutysearch" element={<CeoMgmtDutySearch />} />
+
+                  {/* 직책/책무이력 */}
+                  <Route path="rolehistory" element={<RoleHistory />} />
+
+                  {/* 기존 URL 호환성 - CEO총괄관리의무조회 */}
+                  <Route path="ceo-management" element={<Navigate to="/app/resps/ceomgmtdutysearch" replace />} />
 
                   {/* 기본 리다이렉트 */}
                   <Route index element={<Navigate to="/app/resps/ledger-orders" replace />} />

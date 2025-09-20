@@ -20,58 +20,64 @@ export const MENU_DATA: MenuItem[] = [
     permission: 'auth',
     children: [
       {
-        id: 'position-management',
+        id: 'positionmgmt',
         title: '직책관리',
-        path: '/app/resps/positions',
+        path: '/app/resps/positionmgmt',
         permission: 'auth'
       },
       {
-        id: 'position-concurrent',
+        id: 'positiondualmgmt',
         title: '직책겸직관리',
-        path: '/app/resps/position-duals',
+        path: '/app/resps/positiondualmgmt',
         permission: 'auth'
       },
       {
-        id: 'meeting-management',
+        id: 'deliberativemgmt',
         title: '회의체관리',
-        path: '/app/resps/meetings',
+        path: '/app/resps/deliberativemgmt',
         permission: 'auth'
       },
       {
-        id: 'responsibility-management',
+        id: 'responsibilitymgmt',
         title: '책무관리',
-        path: '/app/resps/responsibilities',
+        path: '/app/resps/responsibilitymgmt',
         permission: 'auth'
       },
       {
-        id: 'specification-management',
+        id: 'responsibilitydocmgmt',
         title: '책무기술서관리',
-        path: '/app/resps/specifications',
+        path: '/app/resps/responsibilitydocmgmt',
         permission: 'auth'
       },
       {
-        id: 'board-history',
+        id: 'boardhistorymgmt',
         title: '이사회이력관리',
-        path: '/app/resps/board-history',
+        path: '/app/resps/boardhistorymgmt',
         permission: 'manager'
       },
       {
-        id: 'executive-info',
+        id: 'officerinfomgmt',
         title: '임원정보관리',
-        path: '/app/resps/executive-info',
+        path: '/app/resps/officerinfomgmt',
         permission: 'manager'
       },
       {
-        id: 'department-manual',
+        id: 'deptopmanualsmgmt',
         title: '부서장업무메뉴얼관리',
-        path: '/app/resps/department-manuals',
+        path: '/app/resps/deptopmanualsmgmt',
         permission: 'manager'
       },
       {
-        id: 'ceo-management',
+        id: 'ceomgmtdutysearch',
         title: 'CEO총괄관리의무조회',
-        path: '/app/resps/ceo-management',
+        path: '/app/resps/ceomgmtdutysearch',
         permission: 'executive'
+      },
+      {
+        id: 'rolehistory',
+        title: '직책/책무 이력',
+        path: '/app/resps/rolehistory',
+        permission: 'manager'
       }
     ]
   },
@@ -293,6 +299,7 @@ export const filterMenuByPermission = (
     if (item.permission === 'auth' && userRoles.includes('USER')) return true;
     if (item.permission === 'manager' && userRoles.includes('MANAGER')) return true;
     if (item.permission === 'admin' && userRoles.includes('ADMIN')) return true;
+    if (item.permission === 'executive' && userRoles.includes('EXECUTIVE')) return true;
 
     return false;
   }).map(item => ({

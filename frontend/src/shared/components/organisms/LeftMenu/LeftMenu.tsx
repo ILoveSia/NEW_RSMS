@@ -35,7 +35,7 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ className }) => {
   // 사용자 권한 정보 (실제로는 useAuthStore에서 가져옴)
   // const { user } = useAuthStore();
   // 임시로 관리자 권한으로 설정
-  const userRoles = ['USER', 'MANAGER', 'ADMIN'];
+  const userRoles = ['USER', 'MANAGER', 'ADMIN', 'EXECUTIVE'];
 
   // 권한에 따른 메뉴 필터링
   const filteredMenuData = filterMenuByPermission(MENU_DATA, userRoles);

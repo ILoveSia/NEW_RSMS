@@ -87,11 +87,38 @@ export const routes = {
     specificationEdit: '/app/resps/specifications/:id/edit',
     specificationGenerate: '/app/resps/specifications/:id/generate',
 
+    // 직책겸직관리
+    positionDuals: '/app/resps/position-duals',
+    positionDualDetail: '/app/resps/position-duals/:id',
+    positionDualCreate: '/app/resps/position-duals/create',
+    positionDualEdit: '/app/resps/position-duals/:id/edit',
+
+    // 회의체관리
+    meetings: '/app/resps/meetings',
+    meetingDetail: '/app/resps/meetings/:id',
+    meetingCreate: '/app/resps/meetings/create',
+    meetingEdit: '/app/resps/meetings/:id/edit',
+
+    // 이사회이력관리
+    boardHistory: '/app/resps/board-history',
+    boardHistoryDetail: '/app/resps/board-history/:id',
+    boardHistoryCreate: '/app/resps/board-history/create',
+    boardHistoryEdit: '/app/resps/board-history/:id/edit',
+
+    // 임원정보관리
+    executiveInfo: '/app/resps/executive-info',
+    executiveInfoDetail: '/app/resps/executive-info/:id',
+    executiveInfoCreate: '/app/resps/executive-info/create',
+    executiveInfoEdit: '/app/resps/executive-info/:id/edit',
+
     // 부서장업무메뉴얼관리
     departmentManuals: '/app/resps/department-manuals',
     departmentManualDetail: '/app/resps/department-manuals/:id',
     departmentManualCreate: '/app/resps/department-manuals/create',
     departmentManualEdit: '/app/resps/department-manuals/:id/edit',
+
+    // CEO총괄관리의무조회
+    ceoManagement: '/app/resps/ceo-management',
   },
 
   // 보고서 (auth)
@@ -164,6 +191,10 @@ export const createRoute = {
   // 책무 관리 - 직책관리
   positionDetail: (id: string | number) => `/app/resps/positions/${id}`,
   positionEdit: (id: string | number) => `/app/resps/positions/${id}/edit`,
+
+  // 책무 관리 - 이사회이력관리
+  boardHistoryDetail: (id: string | number) => `/app/resps/board-history/${id}`,
+  boardHistoryEdit: (id: string | number) => `/app/resps/board-history/${id}/edit`,
 
   // 보고서
   reportDetail: (id: string | number) => `/reports/${id}`,
@@ -241,6 +272,11 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     title: '책무 관리',
     permission: 'auth',
     breadcrumb: ['책무 관리'],
+  },
+  '/app/resps/board-history': {
+    title: '이사회이력관리',
+    permission: 'manager',
+    breadcrumb: ['책무구조도 원장 관리', '이사회이력관리'],
   },
   '/app/reports': {
     title: '보고서',

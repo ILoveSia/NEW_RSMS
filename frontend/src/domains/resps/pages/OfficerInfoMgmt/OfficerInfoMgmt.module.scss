@@ -1,0 +1,481 @@
+/**
+ * OfficerInfoMgmt 스타일
+ * PositionMgmt.tsx 표준 스타일을 기반으로 설계
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 모던 미니멀 컨테이너 (PositionMgmt 표준)
+.container {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+// 🎯 테마 적용 헤더 (PositionMgmt 표준 동일)
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    justify-content: space-between;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+// 🎨 메인 컨텐츠 영역 - PositionMgmt 표준 간격
+.content {
+  padding: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  background: #fafbfc;
+}
+
+// 🔍 검색 섹션
+.searchSection {
+  background: white;
+  border-radius: $border-radius-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+// AG-Grid 모던 플랫 스타일 (PositionMgmt 표준 동일)
+:global(.ag-theme-alpine) {
+  border: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  border-radius: 0;
+  overflow: hidden;
+
+  // 외부 wrapper만 테두리 제거
+  .ag-root-wrapper,
+  .ag-root,
+  .ag-body-viewport {
+    border: none !important;
+  }
+
+  .ag-header {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 2px solid #e1e7ef !important;
+    font-weight: 500;
+
+    .ag-header-cell {
+      border-right: 1px solid #e1e7ef !important;
+
+      &:last-child {
+        border-right: none !important;
+      }
+
+      &:first-child {
+        border-top-left-radius: 16px;
+      }
+
+      &:last-child {
+        border-top-right-radius: 16px;
+        border-right: none;
+      }
+
+      &:hover {
+        background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+      }
+
+      .ag-header-cell-label {
+        font-weight: 600;
+        color: #334e68;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .ag-row {
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    &:hover {
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    &.ag-row-selected {
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 3px solid #627d98 !important;
+      box-shadow: inset 0 0 0 1px rgba(98, 125, 152, 0.2);
+    }
+
+    &:nth-child(even) {
+      background: linear-gradient(145deg, #fafbfc 0%, #f8fafc 100%);
+    }
+  }
+
+  .ag-cell {
+    border-right: 1px solid #e2e8f0 !important;
+    font-weight: 400;
+    color: #334e68;
+
+    &:last-child {
+      border-right: none !important;
+    }
+    font-size: 0.875rem;
+    padding: 10px 14px;
+
+    &:focus {
+      outline: 2px solid #627d98;
+      outline-offset: -2px;
+      background: rgba(98, 125, 152, 0.05);
+    }
+
+    // 클릭 가능한 셀 스타일
+    &.clickable-cell {
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(25, 118, 210, 0.04);
+      }
+    }
+  }
+
+  .ag-paging-panel {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 2px solid #e1e7ef !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 12px 16px;
+    color: #334e68;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  .ag-root-wrapper {
+    border-radius: 0;
+    border: none !important;
+    overflow: hidden;
+  }
+}
+
+// 🔄 로딩 컨테이너
+.loadingContainer {
+  @include flex-center;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: $border-radius-xl;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  margin: $spacing-xl;
+  position: relative;
+  z-index: 2;
+}
+
+// 🎯 특수 상태 표시
+.statusIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 2px 8px;
+  border-radius: $border-radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.assigned {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+  }
+
+  &.pending {
+    background: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+  }
+
+  &.approved {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+  }
+
+  &.rejected {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+  }
+}
+
+// 📊 임원 정보 표시
+.officerInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  .officerAvatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .officerDetails {
+    display: flex;
+    flex-direction: column;
+
+    .officerName {
+      font-weight: 500;
+      color: #334e68;
+      font-size: 0.875rem;
+    }
+
+    .officerPosition {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  }
+}
+
+// 📱 반응형 - 태블릿 (PositionMgmt 표준)
+@include responsive-breakpoint($breakpoint-tablet) {
+  .pageHeader {
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .content {
+    padding: $spacing-xs;
+    gap: $spacing-sm;
+  }
+
+  .headerStats {
+    justify-content: space-between;
+  }
+
+  .statCard {
+    min-width: auto;
+    flex: 1;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .pageHeader {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .pageTitle {
+    font-size: 1.25rem;
+  }
+
+  .pageDescription {
+    font-size: 0.8rem;
+  }
+
+  .content {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
+  }
+
+  .headerStats {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .statCard {
+    min-width: auto;
+  }
+
+  // 모바일에서 그리드 최적화
+  :global(.ag-theme-alpine) {
+    .ag-cell {
+      padding: 8px 10px;
+      font-size: 0.8rem;
+    }
+
+    .ag-header-cell-label {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// 🔄 지연 로딩 컨테이너 (성능 최적화)
+.gridLoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  // 로딩 애니메이션 스타일
+  .loading-spinner {
+    color: var(--theme-button-primary, $color-primary);
+  }
+}
+
+// 🎨 액션 바 커스터마이징
+.actionSection {
+  background: white;
+  border-radius: $border-radius-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+// 🔍 고급 필터 표시
+.advancedFilter {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  margin-top: $spacing-sm;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  .filterTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334e68;
+    margin-bottom: $spacing-sm;
+  }
+
+  .filterChips {
+    display: flex;
+    gap: $spacing-xs;
+    flex-wrap: wrap;
+
+    :global(.MuiChip-root) {
+      font-size: 0.75rem;
+      height: 24px;
+    }
+  }
+}
+
+// 📊 빈 상태 표시
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  text-align: center;
+  color: #64748b;
+
+  .emptyIcon {
+    font-size: 3rem !important;
+    color: #cbd5e1;
+    margin-bottom: $spacing-md;
+  }
+
+  .emptyTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: $spacing-xs;
+  }
+
+  .emptyDescription {
+    font-size: 0.875rem;
+    color: #64748b;
+    max-width: 400px;
+  }
+}

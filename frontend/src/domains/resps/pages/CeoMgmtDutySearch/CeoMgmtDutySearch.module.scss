@@ -1,0 +1,265 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 모던 미니멀 컨테이너
+.container {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+// 🎯 테마 적용 헤더
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    justify-content: space-between;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// 🎨 메인 컨텐츠 영역 - 미니멀
+.content {
+  padding: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  background: #fafbfc;
+}
+
+// AG-Grid 모던 플랫 스타일
+:global(.ag-theme-alpine) {
+  border: none !important;
+  border-radius: $border-radius-lg !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .ag-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.875rem;
+  }
+
+  .ag-header-cell {
+    border-right: 1px solid #e2e8f0;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  .ag-row {
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &.ag-row-selected {
+      background: rgba(25, 118, 210, 0.08) !important;
+    }
+  }
+
+  .ag-cell {
+    border-right: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  .ag-checkbox-input-wrapper {
+    &.ag-checked::after {
+      color: #1976d2;
+    }
+  }
+
+  .ag-paging-panel {
+    border-top: 1px solid #e2e8f0;
+    background: #fafbfc;
+    font-size: 0.875rem;
+  }
+}
+
+// 📱 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .pageHeader {
+    padding: $spacing-xs $spacing-sm;
+    margin-bottom: $spacing-xs;
+  }
+
+  .content {
+    padding: $spacing-xs;
+    gap: $spacing-xs;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .container {
+    min-height: 100vh;
+  }
+
+  .titleSection {
+    gap: $spacing-xs;
+  }
+
+  .headerIcon {
+    font-size: 1rem !important;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .pageDescription {
+    font-size: 0.6875rem;
+  }
+
+  .statCard {
+    min-width: 70px;
+    padding: $spacing-xs;
+  }
+
+  .statNumber {
+    font-size: 0.875rem;
+  }
+
+  .statLabel {
+    font-size: 0.6875rem;
+  }
+}
+
+// 💡 접근성 개선
+@media (prefers-reduced-motion: reduce) {
+  .statCard {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// 🔧 프린트 스타일
+@media print {
+  .pageHeader {
+    background: $color-text-primary !important;
+    color: white !important;
+    box-shadow: none;
+  }
+
+  .statCard {
+    background: transparent !important;
+    border: 1px solid $color-text-secondary;
+  }
+}

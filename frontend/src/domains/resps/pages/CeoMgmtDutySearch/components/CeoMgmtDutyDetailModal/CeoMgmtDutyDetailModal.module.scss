@@ -1,0 +1,541 @@
+/**
+ * CeoMgmtDutyDetailModal 스타일
+ * PositionFormModal 표준 스타일을 기반으로 설계
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🎯 모달 컨테이너
+.modal {
+  .MuiDialog-paper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+    max-width: 1200px;
+    width: 95vw;
+    max-height: 90vh;
+    margin: $spacing-lg;
+  }
+}
+
+// 🏷️ 모달 타이틀
+.modalTitle {
+  background: linear-gradient(145deg, $color-primary 0%, lighten($color-primary, 10%) 100%);
+  color: white;
+  padding: $spacing-lg $spacing-xl;
+  position: relative;
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+
+  .MuiTypography-root {
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+  }
+}
+
+.titleContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.titleIcon {
+  color: white;
+  font-size: 1.75rem !important;
+  opacity: 0.9;
+}
+
+.closeButton {
+  position: absolute !important;
+  top: 50%;
+  right: $spacing-lg;
+  transform: translateY(-50%);
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .MuiSvgIcon-root {
+    font-size: 1.25rem;
+  }
+}
+
+// 🎨 모달 컨텐츠
+.modalContent {
+  padding: 0 !important;
+  background: $color-background-default;
+  overflow: hidden;
+}
+
+// 📝 폼 컨테이너
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  padding: $spacing-xl;
+  max-height: calc(90vh - 200px);
+  overflow-y: auto;
+
+  @include custom-scrollbar;
+}
+
+// 📋 폼 섹션
+.formSection {
+  background: $color-background-paper;
+  border-radius: $border-radius-lg;
+  border: 1px solid rgba($color-primary, 0.1);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba($color-primary, 0.2);
+  }
+}
+
+// 🏷️ 섹션 헤더
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-lg;
+  background: linear-gradient(145deg, $color-background-paper 0%, rgba($color-primary, 0.02) 100%);
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid rgba($color-primary, 0.1);
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  color: $color-text-primary !important;
+  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+  margin: 0 !important;
+
+  .MuiSvgIcon-root {
+    color: $color-primary;
+    font-size: 1.5rem !important;
+  }
+}
+
+// 🎯 액션 버튼 영역
+.actionButtons {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .MuiButton-root {
+    min-width: auto;
+    padding: $spacing-xs $spacing-md;
+    font-size: 0.875rem;
+    border-radius: $border-radius-md;
+    text-transform: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.MuiButton-contained {
+      background: $color-primary;
+      color: white;
+
+      &:hover {
+        background: darken($color-primary, 10%);
+      }
+
+      &:disabled {
+        background: $color-text-disabled;
+        color: white;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    &.MuiButton-outlined {
+      border-color: rgba($color-primary, 0.3);
+      color: $color-primary;
+
+      &:hover {
+        border-color: $color-primary;
+        background: rgba($color-primary, 0.04);
+      }
+
+      &.MuiButton-colorError {
+        border-color: rgba($color-error, 0.3);
+        color: $color-error;
+
+        &:hover {
+          border-color: $color-error;
+          background: rgba($color-error, 0.04);
+        }
+      }
+    }
+
+    .MuiSvgIcon-root {
+      font-size: 1.125rem !important;
+    }
+  }
+}
+
+// 📝 폼 요소들
+.formRow {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-lg $spacing-xl;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+  }
+}
+
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  .MuiTextField-root {
+    width: 100%;
+
+    .MuiInputBase-root {
+      border-radius: $border-radius-md;
+      background: $color-background-default;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: lighten($color-background-default, 2%);
+      }
+
+      &.Mui-focused {
+        background: white;
+        box-shadow: 0 4px 12px rgba($color-primary, 0.15);
+      }
+
+      &.Mui-readOnly {
+        background: $color-background-disabled;
+        color: $color-text-secondary;
+      }
+    }
+
+    .MuiInputLabel-root {
+      color: $color-text-secondary;
+      font-weight: 500;
+
+      &.Mui-focused {
+        color: $color-primary;
+      }
+    }
+
+    .MuiFormHelperText-root {
+      margin-left: $spacing-xs;
+      margin-top: $spacing-xs;
+
+      &.Mui-error {
+        color: $color-error;
+      }
+    }
+  }
+}
+
+.expandedTextArea {
+  .MuiInputBase-root {
+    align-items: flex-start;
+    min-height: 120px;
+
+    .MuiInputBase-input {
+      resize: vertical;
+      min-height: 80px !important;
+    }
+  }
+}
+
+// 📊 테이블 컨테이너
+.tableContainer {
+  padding: 0;
+  background: $color-background-default;
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+  overflow: hidden;
+
+  // AG-Grid 커스텀 스타일
+  :global(.ag-theme-alpine) {
+    border: none;
+    border-radius: 0;
+
+    .ag-header {
+      background: linear-gradient(145deg, $color-background-paper 0%, rgba($color-primary, 0.03) 100%);
+      border-bottom: 2px solid rgba($color-primary, 0.1);
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+
+    .ag-header-cell {
+      border-right: 1px solid rgba($color-primary, 0.08);
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    .ag-row {
+      border-bottom: 1px solid rgba($color-border-default, 0.3);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba($color-primary, 0.02);
+      }
+
+      &.ag-row-selected {
+        background: rgba($color-primary, 0.05);
+        border-color: rgba($color-primary, 0.2);
+      }
+    }
+
+    .ag-cell {
+      border-right: 1px solid rgba($color-border-default, 0.1);
+      display: flex;
+      align-items: center;
+      line-height: 1.4;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    .ag-checkbox-input-wrapper {
+      font-size: 1.125rem;
+
+      &.ag-checked::after {
+        color: $color-primary;
+      }
+    }
+
+    .ag-paging-panel {
+      border-top: 1px solid rgba($color-border-default, 0.2);
+      background: $color-background-paper;
+    }
+  }
+}
+
+// 🎯 모달 액션 영역
+.modalActions {
+  background: linear-gradient(145deg, $color-background-paper 0%, rgba($color-primary, 0.02) 100%);
+  border-top: 1px solid rgba($color-primary, 0.1);
+  padding: $spacing-lg $spacing-xl;
+  gap: $spacing-md;
+  justify-content: flex-end;
+
+  .MuiButton-root {
+    min-width: 100px;
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $border-radius-md;
+    font-weight: 600;
+    text-transform: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.MuiButton-contained {
+      background: $color-primary;
+      color: white;
+
+      &:hover {
+        background: darken($color-primary, 8%);
+      }
+
+      &:disabled {
+        background: $color-text-disabled;
+        color: white;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    &.MuiButton-outlined {
+      border-color: rgba($color-text-secondary, 0.3);
+      color: $color-text-secondary;
+
+      &:hover {
+        border-color: $color-text-secondary;
+        background: rgba($color-text-secondary, 0.04);
+      }
+    }
+  }
+}
+
+// 📱 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modal {
+    .MuiDialog-paper {
+      margin: $spacing-md;
+      width: calc(100vw - #{$spacing-md * 2});
+      max-height: calc(100vh - #{$spacing-md * 2});
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-md $spacing-lg;
+  }
+
+  .form {
+    padding: $spacing-lg;
+    gap: $spacing-lg;
+  }
+
+  .modalActions {
+    padding: $spacing-md $spacing-lg;
+    flex-direction: column-reverse;
+
+    .MuiButton-root {
+      width: 100%;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modal {
+    .MuiDialog-paper {
+      margin: $spacing-sm;
+      width: calc(100vw - #{$spacing-sm * 2});
+      max-height: calc(100vh - #{$spacing-sm * 2});
+      border-radius: $border-radius-md;
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-sm $spacing-md;
+
+    .MuiTypography-root {
+      font-size: 1.125rem !important;
+    }
+  }
+
+  .titleIcon {
+    font-size: 1.5rem !important;
+  }
+
+  .closeButton {
+    right: $spacing-md;
+  }
+
+  .form {
+    padding: $spacing-md;
+    gap: $spacing-md;
+  }
+
+  .sectionHeader {
+    padding: $spacing-md;
+  }
+
+  .formRow {
+    padding: $spacing-md;
+  }
+
+  .sectionTitle {
+    font-size: 1rem !important;
+
+    .MuiSvgIcon-root {
+      font-size: 1.25rem !important;
+    }
+  }
+
+  .actionButtons {
+    .MuiButton-root {
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.8125rem;
+      min-width: auto;
+
+      .MuiSvgIcon-root {
+        font-size: 1rem !important;
+      }
+    }
+  }
+
+  .modalActions {
+    padding: $spacing-sm $spacing-md;
+  }
+}
+
+// 💡 접근성 개선
+@media (prefers-reduced-motion: reduce) {
+  .formSection,
+  .actionButtons .MuiButton-root,
+  .modalActions .MuiButton-root,
+  .closeButton {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// 🎯 다크 모드 지원 (추후 확장 가능)
+@media (prefers-color-scheme: dark) {
+  .modal {
+    .MuiDialog-paper {
+      background: darken($color-background-default, 5%);
+    }
+  }
+
+  .formSection {
+    background: darken($color-background-paper, 3%);
+    border-color: rgba($color-primary, 0.2);
+  }
+}
+
+// 🔧 프린트 스타일
+@media print {
+  .modal {
+    .MuiDialog-paper {
+      box-shadow: none;
+      border: 2px solid $color-text-primary;
+    }
+  }
+
+  .modalTitle {
+    background: $color-text-primary !important;
+    color: white !important;
+  }
+
+  .closeButton,
+  .actionButtons,
+  .modalActions {
+    display: none !important;
+  }
+
+  .formSection {
+    box-shadow: none;
+    border: 1px solid $color-text-secondary;
+  }
+}
