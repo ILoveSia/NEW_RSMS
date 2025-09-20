@@ -22,6 +22,9 @@ const DeptOpManualsMgmt = React.lazy(() => import('@/domains/resps/pages/DeptOpM
 const CeoMgmtDutySearch = React.lazy(() => import('@/domains/resps/pages/CeoMgmtDutySearch/CeoMgmtDutySearch'));
 const RoleHistory = React.lazy(() => import('@/domains/resps/pages/RoleHistory/RoleHistory'));
 const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
+
+// Activities (책무구조도 관리 활동) 도메인
+const PerformerAssignment = React.lazy(() => import('@/domains/activities/pages/PerformerAssignment/PerformerAssignment'));
 import {
   AuthGuard,
   ManagerGuard,
@@ -545,6 +548,131 @@ const AppRouter: React.FC = () => {
                 </AuthGuard>
               } />
             </Routes>
+          } />
+
+          {/* 책무구조도 관리 활동 (인증 필요) */}
+          <Route path="activity/*" element={
+            <AuthGuard>
+              <Suspense fallback={<LoadingSpinner text="관리활동 로딩 중..." />}>
+                <Routes>
+                  {/* 수행자지정 */}
+                  <Route path="performer-assignment" element={<PerformerAssignment />} />
+                  <Route path="performer-assignment/:id" element={
+                    <TemporaryPage
+                      title="수행자 상세"
+                      description="수행자의 상세 정보와 지정 이력을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="performer-assignment/create" element={
+                    <TemporaryPage
+                      title="수행자 지정"
+                      description="새로운 수행자를 지정하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="performer-assignment/:id/edit" element={
+                    <TemporaryPage
+                      title="수행자 변경"
+                      description="기존 수행자 정보를 변경하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 관리활동 수행 */}
+                  <Route path="execution" element={
+                    <TemporaryPage
+                      title="관리활동 수행"
+                      description="관리활동 수행 현황을 관리하고 모니터링하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="execution/:id" element={
+                    <TemporaryPage
+                      title="관리활동 상세"
+                      description="관리활동의 상세 정보와 수행 결과를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="execution/create" element={
+                    <TemporaryPage
+                      title="관리활동 등록"
+                      description="새로운 관리활동을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="execution/:id/edit" element={
+                    <TemporaryPage
+                      title="관리활동 편집"
+                      description="기존 관리활동 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 업무메뉴얼조회 */}
+                  <Route path="manual-inquiry" element={
+                    <TemporaryPage
+                      title="업무메뉴얼조회"
+                      description="업무 메뉴얼을 조회하고 검색하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="manual-inquiry/:id" element={
+                    <TemporaryPage
+                      title="메뉴얼 상세"
+                      description="업무 메뉴얼의 상세 내용을 확인하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 내부통제장치등록 */}
+                  <Route path="internal-control-register" element={
+                    <TemporaryPage
+                      title="내부통제장치등록"
+                      description="내부통제장치를 등록하고 관리하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-register/:id" element={
+                    <TemporaryPage
+                      title="내부통제장치 상세"
+                      description="내부통제장치의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-register/create" element={
+                    <TemporaryPage
+                      title="내부통제장치 등록"
+                      description="새로운 내부통제장치를 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-register/:id/edit" element={
+                    <TemporaryPage
+                      title="내부통제장치 편집"
+                      description="기존 내부통제장치 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 내부통제장치관리 */}
+                  <Route path="internal-control-management" element={
+                    <TemporaryPage
+                      title="내부통제장치관리"
+                      description="내부통제장치 현황을 관리하고 모니터링하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-management/:id" element={
+                    <TemporaryPage
+                      title="내부통제장치 관리 상세"
+                      description="내부통제장치 관리의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-management/create" element={
+                    <TemporaryPage
+                      title="내부통제장치 관리 등록"
+                      description="새로운 내부통제장치 관리를 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="internal-control-management/:id/edit" element={
+                    <TemporaryPage
+                      title="내부통제장치 관리 편집"
+                      description="기존 내부통제장치 관리 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/activity/performer-assignment" replace />} />
+                </Routes>
+              </Suspense>
+            </AuthGuard>
           } />
 
           {/* 앱 기본 경로 - 대시보드로 리다이렉트 */}

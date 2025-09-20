@@ -60,7 +60,7 @@ export const routes = {
     categories: '/app/risks/categories',
   },
 
-  // 책무 관리 (auth - 원장관리)
+  // 책무구조도 원장 관리 (auth - 원장관리)
   resps: {
     // 원장관리
     ledgerOrders: '/app/resps/ledger-orders',
@@ -119,6 +119,37 @@ export const routes = {
 
     // CEO총괄관리의무조회
     ceoManagement: '/app/resps/ceo-management',
+  },
+
+  // 책무구조도 관리 활동 (auth - 관리활동)
+  activities: {
+    // 수행자지정
+    performerAssignment: '/app/activity/performer-assignment',
+    performerAssignmentDetail: '/app/activity/performer-assignment/:id',
+    performerAssignmentCreate: '/app/activity/performer-assignment/create',
+    performerAssignmentEdit: '/app/activity/performer-assignment/:id/edit',
+
+    // 관리활동 수행
+    execution: '/app/activity/execution',
+    executionDetail: '/app/activity/execution/:id',
+    executionCreate: '/app/activity/execution/create',
+    executionEdit: '/app/activity/execution/:id/edit',
+
+    // 업무메뉴얼조회
+    manualInquiry: '/app/activity/manual-inquiry',
+    manualInquiryDetail: '/app/activity/manual-inquiry/:id',
+
+    // 내부통제장치등록
+    internalControlRegister: '/app/activity/internal-control-register',
+    internalControlRegisterDetail: '/app/activity/internal-control-register/:id',
+    internalControlRegisterCreate: '/app/activity/internal-control-register/create',
+    internalControlRegisterEdit: '/app/activity/internal-control-register/:id/edit',
+
+    // 내부통제장치관리
+    internalControlManagement: '/app/activity/internal-control-management',
+    internalControlManagementDetail: '/app/activity/internal-control-management/:id',
+    internalControlManagementCreate: '/app/activity/internal-control-management/create',
+    internalControlManagementEdit: '/app/activity/internal-control-management/:id/edit',
   },
 
   // 보고서 (auth)
@@ -196,6 +227,25 @@ export const createRoute = {
   boardHistoryDetail: (id: string | number) => `/app/resps/board-history/${id}`,
   boardHistoryEdit: (id: string | number) => `/app/resps/board-history/${id}/edit`,
 
+  // 관리활동 - 수행자지정
+  performerAssignmentDetail: (id: string | number) => `/app/activity/performer-assignment/${id}`,
+  performerAssignmentEdit: (id: string | number) => `/app/activity/performer-assignment/${id}/edit`,
+
+  // 관리활동 - 관리활동 수행
+  executionDetail: (id: string | number) => `/app/activity/execution/${id}`,
+  executionEdit: (id: string | number) => `/app/activity/execution/${id}/edit`,
+
+  // 관리활동 - 업무메뉴얼조회
+  manualInquiryDetail: (id: string | number) => `/app/activity/manual-inquiry/${id}`,
+
+  // 관리활동 - 내부통제장치등록
+  internalControlRegisterDetail: (id: string | number) => `/app/activity/internal-control-register/${id}`,
+  internalControlRegisterEdit: (id: string | number) => `/app/activity/internal-control-register/${id}/edit`,
+
+  // 관리활동 - 내부통제장치관리
+  internalControlManagementDetail: (id: string | number) => `/app/activity/internal-control-management/${id}`,
+  internalControlManagementEdit: (id: string | number) => `/app/activity/internal-control-management/${id}/edit`,
+
   // 보고서
   reportDetail: (id: string | number) => `/reports/${id}`,
   reportEdit: (id: string | number) => `/reports/${id}/edit`,
@@ -223,6 +273,8 @@ export const routePermissions: Record<string, RoutePermission> = {
   '/app/risks/*': 'auth',
   '/app/resps': 'auth',
   '/app/resps/*': 'auth',
+  '/app/activity': 'auth',
+  '/app/activity/*': 'auth',
   '/app/reports': 'auth',
   '/app/reports/*': 'auth',
   '/app/settings/profile': 'auth',
@@ -277,6 +329,36 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     title: '이사회이력관리',
     permission: 'manager',
     breadcrumb: ['책무구조도 원장 관리', '이사회이력관리'],
+  },
+  '/app/activity': {
+    title: '책무구조도 관리 활동',
+    permission: 'auth',
+    breadcrumb: ['책무구조도 관리 활동'],
+  },
+  '/app/activity/performer-assignment': {
+    title: '수행자지정',
+    permission: 'manager',
+    breadcrumb: ['책무구조도 관리 활동', '수행자지정'],
+  },
+  '/app/activity/execution': {
+    title: '관리활동 수행',
+    permission: 'auth',
+    breadcrumb: ['책무구조도 관리 활동', '관리활동 수행'],
+  },
+  '/app/activity/manual-inquiry': {
+    title: '업무메뉴얼조회',
+    permission: 'auth',
+    breadcrumb: ['책무구조도 관리 활동', '업무메뉴얼조회'],
+  },
+  '/app/activity/internal-control-register': {
+    title: '내부통제장치등록',
+    permission: 'manager',
+    breadcrumb: ['책무구조도 관리 활동', '내부통제장치등록'],
+  },
+  '/app/activity/internal-control-management': {
+    title: '내부통제장치관리',
+    permission: 'manager',
+    breadcrumb: ['책무구조도 관리 활동', '내부통제장치관리'],
   },
   '/app/reports': {
     title: '보고서',
