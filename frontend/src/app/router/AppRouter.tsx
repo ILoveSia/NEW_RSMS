@@ -25,6 +25,10 @@ const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDas
 
 // Activities (책무구조도 관리 활동) 도메인
 const PerformerAssignment = React.lazy(() => import('@/domains/activities/pages/PerformerAssignment/PerformerAssignment'));
+const ActivityExecution = React.lazy(() => import('@/domains/activities/pages/ActivityExecution/ActivityExecution'));
+const ManualInquiry = React.lazy(() => import('@/domains/activities/pages/ManualInquiry/ManualInquiry'));
+const InternalControlRegister = React.lazy(() => import('@/domains/activities/pages/InternalControlRegister/InternalControlRegister'));
+const InternalControlMgmt = React.lazy(() => import('@/domains/activities/pages/InternalControlMgmt/InternalControlMgmt'));
 import {
   AuthGuard,
   ManagerGuard,
@@ -577,12 +581,7 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 관리활동 수행 */}
-                  <Route path="execution" element={
-                    <TemporaryPage
-                      title="관리활동 수행"
-                      description="관리활동 수행 현황을 관리하고 모니터링하는 페이지입니다."
-                    />
-                  } />
+                  <Route path="execution" element={<ActivityExecution />} />
                   <Route path="execution/:id" element={
                     <TemporaryPage
                       title="관리활동 상세"
@@ -603,12 +602,7 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 업무메뉴얼조회 */}
-                  <Route path="manual-inquiry" element={
-                    <TemporaryPage
-                      title="업무메뉴얼조회"
-                      description="업무 메뉴얼을 조회하고 검색하는 페이지입니다."
-                    />
-                  } />
+                  <Route path="manual-inquiry" element={<ManualInquiry />} />
                   <Route path="manual-inquiry/:id" element={
                     <TemporaryPage
                       title="메뉴얼 상세"
@@ -618,10 +612,9 @@ const AppRouter: React.FC = () => {
 
                   {/* 내부통제장치등록 */}
                   <Route path="internal-control-register" element={
-                    <TemporaryPage
-                      title="내부통제장치등록"
-                      description="내부통제장치를 등록하고 관리하는 페이지입니다."
-                    />
+                    <Suspense fallback={<LoadingSpinner text="내부통제장치등록 로딩 중..." />}>
+                      <InternalControlRegister />
+                    </Suspense>
                   } />
                   <Route path="internal-control-register/:id" element={
                     <TemporaryPage
@@ -644,10 +637,9 @@ const AppRouter: React.FC = () => {
 
                   {/* 내부통제장치관리 */}
                   <Route path="internal-control-management" element={
-                    <TemporaryPage
-                      title="내부통제장치관리"
-                      description="내부통제장치 현황을 관리하고 모니터링하는 페이지입니다."
-                    />
+                    <Suspense fallback={<LoadingSpinner text="내부통제장치관리 로딩 중..." />}>
+                      <InternalControlMgmt />
+                    </Suspense>
                   } />
                   <Route path="internal-control-management/:id" element={
                     <TemporaryPage

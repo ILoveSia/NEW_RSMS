@@ -120,7 +120,7 @@ const BaseDataGrid = <TData = any,>({
   const [gridApi, setGridApi] = useState<GridApi<TData> | null>(null);
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null);
 
-  // 컬럼 정의에 체크박스 선택 추가
+  // 컬럼 정의에 체크박스 선택 추가 (맨 앞에 위치)
   const finalColumns = useMemo<ColDef<TData>[]>(() => {
     if (!checkboxSelection) return columns;
 
@@ -137,6 +137,7 @@ const BaseDataGrid = <TData = any,>({
       headerName: '',
     };
 
+    // 체크박스는 항상 맨 앞에 위치
     return [checkboxCol, ...columns];
   }, [columns, checkboxSelection, headerCheckboxSelection, rowSelection]);
 

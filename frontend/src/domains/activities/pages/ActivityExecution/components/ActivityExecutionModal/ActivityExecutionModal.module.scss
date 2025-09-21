@@ -1,0 +1,428 @@
+// ActivityExecutionModal 스타일 - 이미지 기반 정확한 레이아웃
+@use 'sass:color';
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.modalContent {
+  padding: $spacing-md;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: #f9f9f9;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-md;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-sm;
+  }
+}
+
+// 📋 상단 영역: 관리활동 결과 작성
+.topSection {
+  background: white;
+  padding: $spacing-md;
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-md;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+  color: var(--theme-primary, #{$color-primary});
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: $spacing-xs;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    font-size: 1rem;
+  }
+}
+
+.topFields {
+  margin-top: $spacing-md;
+}
+
+.fieldLabel {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: $spacing-xs;
+  font-size: 0.875rem;
+  display: block;
+}
+
+.selectField {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    height: 40px;
+
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+}
+
+.opinionField {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+}
+
+// 🏗️ 중앙 분할 레이아웃: 왼쪽 파란색 + 오른쪽 폼
+.mainSplitLayout {
+  display: flex;
+  background: white;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  margin-bottom: $spacing-md;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 300px;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+  }
+}
+
+// 왼쪽 파란색 영역: "관리활동"
+.leftBluePanel {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+  width: 40px;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    width: 100%;
+    height: 80px;
+    padding: $spacing-md;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    height: 60px;
+    padding: $spacing-sm;
+  }
+}
+
+.bluePanelTitle {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    font-size: 1.5rem;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    font-size: 1.25rem;
+  }
+}
+
+// 오른쪽 폼 영역
+.rightFormPanel {
+  flex: 1;
+  padding: 2px;
+  background: #fafafa;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-lg;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-md;
+  }
+}
+
+.formField {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    height: 40px;
+
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+
+  &.Mui-disabled {
+    background: #f5f5f5;
+
+    .MuiOutlinedInput-root {
+      background: #f5f5f5;
+    }
+  }
+}
+
+.textareaField {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+
+  &.Mui-disabled {
+    background: #f5f5f5;
+
+    .MuiOutlinedInput-root {
+      background: #f5f5f5;
+    }
+  }
+}
+
+// 🏛️ 하단 영역: 체크리스트
+.bottomSection {
+  background: white;
+  padding: $spacing-md;
+  border-radius: $border-radius-lg;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.checklistLayout {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px;
+  gap: 1px;
+  align-items: start;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+}
+
+.checklistLabel {
+  background: #e3f2fd;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid #bbdefb;
+  text-align: center;
+  height: fit-content;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-sm;
+  }
+}
+
+.checklistTitle {
+  color: var(--theme-primary, #{$color-primary});
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.125rem;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    font-size: 1rem;
+  }
+}
+
+.checklistContent {
+  background: #fffacd;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid #f0e68c;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-sm;
+  }
+}
+
+.checklistField {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    background: white;
+
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+
+  &.Mui-disabled {
+    background: #f5f5f5;
+
+    .MuiOutlinedInput-root {
+      background: #f5f5f5;
+    }
+  }
+}
+
+.checklistConfirmation {
+  background: #f8f9fa;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  border: 1px solid #e9ecef;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-sm;
+  }
+}
+
+.confirmSelect {
+  background: white;
+  border-radius: $border-radius-sm;
+
+  .MuiOutlinedInput-root {
+    height: 40px;
+
+    &:hover .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+
+    &.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: var(--theme-primary, #{$color-primary});
+    }
+  }
+}
+
+// 📱 반응형 개선
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modalContent {
+    .topSection,
+    .mainSplitLayout,
+    .bottomSection {
+      margin-bottom: $spacing-md;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modalContent {
+    .fieldLabel {
+      font-size: 0.8125rem;
+    }
+
+    .topFields {
+      .MuiGrid-item {
+        margin-bottom: $spacing-sm;
+      }
+    }
+  }
+}
+
+// 🎯 접근성 개선
+.modalContent {
+  &:focus-within {
+    .mainSplitLayout,
+    .topSection,
+    .bottomSection {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(var(--theme-primary-rgb, #{color.channel($color-primary, 'red'), color.channel($color-primary, 'green'), color.channel($color-primary, 'blue')}), 0.3);
+    }
+  }
+}
+
+// ⚡ 성능 최적화
+.topSection,
+.mainSplitLayout,
+.bottomSection {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+// 🖨️ 프린트 스타일
+@media print {
+  .modalContent {
+    .leftBluePanel {
+      background: #f5f5f5 !important;
+      color: black !important;
+    }
+
+    .topSection,
+    .mainSplitLayout,
+    .bottomSection {
+      box-shadow: none !important;
+      border: 1px solid #000 !important;
+    }
+  }
+}
+
+// 🌙 다크 모드 지원
+@media (prefers-color-scheme: dark) {
+  .modalContent {
+    background: var(--theme-background-dark, #{color.adjust($color-background-default, $lightness: 2%)});
+  }
+
+  .topSection,
+  .mainSplitLayout,
+  .bottomSection {
+    background: var(--theme-background-paper-dark, #{color.adjust($color-background-default, $lightness: 5%)});
+    border-color: var(--theme-border-dark, #{color.adjust($color-background-default, $lightness: 10%)});
+  }
+
+  .rightFormPanel {
+    background: var(--theme-background-secondary-dark, #{color.adjust($color-background-default, $lightness: 3%)});
+  }
+
+  .fieldLabel {
+    color: var(--theme-text-primary-dark, #e0e0e0);
+  }
+
+  .formField,
+  .textareaField,
+  .selectField,
+  .opinionField,
+  .checklistField,
+  .confirmSelect {
+    background: var(--theme-background-paper-dark, #{color.adjust($color-background-default, $lightness: 8%)});
+
+    .MuiOutlinedInput-root {
+      background: var(--theme-background-paper-dark, #{color.adjust($color-background-default, $lightness: 8%)});
+      color: var(--theme-text-primary-dark, #e0e0e0);
+    }
+  }
+
+  .checklistLabel {
+    background: var(--theme-background-info-dark, #{color.adjust($color-background-default, $lightness: 3%)});
+    border-color: var(--theme-border-info-dark, #{color.adjust($color-background-default, $lightness: 12%)});
+  }
+
+  .checklistContent {
+    background: var(--theme-background-warning-dark, #{color.adjust($color-background-default, $lightness: 4%)});
+    border-color: var(--theme-border-warning-dark, #{color.adjust($color-background-default, $lightness: 15%)});
+  }
+
+  .checklistConfirmation {
+    background: var(--theme-background-secondary-dark, #{color.adjust($color-background-default, $lightness: 6%)});
+    border-color: var(--theme-border-dark, #{color.adjust($color-background-default, $lightness: 10%)});
+  }
+}

@@ -28,9 +28,63 @@ RSMS/
 
 ## 🎨 개발 표준 및 템플릿
 
-### 페이지 개발 표준 템플릿
+### 🚨 **중요: PositionMgmt.tsx 절대 표준 템플릿 (CRITICAL RULE)**
+
+**💥 절대 원칙: PositionMgmt.tsx는 모든 페이지의 절대 표준 템플릿입니다**
+
 - **기본 템플릿**: `src/domains/resps/pages/PositionMgmt/PositionMgmt.tsx`
-- **모든 새로운 페이지는 PositionMgmt.tsx 구조를 참고하여 개발**
+- **절대 원칙**: 모든 새로운 페이지는 PositionMgmt.tsx 구조를 **정확히** 따라야 합니다
+- **중요**: 업무 로직만 다를 뿐, **색상, 사이즈, UI/UX는 100% 동일**해야 합니다
+- **금지**: 독단적으로 다른 스타일이나 구조를 만들지 마세요
+
+#### ⚠️ 실수 방지를 위한 체크리스트
+- [ ] PositionMgmt.tsx의 pageHeader 스타일을 정확히 복사했는가?
+- [ ] PositionMgmt.module.scss의 스타일을 그대로 사용했는가?
+- [ ] 검색 필드의 gridSize 구조를 동일하게 적용했는가?
+- [ ] 액션 버튼(엑셀다운로드, 등록, 삭제)을 동일한 순서로 배치했는가?
+- [ ] 통계 카드의 구조와 스타일을 동일하게 적용했는가?
+
+#### 📋 PositionMgmt.tsx 템플릿 준수 사항
+
+**1. PageHeader 스타일 (절대 변경 금지)**
+```scss
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+```
+
+**2. 검색 필드 구조 (정확히 복사)**
+```typescript
+const searchFields = useMemo<FilterField[]>(() => [
+  {
+    key: 'searchKeyword',
+    type: 'text',
+    label: '검색어',
+    placeholder: '검색어를 입력하세요',
+    gridSize: { xs: 12, sm: 6, md: 3 }
+  },
+  // ... 동일한 패턴으로 구성
+], []);
+```
+
+**3. 액션 버튼 순서 (절대 순서 준수)**
+```tsx
+<div className={styles.actionRight}>
+  <Button variant="contained">엑셀다운로드</Button>
+  <Button variant="contained">등록</Button>
+  <Button variant="contained">삭제</Button>
+</div>
+```
+
+### 페이지 개발 표준 템플릿
 
 **PositionMgmt.tsx 템플릿 구조:**
 ```tsx
@@ -170,19 +224,22 @@ RSMS/
 
 ### Phase 1: 문서 확인 (필수)
 - [ ] **CLAUDE.md** (이 문서) 읽기
+- [ ] **🚨 PositionMgmt.tsx 절대 표준 템플릿 규칙 확인** (최우선)
 - [ ] 개발할 기능에 맞는 참조 문서 확인:
   - Frontend 작업 시: **FRONTEND_ARCHITECTURE.md** + **FRONTEND_DEVELOPMENT_GUIDE.md**
   - Backend 작업 시: **BACKEND_ARCHITECTURE.md** + **BACKEND_DEVELOPMENT_GUIDE.md**
   - 전체 아키텍처 작업 시: 모든 문서
 
-### Phase 2: 기존 코드 분석
-- [ ] **PositionMgmt.tsx 템플릿 구조 확인** (새 페이지 개발 시 필수)
+### Phase 2: 기존 코드 분석 (PositionMgmt.tsx 우선)
+- [ ] **PositionMgmt.tsx 템플릿 구조 완전 이해** (새 페이지 개발 시 필수)
+- [ ] **PositionMgmt.module.scss 스타일 완전 복사** (색상, 사이즈 동일하게)
 - [ ] **테마 시스템 적용 확인** (Button 컴포넌트, CSS 변수 사용)
 - [ ] 기존 코드 패턴 분석 후 작업 시작
 - [ ] 중복 컴포넌트/기능 존재 여부 확인
 - [ ] shared/components, domain 구조 파악
 
 ### Phase 3: 개발 원칙 숙지
+- [ ] **PositionMgmt.tsx 100% 준수 원칙** 숙지
 - [ ] 아래 핵심 원칙들 숙지 후 개발 시작
 
 ---
@@ -919,7 +976,85 @@ PositionMgmt/
 
 ---
 
-**📅 마지막 업데이트**: 2025-09-18
-**🎯 프로젝트 상태**: Priority #1-5 완전 완료, PositionMgmt 페이지 완성
-**🚀 주요 성과**: 45개 테스트, 성능 최적화, 완전한 문서화 체계
+## 🚨 **Claude Code 실수 방지 가이드** (2025-09-21 추가)
+
+### 💥 **절대 반복하지 말아야 할 실수들**
+
+#### ❌ **실수 #1: PositionMgmt.tsx 표준 템플릿 무시**
+**문제**: 사용자가 "PositionMgmt.tsx가 표준 템플릿"이라고 여러 번 강조했지만 독단적으로 다른 스타일 적용
+
+**해결책**:
+- 새 페이지 개발 시 **반드시** PositionMgmt.tsx와 PositionMgmt.module.scss 먼저 분석
+- pageHeader, searchSection, actionBar, gridSection 구조 **정확히** 복사
+- 색상, 사이즈, 패딩, 마진 **모든 것을 동일하게** 적용
+
+#### ❌ **실수 #2: 스타일 불일치로 인한 반복 수정**
+**문제**: pageHeader 높이와 색상이 다름, 통계 카드 스타일 불일치, 액션 버튼 배치 틀림
+
+**해결책**:
+- PositionMgmt.module.scss의 CSS 클래스를 **완전히 복사**
+- CSS 변수 (var(--theme-*)) **정확히** 사용
+- 스타일 변경 시 **반드시** PositionMgmt와 비교하여 동일한지 확인
+
+#### ❌ **실수 #3: 검색 필드 구조 임의 변경**
+**문제**: gridSize, 필드 순서, placeholder 텍스트를 임의로 변경
+
+**해결책**:
+```typescript
+// 반드시 이 패턴 준수
+const searchFields = useMemo<FilterField[]>(() => [
+  {
+    key: 'searchKeyword',
+    type: 'text',
+    label: '검색어',
+    placeholder: '검색어를 입력하세요',
+    gridSize: { xs: 12, sm: 6, md: 3 }  // 이 gridSize 절대 변경 금지
+  },
+], []);
+```
+
+#### ❌ **실수 #4: 사용자 피드백 무시**
+**문제**: "5번 6번 수정 시키잖아" - 같은 실수 반복
+
+**해결책**:
+1. 사용자가 "PositionMgmt.tsx 참고해"라고 하면 **즉시** 해당 파일 Read
+2. 스타일 비교 후 **정확히** 동일하게 적용
+3. 독단적 판단 대신 **사용자 요구사항 우선**
+
+### ✅ **올바른 개발 프로세스**
+
+#### 1️⃣ **새 페이지 개발 시 필수 단계**
+```bash
+1. PositionMgmt.tsx 파일 Read (구조 파악)
+2. PositionMgmt.module.scss 파일 Read (스타일 파악)
+3. 새 페이지에 정확히 동일한 구조 적용
+4. 업무 로직만 변경, UI/UX는 100% 동일
+5. 사용자 피드백 즉시 반영
+```
+
+#### 2️⃣ **스타일 적용 체크리스트**
+- [ ] pageHeader 배경색, 텍스트 색상 동일
+- [ ] pageHeader padding, margin, border-radius 동일
+- [ ] 통계 카드 (statCard) 스타일 동일
+- [ ] 검색 필드 gridSize 동일
+- [ ] 액션 버튼 순서 동일 (엑셀다운로드, 등록, 삭제)
+- [ ] AG-Grid 테마 동일
+
+#### 3️⃣ **사용자 소통 원칙**
+- 사용자가 "참고해"라고 하면 **즉시** 해당 파일 분석
+- "다르잖아"라고 하면 **즉시** 차이점 찾아서 수정
+- **독단적 개발 절대 금지**, 사용자 요구사항 100% 준수
+
+### 🎯 **이 가이드의 목적**
+
+이 섹션은 **사용자의 직접적인 요청**으로 추가되었습니다:
+> "내가 PositionMgmt.tsx 페이지가 표준템플릿이라고 계속 얘기했는데 왜 자꾸 이상하게 개발해? 계속 5번 6번 수정을 시키잖아 너이거 또 실수하지않게 claude.md에 적어놔"
+
+**앞으로는 이런 실수가 절대 반복되지 않도록 이 가이드를 철저히 준수해주세요.**
+
+---
+
+**📅 마지막 업데이트**: 2025-09-21
+**🎯 프로젝트 상태**: Priority #1-5 완전 완료, PositionMgmt 페이지 완성, 실수 방지 가이드 추가
+**🚀 주요 성과**: 45개 테스트, 성능 최적화, 완전한 문서화 체계, Claude Code 실수 방지 체계 구축
 **📝 작성자**: Claude AI (RSMS 마스터 가이드)

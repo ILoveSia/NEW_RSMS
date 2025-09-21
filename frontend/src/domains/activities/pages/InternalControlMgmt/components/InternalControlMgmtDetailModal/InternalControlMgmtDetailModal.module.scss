@@ -1,0 +1,258 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 모달 컨테이너
+.modal {
+  z-index: 1300;
+
+  .modalPaper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    max-height: 90vh;
+  }
+}
+
+// 모달 콘텐츠
+.modalContent {
+  padding: 24px;
+  background: $color-background-default;
+  max-height: calc(90vh - 140px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $color-background-paper;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-divider;
+    border-radius: 3px;
+
+    &:hover {
+      background: $color-text-secondary;
+    }
+  }
+}
+
+// 메인 컨테이너
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// 섹션 스타일
+.section {
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid $color-divider;
+  background: white;
+
+  .sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid $color-divider;
+
+    .sectionTitle {
+      font-size: 16px;
+      font-weight: 600;
+      color: $color-text-primary;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .statusChip {
+      font-weight: 600;
+      font-size: 12px;
+    }
+  }
+}
+
+// 정보 항목 스타일
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .value {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-text-primary;
+    line-height: 1.4;
+    word-break: break-word;
+
+    // 만료 상태별 색상
+    &.expired {
+      color: $color-error;
+      font-weight: 600;
+    }
+
+    &.expiring-soon {
+      color: #f57c00;
+      font-weight: 600;
+    }
+
+    &.expiring-month {
+      color: #fbc02d;
+      font-weight: 500;
+    }
+
+    &.active {
+      color: $color-success;
+      font-weight: 500;
+    }
+  }
+
+  .multilineValue {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-text-primary;
+    line-height: 1.6;
+    white-space: pre-line;
+
+    div {
+      margin-bottom: 4px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .link {
+    color: var(--theme-button-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--theme-button-secondary);
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: var(--theme-button-primary);
+    }
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modalContent {
+    padding: 20px;
+  }
+
+  .container {
+    gap: 20px;
+  }
+
+  .section {
+    padding: 16px;
+
+    .sectionHeader {
+      margin-bottom: 16px;
+
+      .sectionTitle {
+        font-size: 15px;
+      }
+    }
+  }
+
+  .infoItem {
+    .value {
+      font-size: 13px;
+    }
+
+    .multilineValue {
+      font-size: 13px;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modalContent {
+    padding: 16px;
+  }
+
+  .container {
+    gap: 16px;
+  }
+
+  .section {
+    padding: 12px;
+
+    .sectionHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .sectionTitle {
+        font-size: 14px;
+      }
+
+      .statusChip {
+        align-self: flex-end;
+      }
+    }
+  }
+
+  .infoItem {
+    gap: 4px;
+
+    .label {
+      font-size: 11px;
+    }
+
+    .value {
+      font-size: 12px;
+    }
+
+    .multilineValue {
+      font-size: 12px;
+    }
+  }
+}
+
+// 다크 테마 지원
+@media (prefers-color-scheme: dark) {
+  .modalContent {
+    background: $color-background-default;
+  }
+
+  .section {
+    background: $color-background-paper;
+    border-color: $color-divider;
+  }
+
+  .infoItem {
+    .label {
+      color: $color-text-secondary;
+    }
+
+    .value {
+      color: $color-text-primary;
+    }
+
+    .multilineValue {
+      color: $color-text-primary;
+    }
+  }
+}

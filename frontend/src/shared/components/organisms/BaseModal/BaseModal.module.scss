@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -192,19 +193,19 @@
     // 버튼 변형
     &.contained {
       &.primary {
-        background: linear-gradient(135deg, $color-primary 0%, darken($color-primary, 10%) 100%);
+        background: linear-gradient(135deg, $color-primary 0%, #{color.adjust($color-primary, $lightness: -10%)} 100%);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.3);
       }
 
       &.secondary {
-        background: linear-gradient(135deg, $color-secondary 0%, darken($color-secondary, 10%) 100%);
+        background: linear-gradient(135deg, $color-secondary 0%, #{color.adjust($color-secondary, $lightness: -10%)} 100%);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.3);
       }
 
       &.error {
-        background: linear-gradient(135deg, $color-error 0%, darken($color-error, 10%) 100%);
+        background: linear-gradient(135deg, $color-error 0%, #{color.adjust($color-error, $lightness: -10%)} 100%);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.3);
       }

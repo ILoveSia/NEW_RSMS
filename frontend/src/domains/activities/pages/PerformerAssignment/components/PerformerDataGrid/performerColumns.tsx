@@ -28,14 +28,6 @@ export const performerColumns: ColDef<PerformerAssignment>[] = [
     cellClass: 'text-center'
   },
   {
-    headerName: '순서',
-    field: 'order',
-    sortable: true,
-    filter: true,
-    width: 80,
-    cellClass: 'text-center'
-  },
-  {
     headerName: '관리활동명',
     field: 'activityName',
     sortable: true,

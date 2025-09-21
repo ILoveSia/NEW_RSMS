@@ -128,7 +128,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   // 크기별 maxWidth 매핑
   const getSizeWidth = (size: ModalSize): string => {
     switch (size) {
-      case 'xs': return '400px';
+      case 'xs': return '300px';  // 400px → 300px로 축소
       case 'sm': return '600px';
       case 'md': return '800px';
       case 'lg': return '1200px';

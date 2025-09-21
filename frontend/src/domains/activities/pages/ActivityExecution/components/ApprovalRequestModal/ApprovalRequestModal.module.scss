@@ -1,0 +1,295 @@
+// ApprovalRequestModal 스타일 - 승인 요청 전용 모달
+@use 'sass:color';
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.modalContent {
+  padding: $spacing-md;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    padding: $spacing-md;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-sm;
+  }
+}
+
+// 📊 섹션 공통 스타일
+.section {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionHeader {
+  margin-bottom: $spacing-sm;
+  padding: $spacing-sm;
+  background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: $border-radius-md;
+  border-left: 4px solid var(--theme-primary, #{$color-primary});
+}
+
+.sectionTitle {
+  color: var(--theme-primary, #{$color-primary});
+  font-weight: 600;
+  margin-bottom: $spacing-xs;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    font-size: 1.125rem;
+  }
+}
+
+.sectionDivider {
+  margin: $spacing-xl 0;
+  border-color: #e0e0e0;
+  border-width: 2px;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    margin: $spacing-lg 0;
+  }
+}
+
+// 🎯 그리드 컨테이너
+.gridContainer {
+  background: white;
+  border-radius: $border-radius-md;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  // AG-Grid 스타일 오버라이드
+  :global(.ag-theme-alpine) {
+    border: none;
+
+    .ag-header {
+      background: linear-gradient(135deg, var(--theme-primary, #{$color-primary}) 0%, var(--theme-primary-dark, #{color.adjust($color-primary, $lightness: -10%)}) 100%);
+      border-bottom: 2px solid var(--theme-primary-dark, #{color.adjust($color-primary, $lightness: -15%)});
+
+      .ag-header-cell {
+        background: transparent;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+
+        .ag-header-cell-label {
+          color: white;
+          font-weight: 600;
+          font-size: 0.875rem;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
+    .ag-row {
+      border-bottom: 1px solid #f0f0f0;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .ag-cell {
+        border-right: 1px solid #f0f0f0;
+        padding: $spacing-sm;
+
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+
+    .ag-center-cols-viewport {
+      min-height: 100px;
+    }
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    :global(.ag-theme-alpine) {
+      font-size: 12px;
+
+      .ag-header-cell {
+        .ag-header-cell-label {
+          font-size: 0.75rem;
+        }
+      }
+
+      .ag-row .ag-cell {
+        padding: $spacing-xs;
+      }
+    }
+  }
+}
+
+// 📝 안내 섹션 (이미지 매칭)
+.noticeSection {
+  padding: $spacing-md;
+  margin-top: $spacing-lg;
+  border-top: 1px solid #e0e0e0;
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    padding: $spacing-sm;
+  }
+}
+
+.noticeText {
+  color: #1976d2; // 파란색 텍스트
+  font-weight: 500;
+  margin-bottom: $spacing-xs;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.noticeSubText {
+  color: #666666;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  margin-top: $spacing-xs;
+}
+
+// ⏳ 진행 상태 섹션
+.progressSection {
+  background: #f3e5f5;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  border: 2px solid #ce93d8;
+  margin-top: $spacing-lg;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+}
+
+.progressText {
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+
+  &::before {
+    content: '⏳';
+    margin-right: $spacing-xs;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+// 🎨 반응형 개선
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modalContent {
+    .section {
+      margin-bottom: $spacing-lg;
+    }
+
+    .sectionDivider {
+      margin: $spacing-lg 0;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modalContent {
+    .noticeAlert {
+      .MuiAlert-message .MuiTypography-root {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+// 🎯 접근성 개선
+.modalContent {
+  &:focus-within {
+    .gridContainer {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 3px rgba(var(--theme-primary-rgb, #{color.channel($color-primary, 'red'), color.channel($color-primary, 'green'), color.channel($color-primary, 'blue')}), 0.3);
+    }
+  }
+}
+
+// ⚡ 성능 최적화
+.gridContainer,
+.noticeSection,
+.progressSection {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+// 🖨️ 프린트 스타일
+@media print {
+  .modalContent {
+    .gridContainer {
+      box-shadow: none !important;
+      border: 1px solid #000 !important;
+    }
+
+    .noticeSection {
+      background: #f5f5f5 !important;
+      border: 1px solid #000 !important;
+    }
+
+    .progressSection {
+      display: none;
+    }
+  }
+}
+
+// 🌙 다크 모드 지원
+@media (prefers-color-scheme: dark) {
+  .sectionHeader {
+    background: linear-gradient(90deg, var(--theme-background-paper-dark, #{color.adjust($color-background-default, $lightness: 5%)}) 0%, var(--theme-background-secondary-dark, #{color.adjust($color-background-default, $lightness: 8%)}) 100%);
+  }
+
+  .gridContainer {
+    background: var(--theme-background-paper-dark, #{color.adjust($color-background-default, $lightness: 5%)});
+    border-color: var(--theme-border-dark, #{color.adjust($color-background-default, $lightness: 10%)});
+  }
+
+  .noticeSection {
+    border-color: var(--theme-border-dark, #{color.adjust($color-background-default, $lightness: 10%)});
+  }
+
+  .noticeText {
+    color: var(--theme-primary-light, #64b5f6);
+  }
+
+  .noticeSubText {
+    color: var(--theme-text-secondary-dark, #aaa);
+  }
+}
