@@ -270,26 +270,53 @@
     .MuiTextField-root {
       .MuiOutlinedInput-root {
         border-radius: $border-radius-lg;
-        
+
         &.Mui-focused {
           .MuiOutlinedInput-notchedOutline {
             border-color: $color-primary-500;
             border-width: 2px;
           }
         }
+
+        // 입력 아이콘 스타일링
+        .MuiInputAdornment-root {
+          .MuiSvgIcon-root {
+            color: $color-text-secondary;
+            transition: color $transition-base;
+          }
+        }
+
+        &.Mui-focused {
+          .MuiInputAdornment-root {
+            .MuiSvgIcon-root {
+              color: $color-primary-500;
+            }
+          }
+        }
+
+        // 비밀번호 토글 버튼 스타일링
+        .MuiIconButton-root {
+          color: $color-text-secondary;
+          transition: color $transition-base;
+
+          &:hover {
+            color: $color-primary-500;
+            background-color: rgba($color-primary-500, 0.04);
+          }
+        }
       }
-      
+
       .MuiInputLabel-root {
         &.Mui-focused {
           color: $color-primary-500;
         }
       }
     }
-    
+
     .MuiButton-root {
       text-transform: none;
       box-shadow: $shadow-sm;
-      
+
       &:hover {
         box-shadow: $shadow-md;
         transform: translateY(-1px);

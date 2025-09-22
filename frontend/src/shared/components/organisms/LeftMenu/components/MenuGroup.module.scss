@@ -3,6 +3,27 @@
 
 .menuGroup {
   margin-bottom: 0;
+  position: relative;
+  scroll-margin-top: 8px; // 스크롤 시 여백 확보
+
+  // 펼쳐진 그룹 시각적 강조
+  &.expanded {
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(
+        to bottom,
+        var(--theme-primary, $color-primary),
+        var(--theme-primary-light, lighten($color-primary, 10%))
+      );
+      border-radius: 0 2px 2px 0;
+      opacity: 0.8;
+    }
+  }
 }
 
 .groupHeader {

@@ -23,6 +23,11 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { isCollapsed } = useMenuState();
 
+  // 탭 개수 제한 (최대 10개)
+  const MAX_TABS = 10;
+  const limitedTabs = activeTabs.slice(0, MAX_TABS);
+  const hasExceededLimit = activeTabs.length > MAX_TABS;
+
   // 사이드바 너비에 따른 그리드 열 계산
   const getSidebarWidth = () => {
     if (isMobile) return '60px'; // 모바일에서는 최소 너비
@@ -75,7 +80,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           marginLeft: getSidebarWidth()
         }}
       >
-        {activeTabs.map(tab => (
+        {limitedTabs.map(tab => (
           <button
             key={tab.id}
             className={`${styles.tab} ${tab.isActive ? styles.active : ''}`}
@@ -119,6 +124,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             </span>
           </button>
         ))}
+
+        {/* 초과된 탭 표시 */}
+        {hasExceededLimit && (
+          <div className={styles.moreTabsIndicator}>
+            +{activeTabs.length - MAX_TABS}
+          </div>
+        )}
       </div>
 
       {/* 사용자 및 도구 영역 - 절대 위치로 고정 */}

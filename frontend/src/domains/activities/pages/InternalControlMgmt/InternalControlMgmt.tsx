@@ -13,8 +13,6 @@ import type {
   InternalControlMgmt,
   InternalControlMgmtFilters,
   InternalControlMgmtFormData,
-  InternalControlMgmtDetail,
-  InternalControlMgmtModalState,
   InternalControlMgmtPagination,
   InternalControlMgmtStatistics,
   LoadingStates
@@ -23,7 +21,6 @@ import type {
 import {
   DEFAULT_FILTERS,
   DEFAULT_PAGINATION,
-  DEFAULT_FORM_DATA,
   USAGE_STATUS_OPTIONS,
   DEPARTMENT_OPTIONS
 } from './types/internalControlMgmt.types';
@@ -33,14 +30,13 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
-import { TextField, Select, MenuItem, FormControl, InputLabel, TextareaAutosize, Box, Button, Typography, Paper, Grid } from '@mui/material';
 
 // Internal Control Management specific components
 import { internalControlMgmtColumns } from './components/InternalControlMgmtDataGrid/internalControlMgmtColumns';
 
 // Lazy-loaded components for performance optimization
-const InternalControlMgmtDetailModal = React.lazy(() =>
-  import('./components/InternalControlMgmtDetailModal').then(module => ({ default: module.default }))
+const InternalControlFormModal = React.lazy(() =>
+  import('./components/InternalControlFormModal/InternalControlFormModal').then(module => ({ default: module.default }))
 );
 
 interface InternalControlMgmtProps {
@@ -53,101 +49,179 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
   // State Management
   const [items, setItems] = useState<InternalControlMgmt[]>([]);
   const [selectedItems, setSelectedItems] = useState<InternalControlMgmt[]>([]);
-  const [selectedItem, setSelectedItem] = useState<InternalControlMgmt | null>(null);
-  const [selectedDetail, setSelectedDetail] = useState<InternalControlMgmtDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   // 개별 로딩 상태
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({
     search: false,
-    save: false,
-    detail: false,
-    copy: false
+    excel: false,
+    delete: false,
   });
 
   const [filters, setFilters] = useState<InternalControlMgmtFilters>(DEFAULT_FILTERS);
 
   const [pagination, setPagination] = useState<InternalControlMgmtPagination>(DEFAULT_PAGINATION);
 
-  const [modalState, setModalState] = useState<InternalControlMgmtModalState>({
-    detailModal: false,
-    selectedItem: null
-  });
-
-  // 우측 상세 입력 폼 상태
-  const [formData, setFormData] = useState<InternalControlMgmtFormData>(DEFAULT_FORM_DATA);
+  // 통합 모달 상태 (PositionFormModal 방식)
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [formModalMode, setFormModalMode] = useState<'create' | 'detail'>('create');
+  const [selectedInternalControl, setSelectedInternalControl] = useState<InternalControlMgmt | null>(null);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<InternalControlMgmtFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
-  const handleAdd = useCallback(() => {
-    // 새 항목 추가 로직
-    setSelectedItem(null);
-    setSelectedDetail(null);
-    setFormData(DEFAULT_FORM_DATA);
-    toast.info('새 내부통제장치 매핑을 추가해주세요.', { autoClose: 2000 });
+  const handleAddItem = useCallback(() => {
+    setFormModalMode('create');
+    setSelectedInternalControl(null);
+    setFormModalOpen(true);
+    toast.info('새 내부통제장치를 등록해주세요.', { autoClose: 2000 });
   }, []);
 
-  const handleSave = useCallback(async () => {
-    setLoadingStates(prev => ({ ...prev, save: true }));
+  const handleExcelDownload = useCallback(async () => {
+    setLoadingStates(prev => ({ ...prev, excel: true }));
 
     // 로딩 토스트 표시
-    const loadingToastId = toast.loading('내부통제장치 매핑 정보를 저장 중입니다...');
+    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
 
     try {
-      // TODO: 실제 저장 API 호출
+      // TODO: 실제 엑셀 다운로드 API 호출
       await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '내부통제장치 매핑 정보가 저장되었습니다.');
-      console.log('저장할 데이터:', formData);
+      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
+      console.log('엑셀 다운로드 완료');
     } catch (error) {
       // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '저장에 실패했습니다.');
-      console.error('저장 실패:', error);
+      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
+      console.error('엑셀 다운로드 실패:', error);
     } finally {
-      setLoadingStates(prev => ({ ...prev, save: false }));
+      setLoadingStates(prev => ({ ...prev, excel: false }));
     }
-  }, [formData]);
+  }, []);
 
-  const handleCopy = useCallback(async () => {
-    if (!selectedItem) {
-      toast.warning('복사할 항목을 선택해주세요.');
+  const handleDeleteItems = useCallback(async () => {
+    if (selectedItems.length === 0) {
+      toast.warning('삭제할 내부통제장치를 선택해주세요.');
       return;
     }
 
-    setLoadingStates(prev => ({ ...prev, copy: true }));
+    // 확인 메시지
+    const confirmMessage = `선택된 ${selectedItems.length}개의 내부통제장치를 삭제하시겠습니까?`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    setLoadingStates(prev => ({ ...prev, delete: true }));
+
+    // 로딩 토스트 표시
+    const loadingToastId = toast.loading(`${selectedItems.length}개 내부통제장치를 삭제 중입니다...`);
 
     try {
-      // TODO: 복사 로직 구현
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // TODO: 실제 삭제 API 호출
+      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
 
-      toast.success('선택된 항목이 복사되었습니다.');
+      // 상태 업데이트 (삭제된 항목 제거)
+      setItems(prev =>
+        prev.filter(item => !selectedItems.some(selected => selected.id === item.id))
+      );
+      setPagination(prev => ({
+        ...prev,
+        total: prev.total - selectedItems.length
+      }));
+      setSelectedItems([]);
+
+      // 성공 토스트로 업데이트
+      toast.update(loadingToastId, 'success', `${selectedItems.length}개 내부통제장치가 삭제되었습니다.`);
     } catch (error) {
-      toast.error('복사에 실패했습니다.');
-      console.error('복사 실패:', error);
+      // 에러 토스트로 업데이트
+      toast.update(loadingToastId, 'error', '내부통제장치 삭제에 실패했습니다.');
+      console.error('내부통제장치 삭제 실패:', error);
     } finally {
-      setLoadingStates(prev => ({ ...prev, copy: false }));
+      setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedItem]);
+  }, [selectedItems]);
 
-  const handleDetailView = useCallback((item: InternalControlMgmt) => {
-    setModalState(prev => ({
-      ...prev,
-      detailModal: true,
-      selectedItem: item
-    }));
+  // 통합 모달 핸들러들 (PositionFormModal 방식)
+  const handleFormModalClose = useCallback(() => {
+    setFormModalOpen(false);
+    setSelectedInternalControl(null);
   }, []);
 
-  const handleModalClose = useCallback(() => {
-    setModalState(prev => ({
-      ...prev,
-      detailModal: false,
-      selectedItem: null
-    }));
+  const handleRowClick = useCallback((item: InternalControlMgmt) => {
+    setSelectedItems([item]); // 선택된 아이템 설정
   }, []);
+
+  const handleRowDoubleClick = useCallback((item: InternalControlMgmt) => {
+    setFormModalMode('detail');
+    setSelectedInternalControl(item);
+    setFormModalOpen(true);
+  }, []);
+
+  // 폼 모달 핸들러들
+  const handleItemSave = useCallback(async (formData: InternalControlMgmtFormData) => {
+    try {
+      setLoading(true);
+      // TODO: API 호출로 내부통제장치 생성
+
+      // 임시로 새 항목 객체 생성
+      const newItem: InternalControlMgmt = {
+        id: Date.now().toString(),
+        departmentName: formData.departmentName || '',
+        managementActivityName: formData.managementActivityName,
+        internalControl: formData.internalControl,
+        unifiedNumber: formData.unifiedNumber,
+        url: formData.url,
+        applicationDate: formData.applicationDate,
+        expirationDate: '2025-12-31', // 임시값
+        isActive: true,
+        status: '정상'
+      };
+
+      setItems(prev => [newItem, ...prev]);
+      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
+      handleFormModalClose();
+      toast.success('내부통제장치가 성공적으로 등록되었습니다.');
+    } catch (error) {
+      console.error('내부통제장치 등록 실패:', error);
+      toast.error('내부통제장치 등록에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [handleFormModalClose]);
+
+  const handleItemUpdate = useCallback(async (id: string, formData: InternalControlMgmtFormData) => {
+    try {
+      setLoading(true);
+      // TODO: API 호출로 내부통제장치 수정
+
+      // 임시로 기존 항목 업데이트
+      setItems(prev =>
+        prev.map(item =>
+          item.id === id
+            ? {
+                ...item,
+                managementActivityName: formData.managementActivityName,
+                internalControl: formData.internalControl,
+                unifiedNumber: formData.unifiedNumber,
+                url: formData.url,
+                applicationDate: formData.applicationDate
+              }
+            : item
+        )
+      );
+
+      handleFormModalClose();
+      toast.success('내부통제장치가 성공적으로 수정되었습니다.');
+    } catch (error) {
+      console.error('내부통제장치 수정 실패:', error);
+      toast.error('내부통제장치 수정에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [handleFormModalClose]);
+
 
   const handleSearch = useCallback(async () => {
     setLoading(true);
@@ -181,60 +255,11 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
-  // Grid Event Handlers
-  const handleRowClick = useCallback((item: InternalControlMgmt) => {
-    setSelectedItem(item);
-    // 선택된 항목의 상세 정보 로드
-    loadItemDetail(item.id);
-    console.log('행 클릭:', item);
-  }, []);
-
-  const handleRowDoubleClick = useCallback((item: InternalControlMgmt) => {
-    handleDetailView(item);
-  }, [handleDetailView]);
+  // Grid Event Handlers - 중복 제거, 이미 위에서 정의됨
 
   const handleSelectionChange = useCallback((selected: InternalControlMgmt[]) => {
     setSelectedItems(selected);
     console.log('선택된 행:', selected.length);
-  }, []);
-
-  // 선택된 항목의 상세 정보 로드 함수
-  const loadItemDetail = useCallback(async (itemId: string) => {
-    setLoadingStates(prev => ({ ...prev, detail: true }));
-
-    try {
-      // TODO: 실제 API 호출로 상세 정보 로드
-      // const response = await internalControlMgmtApi.getDetail(itemId);
-      // setSelectedDetail(response.data);
-
-      // 임시 데이터
-      const detail: InternalControlMgmtDetail = {
-        ceoInfo: '김대표',
-        managementActivityName: '내부통제 점검',
-        managementActivityDetail: '월별 내부통제 현황 점검 및 보고',
-        internalControl: '내부통제시스템 A',
-        internalControlDeviceDescription: '자동화된 내부통제 점검 도구',
-        unifiedNumber: 'IC2024001',
-        url: 'https://internal-control.example.com',
-        applicationDate: '2024.01.01'
-      };
-
-      setSelectedDetail(detail);
-      setFormData(detail);
-    } catch (error) {
-      console.error('상세 정보 로드 실패:', error);
-      toast.error('상세 정보를 불러오는데 실패했습니다.');
-    } finally {
-      setLoadingStates(prev => ({ ...prev, detail: false }));
-    }
-  }, []);
-
-  // Form Input Handlers
-  const handleFormChange = useCallback((field: keyof InternalControlMgmtFormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
   }, []);
 
   // Memoized computed values (성능 최적화)
@@ -275,14 +300,16 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
     },
     {
       key: 'applicationDateFrom',
-      type: 'date',
+      type: 'text', // date 타입은 현재 지원되지 않으므로 text로 변경
       label: '적용일자 (시작)',
+      placeholder: 'YYYY-MM-DD',
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
       key: 'applicationDateTo',
-      type: 'date',
+      type: 'text', // date 타입은 현재 지원되지 않으므로 text로 변경
       label: '적용일자 (종료)',
+      placeholder: 'YYYY-MM-DD',
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
@@ -294,293 +321,254 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
     }
   ], []);
 
-  // BaseActionBar용 액션 버튼 정의
+  // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
+    {
+      key: 'excel',
+      type: 'excel',
+      onClick: handleExcelDownload,
+      disabled: loadingStates.excel,
+      loading: loadingStates.excel
+    },
     {
       key: 'add',
       type: 'add',
-      onClick: handleAdd
+      onClick: handleAddItem
     },
     {
-      key: 'save',
-      type: 'save',
-      onClick: handleSave,
-      disabled: loadingStates.save,
-      loading: loadingStates.save
-    },
-    {
-      key: 'copy',
-      type: 'copy',
-      onClick: handleCopy,
-      disabled: !selectedItem || loadingStates.copy,
-      loading: loadingStates.copy
-    },
-    {
-      key: 'detail',
-      type: 'detail',
-      label: '내부통제장치 상세',
-      onClick: () => selectedItem && handleDetailView(selectedItem),
-      disabled: !selectedItem
+      key: 'delete',
+      type: 'delete',
+      onClick: handleDeleteItems,
+      disabled: selectedItems.length === 0 || loadingStates.delete,
+      loading: loadingStates.delete,
+      confirmationRequired: true
     }
-  ], [handleAdd, handleSave, handleCopy, handleDetailView, selectedItem, loadingStates]);
+  ], [handleExcelDownload, handleAddItem, handleDeleteItems, selectedItems.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
-  const statusInfo = useMemo<StatusInfo>(() => ({
-    total: statistics.total,
-    selected: selectedItems.length
-  }), [statistics.total, selectedItems.length]);
+  const statusInfo = useMemo<StatusInfo[]>(() => [
+    {
+      label: '활성',
+      value: statistics.active,
+      color: 'success',
+      icon: <SecurityIcon />
+    },
+    {
+      label: '비활성',
+      value: statistics.inactive,
+      color: 'default',
+      icon: <SecurityIcon />
+    }
+  ], [statistics]);
+
+  // 성능 모니터링 함수
+  const onRenderProfiler = useCallback((
+    _id: string,
+    phase: 'mount' | 'update' | 'nested-update',
+    actualDuration: number,
+    baseDuration: number,
+    startTime: number,
+    commitTime: number
+  ) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.group(`🔍 InternalControlMgmt Performance Profiler`);
+      console.log(`📊 Phase: ${phase}`);
+      console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
+      console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
+      console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
+      console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
+
+      if (actualDuration > 16) { // 60fps 기준 16ms 초과 시 경고
+        console.warn(`⚠️ 성능 주의: 렌더링 시간이 16ms를 초과했습니다 (${actualDuration.toFixed(2)}ms)`);
+      }
+      console.groupEnd();
+    }
+  }, []);
+
+  // Mock data loading
+  React.useEffect(() => {
+    // TODO: Replace with actual API call
+    const mockItems: InternalControlMgmt[] = [
+      {
+        id: '1',
+        departmentName: '경영진단본부',
+        managementActivityName: '리스크 평가',
+        internalControl: '리스크관리시스템',
+        unifiedNumber: 'IC2024001',
+        url: 'https://risk.example.com',
+        applicationDate: '2024-01-15',
+        expirationDate: '2024-12-31',
+        isActive: true,
+        status: '정상'
+      },
+      {
+        id: '2',
+        departmentName: '총합기획부',
+        managementActivityName: '예산 편성',
+        internalControl: '예산관리시스템',
+        unifiedNumber: 'IC2024002',
+        url: 'https://budget.example.com',
+        applicationDate: '2024-02-01',
+        expirationDate: '2024-12-31',
+        isActive: true,
+        status: '정상'
+      },
+      {
+        id: '3',
+        departmentName: '정보보호부',
+        managementActivityName: '보안 관리',
+        internalControl: '보안관리시스템',
+        unifiedNumber: 'IC2024003',
+        url: 'https://security.example.com',
+        applicationDate: '2024-03-01',
+        expirationDate: '2024-12-31',
+        isActive: true,
+        status: '정상'
+      },
+      {
+        id: '4',
+        departmentName: '품질관리부',
+        managementActivityName: '품질 평가',
+        internalControl: '품질관리시스템',
+        unifiedNumber: 'IC2024004',
+        url: 'https://quality.example.com',
+        applicationDate: '2024-04-01',
+        expirationDate: '2024-11-30',
+        isActive: false,
+        status: '비활성'
+      },
+      {
+        id: '5',
+        departmentName: '내부감사부',
+        managementActivityName: '감사 실시',
+        internalControl: '감사관리시스템',
+        unifiedNumber: 'IC2024005',
+        url: 'https://audit.example.com',
+        applicationDate: '2024-05-01',
+        expirationDate: '2025-04-30',
+        isActive: true,
+        status: '정상'
+      }
+    ];
+
+    setItems(mockItems);
+    setPagination(prev => ({
+      ...prev,
+      total: mockItems.length,
+      totalPages: Math.ceil(mockItems.length / prev.size)
+    }));
+  }, []);
 
   return (
-    <div className={`${styles.container} ${className || ''}`}>
-      {/* 페이지 헤더 */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <h1>내부통제장치관리</h1>
-            <p>타 내부통제 시스템과 관리활동 간의 매핑 관계를 관리합니다</p>
-          </div>
-          <div className={styles.headerStats}>
-            <div className={styles.statCard}>
-              <DashboardIcon className={styles.statIcon} />
-              <div className={styles.statContent}>
-                <span className={styles.statValue}>{statistics.total}</span>
-                <span className={styles.statLabel}>총 매핑 수</span>
+    <React.Profiler id="InternalControlMgmt" onRender={onRenderProfiler}>
+      <div className={`${styles.container} ${className || ''}`}>
+        {/* 🏗️ 페이지 헤더 */}
+        <div className={styles.pageHeader}>
+          <div className={styles.headerContent}>
+            <div className={styles.titleSection}>
+              <DashboardIcon className={styles.headerIcon} />
+              <div>
+                <h1 className={styles.pageTitle}>
+                  {t('internalControl.management.title', '내부통제장치관리')}
+                </h1>
+                <p className={styles.pageDescription}>
+                  {t('internalControl.management.description', '타 내부통제 시스템과 관리활동 간의 매핑 관계를 관리합니다')}
+                </p>
               </div>
             </div>
-            <div className={styles.statCard}>
-              <SecurityIcon className={styles.statIcon} />
-              <div className={styles.statContent}>
-                <span className={styles.statValue}>{statistics.active}</span>
-                <span className={styles.statLabel}>활성 매핑</span>
-              </div>
-            </div>
-            <div className={styles.statCard}>
-              <TrendingUpIcon className={styles.statIcon} />
-              <div className={styles.statContent}>
-                <span className={styles.statValue}>{statistics.expiringSoon}</span>
-                <span className={styles.statLabel}>만료 예정</span>
-              </div>
-            </div>
-            <div className={styles.statCard}>
-              <AnalyticsIcon className={styles.statIcon} />
-              <div className={styles.statContent}>
-                <span className={styles.statValue}>{statistics.inactive}</span>
-                <span className={styles.statLabel}>비활성 매핑</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* 검색 섹션 */}
-      <div className={styles.searchSection}>
-        <BaseSearchFilter
-          fields={searchFields}
-          values={filters}
-          onValuesChange={handleFiltersChange}
-          onSearch={handleSearch}
-          onClear={handleClearFilters}
-          loading={loadingStates.search}
-        />
-      </div>
+            <div className={styles.headerStats}>
+              <div className={styles.statCard}>
+                <div className={styles.statIcon}>
+                  <TrendingUpIcon />
+                </div>
+                <div className={styles.statContent}>
+                  <div className={styles.statNumber}>{statistics.total}</div>
+                  <div className={styles.statLabel}>총 매핑</div>
+                </div>
+              </div>
 
-      {/* 분할 레이아웃 메인 컨텐츠 */}
-      <div className={styles.splitLayout}>
-        {/* 좌측: 내부통제장치 목록 (2/3) */}
-        <div className={styles.leftPanel}>
-          {/* 액션 바 */}
-          <div className={styles.actionBarSection}>
-            <BaseActionBar
-              title="내부통제장치목록"
-              statusInfo={statusInfo}
-              actionButtons={actionButtons}
-            />
-          </div>
+              <div className={styles.statCard}>
+                <div className={styles.statIcon}>
+                  <SecurityIcon />
+                </div>
+                <div className={styles.statContent}>
+                  <div className={styles.statNumber}>
+                    {statistics.active}
+                  </div>
+                  <div className={styles.statLabel}>활성 매핑</div>
+                </div>
+              </div>
 
-          {/* 데이터 그리드 */}
-          <div className={styles.gridSection}>
-            <BaseDataGrid
-              data={displayItems}
-              columns={internalControlMgmtColumns}
-              loading={loading}
-              pagination={{
-                enabled: true,
-                page: pagination.page,
-                size: pagination.size,
-                total: pagination.total,
-                onPageChange: (page) => setPagination(prev => ({ ...prev, page }))
-              }}
-              selection={{
-                enabled: true,
-                selected: selectedItems,
-                onSelectionChange: handleSelectionChange
-              }}
-              onRowClick={handleRowClick}
-              onRowDoubleClick={handleRowDoubleClick}
-              height={500}
-              theme="rsms"
-              emptyMessage="조회 된 정보가 없습니다."
-            />
+              <div className={styles.statCard}>
+                <div className={styles.statIcon}>
+                  <AnalyticsIcon />
+                </div>
+                <div className={styles.statContent}>
+                  <div className={styles.statNumber}>{statistics.expiringSoon}</div>
+                  <div className={styles.statLabel}>만료 예정</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 우측: 상세 정보 입력 (1/3) */}
-        <div className={styles.rightPanel}>
-          <Paper className={styles.detailPanel}>
-            <Typography variant="h6" className={styles.detailTitle}>
-              상세 정보 입력
-            </Typography>
+        {/* 🎨 메인 컨텐츠 영역 */}
+        <div className={styles.content}>
+          {/* 🔍 공통 검색 필터 */}
+          <BaseSearchFilter
+            fields={searchFields}
+            values={filters as unknown as FilterValues}
+            onValuesChange={(values) => handleFiltersChange(values as unknown as Partial<InternalControlMgmtFilters>)}
+            onSearch={handleSearch}
+            onClear={handleClearFilters}
+            loading={loading}
+            searchLoading={loadingStates.search}
+            showClearButton={true}
+          />
 
-            {loadingStates.detail && (
-              <div className={styles.detailLoading}>
-                <LoadingSpinner text="상세 정보 로딩 중..." />
-              </div>
-            )}
+          {/* 💎 공통 액션 바 */}
+          <BaseActionBar
+            totalCount={statistics.total}
+            totalLabel="총 내부통제장치 수"
+            selectedCount={selectedItems.length}
+            statusInfo={statusInfo}
+            actions={actionButtons}
+            loading={loading}
+          />
 
-            {!loadingStates.detail && (
-              <Box className={styles.detailForm}>
-                <Grid container spacing={2}>
-                  {/* CEO 정보 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="CEO"
-                      value={formData.ceoInfo}
-                      onChange={(e) => handleFormChange('ceoInfo', e.target.value)}
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-
-                  {/* 관리활동명 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="관리활동명"
-                      value={formData.managementActivityName}
-                      onChange={(e) => handleFormChange('managementActivityName', e.target.value)}
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-
-                  {/* 관리활동상세 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="관리활동상세"
-                      value={formData.managementActivityDetail}
-                      onChange={(e) => handleFormChange('managementActivityDetail', e.target.value)}
-                      variant="outlined"
-                      multiline
-                      rows={3}
-                      size="small"
-                    />
-                  </Grid>
-
-                  {/* 내부통제 */}
-                  <Grid item xs={12}>
-                    <Box className={styles.searchField}>
-                      <TextField
-                        fullWidth
-                        label="내부통제"
-                        value={formData.internalControl}
-                        onChange={(e) => handleFormChange('internalControl', e.target.value)}
-                        variant="outlined"
-                        size="small"
-                      />
-                      <Button variant="outlined" size="small" className={styles.searchButton}>
-                        검색
-                      </Button>
-                    </Box>
-                  </Grid>
-
-                  {/* 내부통제장치설명 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="내부통제장치설명"
-                      value={formData.internalControlDeviceDescription}
-                      onChange={(e) => handleFormChange('internalControlDeviceDescription', e.target.value)}
-                      variant="outlined"
-                      multiline
-                      rows={3}
-                      size="small"
-                    />
-                  </Grid>
-
-                  {/* 통일번호 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="통일번호"
-                      value={formData.unifiedNumber}
-                      onChange={(e) => handleFormChange('unifiedNumber', e.target.value)}
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-
-                  {/* URL */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="URL"
-                      value={formData.url}
-                      onChange={(e) => handleFormChange('url', e.target.value)}
-                      variant="outlined"
-                      size="small"
-                      type="url"
-                    />
-                  </Grid>
-
-                  {/* 적용일자 */}
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="적용일자"
-                      value={formData.applicationDate}
-                      onChange={(e) => handleFormChange('applicationDate', e.target.value)}
-                      variant="outlined"
-                      type="date"
-                      size="small"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-
-                {/* 우측 하단 저장 버튼 */}
-                <Box className={styles.detailActions}>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={handleSave}
-                    disabled={loadingStates.save}
-                    className={styles.saveButton}
-                  >
-                    {loadingStates.save ? '저장 중...' : '저장'}
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </Paper>
+          {/* 🎯 공통 데이터 그리드 */}
+          <BaseDataGrid
+            data={displayItems}
+            columns={internalControlMgmtColumns}
+            loading={loading}
+            theme="alpine"
+            onRowClick={(data) => handleRowClick(data)}
+            onRowDoubleClick={(data) => handleRowDoubleClick(data)}
+            onSelectionChange={handleSelectionChange}
+            height="calc(100vh - 370px)"
+            pagination={true}
+            pageSize={25}
+            rowSelection="multiple"
+            checkboxSelection={true}
+            headerCheckboxSelection={true}
+          />
         </div>
-      </div>
 
-      {/* 상세 보기 모달 */}
-      {modalState.detailModal && modalState.selectedItem && (
-        <React.Suspense fallback={<LoadingSpinner text="상세 모달 로딩 중..." />}>
-          <InternalControlMgmtDetailModal
-            open={modalState.detailModal}
-            item={modalState.selectedItem}
-            onClose={handleModalClose}
+        {/* 내부통제장치 등록/상세 통합 모달 (PositionFormModal 방식) */}
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <InternalControlFormModal
+            open={formModalOpen}
+            mode={formModalMode}
+            internalControl={selectedInternalControl}
+            onClose={handleFormModalClose}
+            onSave={handleItemSave}
+            onUpdate={handleItemUpdate}
             loading={loading}
           />
         </React.Suspense>
-      )}
-    </div>
+      </div>
+    </React.Profiler>
   );
 };
 

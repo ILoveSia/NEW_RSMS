@@ -11,9 +11,12 @@
     background-color: var(--theme-menu-bg);
     color: var(--theme-menu-text);
     overflow-x: hidden;
+    overflow-y: hidden; // 드로어 자체는 숨김, 내부 컨테이너에서 스크롤 처리
     @include transition(width);
     margin-top: $header-height; // TopHeader 높이만큼 아래에 위치
     height: calc(100vh - $header-height); // TopHeader 제외한 높이
+    display: flex;
+    flex-direction: column;
 
     // 모든 텍스트 요소에 테마 텍스트 색상 적용
     * {
@@ -96,6 +99,8 @@
   @include flex-column;
   height: 100%;
   overflow: hidden;
+  flex: 1;
+  min-height: 0; // flex 컨테이너에서 자식이 축소될 수 있도록
 }
 
 // 메뉴 컨테이너
@@ -104,24 +109,33 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0;
+  scroll-behavior: smooth; // 부드러운 스크롤
+  scroll-padding-top: 8px; // 스크롤 시 상단 여백
+  min-height: 0; // flex 아이템이 축소될 수 있도록
+  max-height: 100%; // 부모 높이를 넘지 않도록
 
-  // 커스텀 스크롤바
+  // 커스텀 스크롤바 (개선된 스타일)
   &::-webkit-scrollbar {
-    width: 4px;
+    width: 8px; // 디버깅을 위해 더 넓게
   }
 
   &::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba($color-gray-200, 0.1); // 트랙 배경 추가로 스크롤바 확인
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba($color-gray-400, 0.2);
-    border-radius: 2px;
+    background: rgba($color-gray-400, 0.6); // 더 진하게 해서 보이도록
+    border-radius: 4px;
+    transition: background 0.2s ease;
 
     &:hover {
-      background: rgba($color-gray-400, 0.4);
+      background: rgba($color-gray-400, 0.8);
     }
   }
+
+  // Firefox 스크롤바 스타일링
+  scrollbar-width: auto; // thin 대신 auto로 변경
+  scrollbar-color: rgba($color-gray-400, 0.6) rgba($color-gray-200, 0.1);
 }
 
 // 메뉴 리스트

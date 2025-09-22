@@ -37,6 +37,18 @@ export const MenuGroup: React.FC<MenuGroupProps> = ({
   const handleGroupClick = () => {
     if (!isCollapsed) {
       toggleGroup(item.id);
+
+      // 아코디언 펼칠 때 부드러운 스크롤로 해당 메뉴로 이동
+      setTimeout(() => {
+        const element = document.getElementById(`menu-group-${item.id}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'nearest'
+          });
+        }
+      }, 150); // 아코디언 애니메이션 완료 후 스크롤
     }
   };
 
@@ -46,12 +58,22 @@ export const MenuGroup: React.FC<MenuGroupProps> = ({
   }, 0) || 0;
 
   return (
-    <div className={styles.menuGroup}>
+    <div className={`${styles.menuGroup} ${isExpanded ? styles.expanded : ''}`} id={`menu-group-${item.id}`}>
       {/* 그룹 헤더 */}
       <ListItem disablePadding className={styles.groupHeader}>
         <ListItemButton
           onClick={handleGroupClick}
           className={`${styles.groupButton} ${isExpanded ? styles.expanded : ''}`}
+          aria-expanded={isExpanded}
+          aria-controls={`submenu-${item.id}`}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleGroupClick();
+            }
+          }}
         >
           {/* 그룹 아이콘 */}
           {IconComponent && (
@@ -101,7 +123,14 @@ export const MenuGroup: React.FC<MenuGroupProps> = ({
       {/* 하위 메뉴들 */}
       {!isCollapsed && item.children && (
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding className={styles.subMenuList}>
+          <List
+            component="div"
+            disablePadding
+            className={styles.subMenuList}
+            id={`submenu-${item.id}`}
+            role="region"
+            aria-labelledby={`menu-group-${item.id}`}
+          >
             {item.children.map((childItem) => (
               <MenuItem
                 key={childItem.id}

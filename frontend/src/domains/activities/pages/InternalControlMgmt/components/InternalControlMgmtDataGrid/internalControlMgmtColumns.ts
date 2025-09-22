@@ -12,22 +12,6 @@ import { InternalControlMgmt } from '../../types/internalControlMgmt.types';
  */
 export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
   {
-    // 체크박스 선택 컬럼
-    headerCheckboxSelection: true,
-    checkboxSelection: true,
-    width: 50,
-    minWidth: 50,
-    maxWidth: 50,
-    resizable: false,
-    sortable: false,
-    filter: false,
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    suppressMenu: true
-  },
-  {
     field: 'sequence',
     headerName: '순번',
     width: 80,
@@ -38,8 +22,10 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
-      const value = params.value;
-      return `<span style="font-weight: 500;">${value}</span>`;
+      return params.value;
+    },
+    cellStyle: {
+      fontWeight: '500'
     }
   },
   {
@@ -52,8 +38,11 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
-      const value = params.value;
-      return `<span style="font-weight: 500; color: #1976d2;">${value}</span>`;
+      return params.value;
+    },
+    cellStyle: {
+      fontWeight: '500',
+      color: '#1976d2'
     },
     filterParams: {
       filterOptions: ['contains', 'startsWith', 'endsWith'],
@@ -70,8 +59,11 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
-      const value = params.value;
-      return `<span style="font-weight: 500; color: #2e7d32;">${value}</span>`;
+      return params.value;
+    },
+    cellStyle: {
+      fontWeight: '500',
+      color: '#2e7d32'
     },
     filterParams: {
       filterOptions: ['contains', 'startsWith', 'endsWith'],
@@ -79,25 +71,21 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     }
   },
   {
-    field: 'internalControlDeviceName',
-    headerName: '내부통제장치명',
-    width: 220,
-    minWidth: 180,
+    field: 'internalControl',
+    headerName: '내부통제',
+    width: 200,
+    minWidth: 150,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      const truncated = value && value.length > 30 ? `${value.substring(0, 30)}...` : value;
-      return `
-        <span
-          style="font-weight: 500; color: #ed6c02;"
-          title="${value}"
-        >
-          ${truncated}
-        </span>
-      `;
+      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
+    },
+    cellStyle: {
+      fontWeight: '500',
+      color: '#ed6c02'
     },
     filterParams: {
       filterOptions: ['contains', 'startsWith', 'endsWith'],
@@ -105,61 +93,56 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     }
   },
   {
-    field: 'internalControlDeviceDescription',
-    headerName: '내부통제장치설명',
-    width: 250,
-    minWidth: 200,
+    field: 'unifiedNumber',
+    headerName: '통일번호',
+    width: 130,
+    minWidth: 110,
     sortable: true,
     filter: 'agTextColumnFilter',
-    cellClass: 'ag-cell-left',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      const truncated = value && value.length > 40 ? `${value.substring(0, 40)}...` : value;
-      return `
-        <span
-          style="color: #616161; line-height: 1.3;"
-          title="${value}"
-        >
-          ${truncated}
-        </span>
-      `;
-    },
-    filterParams: {
-      filterOptions: ['contains', 'startsWith', 'endsWith'],
-      suppressAndOrCondition: true
-    }
-  },
-  {
-    field: 'registrationDate',
-    headerName: '등록일자',
-    width: 120,
-    minWidth: 100,
-    sortable: true,
-    filter: 'agDateColumnFilter',
     cellClass: 'ag-cell-center',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      return params.value;
+    },
+    cellStyle: {
+      fontFamily: 'monospace',
+      color: '#1976d2',
+      fontWeight: '500'
+    },
+    filterParams: {
+      filterOptions: ['contains', 'startsWith', 'endsWith'],
+      suppressAndOrCondition: true
+    }
+  },
+  {
+    field: 'url',
+    headerName: 'URL',
+    width: 180,
+    minWidth: 150,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
       if (!value) return '';
 
-      // YYYY.MM.DD 형식으로 표시
-      const formattedDate = value.replace(/-/g, '.');
-      return `<span style="font-family: monospace; color: #424242;">${formattedDate}</span>`;
+      const truncated = value.length > 25 ? `${value.substring(0, 25)}...` : value;
+      return truncated;
+    },
+    onCellClicked: (event: any) => {
+      if (event.value) {
+        window.open(event.value, '_blank', 'noopener,noreferrer');
+      }
+    },
+    cellStyle: {
+      color: '#1976d2',
+      textDecoration: 'underline',
+      cursor: 'pointer'
     },
     filterParams: {
-      filterOptions: ['equals', 'greaterThan', 'lessThan', 'inRange'],
-      suppressAndOrCondition: true,
-      comparator: (filterLocalDateAtMidnight: Date, cellValue: string) => {
-        if (!cellValue) return -1;
-
-        // cellValue가 'YYYY.MM.DD' 형식인 경우 Date 객체로 변환
-        const cellDate = new Date(cellValue.replace(/\./g, '-'));
-
-        if (cellDate < filterLocalDateAtMidnight) return -1;
-        if (cellDate > filterLocalDateAtMidnight) return 1;
-        return 0;
-      }
+      filterOptions: ['contains', 'startsWith', 'endsWith'],
+      suppressAndOrCondition: true
     }
   },
   {
@@ -174,16 +157,26 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     cellRenderer: (params: any) => {
       const value = params.value;
       if (!value) return '';
-
-      // YYYY.MM.DD 형식으로 표시
       const formattedDate = value.replace(/-/g, '.');
+      return formattedDate;
+    },
+    cellStyle: (params: any) => {
+      const value = params.value;
+      if (!value) return {
+        fontFamily: 'monospace',
+        color: '#424242',
+        fontWeight: 'normal'
+      };
 
-      // 적용일자가 오늘 이후인 경우 파란색으로 표시
       const today = new Date();
       const applicationDate = new Date(value.replace(/\./g, '-'));
       const color = applicationDate >= today ? '#1976d2' : '#424242';
 
-      return `<span style="font-family: monospace; color: ${color}; font-weight: 500;">${formattedDate}</span>`;
+      return {
+        fontFamily: 'monospace',
+        color: color,
+        fontWeight: '500'
+      };
     },
     filterParams: {
       filterOptions: ['equals', 'greaterThan', 'lessThan', 'inRange'],
@@ -211,11 +204,17 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
     cellRenderer: (params: any) => {
       const value = params.value;
       if (!value) return '';
-
-      // YYYY.MM.DD 형식으로 표시
       const formattedDate = value.replace(/-/g, '.');
+      return formattedDate;
+    },
+    cellStyle: (params: any) => {
+      const value = params.value;
+      if (!value) return {
+        fontFamily: 'monospace',
+        color: '#424242',
+        fontWeight: 'normal'
+      };
 
-      // 만료일자에 따른 색상 구분
       const today = new Date();
       const expirationDate = new Date(value.replace(/\./g, '-'));
       const daysUntilExpiration = Math.ceil((expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -224,27 +223,21 @@ export const internalControlMgmtColumns: ColDef<InternalControlMgmt>[] = [
       let fontWeight = 'normal';
 
       if (daysUntilExpiration < 0) {
-        // 이미 만료된 경우 빨간색
         color = '#d32f2f';
         fontWeight = 'bold';
       } else if (daysUntilExpiration <= 7) {
-        // 7일 이내 만료 예정인 경우 오렌지색
         color = '#f57c00';
         fontWeight = 'bold';
       } else if (daysUntilExpiration <= 30) {
-        // 30일 이내 만료 예정인 경우 노란색
         color = '#fbc02d';
         fontWeight = '500';
       }
 
-      return `
-        <span
-          style="font-family: monospace; color: ${color}; font-weight: ${fontWeight};"
-          title="${daysUntilExpiration >= 0 ? `${daysUntilExpiration}일 후 만료` : `${Math.abs(daysUntilExpiration)}일 전 만료됨`}"
-        >
-          ${formattedDate}
-        </span>
-      `;
+      return {
+        fontFamily: 'monospace',
+        color: color,
+        fontWeight: fontWeight
+      };
     },
     filterParams: {
       filterOptions: ['equals', 'greaterThan', 'lessThan', 'inRange'],

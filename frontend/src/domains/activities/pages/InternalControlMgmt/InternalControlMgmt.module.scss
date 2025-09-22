@@ -1,436 +1,312 @@
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
-// 메인 컨테이너
+// 🏗️ 모던 미니멀 컨테이너
 .container {
   width: 100%;
-  height: 100%;
+  background: white;
   display: flex;
   flex-direction: column;
-  background: $color-background-default;
-  overflow: hidden;
 }
 
-// 페이지 헤더
+// 🎯 테마 적용 헤더
 .pageHeader {
-  background: linear-gradient(135deg, var(--theme-button-primary) 0%, var(--theme-button-secondary) 100%);
-  color: var(--theme-button-primary-text);
-  padding: 24px 32px;
-  border-radius: 12px 12px 0 0;
-  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
 
-  .headerContent {
-    display: flex;
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
     justify-content: space-between;
-    align-items: flex-start;
-    max-width: 100%;
+  }
 
-    @include responsive-breakpoint($breakpoint-tablet) {
-      flex-direction: column;
-      gap: 20px;
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// 🎨 메인 컨텐츠 영역 - 미니멀
+.content {
+  padding: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  background: #fafbfc;
+}
+
+
+
+// AG-Grid 모던 플랫 스타일
+:global(.ag-theme-alpine) {
+  border: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  border-radius: 0;
+  overflow: hidden;
+
+  // 외부 wrapper만 테두리 제거
+  .ag-root-wrapper,
+  .ag-root,
+  .ag-body-viewport {
+    border: none !important;
+  }
+
+  .ag-header {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 2px solid #e1e7ef !important;
+    font-weight: 500;
+
+    .ag-header-cell {
+      border-right: 1px solid #e1e7ef !important;
+
+      &:last-child {
+        border-right: none !important;
+      }
+
+      &:first-child {
+        border-top-left-radius: 16px;
+      }
+
+      &:last-child {
+        border-top-right-radius: 16px;
+        border-right: none;
+      }
+
+      &:hover {
+        background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+      }
+
+      .ag-header-cell-label {
+        font-weight: 600;
+        color: #334e68;
+        font-size: 0.875rem;
+      }
     }
   }
 
-  .titleSection {
-    flex: 1;
+  .ag-row {
+    border-bottom: 1px solid #e2e8f0 !important;
 
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin: 0 0 8px 0;
-      letter-spacing: -0.5px;
+    &:hover {
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
     }
 
-    p {
-      font-size: 16px;
-      opacity: 0.9;
-      margin: 0;
-      line-height: 1.4;
+    &.ag-row-selected {
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 3px solid #627d98 !important;
+      box-shadow: inset 0 0 0 1px rgba(98, 125, 152, 0.2);
     }
+
+    &:nth-child(even) {
+      background: linear-gradient(145deg, #fafbfc 0%, #f8fafc 100%);
+    }
+  }
+
+  .ag-cell {
+    border-right: 1px solid #e2e8f0 !important;
+    font-weight: 400;
+    color: #334e68;
+
+    &:last-child {
+      border-right: none !important;
+    }
+    font-size: 0.875rem;
+    padding: 10px 14px;
+
+    &:focus {
+      outline: 2px solid #627d98;
+      outline-offset: -2px;
+      background: rgba(98, 125, 152, 0.05);
+    }
+  }
+
+  .ag-paging-panel {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 2px solid #e1e7ef !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 12px 16px;
+    color: #334e68;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  .ag-root-wrapper {
+    border-radius: 0;
+    border: none !important;
+    overflow: hidden;
+  }
+}
+
+.loadingContainer {
+  @include flex-center;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: $border-radius-xl;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  margin: $spacing-xl;
+  position: relative;
+  z-index: 2;
+}
+
+// 📱 반응형 - 태블릿
+@include responsive-breakpoint($breakpoint-tablet) {
+  .pageHeader {
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .content {
+    padding: $spacing-xs;
+    gap: $spacing-sm;
   }
 
   .headerStats {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-
-    @include responsive-breakpoint($breakpoint-tablet) {
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    @include responsive-breakpoint($breakpoint-mobile) {
-      flex-direction: column;
-      gap: 12px;
-    }
-  }
-
-  .statCard {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 140px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    @include responsive-breakpoint($breakpoint-tablet) {
-      min-width: 120px;
-      padding: 14px 16px;
-    }
-
-    @include responsive-breakpoint($breakpoint-mobile) {
-      width: 100%;
-      min-width: unset;
-    }
-
-    .statIcon {
-      font-size: 24px;
-      opacity: 0.9;
-    }
-
-    .statContent {
-      display: flex;
-      flex-direction: column;
-
-      .statValue {
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 1.1;
-      }
-
-      .statLabel {
-        font-size: 12px;
-        opacity: 0.8;
-        margin-top: 2px;
-      }
-    }
-  }
-}
-
-// 검색 섹션
-.searchSection {
-  margin-bottom: 24px;
-}
-
-// 분할 레이아웃
-.splitLayout {
-  display: flex;
-  gap: 24px;
-  flex: 1;
-  overflow: hidden;
-
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex-direction: column;
-    gap: 16px;
-    overflow: auto;
-  }
-}
-
-// 좌측 패널 (목록 영역, 2/3)
-.leftPanel {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0; // flex 아이템이 자식 컨텐츠보다 작아질 수 있도록
-
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex: none;
-    height: 60vh;
-  }
-}
-
-// 우측 패널 (상세 입력 영역, 1/3)
-.rightPanel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
-  max-width: 400px;
-
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex: none;
-    min-width: unset;
-    max-width: unset;
-    height: 40vh;
-  }
-}
-
-// 액션 바 섹션
-.actionBarSection {
-  margin-bottom: 16px;
-}
-
-// 그리드 섹션
-.gridSection {
-  flex: 1;
-  overflow: hidden;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid $color-divider;
-
-  // AG-Grid 테마 오버라이드
-  :global(.ag-theme-rsms) {
-    .ag-header {
-      background: $color-background-paper;
-      border-bottom: 2px solid $color-divider;
-    }
-
-    .ag-header-cell {
-      border-right: 1px solid $color-divider;
-
-      .ag-header-cell-label {
-        justify-content: center;
-        font-weight: 600;
-        color: $color-text-primary;
-      }
-    }
-
-    .ag-row {
-      border-bottom: 1px solid $color-divider;
-
-      &:hover {
-        background: $color-background-paper;
-      }
-
-      &.ag-row-selected {
-        background: rgba(var(--theme-button-primary-rgb), 0.1);
-      }
-    }
-
-    .ag-cell {
-      border-right: 1px solid $color-divider;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: $color-text-primary;
-    }
-
-    .ag-row-even {
-      background: rgba(var(--theme-button-primary-rgb), 0.02);
-    }
-  }
-}
-
-// 상세 패널
-.detailPanel {
-  height: 100%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .detailTitle {
-    margin-bottom: 20px;
-    color: $color-text-primary;
-    font-weight: 600;
-    border-bottom: 2px solid var(--theme-button-primary);
-    padding-bottom: 10px;
-  }
-
-  .detailLoading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-  }
-
-  .detailForm {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-
-    // 커스텀 스크롤바
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: $color-background-paper;
-      border-radius: 3px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: $color-divider;
-      border-radius: 3px;
-
-      &:hover {
-        background: $color-text-secondary;
-      }
-    }
-
-    // 검색 필드 (내부통제)
-    .searchField {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-
-      .searchButton {
-        min-width: 60px;
-        height: 40px;
-        border-color: var(--theme-button-primary);
-        color: var(--theme-button-primary);
-
-        &:hover {
-          background: rgba(var(--theme-button-primary-rgb), 0.1);
-        }
-      }
-    }
-
-    // 폼 필드 스타일
-    .MuiTextField-root {
-      .MuiOutlinedInput-root {
-        border-radius: 6px;
-
-        &:hover {
-          .MuiOutlinedInput-notchedOutline {
-            border-color: rgba(var(--theme-button-primary-rgb), 0.5);
-          }
-        }
-
-        &.Mui-focused {
-          .MuiOutlinedInput-notchedOutline {
-            border-color: var(--theme-button-primary);
-          }
-        }
-      }
-
-      .MuiInputLabel-root {
-        font-weight: 500;
-
-        &.Mui-focused {
-          color: var(--theme-button-primary);
-        }
-      }
-    }
-  }
-
-  .detailActions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 16px;
-    border-top: 1px solid $color-divider;
-
-    .saveButton {
-      min-width: 80px;
-      font-weight: 600;
-      border-radius: 6px;
-      text-transform: none;
-      letter-spacing: -0.3px;
-    }
-  }
-}
-
-// 반응형 스타일
-@include responsive-breakpoint($breakpoint-tablet) {
-  .container {
-    padding: 16px;
-  }
-
-  .pageHeader {
-    padding: 20px 24px;
-    margin-bottom: 20px;
-
-    .titleSection h1 {
-      font-size: 24px;
-    }
-
-    .titleSection p {
-      font-size: 14px;
-    }
-  }
-
-  .splitLayout {
-    gap: 16px;
-  }
-
-  .detailPanel {
-    padding: 16px;
-
-    .detailTitle {
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
+    justify-content: space-between;
   }
 }
 
 @include responsive-breakpoint($breakpoint-mobile) {
-  .container {
-    padding: 12px;
-  }
-
   .pageHeader {
-    padding: 16px 20px;
-    margin-bottom: 16px;
-
-    .titleSection h1 {
-      font-size: 20px;
-    }
-
-    .headerStats {
-      gap: 8px;
-    }
-
-    .statCard {
-      padding: 12px 16px;
-
-      .statIcon {
-        font-size: 20px;
-      }
-
-      .statContent .statValue {
-        font-size: 18px;
-      }
-    }
+    padding: $spacing-sm $spacing-md;
   }
 
-  .splitLayout {
-    gap: 12px;
+  .pageTitle {
+    font-size: 1.25rem;
   }
 
-  .rightPanel {
-    min-width: unset;
+  .pageDescription {
+    font-size: 0.8rem;
   }
 
-  .detailPanel {
-    padding: 12px;
+  .content {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
+  }
 
-    .detailForm .searchField {
-      flex-direction: column;
-      align-items: stretch;
+  .headerStats {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
 
-      .searchButton {
-        height: 36px;
-      }
-    }
+  .statCard {
+    min-width: auto;
   }
 }
 
-// 다크 테마 지원
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: $color-background-default;
-  }
+// 🔄 지연 로딩 컨테이너 (성능 최적화)
+.gridLoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: $border-radius-md;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 
-  .gridSection {
-    background: $color-background-paper;
-    border-color: $color-divider;
-  }
-
-  .detailPanel {
-    background: $color-background-paper;
-    color: $color-text-primary;
+  // 로딩 애니메이션 스타일
+  .loading-spinner {
+    color: var(--theme-button-primary, $color-primary);
   }
 }

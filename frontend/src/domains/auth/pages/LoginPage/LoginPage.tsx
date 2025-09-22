@@ -3,10 +3,18 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
+  InputAdornment,
   Paper,
   TextField,
   Typography
 } from '@mui/material';
+import {
+  Person,
+  Lock,
+  Visibility,
+  VisibilityOff
+} from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -28,6 +36,8 @@ export const LoginPage: React.FC = () => {
     password: ''
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   // 로그인 전에 접근하려던 페이지가 있으면 그곳으로, 없으면 대시보드로
   const from = (location.state as any)?.from?.pathname || '/app/dashboard';
 
@@ -37,6 +47,10 @@ export const LoginPage: React.FC = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -116,27 +130,51 @@ export const LoginPage: React.FC = () => {
             <TextField
               fullWidth
               name="username"
-              label="사용자명"
               value={formData.username}
               onChange={handleInputChange}
               variant="outlined"
               margin="normal"
               disabled={isLoading}
               autoFocus
-              placeholder="admin 또는 user 입력"
+              placeholder="사용자명을 입력하세요"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Person sx={{ color: 'action.active' }} />
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <TextField
               fullWidth
               name="password"
-              label="비밀번호"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={handleInputChange}
               variant="outlined"
               margin="normal"
               disabled={isLoading}
-              placeholder="아무 비밀번호나 입력"
+              placeholder="비밀번호를 입력하세요"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock sx={{ color: 'action.active' }} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleTogglePasswordVisibility}
+                      edge="end"
+                      disabled={isLoading}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <Button

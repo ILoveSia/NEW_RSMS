@@ -14,29 +14,25 @@
 export interface InternalControlMgmt {
   // 기본 식별 정보
   id: string;
-  sequence: number; // 순번
 
   // 부서 및 관리활동 정보
   departmentName: string; // 부정명 (부서명)
   managementActivityName: string; // 관리활동명
 
   // 내부통제장치 정보
-  internalControlDeviceName: string; // 내부통제장치명
-  internalControlDeviceDescription: string; // 내부통제장치설명
+  internalControl: string; // 내부통제 (기존 internalControlDeviceName 대신)
+
+  // 시스템 연결 정보
+  unifiedNumber: string; // 통일번호
+  url: string; // URL
 
   // 날짜 정보
-  registrationDate: string; // 등록일자 (YYYY.MM.DD)
   applicationDate: string; // 적용일자 (YYYY.MM.DD)
   expirationDate: string; // 만료일자 (YYYY.MM.DD)
 
-  // 메타데이터
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-
   // 상태 정보
   isActive: boolean; // 사용여부
+  status: string; // 상태 ('정상', '만료' 등)
 }
 
 /**
@@ -102,11 +98,9 @@ export interface UsageStatusOption {
  * 우측 상세 영역 폼 입력값들
  */
 export interface InternalControlMgmtFormData {
-  ceoInfo: string;
+  departmentName?: string; // 부정명 (선택적)
   managementActivityName: string;
-  managementActivityDetail: string;
   internalControl: string;
-  internalControlDeviceDescription: string;
   unifiedNumber: string;
   url: string;
   applicationDate: string;
@@ -114,9 +108,10 @@ export interface InternalControlMgmtFormData {
 
 /**
  * 모달 상태 관리 타입
- * 상세 보기 모달의 열림/닫힘 상태
+ * 등록/상세 모달의 열림/닫힘 상태
  */
 export interface InternalControlMgmtModalState {
+  addModal: boolean;
   detailModal: boolean;
   selectedItem: InternalControlMgmt | null;
 }
@@ -269,9 +264,8 @@ export type InternalControlMgmtEventHandlers = {
  */
 export interface LoadingStates {
   search: boolean;
-  save: boolean;
-  detail: boolean;
-  copy: boolean;
+  excel: boolean;
+  delete: boolean;
 }
 
 /**
