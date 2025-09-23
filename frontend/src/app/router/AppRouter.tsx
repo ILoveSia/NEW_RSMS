@@ -35,6 +35,11 @@ const PeriodSetting = React.lazy(() => import('@/domains/compliance/pages/Period
 const InspectorAssign = React.lazy(() => import('@/domains/compliance/pages/InspectorAssign'));
 const ExecutionApproval = React.lazy(() => import('@/domains/compliance/pages/ExecutionApproval'));
 const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/RejectionMgmt'));
+
+// Reports (보고서) 도메인
+const ExecutiveReport = React.lazy(() => import('@/domains/reports/pages/ExecutiveReport'));
+const CeoReport = React.lazy(() => import('@/domains/reports/pages/CeoReport'));
+const ReportList = React.lazy(() => import('@/domains/reports/pages/ReportList'));
 import {
   AuthGuard,
   ManagerGuard,
@@ -462,38 +467,77 @@ const AppRouter: React.FC = () => {
           {/* 보고서 (인증 필요) */}
           <Route path="reports/*" element={
             <AuthGuard>
-              <Routes>
-                <Route index element={
-                  <TemporaryPage 
-                    title="보고서" 
-                    description="리스크 보고서 생성, 스케줄링, 히스토리 관리 등의 기능이 구현될 예정입니다."
-                  />
-                } />
-                <Route path="create" element={
-                  <TemporaryPage 
-                    title="보고서 생성" 
-                    description="새로운 보고서를 생성하고 설정하는 페이지입니다."
-                  />
-                } />
-                <Route path="templates" element={
-                  <TemporaryPage 
-                    title="보고서 템플릿" 
-                    description="보고서 템플릿을 관리하고 편집하는 페이지입니다."
-                  />
-                } />
-                <Route path="history" element={
-                  <TemporaryPage 
-                    title="보고서 히스토리" 
-                    description="과거 생성된 보고서들의 이력을 조회하는 페이지입니다."
-                  />
-                } />
-                <Route path=":id/*" element={
-                  <TemporaryPage 
-                    title="보고서 상세" 
-                    description="개별 보고서의 상세 내용과 생성 옵션을 관리하는 페이지입니다."
-                  />
-                } />
-              </Routes>
+              <Suspense fallback={<LoadingSpinner text="보고서 로딩 중..." />}>
+                <Routes>
+                  {/* 임원이행점검보고서 */}
+                  <Route path="executive-report" element={<ExecutiveReport />} />
+                  <Route path="executive-report/:id" element={
+                    <TemporaryPage
+                      title="임원이행점검보고서 상세"
+                      description="임원이행점검보고서의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="executive-report/create" element={
+                    <TemporaryPage
+                      title="임원이행점검보고서 생성"
+                      description="새로운 임원이행점검보고서를 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="executive-report/:id/edit" element={
+                    <TemporaryPage
+                      title="임원이행점검보고서 편집"
+                      description="기존 임원이행점검보고서 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* CEO이행점검보고서 */}
+                  <Route path="ceo-report" element={<CeoReport />} />
+                  <Route path="ceo-report/:id" element={
+                    <TemporaryPage
+                      title="CEO이행점검보고서 상세"
+                      description="CEO이행점검보고서의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="ceo-report/create" element={
+                    <TemporaryPage
+                      title="CEO이행점검보고서 생성"
+                      description="새로운 CEO이행점검보고서를 생성하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="ceo-report/:id/edit" element={
+                    <TemporaryPage
+                      title="CEO이행점검보고서 편집"
+                      description="기존 CEO이행점검보고서 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 보고서목록 */}
+                  <Route path="report-list" element={<ReportList />} />
+                  <Route path="report-list/:id" element={
+                    <TemporaryPage
+                      title="보고서 상세"
+                      description="보고서의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 보고서 공통 기능 */}
+                  <Route path="templates" element={
+                    <TemporaryPage
+                      title="보고서 템플릿"
+                      description="보고서 템플릿을 관리하고 편집하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="history" element={
+                    <TemporaryPage
+                      title="보고서 히스토리"
+                      description="과거 생성된 보고서들의 이력을 조회하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/reports/executive-report" replace />} />
+                </Routes>
+              </Suspense>
             </AuthGuard>
           } />
 

@@ -160,19 +160,19 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'executive-report',
         title: '임원이행점검보고서',
-        path: '/app/reports/executive',
+        path: '/app/reports/executive-report',
         permission: 'manager'
       },
       {
         id: 'ceo-report',
         title: 'CEO이행점검보고서',
-        path: '/app/reports/ceo',
+        path: '/app/reports/ceo-report',
         permission: 'executive'
       },
       {
         id: 'report-list',
         title: '보고서목록',
-        path: '/app/reports/list',
+        path: '/app/reports/report-list',
         permission: 'manager'
       }
     ]

@@ -1,0 +1,220 @@
+// PositionFormModal.tsx 표준 템플릿의 스타일을 기반으로 한 ExecutiveReportFormModal 스타일
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.modal {
+  .modalContent {
+    padding: 0 !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+// 폼 섹션 스타일
+.form {
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin-bottom: $spacing-md !important;
+  padding-bottom: $spacing-xs;
+  border-bottom: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.formRow {
+  display: flex;
+  gap: $spacing-md;
+  align-items: flex-start;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.formField {
+  flex: 1;
+
+  .MuiOutlinedInput-root {
+    background: white;
+    font-size: 0.9rem;
+
+    &.MuiInputBase-multiline {
+      padding: 0;
+    }
+
+    textarea {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    input {
+      padding: $spacing-sm $spacing-md;
+      font-size: 0.9rem;
+    }
+  }
+
+  .MuiInputLabel-root {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .MuiFormHelperText-root {
+    font-size: 0.8rem;
+    margin-left: 0;
+    margin-top: $spacing-xs;
+  }
+}
+
+// 첨부파일 섹션
+.fileUploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: #f8f9fa;
+  border-radius: $border-radius-md;
+  border: 1px solid #e9ecef;
+}
+
+.uploadButton {
+  align-self: flex-start;
+  font-weight: 500;
+  text-transform: none;
+
+  &:hover {
+    background: rgba(25, 118, 210, 0.04);
+  }
+}
+
+.fileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  min-height: 40px;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.fileChip {
+  max-width: 250px;
+
+  .MuiChip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: rgba(25, 118, 210, 0.08);
+  }
+}
+
+// 테이블 섹션 스타일 (PositionFormModal과 동일)
+.tableSection {
+  padding: $spacing-md;
+  background: white;
+  border-radius: $border-radius-md;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.tableTitle {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.tableContainer {
+  border: 1px solid #e9ecef;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+}
+
+// 구분선
+.divider {
+  margin: $spacing-md 0 !important;
+  background-color: #e9ecef !important;
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .form {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
+  }
+
+  .sectionTitle {
+    font-size: 1rem !important;
+    margin-bottom: $spacing-sm !important;
+  }
+
+  .formRow {
+    gap: $spacing-sm;
+  }
+
+  .fileUploadSection {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
+  }
+
+  .tableSection {
+    padding: $spacing-sm;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .sectionTitle {
+    font-size: 0.95rem !important;
+  }
+
+  .formField {
+    .MuiOutlinedInput-root {
+      font-size: 0.85rem;
+
+      textarea,
+      input {
+        font-size: 0.85rem;
+      }
+    }
+
+    .MuiInputLabel-root {
+      font-size: 0.85rem;
+    }
+  }
+
+  .uploadButton {
+    font-size: 0.85rem;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .fileChip {
+    max-width: 200px;
+
+    .MuiChip-label {
+      font-size: 0.8rem;
+    }
+  }
+
+  .tableTitle {
+    font-size: 1rem !important;
+  }
+}
