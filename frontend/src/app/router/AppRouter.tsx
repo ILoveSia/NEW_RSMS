@@ -29,6 +29,12 @@ const ActivityExecution = React.lazy(() => import('@/domains/activities/pages/Ac
 const ManualInquiry = React.lazy(() => import('@/domains/activities/pages/ManualInquiry/ManualInquiry'));
 const InternalControlRegister = React.lazy(() => import('@/domains/activities/pages/InternalControlRegister/InternalControlRegister'));
 const InternalControlMgmt = React.lazy(() => import('@/domains/activities/pages/InternalControlMgmt/InternalControlMgmt'));
+
+// Compliance (이행점검 관리) 도메인
+const PeriodSetting = React.lazy(() => import('@/domains/compliance/pages/PeriodSetting/PeriodSetting'));
+const InspectorAssign = React.lazy(() => import('@/domains/compliance/pages/InspectorAssign'));
+const ExecutionApproval = React.lazy(() => import('@/domains/compliance/pages/ExecutionApproval'));
+const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/RejectionMgmt'));
 import {
   AuthGuard,
   ManagerGuard,
@@ -665,6 +671,102 @@ const AppRouter: React.FC = () => {
                 </Routes>
               </Suspense>
             </AuthGuard>
+          } />
+
+          {/* 이행점검 관리 (매니저 이상) */}
+          <Route path="compliance/*" element={
+            <ManagerGuard>
+              <Suspense fallback={<LoadingSpinner text="이행점검 관리 로딩 중..." />}>
+                <Routes>
+                  {/* 기간설정 */}
+                  <Route path="period-setting" element={<PeriodSetting />} />
+                  <Route path="period-setting/:id" element={
+                    <TemporaryPage
+                      title="기간설정 상세"
+                      description="기간설정의 상세 정보와 관련 항목을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="period-setting/create" element={
+                    <TemporaryPage
+                      title="기간설정 등록"
+                      description="새로운 기간설정을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="period-setting/:id/edit" element={
+                    <TemporaryPage
+                      title="기간설정 편집"
+                      description="기존 기간설정 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 점검자지정 */}
+                  <Route path="inspector-assignment" element={<InspectorAssign />} />
+                  <Route path="inspector-assignment/:id" element={
+                    <TemporaryPage
+                      title="점검자 상세"
+                      description="점검자의 상세 정보와 지정 이력을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="inspector-assignment/create" element={
+                    <TemporaryPage
+                      title="점검자 지정"
+                      description="새로운 점검자를 지정하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="inspector-assignment/:id/edit" element={
+                    <TemporaryPage
+                      title="점검자 변경"
+                      description="기존 점검자 정보를 변경하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 점검수행 및 결재 */}
+                  <Route path="execution-approval" element={<ExecutionApproval />} />
+                  <Route path="execution-approval/:id" element={
+                    <TemporaryPage
+                      title="점검수행 상세"
+                      description="점검수행의 상세 정보와 결재 상태를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="execution-approval/create" element={
+                    <TemporaryPage
+                      title="점검수행 등록"
+                      description="새로운 점검수행을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="execution-approval/:id/edit" element={
+                    <TemporaryPage
+                      title="점검수행 편집"
+                      description="기존 점검수행 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 반려관리 */}
+                  <Route path="rejection-management" element={<RejectionMgmt />} />
+                  <Route path="rejection-management/:id" element={
+                    <TemporaryPage
+                      title="반려항목 상세"
+                      description="반려항목의 상세 정보와 처리 이력을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="rejection-management/create" element={
+                    <TemporaryPage
+                      title="반려항목 등록"
+                      description="새로운 반려항목을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="rejection-management/:id/edit" element={
+                    <TemporaryPage
+                      title="반려항목 편집"
+                      description="기존 반려항목 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/compliance/period-setting" replace />} />
+                </Routes>
+              </Suspense>
+            </ManagerGuard>
           } />
 
           {/* 앱 기본 경로 - 대시보드로 리다이렉트 */}

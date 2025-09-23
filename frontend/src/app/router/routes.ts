@@ -152,6 +152,33 @@ export const routes = {
     internalControlManagementEdit: '/app/activity/internal-control-management/:id/edit',
   },
 
+  // 이행점검 관리 (manager - 컴플라이언스)
+  compliance: {
+    // 기간설정
+    periodSetting: '/app/compliance/period-setting',
+    periodSettingDetail: '/app/compliance/period-setting/:id',
+    periodSettingCreate: '/app/compliance/period-setting/create',
+    periodSettingEdit: '/app/compliance/period-setting/:id/edit',
+
+    // 점검자지정
+    inspectorAssignment: '/app/compliance/inspector-assignment',
+    inspectorAssignmentDetail: '/app/compliance/inspector-assignment/:id',
+    inspectorAssignmentCreate: '/app/compliance/inspector-assignment/create',
+    inspectorAssignmentEdit: '/app/compliance/inspector-assignment/:id/edit',
+
+    // 점검수행 및 결재
+    executionApproval: '/app/compliance/execution-approval',
+    executionApprovalDetail: '/app/compliance/execution-approval/:id',
+    executionApprovalCreate: '/app/compliance/execution-approval/create',
+    executionApprovalEdit: '/app/compliance/execution-approval/:id/edit',
+
+    // 반려관리
+    rejectionManagement: '/app/compliance/rejection-management',
+    rejectionManagementDetail: '/app/compliance/rejection-management/:id',
+    rejectionManagementCreate: '/app/compliance/rejection-management/create',
+    rejectionManagementEdit: '/app/compliance/rejection-management/:id/edit',
+  },
+
   // 보고서 (auth)
   reports: {
     list: '/app/reports',
@@ -275,6 +302,8 @@ export const routePermissions: Record<string, RoutePermission> = {
   '/app/resps/*': 'auth',
   '/app/activity': 'auth',
   '/app/activity/*': 'auth',
+  '/app/compliance': 'manager',
+  '/app/compliance/*': 'manager',
   '/app/reports': 'auth',
   '/app/reports/*': 'auth',
   '/app/settings/profile': 'auth',

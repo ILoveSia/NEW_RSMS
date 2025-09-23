@@ -1,0 +1,303 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 직원조회팝업 모달 스타일
+.modal {
+  .modalPaper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    max-height: 90vh;
+    min-height: 650px;
+  }
+}
+
+// 🎯 모달 헤더
+.modalTitle {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  color: white;
+  padding: $spacing-md $spacing-lg;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+
+  .titleIcon {
+    font-size: 1.5rem !important;
+    opacity: 0.9;
+  }
+
+  .titleText {
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+
+  .closeButton {
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// 📄 모달 콘텐츠
+.modalContent {
+  padding: $spacing-lg;
+  background: #fafbfc;
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+
+// 🔍 검색 섹션
+.searchSection {
+  background: white;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// 📊 검색 결과 정보
+.resultInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(46, 125, 50, 0.05);
+  border-radius: $border-radius-sm;
+  border-left: 4px solid #2e7d32;
+
+  .resultIcon {
+    font-size: 1rem !important;
+    margin-right: $spacing-xs;
+    color: #2e7d32;
+  }
+
+  .resultText {
+    color: #2e7d32;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+
+  .filterChip {
+    font-size: 0.75rem;
+    height: 24px;
+  }
+}
+
+// 🎯 그리드 섹션
+.gridSection {
+  background: white;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  // AG-Grid 커스터마이징
+  :global(.ag-theme-alpine) {
+    border: none;
+
+    .ag-header {
+      background: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .ag-header-cell-text {
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .ag-row {
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(46, 125, 50, 0.04);
+      }
+
+      &.ag-row-selected {
+        background: rgba(46, 125, 50, 0.08);
+
+        &:hover {
+          background: rgba(46, 125, 50, 0.12);
+        }
+      }
+    }
+
+    .ag-cell {
+      border-bottom: 1px solid #f0f0f0;
+      padding: $spacing-sm;
+      display: flex;
+      align-items: center;
+    }
+
+    .ag-cell-center {
+      justify-content: center;
+    }
+
+    .ag-cell-left {
+      justify-content: flex-start;
+    }
+
+    // 페이지네이션 스타일링
+    .ag-paging-panel {
+      border-top: 1px solid #e9ecef;
+      background: #f8f9fa;
+      padding: $spacing-sm $spacing-md;
+    }
+  }
+}
+
+// 📋 선택된 직원 정보
+.selectionInfo {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(46, 125, 50, 0.05);
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  border-radius: $border-radius-sm;
+
+  .selectionText {
+    color: #2e7d32;
+    font-weight: 500;
+  }
+}
+
+// ⚠️ 에러 메시지
+.errorMessage {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(211, 47, 47, 0.05);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  border-radius: $border-radius-sm;
+  text-align: center;
+}
+
+// 🎬 모달 액션
+.modalActions {
+  padding: $spacing-md $spacing-lg;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  gap: $spacing-sm;
+
+  button {
+    min-width: 80px;
+  }
+}
+
+// 📱 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modal {
+    .modalPaper {
+      margin: $spacing-sm;
+      max-height: calc(100vh - #{$spacing-md});
+      min-height: 500px;
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-sm $spacing-md;
+
+    .titleText {
+      font-size: 1rem;
+    }
+  }
+
+  .modalContent {
+    padding: $spacing-md;
+  }
+
+  .searchSection {
+    padding: $spacing-sm;
+  }
+
+  .modalActions {
+    padding: $spacing-sm $spacing-md;
+
+    button {
+      min-width: 70px;
+      font-size: 0.875rem;
+    }
+  }
+
+  .resultInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+
+    .filterChip {
+      align-self: flex-end;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modal {
+    .modalPaper {
+      margin: 0;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+  }
+
+  .gridSection {
+    :global(.ag-theme-alpine) {
+      .ag-cell {
+        padding: $spacing-xs;
+        font-size: 0.875rem;
+      }
+
+      .ag-header-cell-text {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .resultInfo {
+    padding: $spacing-xs $spacing-sm;
+
+    .resultText {
+      font-size: 0.875rem;
+    }
+  }
+
+  .selectionInfo {
+    padding: $spacing-xs $spacing-sm;
+
+    .selectionText {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// 🎨 테마 호환성
+.modal {
+  :global(.MuiDialog-paper) {
+    background: white;
+  }
+}
+
+// 🔄 로딩 상태
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+// 🏷️ Chip 커스터마이징
+:global(.MuiChip-root) {
+  &.MuiChip-colorSuccess {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: #2e7d32;
+    border-color: rgba(46, 125, 50, 0.3);
+  }
+}

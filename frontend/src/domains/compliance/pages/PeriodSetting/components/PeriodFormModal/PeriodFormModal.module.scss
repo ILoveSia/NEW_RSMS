@@ -1,0 +1,279 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 모달 컨테이너
+.modal {
+  z-index: 1300;
+
+  .modalPaper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    max-height: 90vh;
+  }
+}
+
+// 모달 헤더
+.modalHeader {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+
+  .modalTitle {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .closeButton {
+    color: white;
+    padding: 8px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    svg {
+      font-size: 24px;
+    }
+  }
+}
+
+// 모달 콘텐츠
+.modalContent {
+  padding: 24px;
+  background: $color-background-default;
+  max-height: calc(90vh - 140px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $color-background-paper;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-divider;
+    border-radius: 3px;
+
+    &:hover {
+      background: $color-text-secondary;
+    }
+  }
+}
+
+// 폼 스타일
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.formField {
+  flex: 1;
+
+  .MuiOutlinedInput-root {
+    border-radius: $border-radius-lg;
+    transition: all 0.2s ease;
+
+    &:hover {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: $color-primary-300;
+      }
+    }
+
+    &.Mui-focused {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: $color-primary;
+        border-width: 2px;
+      }
+    }
+  }
+
+  .MuiInputLabel-root {
+    font-weight: 500;
+
+    &.Mui-focused {
+      color: $color-primary;
+    }
+  }
+
+  .MuiFormHelperText-root {
+    margin-left: 0;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+}
+
+// 구분선
+.divider {
+  margin: 24px 0;
+  background: $color-divider;
+}
+
+// 테이블 섹션
+.tableSection {
+  margin-top: 24px;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .tableTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.tableContainer {
+  border: 1px solid $color-divider;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+
+  // AG-Grid 테마 오버라이드
+  :global(.ag-theme-rsms) {
+    .ag-header {
+      background: $color-background-paper;
+      border-bottom: 2px solid $color-divider;
+    }
+
+    .ag-header-cell {
+      border-right: 1px solid $color-divider;
+
+      .ag-header-cell-label {
+        justify-content: center;
+        font-weight: 600;
+        color: $color-text-primary;
+      }
+    }
+
+    .ag-row {
+      border-bottom: 1px solid $color-divider;
+
+      &:hover {
+        background: $color-background-paper;
+      }
+    }
+
+    .ag-cell {
+      border-right: 1px solid $color-divider;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: $color-text-primary;
+    }
+
+    .ag-row-even {
+      background: rgba($color-primary, 0.02);
+    }
+  }
+}
+
+// 모달 액션
+.modalActions {
+  padding: 20px 24px;
+  background: $color-background-paper;
+  border-top: 1px solid $color-divider;
+  gap: 12px;
+
+  button {
+    min-width: 100px;
+    height: 40px;
+    font-weight: 600;
+    border-radius: 6px;
+    text-transform: none;
+    letter-spacing: -0.3px;
+  }
+}
+
+// 로딩 상태
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+
+  .loadingText {
+    margin-left: 16px;
+    color: $color-text-secondary;
+    font-size: 14px;
+  }
+}
+
+// 에러 상태
+.error {
+  padding: 20px;
+  text-align: center;
+  color: $color-error;
+  background: rgba($color-error, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba($color-error, 0.2);
+
+  .errorMessage {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+}
+
+// 반응형 스타일
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modalContent {
+    padding: 16px;
+  }
+
+  .formRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .modalActions {
+    padding: 16px;
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// 다크 테마 지원
+@media (prefers-color-scheme: dark) {
+  .modalPaper {
+    background: $color-background-default;
+    color: $color-text-primary;
+  }
+
+  .modalContent {
+    background: $color-background-default;
+  }
+
+  .tableContainer {
+    border-color: $color-divider;
+  }
+}

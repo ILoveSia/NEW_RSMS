@@ -3,14 +3,27 @@ import {
   Box,
   FormControl,
   Grid,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
-  TextField
+  TextField,
+  Tooltip
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './BaseSearchFilter.module.scss';
+
+// endAdornment 타입 정의
+export interface EndAdornment {
+  type: 'button' | 'icon';
+  icon: string;
+  onClick: () => void;
+  tooltip?: string;
+  disabled?: boolean;
+}
 
 // 필터 필드 타입 정의
 export interface FilterField {
@@ -25,6 +38,7 @@ export interface FilterField {
     md?: number;
     lg?: number;
   };
+  endAdornment?: EndAdornment;
 }
 
 // 필터 값 타입
@@ -105,6 +119,22 @@ const BaseSearchFilter: React.FC<BaseSearchFilterProps> = React.memo(({
             disabled={loading}
             size="small"
             variant="outlined"
+            InputProps={field.endAdornment ? {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Tooltip title={field.endAdornment.tooltip || ''}>
+                    <IconButton
+                      onClick={field.endAdornment.onClick}
+                      disabled={field.endAdornment.disabled || loading}
+                      size="small"
+                      edge="end"
+                    >
+                      {field.endAdornment.icon === 'Search' && <SearchIcon />}
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              )
+            } : undefined}
           />
         ) : (
           <FormControl fullWidth size="small">

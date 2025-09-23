@@ -1,0 +1,204 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.modal {
+  .modalContent {
+    padding: 0 !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+// 기본 정보 섹션
+.basicInfo {
+  padding: $spacing-md;
+  background: #f8f9fa;
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin-bottom: $spacing-md !important;
+  padding-bottom: $spacing-xs;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.infoRow {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.infoField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.fullWidthField {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.fieldLabel {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: #555 !important;
+  margin: 0 !important;
+}
+
+.fieldValue {
+  font-size: 0.9rem !important;
+  color: #333 !important;
+  margin: 0 !important;
+  padding: $spacing-xs $spacing-sm;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: $border-radius-sm;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+// 재처리 요청 폼
+.reprocessForm {
+  padding: $spacing-md;
+  background: #fff3cd;
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-md;
+  border: 1px solid #ffeaa7;
+}
+
+.formRow {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formField {
+  width: 100%;
+
+  .MuiOutlinedInput-root {
+    background: white;
+    font-size: 0.9rem;
+
+    &.MuiInputBase-multiline {
+      padding: 0;
+    }
+
+    textarea {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    input {
+      padding: $spacing-sm $spacing-md;
+      font-size: 0.9rem;
+    }
+  }
+
+  .MuiInputLabel-root {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .MuiFormHelperText-root {
+    font-size: 0.8rem;
+    margin-left: 0;
+    margin-top: $spacing-xs;
+  }
+}
+
+// 관련 이력 섹션
+.historySection {
+  padding: $spacing-md;
+  background: white;
+  border-radius: $border-radius-md;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.tableTitle {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin: 0 !important;
+}
+
+.tableContainer {
+  border: 1px solid #e9ecef;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+}
+
+// 구분선
+.divider {
+  margin: $spacing-md 0 !important;
+  background-color: #e9ecef !important;
+}
+
+// 반응형 대응
+@include responsive-breakpoint($breakpoint-tablet) {
+  .basicInfo,
+  .reprocessForm,
+  .historySection {
+    padding: $spacing-sm;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .formField {
+    .MuiOutlinedInput-root {
+      font-size: 0.85rem;
+
+      textarea,
+      input {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .sectionTitle {
+    font-size: 1rem !important;
+  }
+
+  .fieldLabel {
+    font-size: 0.8rem !important;
+  }
+
+  .fieldValue {
+    font-size: 0.85rem !important;
+    padding: $spacing-xs;
+  }
+
+  .tableTitle {
+    font-size: 1rem !important;
+  }
+}

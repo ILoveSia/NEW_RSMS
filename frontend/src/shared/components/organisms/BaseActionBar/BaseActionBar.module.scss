@@ -65,6 +65,7 @@
   @include responsive-breakpoint($breakpoint-tablet) {
     justify-content: center;
     width: 100%;
+    flex-wrap: wrap;
   }
 
   @include responsive-breakpoint($breakpoint-mobile) {
@@ -203,6 +204,7 @@
   font-size: 0.875rem !important;
   padding: 8px 16px !important;
   height: 40px !important;
+  min-width: 100px !important;
   border-radius: $border-radius-lg !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   box-shadow:
@@ -211,6 +213,7 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative !important;
   overflow: hidden !important;
+  white-space: nowrap !important;
 
   &::before {
     content: '';
@@ -250,6 +253,8 @@
   @include responsive-breakpoint($breakpoint-mobile) {
     width: 100%;
     justify-content: center;
+    min-width: 100px !important;
+    white-space: nowrap !important;
   }
 }
 

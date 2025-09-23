@@ -3,10 +3,10 @@
  * RSMS 상단 헤더 - 브랜딩, 탭 네비게이션, 사용자 정보
  */
 
-import React from 'react';
-import { IconButton, useTheme, useMediaQuery } from '@mui/material';
-import { Logout, AccountCircle } from '@mui/icons-material';
 import { useMenuState } from '@/shared/components/organisms/LeftMenu';
+import { AccountCircle, Logout } from '@mui/icons-material';
+import { IconButton, useMediaQuery, useTheme } from '@mui/material';
+import React from 'react';
 import { TopHeaderProps } from './types/header.types';
 
 import styles from './TopHeader.module.scss';
@@ -65,7 +65,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         </div>
         <div className={styles.brandInfo}>
           <div className={styles.title}>
-            ITCEN ENTEC
+            아이티센 엔텍
           </div>
           <div className={styles.subtitle}>
             책무구조도 관리시스템

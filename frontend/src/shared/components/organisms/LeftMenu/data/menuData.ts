@@ -295,11 +295,11 @@ export const filterMenuByPermission = (
     // 권한 체크 로직 (실제로는 더 복잡한 권한 체크 필요)
     if (!item.permission || item.permission === 'public') return true;
 
-    // 간단한 권한 체크 (실제로는 백엔드에서 처리)
-    if (item.permission === 'auth' && userRoles.includes('USER')) return true;
-    if (item.permission === 'manager' && userRoles.includes('MANAGER')) return true;
+    // 계층적 권한 체크 (ADMIN은 모든 권한, EXECUTIVE는 manager 포함 등)
+    if (item.permission === 'auth' && (userRoles.includes('USER') || userRoles.includes('EMPLOYEE') || userRoles.includes('MANAGER') || userRoles.includes('ADMIN') || userRoles.includes('EXECUTIVE'))) return true;
+    if (item.permission === 'manager' && (userRoles.includes('MANAGER') || userRoles.includes('ADMIN') || userRoles.includes('EXECUTIVE'))) return true;
     if (item.permission === 'admin' && userRoles.includes('ADMIN')) return true;
-    if (item.permission === 'executive' && userRoles.includes('EXECUTIVE')) return true;
+    if (item.permission === 'executive' && (userRoles.includes('EXECUTIVE') || userRoles.includes('ADMIN'))) return true;
 
     return false;
   }).map(item => ({
