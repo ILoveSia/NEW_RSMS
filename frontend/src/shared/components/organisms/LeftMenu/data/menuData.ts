@@ -213,7 +213,7 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'approval-line',
         title: '결재선관리',
-        path: '/app/approval/line-management',
+        path: '/app/approval/line',
         permission: 'manager'
       }
     ]
@@ -227,31 +227,31 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'code-management',
         title: '코드관리',
-        path: '/app/system/code-management',
+        path: '/app/settings/system/code-mgmt',
         permission: 'admin'
       },
       {
         id: 'menu-management',
         title: '메뉴관리',
-        path: '/app/system/menu-management',
+        path: '/app/settings/system/menu-mgmt',
         permission: 'admin'
       },
       {
         id: 'role-management',
         title: '역활관리',
-        path: '/app/system/role-management',
+        path: '/app/settings/system/role-mgmt',
         permission: 'admin'
       },
       {
         id: 'user-management',
         title: '사용자관리',
-        path: '/app/system/user-management',
+        path: '/app/settings/system/user-mgmt',
         permission: 'admin'
       },
       {
         id: 'access-log',
         title: '접근로그',
-        path: '/app/system/access-log',
+        path: '/app/settings/system/access-log',
         permission: 'admin'
       }
     ]

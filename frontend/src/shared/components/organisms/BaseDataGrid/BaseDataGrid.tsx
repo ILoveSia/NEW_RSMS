@@ -148,6 +148,7 @@ const BaseDataGrid = <TData = any,>({
     enableRangeSelection: true,
     suppressRowClickSelection: checkboxSelection,
     rowMultiSelectWithClick: rowSelection === 'multiple',
+    suppressHtmlInCell: true, // HTML 렌더링 비활성화
     
     // 페이지네이션
     pagination: pagination,

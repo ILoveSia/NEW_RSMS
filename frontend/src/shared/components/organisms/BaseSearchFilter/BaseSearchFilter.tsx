@@ -1,4 +1,5 @@
 import { SearchButton, CancelButton } from '@/shared/components/atoms/ActionButtons';
+import { DatePicker } from '@/shared/components/atoms/DatePicker';
 import {
   Box,
   FormControl,
@@ -28,7 +29,7 @@ export interface EndAdornment {
 // 필터 필드 타입 정의
 export interface FilterField {
   key: string;
-  type: 'text' | 'select';
+  type: 'text' | 'select' | 'date';
   label: string;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -39,11 +40,13 @@ export interface FilterField {
     lg?: number;
   };
   endAdornment?: EndAdornment;
+  min?: string;
+  max?: string;
 }
 
 // 필터 값 타입
 export interface FilterValues {
-  [key: string]: string;
+  [key: string]: string | undefined;
 }
 
 interface BaseSearchFilterProps {
@@ -135,6 +138,16 @@ const BaseSearchFilter: React.FC<BaseSearchFilterProps> = React.memo(({
                 </InputAdornment>
               )
             } : undefined}
+          />
+        ) : field.type === 'date' ? (
+          <DatePicker
+            label={field.label}
+            placeholder={field.placeholder}
+            value={values[field.key] || ''}
+            onChange={(value) => handleInputChange(field.key)({ target: { value } } as any)}
+            disabled={loading}
+            min={field.min}
+            max={field.max}
           />
         ) : (
           <FormControl fullWidth size="small">

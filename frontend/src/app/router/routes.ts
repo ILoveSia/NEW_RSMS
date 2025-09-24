@@ -179,6 +179,39 @@ export const routes = {
     rejectionManagementEdit: '/app/compliance/rejection-management/:id/edit',
   },
 
+  // 개선이행 (manager)
+  improvement: {
+    // 관리활동/이행점검 개선이행
+    actComplImprovement: '/app/improvement/activity-compliance',
+    actComplImprovementDetail: '/app/improvement/activity-compliance/:id',
+    actComplImprovementCreate: '/app/improvement/activity-compliance/create',
+    actComplImprovementEdit: '/app/improvement/activity-compliance/:id/edit',
+
+    // 이행점검 보고서 개선이행
+    reportImprovement: '/app/improvement/report',
+    reportImprovementDetail: '/app/improvement/report/:id',
+    reportImprovementCreate: '/app/improvement/report/create',
+    reportImprovementEdit: '/app/improvement/report/:id/edit',
+  },
+
+  // 결재함 (auth)
+  approval: {
+    // 결재함
+    box: '/app/approval/box',
+    boxDetail: '/app/approval/box/:id',
+    boxCreate: '/app/approval/box/create',
+    boxEdit: '/app/approval/box/:id/edit',
+    boxApprove: '/app/approval/box/:id/approve',
+    boxReject: '/app/approval/box/:id/reject',
+    boxWithdraw: '/app/approval/box/:id/withdraw',
+
+    // 결재선관리
+    line: '/app/approval/line',
+    lineDetail: '/app/approval/line/:id',
+    lineCreate: '/app/approval/line/create',
+    lineEdit: '/app/approval/line/:id/edit',
+  },
+
   // 보고서 (auth)
   reports: {
     list: '/app/reports',
@@ -209,6 +242,16 @@ export const routes = {
       audit: '/app/settings/system/audit',
       backup: '/app/settings/system/backup',
       integrations: '/app/settings/system/integrations',
+      // 코드관리 (admin)
+      codeMgmt: '/app/settings/system/code-mgmt',
+      // 메뉴관리 (admin)
+      menuMgmt: '/app/settings/system/menu-mgmt',
+      // 역활관리 (admin)
+      roleMgmt: '/app/settings/system/role-mgmt',
+      // 사용자관리 (admin)
+      userMgmt: '/app/settings/system/user-mgmt',
+      // 접근로그 (admin)
+      accessLog: '/app/settings/system/access-log',
     },
 
     // 리스크 설정 (manager)
@@ -273,6 +316,14 @@ export const createRoute = {
   internalControlManagementDetail: (id: string | number) => `/app/activity/internal-control-management/${id}`,
   internalControlManagementEdit: (id: string | number) => `/app/activity/internal-control-management/${id}/edit`,
 
+  // 개선이행 - 관리활동/이행점검 개선이행
+  actComplImprovementDetail: (id: string | number) => `/app/improvement/activity-compliance/${id}`,
+  actComplImprovementEdit: (id: string | number) => `/app/improvement/activity-compliance/${id}/edit`,
+
+  // 개선이행 - 이행점검 보고서 개선이행
+  reportImprovementDetail: (id: string | number) => `/app/improvement/report/${id}`,
+  reportImprovementEdit: (id: string | number) => `/app/improvement/report/${id}/edit`,
+
   // 보고서
   reportDetail: (id: string | number) => `/reports/${id}`,
   reportEdit: (id: string | number) => `/reports/${id}/edit`,
@@ -304,6 +355,8 @@ export const routePermissions: Record<string, RoutePermission> = {
   '/app/activity/*': 'auth',
   '/app/compliance': 'manager',
   '/app/compliance/*': 'manager',
+  '/app/improvement': 'manager',
+  '/app/improvement/*': 'manager',
   '/app/reports': 'auth',
   '/app/reports/*': 'auth',
   '/app/settings/profile': 'auth',
@@ -318,6 +371,11 @@ export const routePermissions: Record<string, RoutePermission> = {
 
   // Admin level routes
   '/app/settings/system/*': 'admin',
+  '/app/settings/system/code-mgmt': 'admin',
+  '/app/settings/system/menu-mgmt': 'admin',
+  '/app/settings/system/role-mgmt': 'admin',
+  '/app/settings/system/user-mgmt': 'admin',
+  '/app/settings/system/access-log': 'admin',
 };
 
 // 라우트 메타데이터
@@ -389,6 +447,21 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     permission: 'manager',
     breadcrumb: ['책무구조도 관리 활동', '내부통제장치관리'],
   },
+  '/app/improvement': {
+    title: '개선이행',
+    permission: 'manager',
+    breadcrumb: ['개선이행'],
+  },
+  '/app/improvement/activity-compliance': {
+    title: '관리활동/이행점검 개선이행',
+    permission: 'manager',
+    breadcrumb: ['개선이행', '관리활동/이행점검 개선이행'],
+  },
+  '/app/improvement/report': {
+    title: '이행점검 보고서 개선이행',
+    permission: 'manager',
+    breadcrumb: ['개선이행', '이행점검 보고서 개선이행'],
+  },
   '/app/reports': {
     title: '보고서',
     permission: 'auth',
@@ -398,5 +471,30 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     title: '설정',
     permission: 'auth',
     breadcrumb: ['설정'],
+  },
+  '/app/settings/system/code-mgmt': {
+    title: '코드관리',
+    permission: 'admin',
+    breadcrumb: ['설정', '시스템 설정', '코드관리'],
+  },
+  '/app/settings/system/menu-mgmt': {
+    title: '메뉴관리',
+    permission: 'admin',
+    breadcrumb: ['설정', '시스템 설정', '메뉴관리'],
+  },
+  '/app/settings/system/role-mgmt': {
+    title: '역활관리',
+    permission: 'admin',
+    breadcrumb: ['설정', '시스템 설정', '역활관리'],
+  },
+  '/app/settings/system/user-mgmt': {
+    title: '사용자관리',
+    permission: 'admin',
+    breadcrumb: ['설정', '시스템 설정', '사용자관리'],
+  },
+  '/app/settings/system/access-log': {
+    title: '접근로그',
+    permission: 'admin',
+    breadcrumb: ['설정', '시스템 설정', '접근로그'],
   },
 };

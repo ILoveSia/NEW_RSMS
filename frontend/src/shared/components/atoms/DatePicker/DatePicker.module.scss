@@ -1,0 +1,42 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.datePicker {
+  // Date input 스타일링
+  input[type="date"] {
+    font-family: inherit;
+    cursor: pointer;
+
+    // 브라우저 기본 달력 아이콘 보이도록 설정
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 1;
+    }
+  }
+
+  // Material-UI TextField 스타일 커스터마이징
+  :global(.MuiOutlinedInput-root) {
+    &:hover :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--theme-button-primary, $color-primary);
+    }
+
+    &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--theme-button-primary, $color-primary);
+    }
+  }
+
+  :global(.MuiInputLabel-root) {
+    &:global(.Mui-focused) {
+      color: var(--theme-button-primary, $color-primary);
+    }
+  }
+}
+
+// 반응형 지원
+@include responsive-breakpoint($breakpoint-mobile) {
+  .datePicker {
+    input[type="date"] {
+      font-size: 0.875rem;
+    }
+  }
+}

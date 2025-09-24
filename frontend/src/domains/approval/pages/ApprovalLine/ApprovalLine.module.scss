@@ -1,0 +1,396 @@
+/**
+ * 결재선 관리 페이지 스타일
+ *
+ * @description 이미지 기준 좌우 분할 레이아웃 스타일
+ * @author Claude AI
+ * @version 2.0.0
+ * @created 2025-09-24
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// ===============================
+// Container & Layout
+// ===============================
+
+.container {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+// 내용 영역
+.content {
+  flex: 1;
+  padding: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+}
+
+// ===============================
+// Page Header (PositionMgmt 패턴 준수)
+// ===============================
+
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    justify-content: space-between;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+// ===============================
+// 좌우 분할 레이아웃 (이미지 기준)
+// ===============================
+
+// 좌측 패널
+.leftPanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .leftHeader {
+    padding: $spacing-sm;
+    border-bottom: 1px solid $color-border-default;
+    background: var(--theme-surface, $color-background-paper);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .filterSection {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+
+      .filterLabel {
+        font-weight: 500;
+        color: var(--theme-text-primary, $color-text-primary);
+        min-width: 40px;
+      }
+
+      .workTypeSelect {
+        padding: 6px 12px;
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-sm;
+        background: var(--theme-background, $color-background-default);
+        color: var(--theme-text-primary, $color-text-primary);
+        font-size: 0.875rem;
+        min-width: 150px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--theme-primary, $color-primary);
+        }
+      }
+
+      .refreshButton {
+        padding: 6px 10px;
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-sm;
+        background: var(--theme-background, $color-background-default);
+        color: var(--theme-text-primary, $color-text-primary);
+        cursor: pointer;
+        font-size: 1rem;
+
+        &:hover {
+          background: var(--theme-hover, rgba(0, 0, 0, 0.04));
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .leftActionButtons {
+      display: flex;
+      gap: $spacing-xs;
+
+      .actionButton {
+        padding: 6px 16px;
+        border: none;
+        border-radius: $border-radius-sm;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &.addButton {
+          background: var(--theme-button-primary, $color-primary);
+          color: var(--theme-button-primary-text, white);
+
+          &:hover:not(:disabled) {
+            background: var(--theme-button-primary-hover, darken($color-primary, 10%));
+          }
+        }
+
+        &.saveButton {
+          background: var(--theme-success, $color-success);
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: darken($color-success, 10%);
+          }
+        }
+
+        &.deleteButton {
+          background: var(--theme-error, $color-error);
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: darken($color-error, 10%);
+          }
+        }
+      }
+    }
+  }
+
+  .leftGrid {
+    flex: 1;
+    padding: $spacing-sm;
+    height: calc(100vh - 280px);
+    min-height: 500px;
+  }
+}
+
+// 우측 패널
+.rightPanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .rightHeader {
+    padding: $spacing-sm;
+    border-bottom: 1px solid $color-border-default;
+    background: var(--theme-surface, $color-background-paper);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: $spacing-md;
+
+    .actionButtons {
+      display: flex;
+      gap: $spacing-xs;
+
+      .actionButton {
+        padding: 6px 16px;
+        border: none;
+        border-radius: $border-radius-sm;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &.addButton {
+          background: var(--theme-button-primary, $color-primary);
+          color: var(--theme-button-primary-text, white);
+
+          &:hover:not(:disabled) {
+            background: var(--theme-button-primary-hover, darken($color-primary, 10%));
+          }
+        }
+
+        &.saveButton {
+          background: var(--theme-success, $color-success);
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: darken($color-success, 10%);
+          }
+        }
+
+        &.deleteButton {
+          background: var(--theme-error, $color-error);
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: darken($color-error, 10%);
+          }
+        }
+      }
+    }
+
+    .orderButtons {
+      display: flex;
+      gap: $spacing-xs;
+
+      .orderButton {
+        padding: 6px 12px;
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-sm;
+        background: var(--theme-background, $color-background-default);
+        color: var(--theme-text-primary, $color-text-primary);
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: var(--theme-hover, rgba(0, 0, 0, 0.04));
+          border-color: var(--theme-primary, $color-primary);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .rightGrid {
+    flex: 1;
+    padding: $spacing-sm;
+    height: calc(100vh - 280px);
+    min-height: 500px;
+  }
+}
+
+// ===============================
+// Responsive Design
+// ===============================
+
+@include responsive-breakpoint($breakpoint-tablet) {
+  .leftPanel .leftHeader .filterSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+
+    .filterLabel {
+      min-width: auto;
+    }
+
+    .workTypeSelect {
+      width: 100%;
+    }
+  }
+
+  .rightPanel .rightHeader {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+
+    .actionButtons,
+    .orderButtons {
+      justify-content: center;
+    }
+  }
+}

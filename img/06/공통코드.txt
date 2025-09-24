@@ -1,0 +1,63 @@
+순서	    구분			그룹코드			        그룹코드명	설명			            사용여부
+1       시스템 공통	CD_DVCD			        코드 구분코드                      Y
+2       시스템 공통	AUTH_EXT_TYCD		    확장 권한 유형코드                  Y
+3       시스템 공통	BZWK_KNCD		        업무 종류코드                      Y
+4       시스템 공통	CAT_GPCD		        카테고리 그룹코드                   Y
+5       시스템 공통	CLST_ITEM_TRGT_CD	    체크리스트 항목 대상 코드            Y
+6       시스템 공통	CLST_OPTN_KNCD		    체크리스트 옵션 종류코드             Y
+7       시스템 공통	CLST_REPL_ITEM_TRGT_CD	체크리스트 답변 선택지 대상 코드		Y
+8       시스템 공통	CLST_REPL_ITEM_TYCD	    체크리스트 선택지 유형코드			Y
+9       시스템 공통	MENU_AUTH_TYCD		    메뉴 권한 유형코드				    Y
+10      시스템 공통	SAMPLE01_TYCD		    샘플01 타입				        Y
+11      시스템 공통	USE_YN			        사용 여부					        Y
+12      시스템 공통	USER_ROLE_DTL_TYCD	    상세 역할 유형코드				    Y
+13      시스템 공통	USER_WORK_STCD		    사용자상태					        Y
+14      미선택		ITEM_BZWK_DVCD		    항목업무구분코드	항목의 업무 구분		Y
+15      미선택		DATA_LDNG_DVCD		    데이터적재구분코드				    Y
+16      미선택		APRVL_TYCD		        결재 거래 유형 코드				    Y
+17      미선택		HRA_PSTN_CD		        인사 직위 코드				        Y
+18      미선택		APOF_PSTN_CD            결재선 역할				        Y
+19      시스템 공통	CLST_FLIN_STCD          체크리스트 작성 상태코드             Y
+20      미선택		BZWK_CLSS_DVCD          업무분류구분코드                    Y
+21      미선택		APRVL_LINE_ESN_YN       결재선 필수값 여부                  Y
+22      미선택		APRVL_OPPB_TYCD         결재 공개 유형코드                  Y
+23      미선택		ITEM_DVCD		        항목구분코드	본부부서 공통/본부부서 개별/영업점 공통/영업점 개별	Y
+24      미선택		HQ_DVCD			        부서구분코드				        Y
+25      시스템 공통	APRVL_STCD		        결재 상태 코드                     Y
+26      미선택		CLST_REPL_ITEM_TYCD_00	체크리스트 Y/N 선택지               Y
+27      미선택		EFTV_ISPC_RSLT		    유효성 점검 결과                   Y
+28      미선택		APRVL_LINE_STCD		    결재선 상태코드				        Y
+29      미선택		TMPLT_STCD		        템플릿상태코드				        Y
+30      미선택		ADDT_REPL_CD		    추가 점검사항 답변				    Y
+31      시스템 공통	YN	YN		            자점감사                          Y
+32      시스템 공통	YNX	YNX		            자점감사                          Y
+33      미선택		AMT_CCNT_RATE_DVCD	    금액건수구분                       Y
+34      시스템 공통	BATCH_DVCD		        배치 구분코드                      Y
+35      책무구조		DPRM_CD			        책무구조도부서코드                  Y
+36      책무구조		RSBT_OBLG_CD		    책임의무코드	책무코드              Y
+37      시스템 공통	BD_TYCD			        게시판타입코드                     Y
+38      책무구조		MGMT_OBLG_LCCD          관리의무대분류코드                  Y
+39      책무구조		MGMT_OBLG_MCCD          관리의무중분류코드                  Y
+40      책무구조		RSBT_RSOF_DVCD          책임직책구분코드                    Y
+41      책무구조		CFRN_CYCL_DVCD          회의주기구분코드                    Y
+42      책무구조		REG_STCD		        책임직책상태코드                    Y
+43      시스템 공통	EMP_WORK_STCD_POP	    팝업 조회용 직원 상태 코드			Y
+44      미선택		RSBT_OBLG_CLCD		    책임의무분류코드	책무카테고리 SUBSTR(RSBT_OBLG_CD,0,1)	Y
+45      미선택		DSGNTD_POS		        법정특정책임자				        Y
+46      미선택		ACVT_FRCD		        활동주기코드				        Y
+47      미선택		ACVT_RSK_EVAL_DVCD	    활동위험평가구분코드				    Y
+48      미선택		BRN_GPCD		        부점그룹코드                       Y
+49      미선택		FLFL_ISPC_FRCD		    이행점검주기코드                    Y
+50      미선택		GNRZ_OBLG_DVCD		    총괄의무구분코드                    Y
+51      미선택		MGMT_ACVT_DVCD		    관리활동구분코드                    Y
+52      미선택		RSMP_STCD		        책무구조도상태코드                  Y
+53      미선택		EXC_RSLT_CD		        수행결과코드				        Y
+54      미선택		MGMT_ACVT_ISPC_DVCD	    관리활동점검구분코드				    Y
+55      책무구조		GPCO_CD			        그룹사코드	지주의 그룹사 점검현황용		Y
+56      미선택		ACVT_EVDN_TYP_DVCD	    증빙유형구분코드                    Y
+57      미선택		ACVT_BZWK_KNCD		    활동업무종류코드                    Y
+58      미선택		ISPC_APRV_DVCD		    점검승인구분코드                    Y
+59      미선택		FLFL_STCD		        이행상태코드                       Y
+60      미선택		ISPC_PROP_DVCD		    점검적정구분코드                    Y
+61      미선택		RSMP_BZWK_DVCD		    책무구조도업무구분코드               Y
+62      미선택		RSMP_IMPV_STCD		    책무구조도개선상태코드               Y

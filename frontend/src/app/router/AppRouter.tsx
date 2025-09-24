@@ -40,11 +40,27 @@ const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/Reject
 const ExecutiveReport = React.lazy(() => import('@/domains/reports/pages/ExecutiveReport'));
 const CeoReport = React.lazy(() => import('@/domains/reports/pages/CeoReport'));
 const ReportList = React.lazy(() => import('@/domains/reports/pages/ReportList'));
+
+// Improvement (개선이행) 도메인
+const ActComplImprovement = React.lazy(() => import('@/domains/improvement/pages/ActComplImprovement'));
+const ReportImprovement = React.lazy(() => import('@/domains/improvement/pages/ReportImprovement'));
+
+// Approval (결재함) 도메인
+const ApprovalBox = React.lazy(() => import('@/domains/approval/pages/ApprovalBox/ApprovalBox'));
+const ApprovalLine = React.lazy(() => import('@/domains/approval/pages/ApprovalLine/ApprovalLine'));
+
+// System (시스템 관리) 도메인
+const CodeMgmt = React.lazy(() => import('@/domains/system/pages/CodeMgmt/CodeMgmt'));
+const MenuMgmt = React.lazy(() => import('@/domains/system/pages/MenuMgmt/MenuMgmt'));
+const RoleMgmt = React.lazy(() => import('@/domains/system/pages/RoleMgmt/RoleMgmt'));
+const UserMgmt = React.lazy(() => import('@/domains/system/pages/UserMgmt/UserMgmt'));
+const AccessLog = React.lazy(() => import('@/domains/system/pages/AccessLog/AccessLog'));
 import {
   AuthGuard,
   ManagerGuard,
   AdminGuard
 } from './guards';
+import { useAuthStore } from '@/app/store/authStore';
 
 // 임시 페이지 컴포넌트들 (디자인 완료 후 실제 컴포넌트로 교체)
 const TemporaryPage: React.FC<{ title: string; description?: string }> = ({ 
@@ -90,6 +106,30 @@ const TemporaryPage: React.FC<{ title: string; description?: string }> = ({
 );
 
 const AppRouter: React.FC = () => {
+  const { login, isAuthenticated } = useAuthStore();
+
+  // 개발 환경에서 임시 ADMIN 사용자 자동 로그인
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && !isAuthenticated) {
+      const mockAdminUser = {
+        id: 'mock-admin-001',
+        userId: 'admin',
+        username: 'admin',
+        fullName: '시스템 관리자',
+        email: 'admin@rsms.com',
+        roleCodes: ['ADMIN'] as const,
+        permissions: [],
+        isActive: true,
+        lastLoginAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      login(mockAdminUser, 'mock-session-' + Date.now());
+      console.log('🔧 [개발 모드] 임시 ADMIN 사용자로 자동 로그인됨');
+    }
+  }, [login, isAuthenticated]);
+
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
@@ -126,8 +166,10 @@ const AppRouter: React.FC = () => {
           />
         } />
 
-        {/* 홈페이지 - 로그인 페이지로 리다이렉트 */}
-        <Route path="/" element={<Navigate to="/auth/login" replace />} />
+        {/* 홈페이지 - 인증된 사용자는 대시보드로, 미인증 사용자는 로그인으로 */}
+        <Route path="/" element={
+          isAuthenticated ? <Navigate to="/app/dashboard" replace /> : <Navigate to="/auth/login" replace />
+        } />
 
         {/* 레거시 라우트 리다이렉션 (이전 경로 호환성) */}
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
@@ -438,31 +480,6 @@ const AppRouter: React.FC = () => {
             </AuthGuard>
           } />
 
-          {/* 사용자 관리 (매니저 이상) */}
-          <Route path="users/*" element={
-            <ManagerGuard>
-              <Routes>
-                <Route index element={
-                  <TemporaryPage 
-                    title="사용자 관리" 
-                    description="사용자 목록, 권한 관리, 역할 할당 등의 사용자 관리 기능이 구현될 예정입니다."
-                  />
-                } />
-                <Route path="create" element={
-                  <TemporaryPage 
-                    title="사용자 생성" 
-                    description="새로운 사용자를 시스템에 등록하는 페이지입니다."
-                  />
-                } />
-                <Route path=":id/*" element={
-                  <TemporaryPage 
-                    title="사용자 상세" 
-                    description="사용자의 상세 정보, 권한, 활동 이력 등을 관리하는 페이지입니다."
-                  />
-                } />
-              </Routes>
-            </ManagerGuard>
-          } />
 
           {/* 보고서 (인증 필요) */}
           <Route path="reports/*" element={
@@ -575,10 +592,81 @@ const AppRouter: React.FC = () => {
               {/* 시스템 설정 (관리자만) */}
               <Route path="system/*" element={
                 <AdminGuard>
-                  <TemporaryPage 
-                    title="시스템 설정" 
-                    description="전체 시스템 설정, 사용자 관리, 역할 권한, 감사 로그 등을 관리하는 관리자 전용 페이지입니다."
-                  />
+                  <Suspense fallback={<LoadingSpinner text="시스템 설정 로딩 중..." />}>
+                    <Routes>
+                      {/* 코드관리 */}
+                      <Route path="code-mgmt" element={<CodeMgmt />} />
+
+                      {/* 메뉴관리 */}
+                      <Route path="menu-mgmt" element={<MenuMgmt />} />
+
+                      {/* 역활관리 */}
+                      <Route path="role-mgmt" element={<RoleMgmt />} />
+
+                      {/* 사용자관리 */}
+                      <Route path="user-mgmt" element={<UserMgmt />} />
+                      {/* 접근로그 */}
+                      <Route path="access-log" element={<AccessLog />} />
+
+                      {/* 기타 시스템 설정 (임시 페이지) */}
+                      <Route path="general" element={
+                        <TemporaryPage
+                          title="일반 설정"
+                          description="시스템 기본 설정을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="users" element={
+                        <TemporaryPage
+                          title="사용자 설정"
+                          description="사용자 계정 및 권한을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="roles" element={
+                        <TemporaryPage
+                          title="역할 설정"
+                          description="시스템 역할 및 권한을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="permissions" element={
+                        <TemporaryPage
+                          title="권한 설정"
+                          description="세부 권한을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="audit" element={
+                        <TemporaryPage
+                          title="감사 로그"
+                          description="시스템 감사 로그를 조회하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="backup" element={
+                        <TemporaryPage
+                          title="백업 관리"
+                          description="시스템 백업을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      <Route path="integrations" element={
+                        <TemporaryPage
+                          title="외부 연동"
+                          description="외부 시스템 연동을 관리하는 페이지입니다."
+                        />
+                      } />
+
+                      {/* 시스템 설정 메인 페이지 */}
+                      <Route index element={
+                        <TemporaryPage
+                          title="시스템 설정"
+                          description="전체 시스템 설정을 관리하는 관리자 전용 페이지입니다."
+                        />
+                      } />
+                    </Routes>
+                  </Suspense>
                 </AdminGuard>
               } />
 
@@ -808,6 +896,132 @@ const AppRouter: React.FC = () => {
 
                   {/* 기본 리다이렉트 */}
                   <Route index element={<Navigate to="/app/compliance/period-setting" replace />} />
+                </Routes>
+              </Suspense>
+            </ManagerGuard>
+          } />
+
+          {/* 결재함 (인증 필요) */}
+          <Route path="approval/*" element={
+            <AuthGuard>
+              <Suspense fallback={<LoadingSpinner text="결재함 로딩 중..." />}>
+                <Routes>
+                  {/* 결재함 메인 */}
+                  <Route path="box" element={<ApprovalBox />} />
+                  <Route path="box/:id" element={
+                    <TemporaryPage
+                      title="결재 상세"
+                      description="결재의 상세 정보와 결재선, 진행 상황을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="box/create" element={
+                    <TemporaryPage
+                      title="결재 등록"
+                      description="새로운 결재를 등록하고 결재선을 설정하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="box/:id/edit" element={
+                    <TemporaryPage
+                      title="결재 편집"
+                      description="기존 결재 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="box/:id/approve" element={
+                    <TemporaryPage
+                      title="결재 승인"
+                      description="결재를 승인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="box/:id/reject" element={
+                    <TemporaryPage
+                      title="결재 반려"
+                      description="결재를 반려하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="box/:id/withdraw" element={
+                    <TemporaryPage
+                      title="결재 회수"
+                      description="결재를 회수하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 결재라인 관리 */}
+                  <Route path="line" element={<ApprovalLine />} />
+                  <Route path="line/:id" element={
+                    <TemporaryPage
+                      title="결재라인 상세"
+                      description="결재라인의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="line/create" element={
+                    <TemporaryPage
+                      title="결재라인 등록"
+                      description="새로운 결재라인을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="line/:id/edit" element={
+                    <TemporaryPage
+                      title="결재라인 편집"
+                      description="기존 결재라인 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/approval/box" replace />} />
+                </Routes>
+              </Suspense>
+            </AuthGuard>
+          } />
+
+          {/* 개선이행 (매니저 이상) */}
+          <Route path="improvement/*" element={
+            <ManagerGuard>
+              <Suspense fallback={<LoadingSpinner text="개선이행 로딩 중..." />}>
+                <Routes>
+                  {/* 관리활동/이행점검 개선이행 */}
+                  <Route path="activity-compliance" element={<ActComplImprovement />} />
+                  <Route path="activity-compliance/:id" element={
+                    <TemporaryPage
+                      title="개선이행 상세"
+                      description="개선이행의 상세 정보와 진행 상황을 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="activity-compliance/create" element={
+                    <TemporaryPage
+                      title="개선이행 등록"
+                      description="새로운 개선이행을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="activity-compliance/:id/edit" element={
+                    <TemporaryPage
+                      title="개선이행 편집"
+                      description="기존 개선이행 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 이행점검 보고서 개선이행 */}
+                  <Route path="report" element={<ReportImprovement />} />
+                  <Route path="report/:id" element={
+                    <TemporaryPage
+                      title="보고서 개선이행 상세"
+                      description="보고서 개선이행의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="report/create" element={
+                    <TemporaryPage
+                      title="보고서 개선이행 등록"
+                      description="새로운 보고서 개선이행을 등록하는 페이지입니다."
+                    />
+                  } />
+                  <Route path="report/:id/edit" element={
+                    <TemporaryPage
+                      title="보고서 개선이행 편집"
+                      description="기존 보고서 개선이행 정보를 수정하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/improvement/activity-compliance" replace />} />
                 </Routes>
               </Suspense>
             </ManagerGuard>

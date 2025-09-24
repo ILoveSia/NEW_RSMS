@@ -1,0 +1,331 @@
+/**
+ * 사용자관리 페이지 스타일
+ *
+ * @description PositionMgmt 표준 템플릿 기반 스타일링
+ * @author Claude AI
+ * @version 1.0.0
+ * @created 2025-09-24
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 모던 미니멀 컨테이너
+.container {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+// 🎯 테마 적용 헤더
+
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// 🎨 메인 컨텐츠 영역 - 미니멀
+.content {
+  padding: $spacing-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  background: #fafbfc;
+}
+
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    justify-content: space-between;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+// ===============================
+// Responsive Design
+// ===============================
+
+@include responsive-breakpoint($breakpoint-tablet) {
+  .container {
+    padding: $spacing-xs;
+  }
+
+  .pageHeader {
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .headerStats {
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .statCard {
+    padding: $spacing-xs $spacing-sm;
+    min-width: auto;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .titleSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+  }
+
+  .headerIcon {
+    font-size: 1rem !important;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .pageDescription {
+    font-size: 0.7rem;
+  }
+
+  .statNumber {
+    font-size: 0.9rem;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+}
+
+// ===============================
+// AG-Grid 커스텀 스타일
+// ===============================
+
+.gridSection {
+  :global {
+    // 사용자 상태별 스타일
+    .user-status {
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &.active {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      &.locked {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      &.suspended {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      &.resigned {
+        background: #f8f9fa;
+        color: #6c757d;
+      }
+    }
+
+    // 활성화 상태 스타일
+    .active-status {
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &.active {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      &.inactive {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    }
+
+    // 역할 개수 스타일
+    .role-count {
+      color: var(--theme-text-secondary, $color-text-secondary);
+      font-size: 0.8rem;
+    }
+
+    // 사용자 행 스타일
+    .admin-user-row {
+      background: rgba(0, 123, 255, 0.05);
+      border-left: 3px solid #007bff;
+    }
+
+    .inactive-user-row {
+      opacity: 0.7;
+    }
+
+    // 헤더 스타일
+    .user-header {
+      font-weight: 600;
+      color: var(--theme-text-primary, $color-text-primary);
+    }
+
+    // 셀 스타일
+    .user-cell {
+      border-right: 1px solid $color-border-light;
+    }
+
+    .employee-no-cell {
+      font-weight: 500;
+      color: var(--theme-primary, $color-primary);
+    }
+
+    .full-name-cell {
+      font-weight: 600;
+    }
+  }
+}
+
+// ===============================
+// Loading States
+// ===============================
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+// ===============================
+// Empty States
+// ===============================
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  text-align: center;
+  color: var(--theme-text-secondary, $color-text-secondary);
+
+  .emptyIcon {
+    font-size: 3rem;
+    margin-bottom: $spacing-md;
+    opacity: 0.5;
+  }
+
+  .emptyMessage {
+    font-size: 1rem;
+    margin-bottom: $spacing-sm;
+  }
+
+  .emptyDescription {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+}
