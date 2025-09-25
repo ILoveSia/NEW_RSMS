@@ -167,7 +167,7 @@
       color: white;
 
       &:hover {
-        background: darken($color-primary, 10%);
+        background: color.adjust($color-primary, $lightness: -10%);
       }
 
       &:disabled {
@@ -371,7 +371,7 @@
       color: white;
 
       &:hover {
-        background: darken($color-primary, 8%);
+        background: color.adjust($color-primary, $lightness: -8%);
       }
 
       &:disabled {

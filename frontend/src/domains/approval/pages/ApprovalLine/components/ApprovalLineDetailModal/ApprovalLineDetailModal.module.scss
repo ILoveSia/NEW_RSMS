@@ -7,6 +7,7 @@
  * @created 2025-09-24
  */
 
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -18,7 +19,7 @@
 }
 
 .dialogTitle {
-  background: linear-gradient(135deg, var(--theme-button-primary, $color-primary) 0%, darken($color-primary, 10%) 100%);
+  background: linear-gradient(135deg, var(--theme-button-primary, $color-primary) 0%, color.adjust($color-primary, $lightness: -10%) 100%);
   color: white;
   padding: $spacing-md $spacing-lg;
 
@@ -61,7 +62,7 @@
   background: rgba(255, 255, 255, 0.1) !important;
 
   &:hover {
-    background: var(--theme-button-primary-hover, darken($color-primary, 10%)) !important;
+    background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%)) !important;
   }
 }
 

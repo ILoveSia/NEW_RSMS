@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -203,7 +204,7 @@
   min-width: 100px;
 
   &:hover {
-    background: darken($color-primary, 8%) !important;
+    background: color.adjust($color-primary, $lightness: -8%) !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }

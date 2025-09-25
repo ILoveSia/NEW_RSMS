@@ -7,6 +7,7 @@
  * @created 2025-09-24
  */
 
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -213,7 +214,7 @@
         color: var(--theme-button-primary-text, white);
 
         &:hover:not(:disabled) {
-          background: var(--theme-button-primary-hover, darken($color-primary, 10%));
+          background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
         }
 
         // 에러 버튼
@@ -222,7 +223,7 @@
           color: white;
 
           &:hover:not(:disabled) {
-            background: darken($color-error, 10%);
+            background: color.adjust($color-error, $lightness: -10%);
           }
         }
       }
@@ -324,7 +325,7 @@
           color: var(--theme-button-primary-text, white);
 
           &:hover:not(:disabled) {
-            background: var(--theme-button-primary-hover, darken($color-primary, 10%));
+            background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
           }
         }
       }
