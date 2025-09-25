@@ -1,7 +1,7 @@
 import { ColDef, ValueFormatterParams } from 'ag-grid-community';
 import { InternalControlRegister } from '../../types/internalControlRegister.types';
 
-// 내부통제장치등록 그리드 컬럼 정의
+// 내부통제장치등록 그리드 컬럼 정의 (체크박스 다음 두 번째 위치)
 export const internalControlColumns: ColDef<InternalControlRegister>[] = [
   {
     field: 'sequence',
@@ -94,7 +94,7 @@ export const internalControlColumns: ColDef<InternalControlRegister>[] = [
   }
 ];
 
-// 내부통제장치등록 그리드 기본 설정
+// 내부통제장치등록 그리드 기본 설정 (체크박스는 BaseDataGrid에서 자동 처리)
 export const internalControlGridOptions = {
   defaultColDef: {
     resizable: true,
@@ -113,23 +113,7 @@ export const internalControlGridOptions = {
   paginationPageSize: 25,
   suppressPaginationPanel: true,
   rowSelection: 'multiple',
-  suppressRowDeselection: false,
-  checkboxSelection: true,
-  headerCheckboxSelection: true,
-  // 체크박스를 첫 번째 컬럼으로 설정
-  columnDefs: [
-    {
-      headerName: '',
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-      width: 50,
-      pinned: 'left',
-      suppressMenu: true,
-      sortable: false,
-      filter: false
-    },
-    ...internalControlColumns
-  ]
+  suppressRowDeselection: false
 };
 
 // 엑셀 내보내기용 컬럼 설정

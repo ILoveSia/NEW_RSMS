@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -6,22 +7,33 @@
   position: relative;
   scroll-margin-top: 8px; // 스크롤 시 여백 확보
 
-  // 펼쳐진 그룹 시각적 강조
+  // 펼쳐진 그룹 시각적 강조 - 구분감 강화
   &.expanded {
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: linear-gradient(
-        to bottom,
-        var(--theme-primary, $color-primary),
-        var(--theme-primary-light, lighten($color-primary, 10%))
-      );
-      border-radius: 0 2px 2px 0;
-      opacity: 0.8;
+    // 배경색 변화와 그림자 효과로 확장 상태 강조
+    .groupHeader .groupButton {
+      background: linear-gradient(90deg,
+        rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.12) 0%,
+        rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.04) 100%);
+      border-left: 3px solid var(--theme-menu-active, #06b6d4);
+      box-shadow:
+        0 2px 8px rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+      @include transition(all);
+    }
+
+    // 확장 아이콘 회전, 크기 증가 및 색상 변화
+    .expandIcon {
+      transform: rotate(180deg) scale(1.1);
+      color: var(--theme-menu-active, #06b6d4);
+      filter: brightness(1.2);
+      @include transition(all);
+    }
+
+    // 그룹 텍스트 색상 강조
+    .groupText .MuiListItemText-primary {
+      color: var(--theme-menu-active, #06b6d4);
+      font-weight: 600;
     }
   }
 }
@@ -90,19 +102,57 @@
 }
 
 .subMenuList {
-  background-color: rgba($color-gray-50, 0.3);
-  border-left: 2px solid rgba($color-primary, 0.1);
+  background: linear-gradient(135deg,
+    rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.02) 0%,
+    transparent 100%);
+  border: none;
+  border-left: none !important;
   margin-left: 20px;
   margin-right: 8px;
   border-radius: 0 0 $border-radius-lg 0;
+  position: relative;
+
+  // 서브메뉴 영역 좌측에 얇은 연결선
+  &::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom,
+      var(--theme-menu-active, #06b6d4),
+      rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.3));
+    opacity: 0.6;
+  }
 
   .menuItem {
+    border: none !important;
+    border-left: none !important;
+
     .menuButton {
       min-height: 36px;
       border-radius: 0 12px 12px 0;
+      border: none !important;
+      border-left: none !important;
+      position: relative;
 
       &:hover {
-        background-color: rgba($color-primary, 0.06);
+        background: linear-gradient(90deg,
+          rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.08) 0%,
+          rgba(var(--theme-menu-active-rgb, 6, 182, 212), 0.03) 100%);
+        transform: translateX(1px);
+        @include transition(all);
+      }
+
+      // 서브메뉴 아이템 앞에 작은 점 표시
+      &::before {
+        content: '•';
+        position: absolute;
+        left: 8px;
+        color: var(--theme-menu-active, #06b6d4);
+        opacity: 0.7;
+        font-size: 12px;
       }
     }
   }

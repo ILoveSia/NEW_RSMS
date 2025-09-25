@@ -3,6 +3,7 @@
  * PositionFormModal 표준 스타일을 기반으로 설계
  */
 
+@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
@@ -504,12 +505,12 @@
 @media (prefers-color-scheme: dark) {
   .modal {
     .MuiDialog-paper {
-      background: darken($color-background-default, 5%);
+      background: color.adjust($color-background-default, $lightness: -5%);
     }
   }
 
   .formSection {
-    background: darken($color-background-paper, 3%);
+    background: color.adjust($color-background-paper, $lightness: -3%);
     border-color: rgba($color-primary, 0.2);
   }
 }

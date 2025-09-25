@@ -391,6 +391,7 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
     const mockItems: InternalControlMgmt[] = [
       {
         id: '1',
+        sequence: 1,
         departmentName: '경영진단본부',
         managementActivityName: '리스크 평가',
         internalControl: '리스크관리시스템',
@@ -403,6 +404,7 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
       },
       {
         id: '2',
+        sequence: 2,
         departmentName: '총합기획부',
         managementActivityName: '예산 편성',
         internalControl: '예산관리시스템',
@@ -415,6 +417,7 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
       },
       {
         id: '3',
+        sequence: 3,
         departmentName: '정보보호부',
         managementActivityName: '보안 관리',
         internalControl: '보안관리시스템',
@@ -427,6 +430,7 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
       },
       {
         id: '4',
+        sequence: 4,
         departmentName: '품질관리부',
         managementActivityName: '품질 평가',
         internalControl: '품질관리시스템',
@@ -439,6 +443,7 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
       },
       {
         id: '5',
+        sequence: 5,
         departmentName: '내부감사부',
         managementActivityName: '감사 실시',
         internalControl: '감사관리시스템',

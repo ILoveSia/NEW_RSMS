@@ -196,7 +196,7 @@ const LongTextRenderer: React.FC<ICellRendererParams<ManualInquiry, string>> = (
 
 // 📊 ManualInquiry 컬럼 정의 (19개 컬럼)
 export const manualColumns: ColDef<ManualInquiry>[] = [
-  // 🔒 고정 컬럼 (핀고정)
+  // 🔒 고정 컬럼 (핀고정) - 체크박스 다음 두 번째 위치
   {
     field: 'sequence',
     headerName: '순번',

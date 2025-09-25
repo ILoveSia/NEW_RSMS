@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 // 테마 타입 정의
-export type ThemeType = 'default' | 'netflix' | 'amazon' | 'manhattan' | 'whatsapp' | 'itcen';
+export type ThemeType = 'default' | 'netflix' | 'amazon' | 'manhattan' | 'whatsapp';
 
 // 테마별 색상 정의
 export interface ThemeColors {
@@ -30,31 +30,38 @@ export interface ThemeColors {
   buttonPrimaryText: string;
   buttonSecondary: string;
   buttonSecondaryText: string;
+
+  // Card 색상
+  cardBackground: string;
+  cardBorder: string;
 }
 
-// 8가지 테마별 색상 설정
+// 5가지 테마별 색상 설정
 export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
   default: {
-    // 기본 스타일 - 차분한 슬레이트 그레이
-    headerBackground: '#64748b',
+    // 기본 스타일 - 모던 딥 네이비 + 사이버 아쿠아 (구 아이티센 스타일)
+    headerBackground: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
     headerText: '#ffffff',
 
-    menuBackground: '#f1f5f9',
-    menuText: '#334155',
-    menuHover: '#e2e8f0',
-    menuActive: '#cbd5e1',
+    menuBackground: '#374151', // 헤더와 조화로운 차콜 그레이
+    menuText: '#f9fafb',
+    menuHover: '#4b5563',
+    menuActive: '#06b6d4', // 사이버 아쿠아 액센트
 
-    pageHeaderBackground: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+    pageHeaderBackground: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
     pageHeaderText: '#ffffff',
 
-    buttonPrimary: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+    buttonPrimary: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
     buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
-    buttonSecondaryText: '#ffffff'
+    buttonSecondary: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
+    buttonSecondaryText: '#ffffff',
+
+    cardBackground: '#ffffff',
+    cardBorder: '#e0f2fe'
   },
 
   netflix: {
-    // 넷플릭스 스타일 - 다크 테마
+    // 넷플릭스 스타일 - 다크 테마 (개선: 카드 구분 가능)
     headerBackground: '#141414',
     headerText: '#ffffff',
 
@@ -63,13 +70,16 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     menuHover: '#333333',
     menuActive: '#e50914',
 
-    pageHeaderBackground: '#e50914',
+    pageHeaderBackground: 'linear-gradient(135deg, #e50914 0%, #b7070f 100%)',
     pageHeaderText: '#ffffff',
 
-    buttonPrimary: '#e50914',
+    buttonPrimary: 'linear-gradient(135deg, #e50914 0%, #b7070f 100%)',
     buttonPrimaryText: '#ffffff',
-    buttonSecondary: '#e50914',
-    buttonSecondaryText: '#ffffff'
+    buttonSecondary: 'linear-gradient(135deg, #e50914 0%, #b7070f 100%)',
+    buttonSecondaryText: '#ffffff',
+
+    cardBackground: '#2a2a2a',
+    cardBorder: '#404040'
   },
 
   amazon: {
@@ -88,27 +98,33 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     buttonPrimary: 'linear-gradient(135deg, #ff9900 0%, #ff6b00 100%)',
     buttonPrimaryText: '#ffffff',
     buttonSecondary: 'linear-gradient(135deg, #ff9900 0%, #ff6b00 100%)',
-    buttonSecondaryText: '#ffffff'
+    buttonSecondaryText: '#ffffff',
+
+    cardBackground: '#ffffff',
+    cardBorder: '#ddd'
   },
 
 
   manhattan: {
-    // 맨하탄 금융센터 스타일 - 금융 느낌의 다크 블루
-    headerBackground: '#0a1428',
+    // 맨하탄 금융센터 스타일 - 프리미엄 금융 그라데이션 (전면 리디자인)
+    headerBackground: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
     headerText: '#ffffff',
 
-    menuBackground: '#1e293b',
+    menuBackground: '#1e293b', // 확실한 어두운 차콜 (단색으로 안전하게)
     menuText: '#ffffff',
-    menuHover: '#334155',
-    menuActive: '#3b82f6',
+    menuHover: '#374151',
+    menuActive: '#0ea5e9', // 골드 블루 액센트
 
-    pageHeaderBackground: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+    pageHeaderBackground: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)',
     pageHeaderText: '#ffffff',
 
-    buttonPrimary: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+    buttonPrimary: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)',
     buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-    buttonSecondaryText: '#ffffff'
+    buttonSecondary: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)',
+    buttonSecondaryText: '#ffffff',
+
+    cardBackground: '#ffffff',
+    cardBorder: '#e0f2fe'
   },
 
   whatsapp: {
@@ -127,27 +143,10 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
     buttonPrimary: 'linear-gradient(135deg, #075e54 0%, #128c7e 100%)',
     buttonPrimaryText: '#ffffff',
     buttonSecondary: 'linear-gradient(135deg, #075e54 0%, #128c7e 100%)',
-    buttonSecondaryText: '#ffffff'
-  },
+    buttonSecondaryText: '#ffffff',
 
-
-  itcen: {
-    // 아이티센 스타일 - 캡처된 이미지 기반 색상 (연한 파란색으로 조정)
-    headerBackground: '#3b82f6', // 연한 파란색으로 조정
-    headerText: '#ffffff',
-
-    menuBackground: '#f1f5f9', // 조금 더 진한 회색으로 조정
-    menuText: '#374151',
-    menuHover: '#e2e8f0',
-    menuActive: '#60a5fa', // 더 연한 파란색으로 조정
-
-    pageHeaderBackground: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
-    pageHeaderText: '#ffffff',
-
-    buttonPrimary: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
-    buttonPrimaryText: '#ffffff',
-    buttonSecondary: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
-    buttonSecondaryText: '#ffffff'
+    cardBackground: '#ffffff',
+    cardBorder: '#d1fae5'
   }
 };
 
@@ -163,8 +162,8 @@ export const THEME_OPTIONS: ThemeInfo[] = [
   {
     id: 'default',
     name: '기본 스타일',
-    description: '차분한 슬레이트 그레이 디자인',
-    icon: '🎨'
+    description: '모던 딥 네이비 + 사이버 아쿠아',
+    icon: '💻'
   },
   {
     id: 'netflix',
@@ -189,12 +188,6 @@ export const THEME_OPTIONS: ThemeInfo[] = [
     name: 'WhatsApp 스타일',
     description: '친근한 그린 톤',
     icon: '💬'
-  },
-  {
-    id: 'itcen',
-    name: '아이티센 스타일',
-    description: '프로페셔널한 IT 솔루션 테마',
-    icon: '💻'
   }
 ];
 
@@ -210,8 +203,8 @@ interface ThemeStore {
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set, get) => ({
-      currentTheme: 'amazon', // 아마존을 기본값으로 설정
-      colors: THEME_COLORS.amazon,
+      currentTheme: 'default', // 기본 스타일을 기본값으로 설정
+      colors: THEME_COLORS.default,
 
       setTheme: (theme: ThemeType) => {
         const colors = THEME_COLORS[theme];
@@ -226,7 +219,7 @@ export const useThemeStore = create<ThemeStore>()(
 
       getThemeInfo: () => {
         const currentTheme = get().currentTheme;
-        return THEME_OPTIONS.find(theme => theme.id === currentTheme) || THEME_OPTIONS[2]; // 아마존이 기본값
+        return THEME_OPTIONS.find(theme => theme.id === currentTheme) || THEME_OPTIONS[0]; // 기본 스타일이 기본값
       }
     }),
     {
@@ -234,11 +227,11 @@ export const useThemeStore = create<ThemeStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // 저장된 테마가 유효한지 확인
-          const validThemes: ThemeType[] = ['default', 'netflix', 'amazon', 'manhattan', 'whatsapp', 'itcen'];
+          const validThemes: ThemeType[] = ['default', 'netflix', 'amazon', 'manhattan', 'whatsapp'];
           if (!validThemes.includes(state.currentTheme)) {
             // 유효하지 않은 테마면 기본값으로 리셋
-            state.currentTheme = 'amazon';
-            state.colors = THEME_COLORS.amazon;
+            state.currentTheme = 'default';
+            state.colors = THEME_COLORS.default;
           }
           // 페이지 로드 시 CSS 변수 적용
           updateCSSVariables(state.colors);
@@ -247,6 +240,15 @@ export const useThemeStore = create<ThemeStore>()(
     }
   )
 );
+
+// HEX 색상을 RGB로 변환하는 함수
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (result) {
+    return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
+  }
+  return '0, 0, 0';
+}
 
 // CSS 변수 업데이트 함수
 function updateCSSVariables(colors: ThemeColors) {
@@ -260,6 +262,7 @@ function updateCSSVariables(colors: ThemeColors) {
   root.style.setProperty('--theme-menu-text', colors.menuText);
   root.style.setProperty('--theme-menu-hover', colors.menuHover);
   root.style.setProperty('--theme-menu-active', colors.menuActive);
+  root.style.setProperty('--theme-menu-active-rgb', hexToRgb(colors.menuActive));
 
   root.style.setProperty('--theme-page-header-bg', colors.pageHeaderBackground);
   root.style.setProperty('--theme-page-header-text', colors.pageHeaderText);
@@ -268,6 +271,9 @@ function updateCSSVariables(colors: ThemeColors) {
   root.style.setProperty('--theme-button-primary-text', colors.buttonPrimaryText);
   root.style.setProperty('--theme-button-secondary', colors.buttonSecondary);
   root.style.setProperty('--theme-button-secondary-text', colors.buttonSecondaryText);
+
+  root.style.setProperty('--theme-card-bg', colors.cardBackground);
+  root.style.setProperty('--theme-card-border', colors.cardBorder);
 }
 
 // 초기 테마 적용 (앱 시작 시 호출)

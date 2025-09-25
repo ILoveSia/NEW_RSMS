@@ -46,9 +46,21 @@ const getInternalExternalText = (type: string): string => {
 };
 
 /**
- * 점검자지정 목록 컬럼 정의
+ * 점검자지정 목록 컬럼 정의 (순번과 상태 위치 변경)
  */
 export const inspectorColumns: ColDef<InspectorAssignment>[] = [
+  {
+    field: 'sequence',
+    headerName: '순번',
+    width: 80,
+    minWidth: 60,
+    maxWidth: 100,
+    sortable: true,
+    filter: 'agNumberColumnFilter',
+    cellClass: 'ag-cell-center',
+    headerClass: 'ag-header-center',
+    cellStyle: { fontWeight: '500' }
+  },
   {
     field: 'assignmentStatus',
     headerName: '상태',
@@ -70,18 +82,6 @@ export const inspectorColumns: ColDef<InspectorAssignment>[] = [
       values: ['지정완료', '미지정', '점검완료'],
       suppressSorting: true
     }
-  },
-  {
-    field: 'sequence',
-    headerName: '순번',
-    width: 80,
-    minWidth: 60,
-    maxWidth: 100,
-    sortable: true,
-    filter: 'agNumberColumnFilter',
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    cellStyle: { fontWeight: '500' }
   },
   {
     field: 'managementName',
