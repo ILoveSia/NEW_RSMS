@@ -8,7 +8,6 @@ export const internalControlColumns: ColDef<InternalControlRegister>[] = [
     headerName: '순번',
     width: 80,
     sortable: true,
-    pinned: 'left',
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center'
   },

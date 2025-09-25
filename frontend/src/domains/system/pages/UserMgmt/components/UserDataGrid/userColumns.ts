@@ -73,7 +73,6 @@ export const userColumns: ColDef<User>[] = [
     filter: 'agTextColumnFilter',
     cellClass: 'employee-no-cell',
     headerClass: 'user-header',
-    pinned: 'left'
   },
   {
     headerName: '성명',

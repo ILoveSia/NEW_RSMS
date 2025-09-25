@@ -13,52 +13,51 @@
  * - ApprovalLine 좌우 분할 레이아웃 패턴 적용
  */
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
+  Add as AddIcon,
+  KeyboardArrowDown as ArrowDownIcon,
+  KeyboardArrowUp as ArrowUpIcon,
+  Code as CodeIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  GetApp as ExcelIcon,
+  Refresh as RefreshIcon,
+  Settings as SettingsIcon
+} from '@mui/icons-material';
+import {
+  Alert,
   Box,
-  Grid,
-  Paper,
-  Typography,
   Button,
   Chip,
+  Grid,
   IconButton,
-  Alert,
-  Skeleton
+  Paper,
+  Skeleton,
+  Typography
 } from '@mui/material';
-import {
-  Settings as SettingsIcon,
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon,
-  KeyboardArrowUp as ArrowUpIcon,
-  KeyboardArrowDown as ArrowDownIcon,
-  GetApp as ExcelIcon,
-  Code as CodeIcon
-} from '@mui/icons-material';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 공통 컴포넌트
-import { BaseSearchFilter } from '@/shared/components/organisms/BaseSearchFilter';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import { BaseSearchFilter } from '@/shared/components/organisms/BaseSearchFilter';
 import type { FilterField } from '@/shared/components/organisms/BaseSearchFilter/BaseSearchFilter';
 import type { ColDef } from 'ag-grid-community';
 
 // 타입 및 상수 import
 import type {
-  CodeGroup,
   CodeDetail,
   CodeFilters,
+  CodeGroup,
   CodeModalState,
   SplitLayoutState
 } from './types/codeMgmt.types';
 
 import {
-  MOCK_CODE_GROUPS,
-  MOCK_CODE_DETAILS,
+  CATEGORY_COLOR_MAP,
   CATEGORY_OPTIONS,
-  USE_YN_OPTIONS,
-  USE_YN_COLOR_MAP,
-  CATEGORY_COLOR_MAP
+  MOCK_CODE_DETAILS,
+  MOCK_CODE_GROUPS,
+  USE_YN_OPTIONS
 } from './types/codeMgmt.types';
 
 
@@ -186,14 +185,12 @@ const CodeMgmt: React.FC = () => {
       headerName: '그룹코드',
       width: 120,
       sortable: true,
-      pinned: 'left'
     },
     {
       field: 'groupName',
       headerName: '그룹명',
       width: 180,
       sortable: true,
-      pinned: 'left'
     },
     {
       field: 'description',
@@ -253,14 +250,12 @@ const CodeMgmt: React.FC = () => {
       headerName: '상세코드',
       width: 120,
       sortable: true,
-      pinned: 'left'
     },
     {
       field: 'detailName',
       headerName: '상세코드명',
       width: 200,
       sortable: true,
-      pinned: 'left'
     },
     {
       field: 'description',

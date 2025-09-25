@@ -9,10 +9,10 @@
  * - 반응형 컬럼 폭
  */
 
-import React from 'react';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import { Cancel, CheckCircle, Warning } from '@mui/icons-material';
 import { Chip, Tooltip } from '@mui/material';
-import { CheckCircle, Cancel, Warning } from '@mui/icons-material';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import React from 'react';
 import { ManualInquiry } from '../../types/manualInquiry.types';
 
 // 🎨 Boolean 값 렌더러 (Y/N 표시)
@@ -201,7 +201,6 @@ export const manualColumns: ColDef<ManualInquiry>[] = [
     field: 'sequence',
     headerName: '순번',
     width: 80,
-    pinned: 'left',
     cellStyle: { textAlign: 'center', fontWeight: 'bold' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -213,9 +212,8 @@ export const manualColumns: ColDef<ManualInquiry>[] = [
   },
   {
     field: 'departmentName',
-    headerName: '부정명',
+    headerName: '부점명',
     width: 120,
-    pinned: 'left',
     cellStyle: { textAlign: 'center', fontWeight: '600', color: '#1976d2' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -514,7 +512,6 @@ export const mobileManualColumns: ColDef<ManualInquiry>[] = [
     field: 'sequence',
     headerName: '순번',
     width: 60,
-    pinned: 'left',
     cellStyle: { textAlign: 'center', fontWeight: 'bold' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -525,7 +522,6 @@ export const mobileManualColumns: ColDef<ManualInquiry>[] = [
     field: 'departmentName',
     headerName: '부서',
     width: 80,
-    pinned: 'left',
     cellStyle: { textAlign: 'center', fontWeight: '600', fontSize: '0.85rem' },
     headerClass: 'ag-header-cell-center',
     sortable: true,

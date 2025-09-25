@@ -5,7 +5,7 @@
 
 import type { ColDef } from 'ag-grid-community';
 import type { ResponsibilityInspection } from '../../types/executiveReport.types';
-import { INSPECTION_STATUS_COLORS, IMPROVEMENT_STATUS_COLORS, INSPECTION_STATUS_LABELS, IMPROVEMENT_STATUS_LABELS } from '../../types/executiveReport.types';
+import { IMPROVEMENT_STATUS_COLORS, IMPROVEMENT_STATUS_LABELS, INSPECTION_STATUS_COLORS, INSPECTION_STATUS_LABELS } from '../../types/executiveReport.types';
 
 // 상태 렌더러 컴포넌트
 const StatusCellRenderer = (params: any) => {
@@ -79,7 +79,6 @@ export const responsibilityColumns: ColDef<ResponsibilityInspection>[] = [
     headerName: '번호',
     field: 'id',
     width: 80,
-    pinned: 'left',
     cellStyle: { textAlign: 'center', fontWeight: '500' },
     sortable: false,
     filter: false,
@@ -91,7 +90,6 @@ export const responsibilityColumns: ColDef<ResponsibilityInspection>[] = [
     headerName: '책무',
     field: 'responsibility',
     width: 120,
-    pinned: 'left',
     cellStyle: { fontWeight: '600', color: '#1976d2' },
     sortable: true,
     filter: 'agTextColumnFilter',

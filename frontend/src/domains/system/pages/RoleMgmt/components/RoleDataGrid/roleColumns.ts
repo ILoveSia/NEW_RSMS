@@ -8,7 +8,7 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import type { RoleWithPermissions, Permission } from '../../../../types';
+import type { Permission, RoleWithPermissions } from '../../../../types';
 
 // 역활 상태 렌더러
 const RoleStatusRenderer = (params: any) => {
@@ -94,7 +94,6 @@ export const roleColumns: ColDef<RoleWithPermissions>[] = [
     width: 60,
     cellClass: 'row-number-cell',
     headerClass: 'role-header',
-    pinned: 'left'
   },
   {
     headerName: '역활코드',
@@ -199,7 +198,6 @@ export const permissionDetailColumns: ColDef<Permission>[] = [
     width: 50,
     cellClass: 'row-number-cell',
     headerClass: 'permission-header',
-    pinned: 'left'
   },
   {
     headerName: '순서',
