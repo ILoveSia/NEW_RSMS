@@ -22,13 +22,15 @@
   flex-direction: column;
 }
 
-// 내용 영역 - CodeMgmt와 동일한 높이 설정
+// 내용 영역 - 고정 높이로 스크롤 방지
 .content {
   flex: 1;
   padding: $spacing-sm;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 180px);
+  max-height: calc(100vh - 180px);
+  overflow: hidden; // 전체 화면 스크롤 방지
 }
 
 // ===============================
@@ -153,17 +155,19 @@
 
 .leftPanel {
   height: 100%;
+  max-height: calc(100vh - 220px); // 고정 최대 높이
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
   .leftHeader {
+    height: 56px; // 고정 높이로 우측 헤더와 정렬
     padding: $spacing-sm;
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; // 세로 중앙 정렬
     flex-wrap: wrap;
     gap: $spacing-sm;
   }
@@ -178,7 +182,8 @@
     flex: 1;
     overflow-y: auto;
     padding: $spacing-xs;
-    max-height: calc(100vh - 250px);
+    height: calc(100vh - 320px); // 고정 높이로 전체 화면 스크롤 방지
+    max-height: calc(100vh - 320px);
   }
 }
 
@@ -249,9 +254,11 @@
 
 .rightPanel {
   height: 100%;
+  max-height: calc(100vh - 220px); // 좌측 패널과 동일한 최대 높이
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
+  overflow: hidden;
 }
 
 // 메뉴 정보 폼 - 독립적 높이 조절 가능
@@ -263,12 +270,13 @@
   height: 350px; // 높이 증가로 하단 공간 감소
 
   .formHeader {
+    height: 56px; // 고정 높이로 좌측 헤더와 정렬
     padding: $spacing-sm;
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; // 세로 중앙 정렬
   }
 
   .formActions {
@@ -330,12 +338,13 @@
   min-height: 300px; // 최소 높이 보장
 
   .tableHeader {
+    height: 56px; // 다른 헤더들과 동일한 높이
     padding: $spacing-sm;
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; // 세로 중앙 정렬
   }
 
   .tableContent {
@@ -527,7 +536,7 @@
   }
 
   .leftPanel .treeContainer {
-    max-height: calc(100vh - 400px);
+    max-height: calc(100vh - 600px);
   }
 
   .treeNode {

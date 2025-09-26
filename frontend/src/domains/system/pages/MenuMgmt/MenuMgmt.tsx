@@ -564,7 +564,17 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
           <Grid item xs={12} md={4}>
             <Paper className={styles.leftPanel}>
               <div className={styles.leftHeader}>
-                <Typography variant="h6" component="h2">
+                <Typography
+                  variant="subtitle1"
+                  component="h2"
+                  sx={{
+                    fontSize: '0.875rem !important',
+                    fontWeight: '500 !important',
+                    lineHeight: '1.2 !important',
+                    margin: '0 !important',
+                    fontFamily: 'inherit !important'
+                  }}
+                >
                   메뉴 정보
                 </Typography>
               </div>
@@ -611,7 +621,17 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
               <Paper className={styles.menuForm} sx={{ mb: 2, height: '45%' }}>
                 <div className={styles.formHeader}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Typography variant="h6" component="h3">
+                    <Typography
+                      variant="subtitle1"
+                      component="h3"
+                      sx={{
+                        fontSize: '0.875rem !important',
+                        fontWeight: '500 !important',
+                        lineHeight: '1.2 !important',
+                        margin: '0 !important',
+                        fontFamily: 'inherit !important'
+                      }}
+                    >
                       메뉴 정보
                     </Typography>
                     {isEditing && (
@@ -1002,7 +1022,17 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
               {/* 하단: 권한 관리 테이블 */}
               <Paper className={styles.permissionTable} sx={{ height: '45%' }}>
                 <div className={styles.tableHeader}>
-                  <Typography variant="h6" component="h3">
+                  <Typography
+                    variant="subtitle1"
+                    component="h3"
+                    sx={{
+                      fontSize: '0.875rem !important',
+                      fontWeight: '500 !important',
+                      lineHeight: '1.2 !important',
+                      margin: '0 !important',
+                      fontFamily: 'inherit !important'
+                    }}
+                  >
                     역할 권한 설정
                   </Typography>
                   <Box sx={{ display: 'flex' }}>
