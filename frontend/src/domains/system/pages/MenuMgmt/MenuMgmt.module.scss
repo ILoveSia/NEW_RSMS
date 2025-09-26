@@ -22,7 +22,7 @@
   flex-direction: column;
 }
 
-// 내용 영역
+// 내용 영역 - CodeMgmt와 동일한 높이 설정
 .content {
   flex: 1;
   padding: $spacing-sm;
@@ -178,7 +178,7 @@
     flex: 1;
     overflow-y: auto;
     padding: $spacing-xs;
-    max-height: calc(100vh - 350px);
+    max-height: calc(100vh - 250px);
   }
 }
 
@@ -194,7 +194,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: var(--theme-hover, rgba(0, 0, 0, 0.04));
+    background: var(--theme-hover, rgba(42, 33, 33, 0.04));
   }
 
   &.selected {
@@ -251,24 +251,65 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: $spacing-sm;
 }
 
-// 메뉴 정보 폼
+// 메뉴 정보 폼 - 독립적 높이 조절 가능
 .menuForm {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 0 0 auto; // 고정 크기
+  height: 350px; // 높이 증가로 하단 공간 감소
 
   .formHeader {
     padding: $spacing-sm;
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .formActions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; // 버튼들이 축소되지 않도록 보장
   }
 
   .formContent {
     flex: 1;
-    padding: $spacing-sm;
+    padding: 3px $spacing-md; // 좌우 패딩 더 증가
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    // Grid 컨테이너 간격 극한 감소
+    :global(.MuiGrid-container) {
+      margin-top: 0px !important;
+
+      :global(.MuiGrid-item) {
+        margin-bottom: 2px !important;
+
+        // TextField 간격 제거
+        :global(.MuiTextField-root) {
+          margin-bottom: 0px;
+        }
+
+        // FormLabel 간격 극한 감소
+        :global(.MuiFormLabel-root) {
+          margin-top: 1px;
+          margin-bottom: 0px;
+        }
+
+        // RadioGroup 간격 극한 감소
+        :global(.MuiRadioGroup-root) {
+          margin-top: 0px;
+          margin-bottom: 1px;
+        }
+      }
+    }
   }
 
   .noSelection {
@@ -280,11 +321,13 @@
   }
 }
 
-// 권한 관리 테이블
+// 권한 관리 테이블 - 독립적 높이 조절 가능
 .permissionTable {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1; // 나머지 공간 차지
+  min-height: 300px; // 최소 높이 보장
 
   .tableHeader {
     padding: $spacing-sm;
@@ -297,8 +340,55 @@
 
   .tableContent {
     flex: 1;
-    padding: $spacing-sm;
     overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--theme-scrollbar-thumb);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--theme-scrollbar-thumb-hover);
+      }
+    }
+
+    // MUI Table 스타일 오버라이드
+    :global(.MuiTable-root) {
+      :global(.MuiTableHead-root) {
+        :global(.MuiTableRow-root) {
+          background: var(--theme-background-neutral);
+        }
+
+        :global(.MuiTableCell-root) {
+          font-weight: 600;
+          color: var(--theme-text-primary);
+          border-bottom: 2px solid var(--theme-divider);
+          font-size: 0.875rem;
+          padding: 8px 16px;
+        }
+      }
+
+      :global(.MuiTableBody-root) {
+        :global(.MuiTableRow-root) {
+          &:hover {
+            background: var(--theme-action-hover);
+          }
+        }
+
+        :global(.MuiTableCell-root) {
+          border-bottom: 1px solid var(--theme-divider);
+          font-size: 0.875rem;
+          padding: 8px 16px;
+        }
+      }
+    }
   }
 
   .noPermissions {

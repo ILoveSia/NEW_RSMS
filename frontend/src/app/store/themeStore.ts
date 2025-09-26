@@ -28,8 +28,15 @@ export interface ThemeColors {
   // Button 색상
   buttonPrimary: string;
   buttonPrimaryText: string;
+  buttonPrimaryHover: string;
   buttonSecondary: string;
   buttonSecondaryText: string;
+  buttonSecondaryHover: string;
+
+  // Error/Delete 버튼 색상
+  errorMain: string;
+  errorLight: string;
+  errorDark: string;
 
   // Card 색상
   cardBackground: string;
@@ -53,8 +60,14 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
     buttonPrimary: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
     buttonPrimaryText: '#ffffff',
+    buttonPrimaryHover: 'linear-gradient(135deg, #0e7490 0%, #0891b2 100%)',
     buttonSecondary: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
     buttonSecondaryText: '#ffffff',
+    buttonSecondaryHover: 'linear-gradient(135deg, #0e7490 0%, #0891b2 100%)',
+
+    errorMain: '#dc2626',
+    errorLight: '#fee2e2',
+    errorDark: '#991b1b',
 
     cardBackground: '#ffffff',
     cardBorder: '#e0f2fe'
@@ -75,8 +88,14 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
     buttonPrimary: 'linear-gradient(135deg, #e50914 0%, #b7070f 100%)',
     buttonPrimaryText: '#ffffff',
+    buttonPrimaryHover: 'linear-gradient(135deg, #b7070f 0%, #870509 100%)',
     buttonSecondary: 'linear-gradient(135deg, #e50914 0%, #b7070f 100%)',
     buttonSecondaryText: '#ffffff',
+    buttonSecondaryHover: 'linear-gradient(135deg, #b7070f 0%, #870509 100%)',
+
+    errorMain: '#ef4444',
+    errorLight: '#fee2e2',
+    errorDark: '#dc2626',
 
     cardBackground: '#2a2a2a',
     cardBorder: '#404040'
@@ -97,8 +116,14 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
     buttonPrimary: 'linear-gradient(135deg, #ff9900 0%, #ff6b00 100%)',
     buttonPrimaryText: '#ffffff',
+    buttonPrimaryHover: 'linear-gradient(135deg, #e68900 0%, #e55100 100%)',
     buttonSecondary: 'linear-gradient(135deg, #ff9900 0%, #ff6b00 100%)',
     buttonSecondaryText: '#ffffff',
+    buttonSecondaryHover: 'linear-gradient(135deg, #e68900 0%, #e55100 100%)',
+
+    errorMain: '#dc2626',
+    errorLight: '#fee2e2',
+    errorDark: '#991b1b',
 
     cardBackground: '#ffffff',
     cardBorder: '#ddd'
@@ -120,8 +145,14 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
     buttonPrimary: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)',
     buttonPrimaryText: '#ffffff',
+    buttonPrimaryHover: 'linear-gradient(135deg, #0369a1 0%, #0284c7 100%)',
     buttonSecondary: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)',
     buttonSecondaryText: '#ffffff',
+    buttonSecondaryHover: 'linear-gradient(135deg, #0369a1 0%, #0284c7 100%)',
+
+    errorMain: '#dc2626',
+    errorLight: '#fee2e2',
+    errorDark: '#991b1b',
 
     cardBackground: '#ffffff',
     cardBorder: '#e0f2fe'
@@ -142,8 +173,14 @@ export const THEME_COLORS: Record<ThemeType, ThemeColors> = {
 
     buttonPrimary: 'linear-gradient(135deg, #075e54 0%, #128c7e 100%)',
     buttonPrimaryText: '#ffffff',
+    buttonPrimaryHover: 'linear-gradient(135deg, #064e46 0%, #0f6b5e 100%)',
     buttonSecondary: 'linear-gradient(135deg, #075e54 0%, #128c7e 100%)',
     buttonSecondaryText: '#ffffff',
+    buttonSecondaryHover: 'linear-gradient(135deg, #064e46 0%, #0f6b5e 100%)',
+
+    errorMain: '#dc2626',
+    errorLight: '#fee2e2',
+    errorDark: '#991b1b',
 
     cardBackground: '#ffffff',
     cardBorder: '#d1fae5'
@@ -269,8 +306,14 @@ function updateCSSVariables(colors: ThemeColors) {
 
   root.style.setProperty('--theme-button-primary', colors.buttonPrimary);
   root.style.setProperty('--theme-button-primary-text', colors.buttonPrimaryText);
+  root.style.setProperty('--theme-button-primary-hover', colors.buttonPrimaryHover);
   root.style.setProperty('--theme-button-secondary', colors.buttonSecondary);
   root.style.setProperty('--theme-button-secondary-text', colors.buttonSecondaryText);
+  root.style.setProperty('--theme-button-secondary-hover', colors.buttonSecondaryHover);
+
+  root.style.setProperty('--theme-error-main', colors.errorMain);
+  root.style.setProperty('--theme-error-light', colors.errorLight);
+  root.style.setProperty('--theme-error-dark', colors.errorDark);
 
   root.style.setProperty('--theme-card-bg', colors.cardBackground);
   root.style.setProperty('--theme-card-border', colors.cardBorder);

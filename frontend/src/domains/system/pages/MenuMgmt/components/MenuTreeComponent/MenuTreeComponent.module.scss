@@ -1,0 +1,335 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.menuTreeContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--theme-background-paper);
+  border-radius: $border-radius-md;
+}
+
+.treeHeader {
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid var(--theme-divider);
+  background: var(--theme-background-default);
+  border-radius: $border-radius-md $border-radius-md 0 0;
+}
+
+.treeStats {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  font-size: 0.875rem;
+
+  .statItem {
+    color: var(--theme-text-secondary);
+
+    strong {
+      color: var(--theme-text-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.treeContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-xs 0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--theme-scrollbar-thumb);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--theme-scrollbar-thumb-hover);
+    }
+  }
+}
+
+.treeNodes {
+  padding: 0 $spacing-xs;
+}
+
+.treeNodeWrapper {
+  margin-bottom: 1px;
+}
+
+.treeNode {
+  display: flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease-in-out;
+  position: relative;
+
+  &:hover {
+    background: var(--theme-action-hover);
+
+    .statusIndicators {
+      opacity: 1;
+    }
+  }
+
+  &:focus {
+    outline: 2px solid var(--theme-primary-main);
+    outline-offset: 1px;
+  }
+
+  &.selected {
+    background: var(--theme-primary-light);
+    color: var(--theme-primary-main);
+    font-weight: 600;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--theme-primary-main);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .menuIcon {
+      color: var(--theme-primary-main);
+    }
+  }
+
+  &.matched {
+    background: var(--theme-warning-light);
+
+    .highlight {
+      background: var(--theme-warning-main);
+      color: var(--theme-warning-contrastText);
+      padding: 1px 2px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+  }
+
+  &.inactive {
+    opacity: 0.6;
+
+    .menuName {
+      text-decoration: line-through;
+    }
+  }
+}
+
+.expandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: $spacing-xs;
+  border-radius: 50%;
+  transition: all 0.15s ease-in-out;
+  color: var(--theme-text-secondary);
+
+  &:hover {
+    background: var(--theme-action-hover);
+    color: var(--theme-text-primary);
+  }
+
+  &:focus {
+    outline: 2px solid var(--theme-primary-main);
+    outline-offset: 1px;
+  }
+
+  svg {
+    font-size: 16px;
+    transition: transform 0.15s ease-in-out;
+  }
+}
+
+.menuIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: $spacing-sm;
+  color: var(--theme-text-secondary);
+
+  svg {
+    font-size: 16px;
+  }
+
+  .defaultIcon {
+    font-size: 14px;
+  }
+}
+
+.menuName {
+  flex: 1;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--theme-text-primary);
+  margin-right: $spacing-sm;
+
+  // 텍스트가 너무 길 때 말줄임표
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusIndicators {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+
+  span {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: $border-radius-sm;
+    font-weight: 500;
+  }
+}
+
+.inactiveLabel {
+  background: var(--theme-error-light);
+  color: var(--theme-error-main);
+}
+
+.testLabel {
+  background: var(--theme-warning-light);
+  color: var(--theme-warning-main);
+}
+
+.childrenCount {
+  background: var(--theme-info-light);
+  color: var(--theme-info-main);
+  font-size: 0.7rem !important;
+}
+
+.childNodes {
+  position: relative;
+
+  // 들여쓰기 가이드 라인
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--theme-divider);
+    opacity: 0.3;
+  }
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--theme-text-secondary);
+  font-size: 0.875rem;
+}
+
+.noSearchResults, .noData {
+  text-align: center;
+
+  span {
+    display: inline-block;
+    padding: $spacing-md;
+    background: var(--theme-background-default);
+    border-radius: $border-radius-md;
+    border: 1px dashed var(--theme-divider);
+  }
+}
+
+// 반응형 디자인
+@include responsive-breakpoint($breakpoint-mobile) {
+  .treeNode {
+    padding: $spacing-sm;
+
+    .menuName {
+      font-size: 0.8rem;
+    }
+  }
+
+  .treeStats {
+    flex-direction: column;
+    gap: $spacing-xs;
+    align-items: flex-start;
+
+    .statItem {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// 다크 테마 지원
+@media (prefers-color-scheme: dark) {
+  .treeNode {
+    &.selected {
+      background: rgba(var(--theme-primary-main-rgb), 0.15);
+    }
+
+    &.matched {
+      background: rgba(var(--theme-warning-main-rgb), 0.15);
+    }
+  }
+
+  .highlight {
+    background: var(--theme-warning-main);
+    color: var(--theme-warning-contrastText);
+  }
+
+  .childNodes::before {
+    opacity: 0.2;
+  }
+}
+
+// 고대비 모드 지원
+@media (prefers-contrast: high) {
+  .treeNode {
+    border: 1px solid transparent;
+
+    &:hover {
+      border-color: var(--theme-action-hover);
+    }
+
+    &.selected {
+      border-color: var(--theme-primary-main);
+      background: var(--theme-primary-light);
+    }
+
+    &:focus {
+      outline-width: 3px;
+    }
+  }
+
+  .expandIcon:focus {
+    outline-width: 3px;
+  }
+}
+
+// 애니메이션 감소 모드 지원
+@media (prefers-reduced-motion: reduce) {
+  .treeNode,
+  .expandIcon,
+  .statusIndicators {
+    transition: none;
+  }
+
+  .expandIcon svg {
+    transition: none;
+  }
+}

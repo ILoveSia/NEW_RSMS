@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
   const { login, setLoading, setError, isLoading, error } = useAuthStore();
 
   const [formData, setFormData] = useState<LoginFormData>({
-    username: '',
+    username: 'admin', // 개발용 기본값
     password: ''
   });
 

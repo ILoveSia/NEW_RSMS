@@ -104,29 +104,16 @@ const TemporaryPage: React.FC<{ title: string; description?: string }> = ({
 );
 
 const AppRouter: React.FC = () => {
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, logout, isAuthenticated } = useAuthStore();
 
-  // 개발 환경에서 임시 ADMIN 사용자 자동 로그인
+  // 개발 환경에서 강제 로그아웃 (로그인 페이지 테스트용)
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && !isAuthenticated) {
-      const mockAdminUser = {
-        id: 'mock-admin-001',
-        userId: 'admin',
-        username: 'admin',
-        fullName: '시스템 관리자',
-        email: 'admin@rsms.com',
-        roleCodes: ['ADMIN'] as const,
-        permissions: [],
-        isActive: true,
-        lastLoginAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      login(mockAdminUser, 'mock-session-' + Date.now());
-      console.log('🔧 [개발 모드] 임시 ADMIN 사용자로 자동 로그인됨');
+    if (process.env.NODE_ENV === 'development') {
+      // 개발 중 로그인 페이지를 테스트하기 위해 강제 로그아웃
+      logout();
+      console.log('🔧 [개발 모드] 로그인 페이지 테스트를 위한 강제 로그아웃');
     }
-  }, [login, isAuthenticated]);
+  }, [logout]);
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
