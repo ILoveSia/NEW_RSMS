@@ -38,7 +38,7 @@ export interface BaseSectionTableProps<TData = any> {
 /**
  * BaseSectionTable - 섹션별 테이블을 위한 공통 컴포넌트
  *
- * ResponsibilityMgmt의 3단계 섹션 (책무/책무세부내용/관리의무)에서 재사용
+ * 3단계 섹션 구조의 테이블 관리 (예: 책무/책무세부내용/관리의무)에서 재사용
  *
  * @example
  * <BaseSectionTable

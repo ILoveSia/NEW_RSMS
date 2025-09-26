@@ -1,0 +1,243 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.alert {
+  .paper {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+// 크기별 스타일
+.size-xs .paper {
+  max-width: 320px;
+}
+
+.size-sm .paper {
+  max-width: 400px;
+}
+
+.size-md .paper {
+  max-width: 500px;
+}
+
+// 헤더 스타일
+.header {
+  padding: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+
+  .headerContent {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex: 1;
+  }
+
+  .title {
+    color: $color-text-primary;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+  }
+
+  .closeButton {
+    color: $color-text-secondary;
+    margin-left: $spacing-sm;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+// 컨텐츠 스타일
+.content {
+  padding: $spacing-lg;
+  padding-top: 0;
+
+  &.contentNoHeader {
+    padding-top: $spacing-lg;
+  }
+
+  &.contentWithIcon {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+
+  .messageWrapper {
+    flex: 1;
+  }
+
+  .message {
+    color: $color-text-primary;
+    line-height: 1.6;
+    margin: 0;
+
+    // HTML 컨텐츠 스타일링
+    strong {
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0 0 $spacing-sm 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    ul, ol {
+      margin: $spacing-sm 0;
+      padding-left: $spacing-lg;
+    }
+
+    li {
+      margin-bottom: $spacing-xs;
+    }
+  }
+}
+
+// 아이콘 스타일
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// 타입별 아이콘 색상
+.icon-success {
+  background-color: rgba(76, 175, 80, 0.1);
+
+  .icon {
+    color: #4caf50;
+  }
+}
+
+.icon-error {
+  background-color: rgba(244, 67, 54, 0.1);
+
+  .icon {
+    color: #f44336;
+  }
+}
+
+.icon-warning {
+  background-color: rgba(255, 152, 0, 0.1);
+
+  .icon {
+    color: #ff9800;
+  }
+}
+
+.icon-info {
+  background-color: rgba(33, 150, 243, 0.1);
+
+  .icon {
+    color: #2196f3;
+  }
+}
+
+.icon-question {
+  background-color: rgba(156, 39, 176, 0.1);
+
+  .icon {
+    color: #9c27b0;
+  }
+}
+
+// 액션 스타일
+.actions {
+  padding: $spacing-md $spacing-lg $spacing-lg;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+
+  // 모바일에서는 버튼을 세로로 배열
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+      margin: 0;
+    }
+  }
+}
+
+// 타입별 전체적인 스타일 (필요시 확장)
+.type-success {
+  .paper {
+    border-top: 3px solid #4caf50;
+  }
+}
+
+.type-error {
+  .paper {
+    border-top: 3px solid #f44336;
+  }
+}
+
+.type-warning {
+  .paper {
+    border-top: 3px solid #ff9800;
+  }
+}
+
+.type-info {
+  .paper {
+    border-top: 3px solid #2196f3;
+  }
+}
+
+.type-question {
+  .paper {
+    border-top: 3px solid #9c27b0;
+  }
+}
+
+// 애니메이션 효과
+.alert {
+  .paper {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// 다크 테마 지원 (필요시)
+@media (prefers-color-scheme: dark) {
+  .alert {
+    .paper {
+      background-color: $color-background-paper;
+      color: $color-text-primary;
+    }
+
+    .header {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .closeButton {
+      color: $color-text-secondary;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+    }
+  }
+}

@@ -38,6 +38,13 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+
+// Custom Hooks
+import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
+import usePagination from '@/shared/hooks/usePagination';
+import useFilters from '@/shared/hooks/useFilters';
 
 // User specific components
 import { userColumns } from './components/UserDataGrid/userColumns';
@@ -56,17 +63,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
 
   // State Management
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-
-  // 개별 로딩 상태
-  const [loadingStates, setLoadingStates] = useState({
-    search: false,
-    excel: false,
-    delete: false,
-    create: false,
-    update: false
-  });
 
   // 모달 상태 관리
   const [modalState, setModalState] = useState<UserModalState>({
@@ -75,16 +72,27 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     selectedUser: null
   });
 
-  // 페이지네이션 상태
-  const [pagination, setPagination] = useState<UserPagination>({
-    page: 1,
-    size: 20,
-    total: 4,
-    totalPages: 1
+  // Custom Hooks
+  const { handlers, loadingStates, loading: anyLoading } = useAsyncHandlers({
+    search: { key: 'user-search' },
+    excel: { key: 'user-excel' },
+    delete: { key: 'user-delete' },
+    create: { key: 'user-create' },
+    update: { key: 'user-update' }
   });
 
-  // 검색 필터 상태
-  const [filters, setFilters] = useState<UserFilters>({});
+  const { pagination, goToPage, changePageSize, updateTotal } = usePagination({
+    initialPage: 1,
+    initialSize: 20,
+    total: 4
+  });
+
+  const {
+    filters,
+    setFilter,
+    clearFilters,
+    hasFilters
+  } = useFilters<UserFilters>({});
 
   // 옵션 데이터
   const [roles] = useState<RoleOption[]>([]);
@@ -119,78 +127,63 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
 
   // 검색 핸들러
   const handleSearch = useCallback(async (searchFilters: FilterValues) => {
-    setLoadingStates(prev => ({ ...prev, search: true }));
-    setFilters(searchFilters as UserFilters);
+    // Update filters first
+    Object.entries(searchFilters).forEach(([key, value]) => {
+      setFilter(key as keyof UserFilters, value);
+    });
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('사용자를 검색 중입니다...');
+    await handlers.search.execute(
+      async () => {
+        // TODO: 실제 검색 API 호출
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
 
-    try {
-      // TODO: 실제 검색 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+        // Mock 검색 결과
+        const mockFilteredUsers = mockUsers.filter(user => {
+          if (searchFilters.fullName && !user.fullName.includes(searchFilters.fullName as string)) return false;
+          if (searchFilters.employeeNo && !user.employeeNo.includes(searchFilters.employeeNo as string)) return false;
+          if (searchFilters.searchKeyword && !user.deptName?.includes(searchFilters.searchKeyword as string)) return false;
+          return true;
+        });
 
-      // Mock 검색 결과
-      const mockFilteredUsers = mockUsers.filter(user => {
-        if (searchFilters.fullName && !user.fullName.includes(searchFilters.fullName as string)) return false;
-        if (searchFilters.employeeNo && !user.employeeNo.includes(searchFilters.employeeNo as string)) return false;
-        if (searchFilters.searchKeyword && !user.deptName?.includes(searchFilters.searchKeyword as string)) return false;
-        return true;
-      });
+        setUsers(mockFilteredUsers);
+        updateTotal(mockFilteredUsers.length);
+      },
+      {
+        loading: '사용자를 검색 중입니다...',
+        success: `검색이 완료되었습니다.`,
+        error: '검색에 실패했습니다.'
+      }
+    );
+  }, [handlers.search, setFilter, updateTotal, users.length]);
 
-      setUsers(mockFilteredUsers);
-      setPagination(prev => ({
-        ...prev,
-        total: mockFilteredUsers.length
-      }));
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${mockFilteredUsers.length}개의 사용자를 찾았습니다.`);
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
-      console.error('검색 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, search: false }));
-    }
-  }, []);
-
-  // 필터 변경 핸들러
+  // 필터 변경 핸들러 (이제 useFilters 훅에서 자동 처리됨)
   const handleFiltersChange = useCallback((newFilters: Partial<UserFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
+    Object.entries(newFilters).forEach(([key, value]) => {
+      setFilter(key as keyof UserFilters, value);
+    });
+  }, [setFilter]);
 
   // 필터 초기화 핸들러
   const handleClearFilters = useCallback(() => {
-    setFilters({
-      deptName: '',
-      fullName: '',
-      jobRankName: ''
-    });
-    setPagination(prev => ({ ...prev, page: 1 }));
+    clearFilters();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, []);
+  }, [clearFilters]);
 
   // 엑셀 다운로드 핸들러
   const handleExcelDownload = useCallback(async () => {
-    setLoadingStates(prev => ({ ...prev, excel: true }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
-
-    try {
-      // TODO: 실제 엑셀 다운로드 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
-      console.error('엑셀 다운로드 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, excel: false }));
-    }
-  }, []);
+    await handlers.excel.execute(
+      async () => {
+        // TODO: 실제 엑셀 다운로드 API 호출
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+        console.log('엑셀 다운로드 완료');
+      },
+      {
+        loading: '엑셀 파일을 생성 중입니다...',
+        success: '엑셀 파일이 다운로드되었습니다.',
+        error: '엑셀 다운로드에 실패했습니다.'
+      }
+    );
+  }, [handlers.excel]);
 
   // 사용자 등록 핸들러
   const handleAddUser = useCallback(() => {
@@ -369,6 +362,28 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     };
   }, [pagination.total, users]);
 
+  // BasePageHeader용 통계 데이터
+  const headerStatistics = useMemo(() => [
+    {
+      icon: <PeopleIcon />,
+      value: statistics.totalUsers,
+      label: '전체 사용자',
+      color: 'primary' as const
+    },
+    {
+      icon: <PersonAddIcon />,
+      value: statistics.activeUsers,
+      label: '활성 사용자',
+      color: 'success' as const
+    },
+    {
+      icon: <SupervisorAccountIcon />,
+      value: statistics.adminUsers,
+      label: '관리자',
+      color: 'warning' as const
+    }
+  ], [statistics]);
+
   // Mock 데이터 로딩 - 참조 이미지 기반
   const mockUsers: User[] = useMemo(() => [
     {
@@ -529,7 +544,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
   // React.Profiler onRender 콜백 (성능 모니터링)
   const onRenderProfiler = useCallback((
     id: string,
-    phase: 'mount' | 'update',
+    phase: 'mount' | 'update' | 'nested-update',
     actualDuration: number
   ) => {
     if (actualDuration > 16) { // 60fps 기준 16ms
@@ -540,49 +555,14 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
   return (
     <React.Profiler id="UserMgmt" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <SecurityIcon className={styles.headerIcon} />
-            <div>
-              <h1 className={styles.pageTitle}>사용자관리</h1>
-              <p className={styles.pageDescription}>
-                시스템 사용자 계정을 통합 관리합니다
-              </p>
-            </div>
-          </div>
-          <div className={styles.headerStats}>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <PeopleIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.totalUsers}</div>
-                <div className={styles.statLabel}>전체 사용자</div>
-              </div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <PersonAddIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.activeUsers}</div>
-                <div className={styles.statLabel}>활성 사용자</div>
-              </div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <SupervisorAccountIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.adminUsers}</div>
-                <div className={styles.statLabel}>관리자</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        {/* 🏗️ 공통 페이지 헤더 */}
+        <BasePageHeader
+          icon={<SecurityIcon />}
+          title="사용자관리"
+          description="시스템 사용자 계정을 통합 관리합니다"
+          statistics={headerStatistics}
+          i18nNamespace="system"
+        />
 
       <div className={styles.content}>
         {/* 🔍 공통 검색 필터 */}
@@ -623,25 +603,28 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
         )}
       </div>
 
-      {/* 사용자 폼 모달 */}
-      {(modalState.addModal || modalState.detailModal) && (
-        <React.Suspense fallback={<LoadingSpinner />}>
-          <UserFormModal
-            open={modalState.addModal || modalState.detailModal}
-            mode={modalState.addModal ? 'create' : 'edit'}
-            user={modalState.selectedUser}
-            onClose={handleModalClose}
-            onSave={handleUserSave}
-            onUpdate={handleUserUpdate}
-            onDelete={handleDeleteUser}
-            loading={loadingStates.create || loadingStates.update}
-            roles={roles}
-            detailRoles={detailRoles}
-            departments={departments}
-            positions={positions}
-          />
-        </React.Suspense>
-      )}
+      {/* 사용자 폼 모달 - BaseModalWrapper 적용 */}
+      <BaseModalWrapper
+        isOpen={modalState.addModal || modalState.detailModal}
+        onClose={handleModalClose}
+        ariaLabel="사용자 관리 모달"
+        fallbackComponent={<LoadingSpinner text="사용자 모달을 불러오는 중..." />}
+      >
+        <UserFormModal
+          open={modalState.addModal || modalState.detailModal}
+          mode={modalState.addModal ? 'create' : 'edit'}
+          user={modalState.selectedUser}
+          onClose={handleModalClose}
+          onSave={handleUserSave}
+          onUpdate={handleUserUpdate}
+          onDelete={handleDeleteUser}
+          loading={loadingStates.create || loadingStates.update}
+          roles={roles}
+          detailRoles={detailRoles}
+          departments={departments}
+          positions={positions}
+        />
+      </BaseModalWrapper>
     </div>
     </React.Profiler>
   );

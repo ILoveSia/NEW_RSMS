@@ -1,0 +1,278 @@
+/**
+ * BasePageHeader 스타일시트
+ *
+ * PositionMgmt.module.scss 기준으로 공통화
+ * - 테마 시스템 완전 지원 (var(--theme-*) 사용)
+ * - 반응형 디자인 적용
+ * - 접근성 고려
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🎯 테마 적용 헤더 (PositionMgmt와 100% 동일)
+.pageHeader {
+  position: relative;
+  z-index: 2;
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: stretch;
+  }
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.headerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerIconSvg {
+  font-size: 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.titleContent {
+  flex: 1;
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+  line-height: 1.2;
+}
+
+.pageDescription {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+// 🏆 통계 카드 섹션
+.headerStats {
+  display: flex;
+  gap: $spacing-md;
+
+  @include responsive-breakpoint($breakpoint-tablet) {
+    justify-content: space-between;
+  }
+
+  @include responsive-breakpoint($breakpoint-mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+// 📊 개별 통계 카드 (PositionMgmt와 100% 동일)
+.statCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $border-radius-lg;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 80px;
+  cursor: default;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  transition: background 0.2s ease;
+}
+
+// 통계 카드 색상 변형 (선택사항)
+.statCard--primary {
+  border-color: rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.1);
+  }
+}
+
+.statCard--success {
+  border-color: rgba(34, 197, 94, 0.3);
+
+  &:hover {
+    background: rgba(34, 197, 94, 0.1);
+  }
+}
+
+.statCard--warning {
+  border-color: rgba(245, 158, 11, 0.3);
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.1);
+  }
+}
+
+.statCard--error {
+  border-color: rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.statIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconSvg {
+  font-size: 1rem !important;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.statContent {
+  flex: 1;
+  min-width: 0; // 텍스트 오버플로우 방지
+}
+
+.statNumber {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.2;
+
+  // 숫자 가독성 향상
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-top: 1px;
+
+  // 긴 레이블 처리
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 📱 반응형 - 태블릿
+@include responsive-breakpoint($breakpoint-tablet) {
+  .pageHeader {
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .headerStats {
+    justify-content: space-between;
+  }
+
+  .statCard {
+    min-width: 70px;
+    padding: $spacing-xs $spacing-sm;
+  }
+
+  .statNumber {
+    font-size: 0.9rem;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+}
+
+// 📱 반응형 - 모바일
+@include responsive-breakpoint($breakpoint-mobile) {
+  .pageHeader {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .pageTitle {
+    font-size: 1.125rem;
+  }
+
+  .pageDescription {
+    font-size: 0.8rem;
+  }
+
+  .headerStats {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .statCard {
+    min-width: auto;
+    justify-content: flex-start;
+  }
+
+  .titleSection {
+    gap: $spacing-sm;
+  }
+}
+
+// 🎨 접근성 및 포커스 스타일
+.pageHeader:focus-within {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.statCard:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+// 🌟 고대비 모드 지원
+@media (prefers-contrast: high) {
+  .pageHeader {
+    border: 2px solid white;
+  }
+
+  .statCard {
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .pageTitle,
+  .statNumber {
+    color: white;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  }
+}
+
+// 🎭 애니메이션 감소 모드 지원
+@media (prefers-reduced-motion: reduce) {
+  .statCard {
+    transition: none;
+  }
+}

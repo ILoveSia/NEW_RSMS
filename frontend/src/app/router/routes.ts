@@ -62,11 +62,6 @@ export const routes = {
 
   // 책무구조도 원장 관리 (auth - 원장관리)
   resps: {
-    // 원장관리
-    ledgerOrders: '/app/resps/ledger-orders',
-    ledgerOrderDetail: '/app/resps/ledger-orders/:id',
-    ledgerOrderCreate: '/app/resps/ledger-orders/create',
-    ledgerOrderEdit: '/app/resps/ledger-orders/:id/edit',
 
     // 직책관리
     positions: '/app/resps/positions',
@@ -80,12 +75,6 @@ export const routes = {
     responsibilityCreate: '/app/resps/responsibilities/create',
     responsibilityEdit: '/app/resps/responsibilities/:id/edit',
 
-    // 책무기술서관리
-    specifications: '/app/resps/specifications',
-    specificationDetail: '/app/resps/specifications/:id',
-    specificationCreate: '/app/resps/specifications/create',
-    specificationEdit: '/app/resps/specifications/:id/edit',
-    specificationGenerate: '/app/resps/specifications/:id/generate',
 
     // 직책겸직관리
     positionDuals: '/app/resps/position-duals',

@@ -22,6 +22,13 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+
+// Custom Hooks
+import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
+import usePagination from '@/shared/hooks/usePagination';
+import useFilters from '@/shared/hooks/useFilters';
 
 // Position specific components
 import { positionColumns } from './components/PositionDataGrid/positionColumns';
@@ -40,27 +47,38 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   // State Management
   const [positions, setPositions] = useState<Position[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [selectedPositions, setSelectedPositions] = useState<Position[]>([]);
 
-  // 개별 로딩 상태
-  const [loadingStates, setLoadingStates] = useState({
-    search: false,
-    excel: false,
-    delete: false,
+  // 커스텀 훅 사용
+  const { handlers, loadingStates, loading: anyLoading } = useAsyncHandlers({
+    search: { key: 'position-search' },
+    excel: { key: 'position-excel' },
+    delete: { key: 'position-delete' },
+    create: { key: 'position-create' },
+    update: { key: 'position-update' }
   });
-  const [filters, setFilters] = useState<PositionFilters>({
+
+  const {
+    filters,
+    setFilter,
+    setFilters,
+    clearFilters,
+    hasFilters
+  } = useFilters<PositionFilters>({
     positionName: '',
     headquarters: '',
     status: '',
     isActive: ''
   });
 
-  const [pagination, setPagination] = useState<PositionPagination>({
-    page: 1,
-    size: 20,
-    total: 0,
-    totalPages: 0
+  const {
+    pagination,
+    updateTotal,
+    info: paginationInfo
+  } = usePagination({
+    initialPage: 1,
+    initialSize: 20,
+    total: 0
   });
 
   const [modalState, setModalState] = useState<PositionModalState>({
@@ -71,8 +89,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<PositionFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
+    setFilters(newFilters);
+  }, [setFilters]);
 
 
   const handleAddPosition = useCallback(() => {
@@ -85,26 +103,19 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   }, []);
 
   const handleExcelDownload = useCallback(async () => {
-    setLoadingStates(prev => ({ ...prev, excel: true }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
-
-    try {
-      // TODO: 실제 엑셀 다운로드 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
-      console.log('엑셀 다운로드 완료');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
-      console.error('엑셀 다운로드 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, excel: false }));
-    }
-  }, []);
+    await handlers.excel.execute(
+      async () => {
+        // TODO: 실제 엑셀 다운로드 API 호출
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+        console.log('엑셀 다운로드 완료');
+      },
+      {
+        loading: '엑셀 파일을 생성 중입니다...',
+        success: '엑셀 파일이 다운로드되었습니다.',
+        error: '엑셀 다운로드에 실패했습니다.'
+      }
+    );
+  }, [handlers.excel]);
 
   const handleDeletePositions = useCallback(async () => {
     if (selectedPositions.length === 0) {
@@ -118,35 +129,25 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       return;
     }
 
-    setLoadingStates(prev => ({ ...prev, delete: true }));
+    await handlers.delete.execute(
+      async () => {
+        // TODO: 실제 삭제 API 호출
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading(`${selectedPositions.length}개 직책을 삭제 중입니다...`);
-
-    try {
-      // TODO: 실제 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
-
-      // 상태 업데이트 (삭제된 항목 제거)
-      setPositions(prev =>
-        prev.filter(pos => !selectedPositions.some(selected => selected.id === pos.id))
-      );
-      setPagination(prev => ({
-        ...prev,
-        total: prev.total - selectedPositions.length
-      }));
-      setSelectedPositions([]);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedPositions.length}개 직책이 삭제되었습니다.`);
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '직책 삭제에 실패했습니다.');
-      console.error('직책 삭제 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, delete: false }));
-    }
-  }, [selectedPositions]);
+        // 상태 업데이트 (삭제된 항목 제거)
+        setPositions(prev =>
+          prev.filter(pos => !selectedPositions.some(selected => selected.id === pos.id))
+        );
+        updateTotal(pagination.total - selectedPositions.length);
+        setSelectedPositions([]);
+      },
+      {
+        loading: `${selectedPositions.length}개 직책을 삭제 중입니다...`,
+        success: `${selectedPositions.length}개 직책이 삭제되었습니다.`,
+        error: '직책 삭제에 실패했습니다.'
+      }
+    );
+  }, [selectedPositions, handlers.delete, updateTotal, pagination.total]);
 
 
   const handleModalClose = useCallback(() => {
@@ -160,75 +161,75 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   // 폼 모달 핸들러들
   const handlePositionSave = useCallback(async (formData: PositionFormData) => {
-    try {
-      setLoading(true);
-      // TODO: API 호출로 직책 생성
-      // const response = await positionApi.create(formData);
+    await handlers.create.execute(
+      async () => {
+        // TODO: API 호출로 직책 생성
+        // const response = await positionApi.create(formData);
 
-      // 임시로 새 직책 객체 생성
-      const newPosition: Position = {
-        id: Date.now().toString(),
-        positionName: formData.positionName,
-        headquarters: formData.headquarters,
-        departmentName: formData.departmentName,
-        divisionName: formData.divisionName,
-        registrationDate: new Date().toISOString().split('T')[0],
-        registrar: '현재사용자',
-        registrarPosition: '관리자',
-        modificationDate: new Date().toISOString().split('T')[0],
-        modifier: '현재사용자',
-        modifierPosition: '관리자',
-        status: '정상',
-        isActive: true,
-        approvalStatus: '승인',
-        dual: '단일'
-      };
+        // 임시로 새 직책 객체 생성
+        const newPosition: Position = {
+          id: Date.now().toString(),
+          positionName: formData.positionName,
+          headquarters: formData.headquarters,
+          departmentName: formData.departmentName,
+          divisionName: formData.divisionName,
+          registrationDate: new Date().toISOString().split('T')[0],
+          registrar: '현재사용자',
+          registrarPosition: '관리자',
+          modificationDate: new Date().toISOString().split('T')[0],
+          modifier: '현재사용자',
+          modifierPosition: '관리자',
+          status: '정상',
+          isActive: true,
+          approvalStatus: '승인',
+          dual: '단일'
+        };
 
-      setPositions(prev => [newPosition, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
-      handleModalClose();
-      toast.success('직책이 성공적으로 등록되었습니다.');
-    } catch (error) {
-      console.error('직책 등록 실패:', error);
-      toast.error('직책 등록에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [handleModalClose]);
+        setPositions(prev => [newPosition, ...prev]);
+        updateTotal(pagination.total + 1);
+        handleModalClose();
+      },
+      {
+        loading: '직책을 등록 중입니다...',
+        success: '직책이 성공적으로 등록되었습니다.',
+        error: '직책 등록에 실패했습니다.'
+      }
+    );
+  }, [handleModalClose, handlers.create, updateTotal, pagination.total]);
 
   const handlePositionUpdate = useCallback(async (id: string, formData: PositionFormData) => {
-    try {
-      setLoading(true);
-      // TODO: API 호출로 직책 수정
-      // const response = await positionApi.update(id, formData);
+    await handlers.update.execute(
+      async () => {
+        // TODO: API 호출로 직책 수정
+        // const response = await positionApi.update(id, formData);
 
-      // 임시로 기존 직책 업데이트
-      setPositions(prev =>
-        prev.map(pos =>
-          pos.id === id
-            ? {
-                ...pos,
-                positionName: formData.positionName,
-                headquarters: formData.headquarters,
-                departmentName: formData.departmentName,
-                divisionName: formData.divisionName,
-                modificationDate: new Date().toISOString().split('T')[0],
-                modifier: '현재사용자',
-                modifierPosition: '관리자'
-              }
-            : pos
-        )
-      );
+        // 임시로 기존 직책 업데이트
+        setPositions(prev =>
+          prev.map(pos =>
+            pos.id === id
+              ? {
+                  ...pos,
+                  positionName: formData.positionName,
+                  headquarters: formData.headquarters,
+                  departmentName: formData.departmentName,
+                  divisionName: formData.divisionName,
+                  modificationDate: new Date().toISOString().split('T')[0],
+                  modifier: '현재사용자',
+                  modifierPosition: '관리자'
+                }
+              : pos
+          )
+        );
 
-      handleModalClose();
-      toast.success('직책이 성공적으로 수정되었습니다.');
-    } catch (error) {
-      console.error('직책 수정 실패:', error);
-      toast.error('직책 수정에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [handleModalClose]);
+        handleModalClose();
+      },
+      {
+        loading: '직책을 수정 중입니다...',
+        success: '직책이 성공적으로 수정되었습니다.',
+        error: '직책 수정에 실패했습니다.'
+      }
+    );
+  }, [handleModalClose, handlers.update]);
 
   const handlePositionDetail = useCallback((position: Position) => {
     setModalState(prev => ({
@@ -239,41 +240,24 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    setLoading(true);
-    setLoadingStates(prev => ({ ...prev, search: true }));
-    setPagination(prev => ({ ...prev, page: 1 }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('직책 정보를 검색 중입니다...');
-
-    try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-
-      console.log('검색 필터:', filters);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
-      console.error('검색 실패:', error);
-    } finally {
-      setLoading(false);
-      setLoadingStates(prev => ({ ...prev, search: false }));
-    }
-  }, [filters]);
+    await handlers.search.execute(
+      async () => {
+        // TODO: 실제 API 호출로 교체
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+        console.log('검색 필터:', filters);
+      },
+      {
+        loading: '직책 정보를 검색 중입니다...',
+        success: '검색이 완료되었습니다.',
+        error: '검색에 실패했습니다.'
+      }
+    );
+  }, [filters, handlers.search]);
 
   const handleClearFilters = useCallback(() => {
-    setFilters({
-      positionName: '',
-      headquarters: '',
-      status: '',
-      isActive: ''
-    });
-    setPagination(prev => ({ ...prev, page: 1 }));
+    clearFilters();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, []);
+  }, [clearFilters]);
 
   // Grid Event Handlers
   const handleRowClick = useCallback((position: Position) => {
@@ -303,6 +287,28 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       systemUptime
     };
   }, [pagination.total, positions]);
+
+  // BasePageHeader용 통계 데이터
+  const headerStatistics = useMemo(() => [
+    {
+      icon: <TrendingUpIcon />,
+      value: statistics.total,
+      label: '총 직책',
+      color: 'primary' as const
+    },
+    {
+      icon: <SecurityIcon />,
+      value: statistics.activeCount,
+      label: '활성 직책',
+      color: 'success' as const
+    },
+    {
+      icon: <AnalyticsIcon />,
+      value: `${statistics.systemUptime}%`,
+      label: '시스템 가동률',
+      color: 'default' as const
+    }
+  ], [statistics]);
 
   // Filtered positions for display (성능 최적화)
   const displayPositions = useMemo(() => {
@@ -624,67 +630,21 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       ];
 
     setPositions(mockPositions);
-    setPagination(prev => ({
-      ...prev,
-      total: mockPositions.length,
-      totalPages: Math.ceil(mockPositions.length / prev.size)
-    }));
+    updateTotal(mockPositions.length);
   }, []);
 
 
   return (
     <React.Profiler id="PositionMgmt" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <DashboardIcon className={styles.headerIcon} />
-            <div>
-              <h1 className={styles.pageTitle}>
-                {t('position.management.title', '직책관리 시스템')}
-              </h1>
-              <p className={styles.pageDescription}>
-                {t('position.management.description', '조직의 직책 정보를 체계적으로 관리합니다')}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.headerStats}>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <TrendingUpIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.total}</div>
-                <div className={styles.statLabel}>총 직책</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <SecurityIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>
-                  {statistics.activeCount}
-                </div>
-                <div className={styles.statLabel}>활성 직책</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <AnalyticsIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.systemUptime}%</div>
-                <div className={styles.statLabel}>시스템 가동률</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        {/* 🏗️ 공통 페이지 헤더 */}
+        <BasePageHeader
+          icon={<DashboardIcon />}
+          title={t('position.management.title', '직책관리 시스템')}
+          description={t('position.management.description', '조직의 직책 정보를 체계적으로 관리합니다')}
+          statistics={headerStatistics}
+          i18nNamespace="resps"
+        />
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
@@ -695,7 +655,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           onValuesChange={(values) => handleFiltersChange(values as unknown as Partial<PositionFilters>)}
           onSearch={handleSearch}
           onClear={handleClearFilters}
-          loading={loading}
+          loading={anyLoading}
           searchLoading={loadingStates.search}
           showClearButton={true}
         />
@@ -707,14 +667,14 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           selectedCount={selectedPositions.length}
           statusInfo={statusInfo}
           actions={actionButtons}
-          loading={loading}
+          loading={anyLoading}
         />
 
         {/* 🎯 공통 데이터 그리드 */}
         <BaseDataGrid
           data={displayPositions}
           columns={positionColumns}
-          loading={loading}
+          loading={anyLoading}
           theme="alpine"
           onRowClick={(data) => handleRowClick(data)}
           onRowDoubleClick={(data) => handleRowDoubleClick(data)}
@@ -728,8 +688,13 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         />
       </div>
 
-      {/* 직책 등록/상세 모달 */}
-      <React.Suspense fallback={<LoadingSpinner />}>
+      {/* 직책 등록/상세 모달 - BaseModalWrapper 적용 */}
+      <BaseModalWrapper
+        isOpen={modalState.addModal || modalState.detailModal}
+        onClose={handleModalClose}
+        ariaLabel="직책 관리 모달"
+        fallbackComponent={<LoadingSpinner text="직책 모달을 불러오는 중..." />}
+      >
         <PositionFormModal
           open={modalState.addModal || modalState.detailModal}
           mode={modalState.addModal ? 'create' : 'detail'}
@@ -737,9 +702,9 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           onClose={handleModalClose}
           onSave={handlePositionSave}
           onUpdate={handlePositionUpdate}
-          loading={loading}
+          loading={loadingStates.create || loadingStates.update}
         />
-      </React.Suspense>
+      </BaseModalWrapper>
       </div>
     </React.Profiler>
   );

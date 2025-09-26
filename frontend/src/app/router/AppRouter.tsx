@@ -10,8 +10,6 @@ import { Layout } from '@/shared/components/templates/Layout';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 // Lazy-loaded pages for better performance
 const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage/LoginPage').then(module => ({ default: module.LoginPage })));
-const LedgerOrderManagement = React.lazy(() => import('@/domains/resps/pages/LedgerOrderManagement/LedgerOrderManagement'));
-const ResponsibilityManagement = React.lazy(() => import('@/domains/resps/pages/ResponsibilityMgmt'));
 const ResponsibilityDocMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityDocMgmt'));
 const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
 const PositionDualMgmt = React.lazy(() => import('@/domains/resps/pages/PositionDualMgmt/PositionDualMgmt'));
@@ -220,7 +218,12 @@ const AppRouter: React.FC = () => {
               <Suspense fallback={<LoadingSpinner text="책무 관리 로딩 중..." />}>
                 <Routes>
                   {/* 원장관리 */}
-                  <Route path="ledger-orders" element={<LedgerOrderManagement />} />
+                  <Route path="ledger-orders" element={
+                    <TemporaryPage
+                      title="원장차수관리"
+                      description="원장차수를 관리하는 페이지입니다. 구현 예정입니다."
+                    />
+                  } />
                   <Route path="ledger-orders/:id" element={
                     <TemporaryPage
                       title="원장차수 상세"
@@ -304,7 +307,12 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 책무관리 */}
-                  <Route path="responsibilitymgmt" element={<ResponsibilityManagement />} />
+                  <Route path="responsibilitymgmt" element={
+                    <TemporaryPage
+                      title="책무관리"
+                      description="책무를 관리하는 페이지입니다. 구현 예정입니다."
+                    />
+                  } />
                   <Route path="responsibilitymgmt/:id" element={
                     <TemporaryPage
                       title="책무 상세"

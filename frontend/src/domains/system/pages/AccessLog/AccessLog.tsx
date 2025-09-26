@@ -22,6 +22,13 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+
+// Custom Hooks
+import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
+import usePagination from '@/shared/hooks/usePagination';
+import useFilters from '@/shared/hooks/useFilters';
 
 // AccessLog specific components
 import { accessLogColumns, accessTargetOptions } from './config/accessLogColumns';
@@ -40,16 +47,26 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
 
   // State Management
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [selectedLogs, setSelectedLogs] = useState<AccessLog[]>([]);
 
-  // 개별 로딩 상태
-  const [loadingStates, setLoadingStates] = useState({
-    search: false,
-    excel: false,
+  // Custom Hooks
+  const { handlers, loadingStates, loading: anyLoading } = useAsyncHandlers({
+    search: { key: 'accesslog-search' },
+    excel: { key: 'accesslog-excel' }
   });
 
-  const [filters, setFilters] = useState<AccessLogFilters>({
+  const { pagination, goToPage, changePageSize, updateTotal } = usePagination({
+    initialPage: 1,
+    initialSize: 20,
+    total: 0
+  });
+
+  const {
+    filters,
+    setFilter,
+    clearFilters,
+    hasFilters
+  } = useFilters<AccessLogFilters>({
     accessTarget: '',
     startDate: '',
     endDate: '',
@@ -59,42 +76,30 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
     fullName: ''
   });
 
-  const [pagination, setPagination] = useState<AccessLogPagination>({
-    page: 1,
-    size: 20,
-    total: 0,
-    totalPages: 0
-  });
-
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AccessLog | null>(null);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<AccessLogFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
+    Object.entries(newFilters).forEach(([key, value]) => {
+      setFilter(key as keyof AccessLogFilters, value);
+    });
+  }, [setFilter]);
 
   const handleExcelDownload = useCallback(async () => {
-    setLoadingStates(prev => ({ ...prev, excel: true }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
-
-    try {
-      // TODO: 실제 엑셀 다운로드 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
-      console.log('엑셀 다운로드 완료');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
-      console.error('엑셀 다운로드 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, excel: false }));
-    }
-  }, []);
+    await handlers.excel.execute(
+      async () => {
+        // TODO: 실제 엑셀 다운로드 API 호출
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+        console.log('엑셀 다운로드 완료');
+      },
+      {
+        loading: '엑셀 파일을 생성 중입니다...',
+        success: '엑셀 파일이 다운로드되었습니다.',
+        error: '엑셀 다운로드에 실패했습니다.'
+      }
+    );
+  }, [handlers.excel]);
 
   const handleLogDetail = useCallback((log: AccessLog) => {
     setSelectedLog(log);
@@ -107,44 +112,24 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    setLoading(true);
-    setLoadingStates(prev => ({ ...prev, search: true }));
-    setPagination(prev => ({ ...prev, page: 1 }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('접근로그 정보를 검색 중입니다...');
-
-    try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-
-      console.log('검색 필터:', filters);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
-      console.error('검색 실패:', error);
-    } finally {
-      setLoading(false);
-      setLoadingStates(prev => ({ ...prev, search: false }));
-    }
-  }, [filters]);
+    await handlers.search.execute(
+      async () => {
+        // TODO: 실제 API 호출로 교체
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+        console.log('검색 필터:', filters);
+      },
+      {
+        loading: '접근로그 정보를 검색 중입니다...',
+        success: '검색이 완료되었습니다.',
+        error: '검색에 실패했습니다.'
+      }
+    );
+  }, [filters, handlers.search]);
 
   const handleClearFilters = useCallback(() => {
-    setFilters({
-      accessTarget: '',
-      startDate: '',
-      endDate: '',
-      employeeNo: '',
-      ipAddress: '',
-      menuName: '',
-      fullName: ''
-    });
-    setPagination(prev => ({ ...prev, page: 1 }));
+    clearFilters();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, []);
+  }, [clearFilters]);
 
   // Grid Event Handlers
   const handleRowClick = useCallback((log: AccessLog) => {
@@ -177,6 +162,28 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
       uniqueIpCount
     };
   }, [pagination.total, accessLogs]);
+
+  // BasePageHeader용 통계 데이터
+  const headerStatistics = useMemo(() => [
+    {
+      icon: <TrendingUpIcon />,
+      value: statistics.total,
+      label: '총 로그',
+      color: 'primary' as const
+    },
+    {
+      icon: <SecurityIcon />,
+      value: statistics.todayLogs,
+      label: '오늘 로그',
+      color: 'success' as const
+    },
+    {
+      icon: <AnalyticsIcon />,
+      value: statistics.activeUsers,
+      label: '활성 사용자',
+      color: 'warning' as const
+    }
+  ], [statistics]);
 
   // Filtered logs for display (성능 최적화)
   const displayLogs = useMemo(() => {
@@ -445,56 +452,14 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
   return (
     <React.Profiler id="AccessLog" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
-        {/* 🏗️ 페이지 헤더 */}
-        <div className={styles.pageHeader}>
-          <div className={styles.headerContent}>
-            <div className={styles.titleSection}>
-              <DashboardIcon className={styles.headerIcon} />
-              <div>
-                <h1 className={styles.pageTitle}>
-                  {t('accessLog.management.title', '접근로그 관리')}
-                </h1>
-                <p className={styles.pageDescription}>
-                  {t('accessLog.management.description', '시스템 접근 기록을 모니터링하고 관리합니다')}
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.headerStats}>
-              <div className={styles.statCard}>
-                <div className={styles.statIcon}>
-                  <TrendingUpIcon />
-                </div>
-                <div className={styles.statContent}>
-                  <div className={styles.statNumber}>{statistics.total}</div>
-                  <div className={styles.statLabel}>총 로그</div>
-                </div>
-              </div>
-
-              <div className={styles.statCard}>
-                <div className={styles.statIcon}>
-                  <SecurityIcon />
-                </div>
-                <div className={styles.statContent}>
-                  <div className={styles.statNumber}>
-                    {statistics.todayLogs}
-                  </div>
-                  <div className={styles.statLabel}>오늘 로그</div>
-                </div>
-              </div>
-
-              <div className={styles.statCard}>
-                <div className={styles.statIcon}>
-                  <AnalyticsIcon />
-                </div>
-                <div className={styles.statContent}>
-                  <div className={styles.statNumber}>{statistics.activeUsers}</div>
-                  <div className={styles.statLabel}>활성 사용자</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* 🏗️ 공통 페이지 헤더 */}
+        <BasePageHeader
+          icon={<DashboardIcon />}
+          title={t('accessLog.management.title', '접근로그 관리')}
+          description={t('accessLog.management.description', '시스템 접근 기록을 모니터링하고 관리합니다')}
+          statistics={headerStatistics}
+          i18nNamespace="system"
+        />
 
         {/* 🎨 메인 컨텐츠 영역 */}
         <div className={styles.content}>
@@ -538,14 +503,19 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
           />
         </div>
 
-        {/* 접근로그 상세 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        {/* 접근로그 상세 모달 - BaseModalWrapper 적용 */}
+        <BaseModalWrapper
+          isOpen={detailModalOpen}
+          onClose={handleModalClose}
+          ariaLabel="접근로그 상세 모달"
+          fallbackComponent={<LoadingSpinner text="접근로그 모달을 불러오는 중..." />}
+        >
           <AccessLogDetailModal
             open={detailModalOpen}
             log={selectedLog}
             onClose={handleModalClose}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
       </div>
     </React.Profiler>
   );
