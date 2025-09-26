@@ -14,6 +14,7 @@ import {
   X
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './HomeDashboard.module.scss';
 
 // 타입 정의
@@ -146,6 +147,7 @@ const implementationData = {
 
 
 const HomeDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('2026년 07월');
   const [selectedOrg, setSelectedOrg] = useState('대표이사');
   const [showOrgModal, setShowOrgModal] = useState(false);
@@ -156,6 +158,26 @@ const HomeDashboard: React.FC = () => {
   const handleRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 1000);
+  };
+
+  // 책무 현황 카드 클릭 핸들러
+  const handleCardClick = (cardType: string) => {
+    switch (cardType) {
+      case '책무':
+      case '관리의무':
+      case '이행점검':
+      case '미점검':
+      case '적정':
+      case '부적정':
+        navigate('/app/compliance/execution-approval');
+        break;
+      case '개선완료':
+      case '개선진행중':
+        navigate('/app/improvement/activity-compliance');
+        break;
+      default:
+        console.warn('Unknown card type:', cardType);
+    }
   };
 
   const renderResponsibilityHierarchy = () => {
@@ -857,7 +879,10 @@ const HomeDashboard: React.FC = () => {
             <div className={styles.flowChartNew}>
               {/* 첫 번째 단계: 책무 */}
               <div className={styles.flowLevel1}>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('책무')}
+                >
                   <span className={styles.cardTitle}>책무</span>
                   <span className={styles.cardNumber}>1</span>
                 </div>
@@ -866,7 +891,10 @@ const HomeDashboard: React.FC = () => {
 
               {/* 두 번째 단계: 관리의무(CEO) */}
               <div className={styles.flowLevel2}>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('관리의무')}
+                >
                   <span className={styles.cardTitle}>관리의무</span>
                   <span className={styles.cardNumber}>2<span className={styles.subNumber}>(2)</span></span>
                 </div>
@@ -875,7 +903,10 @@ const HomeDashboard: React.FC = () => {
 
               {/* 세 번째 단계: 이행점검(CEO) */}
               <div className={styles.flowLevel3}>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('이행점검')}
+                >
                   <span className={styles.cardTitle}>이행점검</span>
                   <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
                 </div>
@@ -894,15 +925,24 @@ const HomeDashboard: React.FC = () => {
 
               {/* 네 번째 단계: 3방향 분기 */}
               <div className={styles.flowLevel4}>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('미점검')}
+                >
                   <span className={styles.cardTitle}>미점검</span>
                   <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
                 </div>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('적정')}
+                >
                   <span className={styles.cardTitle}>적정</span>
                   <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
                 </div>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('부적정')}
+                >
                   <span className={styles.cardTitle}>부적정</span>
                   <span className={styles.cardNumberRed}>0<span className={styles.subNumber}>(0)</span></span>
                 </div>
@@ -920,11 +960,17 @@ const HomeDashboard: React.FC = () => {
 
               {/* 부적정 아래 2개 카드 (양옆 배치) */}
               <div className={styles.flowLevel5Inadequate}>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('개선완료')}
+                >
                   <span className={styles.cardTitle}>개선완료</span>
                   <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
                 </div>
-                <div className={styles.flowCard}>
+                <div
+                  className={`${styles.flowCard} ${styles.clickable}`}
+                  onClick={() => handleCardClick('개선진행중')}
+                >
                   <span className={styles.cardTitle}>개선진행중</span>
                   <span className={styles.cardNumber}>0<span className={styles.subNumber}>(0)</span></span>
                 </div>
