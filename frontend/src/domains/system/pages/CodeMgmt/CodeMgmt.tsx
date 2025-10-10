@@ -19,7 +19,6 @@ import {
   KeyboardArrowUp as ArrowUpIcon,
   Code as CodeIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
   GetApp as ExcelIcon,
   Refresh as RefreshIcon,
   Settings as SettingsIcon
@@ -29,18 +28,21 @@ import {
   Box,
   Button,
   Chip,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Skeleton,
+  TextField,
   Typography
 } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 공통 컴포넌트
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import { BaseSearchFilter } from '@/shared/components/organisms/BaseSearchFilter';
-import type { FilterField } from '@/shared/components/organisms/BaseSearchFilter/BaseSearchFilter';
 import type { ColDef } from 'ag-grid-community';
 
 // 타입 및 상수 import
@@ -56,8 +58,7 @@ import {
   CATEGORY_COLOR_MAP,
   CATEGORY_OPTIONS,
   MOCK_CODE_DETAILS,
-  MOCK_CODE_GROUPS,
-  USE_YN_OPTIONS
+  MOCK_CODE_GROUPS
 } from './types/codeMgmt.types';
 
 
@@ -97,7 +98,7 @@ const CodeMgmt: React.FC = () => {
   });
 
   // 데이터 상태
-  const [codeGroups] = useState<CodeGroup[]>(MOCK_CODE_GROUPS);
+  const [codeGroups, setCodeGroups] = useState<CodeGroup[]>(MOCK_CODE_GROUPS);
   const [codeDetails, setCodeDetails] = useState<CodeDetail[]>([]);
 
   // ===============================
@@ -144,65 +145,49 @@ const CodeMgmt: React.FC = () => {
     };
   }, [codeGroups, selectedGroupDetails]);
 
-  // ===============================
-  // Search Fields Configuration
-  // ===============================
-
-  const searchFields = useMemo<FilterField[]>(() => [
-    {
-      key: 'searchKeyword',
-      type: 'text',
-      label: '검색어',
-      placeholder: '그룹코드, 그룹명 또는 설명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 4 }
-    },
-    {
-      key: 'category',
-      type: 'select',
-      label: '구분',
-      placeholder: '구분 선택',
-      options: CATEGORY_OPTIONS,
-      gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'isActive',
-      type: 'select',
-      label: '사용여부',
-      placeholder: '사용여부 선택',
-      options: USE_YN_OPTIONS,
-      gridSize: { xs: 12, sm: 6, md: 3 }
-    }
-  ], []);
 
   // ===============================
   // Column Definitions
   // ===============================
 
-  // 코드 그룹 컬럼
+  // 코드 그룹 컬럼 (인라인 편집 가능)
   const groupColumns = useMemo<ColDef<CodeGroup>[]>(() => [
     {
-      field: 'groupCode',
-      headerName: '그룹코드',
-      width: 120,
-      sortable: true,
+      field: 'status',
+      headerName: '상태',
+      width: 80,
+      sortable: false,
+      editable: false,
+      cellRenderer: (params: any) => {
+        const status = params.value || '저장';
+        return (
+          <Chip
+            label={status}
+            size="small"
+            color={status === '저장' ? 'primary' : 'warning'}
+            variant="outlined"
+          />
+        );
+      }
     },
     {
-      field: 'groupName',
-      headerName: '그룹명',
-      width: 180,
+      field: 'sortOrder',
+      headerName: '순서',
+      width: 80,
       sortable: true,
-    },
-    {
-      field: 'description',
-      headerName: '설명',
-      width: 200,
-      sortable: false
+      type: 'number',
+      editable: false, // 자동 증가이므로 편집 불가
     },
     {
       field: 'category',
       headerName: '구분',
       width: 120,
       sortable: true,
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: CATEGORY_OPTIONS.map(opt => opt.value)
+      },
       cellRenderer: (params: any) => (
         <Chip
           label={params.value}
@@ -215,80 +200,94 @@ const CodeMgmt: React.FC = () => {
       )
     },
     {
+      field: 'groupCode',
+      headerName: '그룹코드',
+      width: 120,
+      sortable: true,
+      editable: true,
+    },
+    {
+      field: 'groupName',
+      headerName: '그룹코드명',
+      width: 180,
+      sortable: true,
+      editable: true,
+    },
+    {
+      field: 'description',
+      headerName: '설명',
+      width: 200,
+      sortable: false,
+      editable: true,
+    },
+    {
       field: 'isActive',
       headerName: '사용여부',
       width: 100,
       sortable: true,
-      cellRenderer: (params: any) => (
-        <Chip
-          label={params.value === 'Y' ? '사용' : '미사용'}
-          size="small"
-          color={params.value === 'Y' ? 'success' : 'error'}
-          variant="outlined"
-        />
-      )
-    },
-    {
-      field: 'sortOrder',
-      headerName: '정렬순서',
-      width: 100,
-      sortable: true,
-      type: 'number'
-    },
-    {
-      field: 'updatedAt',
-      headerName: '수정일시',
-      width: 160,
-      sortable: true
+      editable: true,
+      cellEditor: 'agCheckboxCellEditor',
+      cellRenderer: 'agCheckboxCellRenderer',
     }
   ], []);
 
-  // 상세코드 컬럼
+  // 상세코드 컬럼 (인라인 편집 가능)
   const detailColumns = useMemo<ColDef<CodeDetail>[]>(() => [
     {
+      field: 'status',
+      headerName: '상태',
+      width: 80,
+      sortable: false,
+      editable: false,
+      cellRenderer: (params: any) => {
+        const status = params.value || '저장';
+        return (
+          <Chip
+            label={status}
+            size="small"
+            color={status === '저장' ? 'primary' : 'warning'}
+            variant="outlined"
+          />
+        );
+      }
+    },
+    {
+      field: 'sortOrder',
+      headerName: '순서',
+      width: 80,
+      sortable: true,
+      type: 'number',
+      editable: false, // 자동 증가이므로 편집 불가
+    },
+    {
       field: 'detailCode',
-      headerName: '상세코드',
+      headerName: '코드',
       width: 120,
       sortable: true,
+      editable: true,
     },
     {
       field: 'detailName',
-      headerName: '상세코드명',
+      headerName: '코드명',
       width: 200,
       sortable: true,
+      editable: true,
     },
     {
       field: 'description',
       headerName: '설명',
       width: 180,
-      sortable: false
-    },
-    {
-      field: 'sortOrder',
-      headerName: '정렬순서',
-      width: 100,
-      sortable: true,
-      type: 'number'
+      sortable: false,
+      editable: true,
     },
     {
       field: 'isActive',
       headerName: '사용여부',
       width: 100,
       sortable: true,
-      cellRenderer: (params: any) => (
-        <Chip
-          label={params.value === 'Y' ? '사용' : '미사용'}
-          size="small"
-          color={params.value === 'Y' ? 'success' : 'error'}
-          variant="outlined"
-        />
-      )
-    },
-    {
-      field: 'updatedAt',
-      headerName: '수정일시',
-      width: 160,
-      sortable: true
+      editable: true,
+      cellEditor: 'agCheckboxCellEditor',
+      cellRenderer: 'agCheckboxCellRenderer',
     }
   ], []);
 
@@ -296,18 +295,9 @@ const CodeMgmt: React.FC = () => {
   // Event Handlers
   // ===============================
 
-  // 검색 필터 변경
+  // 검색 필터 변경 (자동 필터링)
   const handleFiltersChange = useCallback((newFilters: Record<string, any>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
-
-  // 검색 실행
-  const handleSearch = useCallback(() => {
-    setLayoutState(prev => ({ ...prev, leftLoading: true }));
-    // 검색 로직 (현재는 필터링만)
-    setTimeout(() => {
-      setLayoutState(prev => ({ ...prev, leftLoading: false }));
-    }, 300);
   }, []);
 
   // 그룹 선택
@@ -334,6 +324,111 @@ const CodeMgmt: React.FC = () => {
     setTimeout(() => {
       setLayoutState(prev => ({ ...prev, leftLoading: false }));
     }, 500);
+  }, []);
+
+  // 그룹 추가
+  const handleAddGroup = useCallback(() => {
+    // 현재 최대 순서 찾기
+    const maxOrder = codeGroups.length > 0
+      ? Math.max(...codeGroups.map(g => g.sortOrder))
+      : 0;
+
+    const newGroup: CodeGroup = {
+      status: '저장', // 새로 추가된 행은 '저장' 상태
+      groupCode: `NEW_${Date.now()}`,
+      groupName: '',
+      description: '',
+      category: '시스템 공통',
+      categoryCode: 'SYSTEM',
+      systemCode: false,
+      editable: true,
+      sortOrder: maxOrder + 1, // 자동 증가
+      isActive: 'Y',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    };
+    setCodeGroups(prev => [newGroup, ...prev]);
+  }, [codeGroups]);
+
+  // 상세 추가
+  const handleAddDetail = useCallback(() => {
+    if (!layoutState.selectedCodeGroup) return;
+
+    // 현재 최대 순서 찾기
+    const maxOrder = codeDetails.length > 0
+      ? Math.max(...codeDetails.map(d => d.sortOrder))
+      : 0;
+
+    const newDetail: CodeDetail = {
+      status: '저장', // 새로 추가된 행은 '저장' 상태
+      groupCode: layoutState.selectedCodeGroup.groupCode,
+      detailCode: `NEW_${Date.now()}`,
+      detailName: '',
+      description: '',
+      parentCode: undefined,
+      levelDepth: 1,
+      sortOrder: maxOrder + 1, // 자동 증가
+      extAttr1: undefined,
+      extAttr2: undefined,
+      extAttr3: undefined,
+      extraData: undefined,
+      validFrom: undefined,
+      validUntil: undefined,
+      isActive: 'Y',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    };
+    setCodeDetails(prev => [newDetail, ...prev]);
+  }, [layoutState.selectedCodeGroup, codeDetails]);
+
+  // 그룹 셀 값 변경
+  const handleGroupCellValueChanged = useCallback((event: any) => {
+    const updatedGroup = event.data as CodeGroup;
+    setCodeGroups(prev =>
+      prev.map(group =>
+        group.groupCode === updatedGroup.groupCode
+          ? {
+              ...updatedGroup,
+              status: '수정', // 셀 값이 변경되면 '수정' 상태로 변경
+              updatedAt: new Date().toISOString()
+            }
+          : group
+      )
+    );
+    console.log('그룹 수정됨:', updatedGroup);
+  }, []);
+
+  // 상세 셀 값 변경
+  const handleDetailCellValueChanged = useCallback((event: any) => {
+    const updatedDetail = event.data as CodeDetail;
+    setCodeDetails(prev =>
+      prev.map(detail =>
+        detail.detailCode === updatedDetail.detailCode && detail.groupCode === updatedDetail.groupCode
+          ? {
+              ...updatedDetail,
+              status: '수정', // 셀 값이 변경되면 '수정' 상태로 변경
+              updatedAt: new Date().toISOString()
+            }
+          : detail
+      )
+    );
+    console.log('상세 수정됨:', updatedDetail);
+  }, []);
+
+  // 그룹 삭제
+  const handleDeleteGroups = useCallback(() => {
+    // TODO: 선택된 행 삭제 로직 구현
+    console.log('그룹 삭제');
+  }, []);
+
+  // 상세 삭제
+  const handleDeleteDetails = useCallback(() => {
+    // TODO: 선택된 행 삭제 로직 구현
+    console.log('상세 삭제');
   }, []);
 
   // ===============================
@@ -403,59 +498,69 @@ const CodeMgmt: React.FC = () => {
           {/* 좌측 패널 - 코드 그룹 관리 */}
           <Grid item xs={12} md={6}>
             <Paper className={styles.leftPanel}>
-              {/* 좌측 헤더 */}
+              {/* 좌측 헤더 + 검색 필터 한줄 통합 */}
               <div className={styles.leftHeader}>
-                <div className={styles.filterSection}>
-                  <Typography variant="h6" className={styles.sectionTitle}>
-                    코드 그룹 목록
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={handleRefresh}
-                    disabled={layoutState.leftLoading}
-                    className={styles.refreshButton}
-                  >
-                    <RefreshIcon />
-                  </IconButton>
-                </div>
-                <div className={styles.leftActionButtons}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<ExcelIcon />}
-                    className={styles.actionButton}
-                  >
-                    엑셀다운로드
-                  </Button>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<AddIcon />}
-                    className={styles.actionButton}
-                  >
-                    그룹 등록
-                  </Button>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<DeleteIcon />}
-                    color="error"
-                    className={styles.actionButton}
-                  >
-                    삭제
-                  </Button>
-                </div>
-              </div>
-
-              {/* 검색 필터 */}
-              <div className={styles.searchSection}>
-                <BaseSearchFilter
-                  fields={searchFields}
-                  values={filters}
-                  onValuesChange={handleFiltersChange}
-                  onSearch={handleSearch}
-                  loading={layoutState.leftLoading}
+                <Typography variant="h6" className={styles.sectionTitle}>
+                  코드 그룹 목록
+                </Typography>
+                <TextField
+                  size="small"
+                  placeholder="그룹코드, 그룹명 또는 설명을 입력하세요"
+                  value={filters.searchKeyword}
+                  onChange={(e) => handleFiltersChange({ searchKeyword: e.target.value })}
+                  disabled={layoutState.leftLoading}
+                  className={styles.searchField}
                 />
+                <FormControl size="small" className={styles.selectField}>
+                  <Select
+                    value={filters.category}
+                    onChange={(e) => handleFiltersChange({ category: e.target.value })}
+                    disabled={layoutState.leftLoading}
+                    displayEmpty
+                  >
+                    <MenuItem value="">전체</MenuItem>
+                    {CATEGORY_OPTIONS.map(option => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <IconButton
+                  size="small"
+                  onClick={handleRefresh}
+                  disabled={layoutState.leftLoading}
+                  className={styles.refreshButton}
+                >
+                  <RefreshIcon />
+                </IconButton>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<ExcelIcon />}
+                  className={styles.actionButton}
+                >
+                  엑셀다운로드
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<AddIcon />}
+                  className={styles.actionButton}
+                  onClick={handleAddGroup}
+                >
+                  추가
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<DeleteIcon />}
+                  color="error"
+                  className={styles.actionButton}
+                  onClick={handleDeleteGroups}
+                >
+                  삭제
+                </Button>
               </div>
 
               {/* 그룹 목록 그리드 */}
@@ -471,9 +576,10 @@ const CodeMgmt: React.FC = () => {
                     data={filteredGroups}
                     columns={groupColumns}
                     onRowClick={handleGroupSelect}
-                    selectedRow={layoutState.selectedCodeGroup}
-                    height="100%"
+                    onCellValueChanged={handleGroupCellValueChanged}
+                    height="calc(100vh - 290px)"
                     pagination={false}
+                    rowSelection="single"
                   />
                 )}
               </div>
@@ -523,17 +629,9 @@ const CodeMgmt: React.FC = () => {
                       startIcon={<AddIcon />}
                       className={styles.actionButton}
                       disabled={!layoutState.selectedCodeGroup}
+                      onClick={handleAddDetail}
                     >
-                      상세 등록
-                    </Button>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<EditIcon />}
-                      className={styles.actionButton}
-                      disabled={!layoutState.selectedCodeGroup}
-                    >
-                      수정
+                      추가
                     </Button>
                     <Button
                       variant="contained"
@@ -542,6 +640,7 @@ const CodeMgmt: React.FC = () => {
                       color="error"
                       className={styles.actionButton}
                       disabled={!layoutState.selectedCodeGroup}
+                      onClick={handleDeleteDetails}
                     >
                       삭제
                     </Button>
@@ -583,7 +682,8 @@ const CodeMgmt: React.FC = () => {
                   <BaseDataGrid
                     data={selectedGroupDetails}
                     columns={detailColumns}
-                    height="100%"
+                    onCellValueChanged={handleDetailCellValueChanged}
+                    height="calc(100vh - 290px)"
                     pagination={false}
                   />
                 )}

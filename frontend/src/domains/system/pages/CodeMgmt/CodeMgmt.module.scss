@@ -162,86 +162,78 @@
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: $spacing-sm;
 
-    .filterSection {
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
+    .sectionTitle {
+      font-weight: 600;
+      color: var(--theme-text-primary, $color-text-primary);
+      font-size: 1rem;
+      white-space: nowrap;
+      margin: 0;
+    }
 
-      .sectionTitle {
-        font-weight: 600;
-        color: var(--theme-text-primary, $color-text-primary);
-        font-size: 1rem;
+    .searchField {
+      width: 300px;
+      min-width: 200px;
+    }
+
+    .selectField {
+      width: 150px;
+      min-width: 120px;
+    }
+
+    .refreshButton {
+      padding: 4px;
+      border-radius: $border-radius-sm;
+      color: var(--theme-text-secondary, $color-text-secondary);
+
+      &:hover {
+        background: var(--theme-hover, rgba(0, 0, 0, 0.04));
       }
 
-      .refreshButton {
-        padding: 4px;
-        border-radius: $border-radius-sm;
-        color: var(--theme-text-secondary, $color-text-secondary);
-
-        &:hover {
-          background: var(--theme-hover, rgba(0, 0, 0, 0.04));
-        }
-
-        &:disabled {
-          opacity: 0.5;
-        }
+      &:disabled {
+        opacity: 0.5;
       }
     }
 
-    .leftActionButtons {
-      display: flex;
-      gap: $spacing-xs;
+    .actionButton {
+      padding: 6px 16px;
+      border: none;
+      border-radius: 8px; // 모서리 라운드 처리
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
 
-      .actionButton {
-        padding: 6px 16px;
-        border: none;
-        border-radius: $border-radius-sm;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
+      // 테마 색상 적용
+      background: var(--theme-button-primary, $color-primary);
+      color: var(--theme-button-primary-text, white);
 
-        // 테마 색상 적용
-        background: var(--theme-button-primary, $color-primary);
-        color: var(--theme-button-primary-text, white);
+      &:hover:not(:disabled) {
+        background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
+      }
+
+      // 에러 버튼
+      &.error {
+        background: var(--theme-error, $color-error);
+        color: white;
 
         &:hover:not(:disabled) {
-          background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
-        }
-
-        // 에러 버튼
-        &.error {
-          background: var(--theme-error, $color-error);
-          color: white;
-
-          &:hover:not(:disabled) {
-            background: color.adjust($color-error, $lightness: -10%);
-          }
+          background: color.adjust($color-error, $lightness: -10%);
         }
       }
     }
-  }
-
-  .searchSection {
-    padding: $spacing-sm;
-    border-bottom: 1px solid $color-border-light;
-    background: var(--theme-background-light, $color-background-neutral);
   }
 
   .leftGrid {
-    flex: 1;
     padding: $spacing-sm;
-    height: calc(100vh - 200px);
-    min-height: 650px;
-    overflow: hidden;
   }
 }
 
@@ -309,7 +301,7 @@
         .actionButton {
           padding: 6px 16px;
           border: none;
-          border-radius: $border-radius-sm;
+          border-radius: 8px; // 모서리 라운드 처리
           font-size: 0.875rem;
           font-weight: 500;
           cursor: pointer;
@@ -333,11 +325,7 @@
   }
 
   .rightGrid {
-    flex: 1;
     padding: $spacing-sm;
-    height: calc(100vh - 170px);
-    min-height: 650px;
-    overflow: hidden;
   }
 }
 
@@ -378,12 +366,6 @@
 @include responsive-breakpoint($breakpoint-mobile) {
   .content {
     padding: $spacing-xs;
-  }
-
-  .leftPanel .leftGrid,
-  .rightPanel .rightGrid {
-    height: calc(100vh - 240px);
-    min-height: 550px;
   }
 
   .leftPanel .leftHeader .leftActionButtons,

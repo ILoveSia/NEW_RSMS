@@ -73,7 +73,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
   });
 
   // Custom Hooks
-  const { handlers, loadingStates, loading: anyLoading } = useAsyncHandlers({
+  const { handlers, loadingStates, loading } = useAsyncHandlers({
     search: { key: 'user-search' },
     excel: { key: 'user-excel' },
     delete: { key: 'user-delete' },
@@ -214,108 +214,103 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
 
   // 사용자 저장 핸들러
   const handleUserSave = useCallback(async (formData: CreateUserRequest) => {
-    setLoadingStates(prev => ({ ...prev, create: true }));
+    await handlers.create.execute(
+      async () => {
+        // TODO: 실제 사용자 등록 API 호출
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
 
-    const loadingToastId = toast.loading('사용자를 등록 중입니다...');
+        // Mock 사용자 추가
+        const newUser: User = {
+          id: Date.now().toString(),
+          username: formData.employeeNo,
+          employeeNo: formData.employeeNo,
+          fullName: formData.fullName,
+          englishName: formData.englishName,
+          deptId: formData.deptId,
+          deptName: '새 부서',
+          positionId: formData.positionId,
+          positionName: '새 직책',
+          accountStatus: formData.accountStatus,
+          passwordChangeRequired: formData.passwordChangeRequired,
+          failedLoginCount: 0,
+          isAdmin: false,
+          isExecutive: false,
+          authLevel: 5,
+          timezone: formData.timezone,
+          language: 'Korean',
+          isActive: formData.isActive,
+          roleCount: formData.roleIds.length,
+          detailRoleCount: formData.detailRoleIds.length,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isDeleted: false
+        };
 
-    try {
-      // TODO: 실제 사용자 등록 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+        setUsers(prev => [newUser, ...prev]);
+        updateTotal(pagination.total + 1);
 
-      // Mock 사용자 추가
-      const newUser: User = {
-        id: Date.now().toString(),
-        username: formData.employeeNo,
-        employeeNo: formData.employeeNo,
-        fullName: formData.fullName,
-        englishName: formData.englishName,
-        deptId: formData.deptId,
-        deptName: '새 부서',
-        positionId: formData.positionId,
-        positionName: '새 직책',
-        accountStatus: formData.accountStatus,
-        passwordChangeRequired: formData.passwordChangeRequired,
-        failedLoginCount: 0,
-        isAdmin: false,
-        isExecutive: false,
-        authLevel: 5,
-        timezone: formData.timezone,
-        language: 'Korean',
-        isActive: formData.isActive,
-        roleCount: formData.roleIds.length,
-        detailRoleCount: formData.detailRoleIds.length,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        isDeleted: false
-      };
-
-      setUsers(prev => [newUser, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
-
-      toast.update(loadingToastId, 'success', '사용자가 등록되었습니다.');
-      handleModalClose();
-    } catch (error) {
-      toast.update(loadingToastId, 'error', '사용자 등록에 실패했습니다.');
-      console.error('사용자 등록 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, create: false }));
-    }
-  }, [handleModalClose]);
+        handleModalClose();
+      },
+      {
+        loading: '사용자를 등록 중입니다...',
+        success: '사용자가 등록되었습니다.',
+        error: '사용자 등록에 실패했습니다.'
+      }
+    );
+  }, [handlers.create, handleModalClose, pagination.total, updateTotal]);
 
   // 사용자 수정 핸들러
   const handleUserUpdate = useCallback(async (id: string, formData: UpdateUserRequest) => {
-    setLoadingStates(prev => ({ ...prev, update: true }));
+    await handlers.update.execute(
+      async () => {
+        // TODO: 실제 사용자 수정 API 호출
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
 
-    const loadingToastId = toast.loading('사용자 정보를 수정 중입니다...');
+        setUsers(prev =>
+          prev.map(user =>
+            user.id === id
+              ? {
+                  ...user,
+                  fullName: formData.fullName,
+                  englishName: formData.englishName,
+                  accountStatus: formData.accountStatus,
+                  isActive: formData.isActive,
+                  timezone: formData.timezone,
+                  updatedAt: new Date().toISOString()
+                }
+              : user
+          )
+        );
 
-    try {
-      // TODO: 실제 사용자 수정 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
-
-      setUsers(prev =>
-        prev.map(user =>
-          user.id === id
-            ? {
-                ...user,
-                fullName: formData.fullName,
-                englishName: formData.englishName,
-                accountStatus: formData.accountStatus,
-                isActive: formData.isActive,
-                timezone: formData.timezone,
-                updatedAt: new Date().toISOString()
-              }
-            : user
-        )
-      );
-
-      toast.update(loadingToastId, 'success', '사용자 정보가 수정되었습니다.');
-      handleModalClose();
-    } catch (error) {
-      toast.update(loadingToastId, 'error', '사용자 수정에 실패했습니다.');
-      console.error('사용자 수정 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, update: false }));
-    }
-  }, [handleModalClose]);
+        handleModalClose();
+      },
+      {
+        loading: '사용자 정보를 수정 중입니다...',
+        success: '사용자 정보가 수정되었습니다.',
+        error: '사용자 수정에 실패했습니다.'
+      }
+    );
+  }, [handlers.update, handleModalClose]);
 
   // 사용자 삭제 핸들러
   const handleDeleteUser = useCallback(async (id: string) => {
-    const loadingToastId = toast.loading('사용자를 삭제 중입니다...');
+    await handlers.delete.execute(
+      async () => {
+        // TODO: 실제 사용자 삭제 API 호출
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
 
-    try {
-      // TODO: 실제 사용자 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+        setUsers(prev => prev.filter(user => user.id !== id));
+        updateTotal(pagination.total - 1);
 
-      setUsers(prev => prev.filter(user => user.id !== id));
-      setPagination(prev => ({ ...prev, total: prev.total - 1 }));
-
-      toast.update(loadingToastId, 'success', '사용자가 삭제되었습니다.');
-      handleModalClose();
-    } catch (error) {
-      toast.update(loadingToastId, 'error', '사용자 삭제에 실패했습니다.');
-      console.error('사용자 삭제 실패:', error);
-    }
-  }, [handleModalClose]);
+        handleModalClose();
+      },
+      {
+        loading: '사용자를 삭제 중입니다...',
+        success: '사용자가 삭제되었습니다.',
+        error: '사용자 삭제에 실패했습니다.'
+      }
+    );
+  }, [handlers.delete, handleModalClose, pagination.total, updateTotal]);
 
   // 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -535,11 +530,8 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
   // 컴포넌트 마운트 시 Mock 데이터 설정
   React.useEffect(() => {
     setUsers(mockUsers);
-    setPagination(prev => ({
-      ...prev,
-      total: mockUsers.length
-    }));
-  }, [mockUsers]);
+    updateTotal(mockUsers.length);
+  }, [mockUsers, updateTotal]);
 
   // React.Profiler onRender 콜백 (성능 모니터링)
   const onRenderProfiler = useCallback((

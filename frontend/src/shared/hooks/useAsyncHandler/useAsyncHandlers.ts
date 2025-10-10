@@ -71,17 +71,33 @@ export interface UseAsyncHandlersReturn<T extends AsyncHandlersConfig> {
 const useAsyncHandlers = <T extends AsyncHandlersConfig>(
   config: T
 ): UseAsyncHandlersReturn<T> => {
-  // 각 키별로 개별 useAsyncHandler 생성
-  const handlers = useMemo(() => {
-    const result: Record<keyof T, UseAsyncHandlerReturn> = {} as any;
+  // 각 키별로 개별 useAsyncHandler 생성 (Hooks 규칙 준수)
+  // useMemo 내부가 아닌 컴포넌트 최상위 레벨에서 호출
+  const handlerEntries = Object.entries(config);
+  const handlers: Record<string, UseAsyncHandlerReturn> = {};
 
-    for (const [handlerKey, handlerConfig] of Object.entries(config)) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      result[handlerKey as keyof T] = useAsyncHandler(handlerConfig.key);
-    }
+  // 동적으로 훅을 호출할 수 없으므로, 고정된 수의 핸들러만 지원
+  // 실제 사용 시 5개 이하의 핸들러만 사용하도록 제한
+  const keys = handlerEntries.map(([key]) => key);
+  const configs = handlerEntries.map(([, cfg]) => cfg);
 
-    return result;
-  }, [config]);
+  // 최대 10개의 핸들러 지원 (필요시 확장 가능)
+  const handler0 = useAsyncHandler(configs[0]?.key || 'placeholder-0');
+  const handler1 = useAsyncHandler(configs[1]?.key || 'placeholder-1');
+  const handler2 = useAsyncHandler(configs[2]?.key || 'placeholder-2');
+  const handler3 = useAsyncHandler(configs[3]?.key || 'placeholder-3');
+  const handler4 = useAsyncHandler(configs[4]?.key || 'placeholder-4');
+  const handler5 = useAsyncHandler(configs[5]?.key || 'placeholder-5');
+  const handler6 = useAsyncHandler(configs[6]?.key || 'placeholder-6');
+  const handler7 = useAsyncHandler(configs[7]?.key || 'placeholder-7');
+  const handler8 = useAsyncHandler(configs[8]?.key || 'placeholder-8');
+  const handler9 = useAsyncHandler(configs[9]?.key || 'placeholder-9');
+
+  // 실제 사용된 핸들러만 매핑
+  const allHandlers = [handler0, handler1, handler2, handler3, handler4, handler5, handler6, handler7, handler8, handler9];
+  keys.forEach((key, index) => {
+    handlers[key] = allHandlers[index];
+  });
 
   // 계산된 값들
   const computed = useMemo(() => {
