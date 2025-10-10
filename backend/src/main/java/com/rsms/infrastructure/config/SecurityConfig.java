@@ -46,18 +46,24 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(auth -> auth
+                // 개발 중: 모든 API 허용 (로그인 기능 개발 후 주석 해제)
+                .anyRequest().permitAll()
+
+                // TODO: 로그인 기능 개발 후 아래 주석 해제
+                /*
                 // 공개 API
                 .requestMatchers("/", "/health", "/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
-                
+
                 // 인증이 필요한 API
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated()
-                
+
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
+                */
             )
             
             // 로그인/로그아웃 설정
@@ -108,8 +114,10 @@ public class SecurityConfig {
         
         configuration.setAllowedOrigins(List.of(
             "http://localhost:3000",
+            "http://localhost:4000",
             "http://localhost:5173",
             "http://127.0.0.1:3000",
+            "http://127.0.0.1:4000",
             "http://127.0.0.1:5173"
         ));
         

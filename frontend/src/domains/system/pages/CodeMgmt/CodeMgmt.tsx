@@ -61,6 +61,8 @@ import {
   MOCK_CODE_GROUPS
 } from './types/codeMgmt.types';
 
+// API import
+import * as codeMgmtApi from './api/codeMgmtApi';
 
 // 스타일 import
 import styles from './CodeMgmt.module.scss';
@@ -98,8 +100,9 @@ const CodeMgmt: React.FC = () => {
   });
 
   // 데이터 상태
-  const [codeGroups, setCodeGroups] = useState<CodeGroup[]>(MOCK_CODE_GROUPS);
+  const [codeGroups, setCodeGroups] = useState<CodeGroup[]>([]);
   const [codeDetails, setCodeDetails] = useState<CodeDetail[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // ===============================
   // Computed Values
@@ -159,12 +162,13 @@ const CodeMgmt: React.FC = () => {
       sortable: false,
       editable: false,
       cellRenderer: (params: any) => {
-        const status = params.value || '저장';
+        const status = params.value;
+        if (!status) return null; // 조회된 데이터는 상태 표시 안 함
         return (
           <Chip
             label={status}
             size="small"
-            color={status === '저장' ? 'primary' : 'warning'}
+            color={status === 'NEW' ? 'primary' : 'warning'}
             variant="outlined"
           />
         );
@@ -240,12 +244,13 @@ const CodeMgmt: React.FC = () => {
       sortable: false,
       editable: false,
       cellRenderer: (params: any) => {
-        const status = params.value || '저장';
+        const status = params.value;
+        if (!status) return null; // 조회된 데이터는 상태 표시 안 함
         return (
           <Chip
             label={status}
             size="small"
-            color={status === '저장' ? 'primary' : 'warning'}
+            color={status === 'NEW' ? 'primary' : 'warning'}
             variant="outlined"
           />
         );
@@ -300,31 +305,66 @@ const CodeMgmt: React.FC = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
+  // 코드 그룹 목록 로드
+  const loadCodeGroups = useCallback(async () => {
+    setLayoutState(prev => ({ ...prev, leftLoading: true }));
+    try {
+      const groups = await codeMgmtApi.getAllCodeGroups();
+      setCodeGroups(groups);
+      setError(null);
+    } catch (err) {
+      console.error('코드 그룹 조회 실패:', err);
+      setError('코드 그룹 조회에 실패했습니다.');
+    } finally {
+      setLayoutState(prev => ({ ...prev, leftLoading: false }));
+    }
+  }, []);
+
   // 그룹 선택
-  const handleGroupSelect = useCallback((group: CodeGroup) => {
+  const handleGroupSelect = useCallback(async (group: CodeGroup) => {
     setLayoutState(prev => ({
       ...prev,
       selectedCodeGroup: group,
       rightLoading: true
     }));
 
-    // 상세코드 로딩 시뮬레이션
-    setTimeout(() => {
-      const groupDetails = MOCK_CODE_DETAILS.filter(detail =>
-        detail.groupCode === group.groupCode
-      );
-      setCodeDetails(groupDetails);
+    try {
+      const details = await codeMgmtApi.getCodeDetailsByGroup(group.groupCode);
+      setCodeDetails(details);
+      setError(null);
+    } catch (err) {
+      console.error('상세코드 조회 실패:', err);
+      setError('상세코드 조회에 실패했습니다.');
+      setCodeDetails([]);
+    } finally {
       setLayoutState(prev => ({ ...prev, rightLoading: false }));
-    }, 300);
+    }
   }, []);
 
-  // 새로고침
-  const handleRefresh = useCallback(() => {
+  // 새로고침 (IconButton 클릭 시 검색조건으로 조회)
+  const handleRefresh = useCallback(async () => {
     setLayoutState(prev => ({ ...prev, leftLoading: true }));
-    setTimeout(() => {
+    try {
+      // 검색조건이 있으면 searchCodeGroups API 호출, 없으면 getAllCodeGroups
+      if (filters.searchKeyword || filters.category || filters.isActive) {
+        const result = await codeMgmtApi.searchCodeGroups(
+          filters.searchKeyword || undefined,
+          filters.category || undefined,
+          filters.isActive || undefined
+        );
+        setCodeGroups(result.content);
+      } else {
+        const groups = await codeMgmtApi.getAllCodeGroups();
+        setCodeGroups(groups);
+      }
+      setError(null);
+    } catch (err) {
+      console.error('코드 그룹 조회 실패:', err);
+      setError('코드 그룹 조회에 실패했습니다.');
+    } finally {
       setLayoutState(prev => ({ ...prev, leftLoading: false }));
-    }, 500);
-  }, []);
+    }
+  }, [filters]);
 
   // 그룹 추가
   const handleAddGroup = useCallback(() => {
@@ -334,7 +374,7 @@ const CodeMgmt: React.FC = () => {
       : 0;
 
     const newGroup: CodeGroup = {
-      status: '저장', // 새로 추가된 행은 '저장' 상태
+      status: 'NEW', // 새로 추가된 행은 'NEW' 상태
       groupCode: `NEW_${Date.now()}`,
       groupName: '',
       description: '',
@@ -362,7 +402,7 @@ const CodeMgmt: React.FC = () => {
       : 0;
 
     const newDetail: CodeDetail = {
-      status: '저장', // 새로 추가된 행은 '저장' 상태
+      status: 'NEW', // 새로 추가된 행은 'NEW' 상태
       groupCode: layoutState.selectedCodeGroup.groupCode,
       detailCode: `NEW_${Date.now()}`,
       detailName: '',
@@ -389,15 +429,18 @@ const CodeMgmt: React.FC = () => {
   const handleGroupCellValueChanged = useCallback((event: any) => {
     const updatedGroup = event.data as CodeGroup;
     setCodeGroups(prev =>
-      prev.map(group =>
-        group.groupCode === updatedGroup.groupCode
-          ? {
-              ...updatedGroup,
-              status: '수정', // 셀 값이 변경되면 '수정' 상태로 변경
-              updatedAt: new Date().toISOString()
-            }
-          : group
-      )
+      prev.map(group => {
+        if (group.groupCode !== updatedGroup.groupCode) return group;
+
+        // 기존 상태가 'NEW'면 'NEW' 유지, 없거나 다른 상태면 'UPDATE'로 변경
+        const newStatus = group.status === 'NEW' ? 'NEW' : 'UPDATE';
+
+        return {
+          ...updatedGroup,
+          status: newStatus,
+          updatedAt: new Date().toISOString()
+        };
+      })
     );
     console.log('그룹 수정됨:', updatedGroup);
   }, []);
@@ -406,24 +449,137 @@ const CodeMgmt: React.FC = () => {
   const handleDetailCellValueChanged = useCallback((event: any) => {
     const updatedDetail = event.data as CodeDetail;
     setCodeDetails(prev =>
-      prev.map(detail =>
-        detail.detailCode === updatedDetail.detailCode && detail.groupCode === updatedDetail.groupCode
-          ? {
-              ...updatedDetail,
-              status: '수정', // 셀 값이 변경되면 '수정' 상태로 변경
-              updatedAt: new Date().toISOString()
-            }
-          : detail
-      )
+      prev.map(detail => {
+        if (detail.detailCode !== updatedDetail.detailCode || detail.groupCode !== updatedDetail.groupCode) {
+          return detail;
+        }
+
+        // 기존 상태가 'NEW'면 'NEW' 유지, 없거나 다른 상태면 'UPDATE'로 변경
+        const newStatus = detail.status === 'NEW' ? 'NEW' : 'UPDATE';
+
+        return {
+          ...updatedDetail,
+          status: newStatus,
+          updatedAt: new Date().toISOString()
+        };
+      })
     );
     console.log('상세 수정됨:', updatedDetail);
   }, []);
+
+  // 그룹 저장 (신규=INSERT, 수정=UPDATE)
+  const handleSaveGroups = useCallback(async () => {
+    // 상태가 'NEW' 또는 'UPDATE'인 행만 필터링
+    const groupsToSave = codeGroups.filter(g => g.status === 'NEW' || g.status === 'UPDATE');
+
+    if (groupsToSave.length === 0) {
+      alert('저장할 데이터가 없습니다.');
+      return;
+    }
+
+    try {
+      for (const group of groupsToSave) {
+        if (group.status === 'NEW') {
+          // INSERT
+          await codeMgmtApi.createCodeGroup({
+            groupCode: group.groupCode,
+            groupName: group.groupName,
+            description: group.description,
+            category: group.category,
+            categoryCode: group.categoryCode,
+            systemCode: group.systemCode,
+            editable: group.editable,
+            sortOrder: group.sortOrder,
+            isActive: group.isActive
+          });
+          console.log('그룹 생성 완료:', group.groupCode);
+        } else if (group.status === 'UPDATE') {
+          // UPDATE
+          await codeMgmtApi.updateCodeGroup(group.groupCode, {
+            groupName: group.groupName,
+            description: group.description,
+            category: group.category,
+            sortOrder: group.sortOrder,
+            isActive: group.isActive
+          });
+          console.log('그룹 수정 완료:', group.groupCode);
+        }
+      }
+
+      // 저장 완료 후 데이터 다시 로드
+      await loadCodeGroups();
+      alert('저장되었습니다.');
+    } catch (err) {
+      console.error('그룹 저장 실패:', err);
+      alert('저장에 실패했습니다.');
+    }
+  }, [codeGroups, loadCodeGroups]);
 
   // 그룹 삭제
   const handleDeleteGroups = useCallback(() => {
     // TODO: 선택된 행 삭제 로직 구현
     console.log('그룹 삭제');
   }, []);
+
+  // 상세코드 저장 (신규=INSERT, 수정=UPDATE)
+  const handleSaveDetails = useCallback(async () => {
+    // 상태가 'NEW' 또는 'UPDATE'인 행만 필터링
+    const detailsToSave = codeDetails.filter(d => d.status === 'NEW' || d.status === 'UPDATE');
+
+    if (detailsToSave.length === 0) {
+      alert('저장할 데이터가 없습니다.');
+      return;
+    }
+
+    try {
+      for (const detail of detailsToSave) {
+        if (detail.status === 'NEW') {
+          // INSERT
+          await codeMgmtApi.createCodeDetail({
+            groupCode: detail.groupCode,
+            detailCode: detail.detailCode,
+            detailName: detail.detailName,
+            description: detail.description,
+            parentCode: detail.parentCode,
+            levelDepth: detail.levelDepth,
+            sortOrder: detail.sortOrder,
+            extAttr1: detail.extAttr1,
+            extAttr2: detail.extAttr2,
+            extAttr3: detail.extAttr3,
+            extraData: detail.extraData,
+            validFrom: detail.validFrom,
+            validUntil: detail.validUntil,
+            isActive: detail.isActive
+          });
+          console.log('상세코드 생성 완료:', detail.detailCode);
+        } else if (detail.status === 'UPDATE') {
+          // UPDATE
+          await codeMgmtApi.updateCodeDetail(detail.groupCode, detail.detailCode, {
+            detailName: detail.detailName,
+            description: detail.description,
+            sortOrder: detail.sortOrder,
+            extAttr1: detail.extAttr1,
+            extAttr2: detail.extAttr2,
+            extAttr3: detail.extAttr3,
+            extraData: detail.extraData,
+            validFrom: detail.validFrom,
+            validUntil: detail.validUntil,
+            isActive: detail.isActive
+          });
+          console.log('상세코드 수정 완료:', detail.detailCode);
+        }
+      }
+
+      // 저장 완료 후 데이터 다시 로드
+      if (layoutState.selectedCodeGroup) {
+        await handleGroupSelect(layoutState.selectedCodeGroup);
+      }
+      alert('저장되었습니다.');
+    } catch (err) {
+      console.error('상세코드 저장 실패:', err);
+      alert('저장에 실패했습니다.');
+    }
+  }, [codeDetails, layoutState.selectedCodeGroup, handleGroupSelect]);
 
   // 상세 삭제
   const handleDeleteDetails = useCallback(() => {
@@ -434,6 +590,11 @@ const CodeMgmt: React.FC = () => {
   // ===============================
   // Effects
   // ===============================
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    loadCodeGroups();
+  }, [loadCodeGroups]);
 
   // 첫 번째 그룹 자동 선택
   useEffect(() => {
@@ -496,71 +657,75 @@ const CodeMgmt: React.FC = () => {
       <div className={styles.content}>
         <Grid container spacing={2} sx={{ height: '100%' }}>
           {/* 좌측 패널 - 코드 그룹 관리 */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={7}>
             <Paper className={styles.leftPanel}>
               {/* 좌측 헤더 + 검색 필터 한줄 통합 */}
               <div className={styles.leftHeader}>
-                <Typography variant="h6" className={styles.sectionTitle}>
-                  코드 그룹 목록
-                </Typography>
-                <TextField
-                  size="small"
-                  placeholder="그룹코드, 그룹명 또는 설명을 입력하세요"
-                  value={filters.searchKeyword}
-                  onChange={(e) => handleFiltersChange({ searchKeyword: e.target.value })}
-                  disabled={layoutState.leftLoading}
-                  className={styles.searchField}
-                />
-                <FormControl size="small" className={styles.selectField}>
-                  <Select
-                    value={filters.category}
-                    onChange={(e) => handleFiltersChange({ category: e.target.value })}
+                <div className={styles.leftHeaderLeft}>
+                  <Typography variant="h6" className={styles.sectionTitle}>
+                    코드 그룹 목록
+                  </Typography>
+                  <TextField
+                    size="small"
+                    placeholder="그룹코드, 그룹명 또는 설명을 입력하세요"
+                    value={filters.searchKeyword}
+                    onChange={(e) => handleFiltersChange({ searchKeyword: e.target.value })}
                     disabled={layoutState.leftLoading}
-                    displayEmpty
+                    className={styles.searchField}
+                  />
+                  <FormControl size="small" className={styles.selectField}>
+                    <Select
+                      value={filters.category}
+                      onChange={(e) => handleFiltersChange({ category: e.target.value })}
+                      disabled={layoutState.leftLoading}
+                      displayEmpty
+                    >
+                      <MenuItem value="">전체</MenuItem>
+                      {CATEGORY_OPTIONS.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <IconButton
+                    size="small"
+                    onClick={handleRefresh}
+                    disabled={layoutState.leftLoading}
+                    className={styles.refreshButton}
                   >
-                    <MenuItem value="">전체</MenuItem>
-                    {CATEGORY_OPTIONS.map(option => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <IconButton
-                  size="small"
-                  onClick={handleRefresh}
-                  disabled={layoutState.leftLoading}
-                  className={styles.refreshButton}
-                >
-                  <RefreshIcon />
-                </IconButton>
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<ExcelIcon />}
-                  className={styles.actionButton}
-                >
-                  엑셀다운로드
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<AddIcon />}
-                  className={styles.actionButton}
-                  onClick={handleAddGroup}
-                >
-                  추가
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<DeleteIcon />}
-                  color="error"
-                  className={styles.actionButton}
-                  onClick={handleDeleteGroups}
-                >
-                  삭제
-                </Button>
+                    <RefreshIcon />
+                  </IconButton>
+                </div>
+                <div className={styles.leftHeaderRight}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<AddIcon />}
+                    className={styles.actionButton}
+                    onClick={handleAddGroup}
+                  >
+                    추가
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    className={styles.actionButton}
+                    onClick={handleSaveGroups}
+                  >
+                    저장
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<DeleteIcon />}
+                    color="error"
+                    className={styles.actionButton}
+                    onClick={handleDeleteGroups}
+                  >
+                    삭제
+                  </Button>
+                </div>
               </div>
 
               {/* 그룹 목록 그리드 */}
@@ -587,7 +752,7 @@ const CodeMgmt: React.FC = () => {
           </Grid>
 
           {/* 우측 패널 - 상세코드 관리 */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={5}>
             <Paper className={styles.rightPanel}>
               {/* 우측 헤더 */}
               <div className={styles.rightHeader}>
@@ -632,6 +797,15 @@ const CodeMgmt: React.FC = () => {
                       onClick={handleAddDetail}
                     >
                       추가
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      className={styles.actionButton}
+                      disabled={!layoutState.selectedCodeGroup}
+                      onClick={handleSaveDetails}
+                    >
+                      저장
                     </Button>
                     <Button
                       variant="contained"

@@ -162,8 +162,22 @@
     border-bottom: 1px solid $color-border-default;
     background: var(--theme-surface, $color-background-paper);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
+
+    .leftHeaderLeft {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      flex: 1;
+    }
+
+    .leftHeaderRight {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
 
     .sectionTitle {
       font-weight: 600;

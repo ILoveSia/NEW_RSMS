@@ -43,8 +43,8 @@ export const CODE_CATEGORY_LABELS: Record<CodeCategory, string> = {
  * 코드 그룹 기본 인터페이스 (좌측 그리드)
  */
 export interface CodeGroup {
-  /** 상태 (저장/수정) */
-  status?: '저장' | '수정';
+  /** 상태 (NEW/UPDATE) */
+  status?: 'NEW' | 'UPDATE';
 
   /** 그룹코드 ID */
   groupCode: string;
@@ -90,8 +90,8 @@ export interface CodeGroup {
  * 코드 상세 인터페이스 (우측 그리드)
  */
 export interface CodeDetail {
-  /** 상태 (저장/수정) */
-  status?: '저장' | '수정';
+  /** 상태 (NEW/UPDATE) */
+  status?: 'NEW' | 'UPDATE';
 
   /** 그룹코드 */
   groupCode: string;

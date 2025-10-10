@@ -28,7 +28,7 @@ CREATE TABLE rsms.common_code_groups (
   sort_order INTEGER NOT NULL DEFAULT 0,                -- 정렬 순서
 
   -- 사용 여부
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',               -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',            -- 사용여부 ('Y', 'N')
 
   -- 감사 정보
   created_by VARCHAR(100) NOT NULL,                     -- 생성자

@@ -29,6 +29,10 @@ tmp/
 temp/
 logs/
 
+# Backend specific
+backend/.gradle/
+backend/logs/
+
 # Documentation builds
 docs/_build/
 docs/.docusaurus/

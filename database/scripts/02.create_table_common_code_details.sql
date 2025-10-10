@@ -35,7 +35,7 @@ CREATE TABLE rsms.common_code_details (
   valid_until DATE NULL,                                -- 유효 종료일
 
   -- 사용 여부
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',               -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',            -- 사용여부 ('Y', 'N')
 
   -- 감사 정보
   created_by VARCHAR(100) NOT NULL,                     -- 생성자
