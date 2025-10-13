@@ -60,6 +60,8 @@ export interface BaseDataGridProps<TData = any> extends Omit<AgGridReactProps, '
   onRowDoubleClick?: (data: TData, event: RowDoubleClickedEvent<TData>) => void;
   /** 선택 변경 이벤트 */
   onSelectionChange?: (selectedRows: TData[]) => void;
+  /** 셀 값 변경 이벤트 */
+  onCellValueChanged?: (event: any) => void;
   /** 빈 상태 메시지 */
   emptyMessage?: string;
   /** 에러 상태 */
@@ -111,6 +113,7 @@ const BaseDataGrid = <TData = any,>({
   onRowClick,
   onRowDoubleClick,
   onSelectionChange,
+  onCellValueChanged,
   emptyMessage = '데이터가 없습니다',
   error,
   className,
@@ -149,19 +152,23 @@ const BaseDataGrid = <TData = any,>({
     suppressRowClickSelection: checkboxSelection,
     rowMultiSelectWithClick: rowSelection === 'multiple',
     suppressHtmlInCell: true, // HTML 렌더링 비활성화
-    
+
+    // 편집 설정 (중요!)
+    singleClickEdit: true, // 한 번 클릭으로 편집 모드 진입
+    stopEditingWhenCellsLoseFocus: true, // 포커스 잃으면 편집 종료
+
     // 페이지네이션
     pagination: pagination,
     paginationPageSize: pageSize,
     paginationPageSizeSelector: pageSizeOptions,
-    
+
     // 선택 모드
     rowSelection: rowSelection === 'none' ? undefined : rowSelection,
-    
+
     // 필터 및 정렬
     enableFilter: enableFilter,
     enableSorting: enableSorting,
-    
+
     // 컬럼 조작
     enableColResize: enableColumnResize,
     enableColumnReorder: enableColumnReorder,
@@ -285,6 +292,7 @@ const BaseDataGrid = <TData = any,>({
         onCellClicked={onCellClicked}
         onRowDoubleClicked={onRowDoubleClicked}
         onSelectionChanged={onSelectionChanged}
+        onCellValueChanged={onCellValueChanged}
         className={styles.grid}
       />
     </Box>

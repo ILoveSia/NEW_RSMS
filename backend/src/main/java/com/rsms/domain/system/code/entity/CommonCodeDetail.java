@@ -88,8 +88,10 @@ public class CommonCodeDetail {
 
     /**
      * 추가 데이터 (JSON 형식)
+     * PostgreSQL JSONB 타입 매핑 (Hibernate 6 기본 지원)
      */
     @Column(name = "extra_data", columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     private String extraData;
 
     /**

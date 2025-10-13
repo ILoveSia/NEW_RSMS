@@ -104,6 +104,10 @@ const CodeMgmt: React.FC = () => {
   const [codeDetails, setCodeDetails] = useState<CodeDetail[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // 선택된 행 상태
+  const [selectedGroups, setSelectedGroups] = useState<CodeGroup[]>([]);
+  const [selectedDetails, setSelectedDetails] = useState<CodeDetail[]>([]);
+
   // ===============================
   // Computed Values
   // ===============================
@@ -155,25 +159,6 @@ const CodeMgmt: React.FC = () => {
 
   // 코드 그룹 컬럼 (인라인 편집 가능)
   const groupColumns = useMemo<ColDef<CodeGroup>[]>(() => [
-    {
-      field: 'status',
-      headerName: '상태',
-      width: 80,
-      sortable: false,
-      editable: false,
-      cellRenderer: (params: any) => {
-        const status = params.value;
-        if (!status) return null; // 조회된 데이터는 상태 표시 안 함
-        return (
-          <Chip
-            label={status}
-            size="small"
-            color={status === 'NEW' ? 'primary' : 'warning'}
-            variant="outlined"
-          />
-        );
-      }
-    },
     {
       field: 'sortOrder',
       headerName: '순서',
@@ -232,34 +217,21 @@ const CodeMgmt: React.FC = () => {
       editable: true,
       cellEditor: 'agCheckboxCellEditor',
       cellRenderer: 'agCheckboxCellRenderer',
+      valueGetter: (params: any) => params.data?.isActive === 'Y',
+      valueSetter: (params: any) => {
+        const newValue = params.newValue ? 'Y' : 'N';
+        params.data.isActive = newValue;
+        return true;
+      }
     }
   ], []);
 
   // 상세코드 컬럼 (인라인 편집 가능)
   const detailColumns = useMemo<ColDef<CodeDetail>[]>(() => [
     {
-      field: 'status',
-      headerName: '상태',
-      width: 80,
-      sortable: false,
-      editable: false,
-      cellRenderer: (params: any) => {
-        const status = params.value;
-        if (!status) return null; // 조회된 데이터는 상태 표시 안 함
-        return (
-          <Chip
-            label={status}
-            size="small"
-            color={status === 'NEW' ? 'primary' : 'warning'}
-            variant="outlined"
-          />
-        );
-      }
-    },
-    {
       field: 'sortOrder',
       headerName: '순서',
-      width: 80,
+      width: 60,
       sortable: true,
       type: 'number',
       editable: false, // 자동 증가이므로 편집 불가
@@ -267,32 +239,38 @@ const CodeMgmt: React.FC = () => {
     {
       field: 'detailCode',
       headerName: '코드',
-      width: 120,
+      width: 100,
       sortable: true,
       editable: true,
     },
     {
       field: 'detailName',
       headerName: '코드명',
-      width: 200,
+      width: 150,
       sortable: true,
       editable: true,
     },
     {
       field: 'description',
       headerName: '설명',
-      width: 180,
+      width: 130,
       sortable: false,
       editable: true,
     },
     {
       field: 'isActive',
       headerName: '사용여부',
-      width: 100,
+      width: 90,
       sortable: true,
       editable: true,
       cellEditor: 'agCheckboxCellEditor',
       cellRenderer: 'agCheckboxCellRenderer',
+      valueGetter: (params: any) => params.data?.isActive === 'Y',
+      valueSetter: (params: any) => {
+        const newValue = params.newValue ? 'Y' : 'N';
+        params.data.isActive = newValue;
+        return true;
+      }
     }
   ], []);
 
@@ -428,49 +406,82 @@ const CodeMgmt: React.FC = () => {
   // 그룹 셀 값 변경
   const handleGroupCellValueChanged = useCallback((event: any) => {
     const updatedGroup = event.data as CodeGroup;
+
     setCodeGroups(prev =>
       prev.map(group => {
         if (group.groupCode !== updatedGroup.groupCode) return group;
 
-        // 기존 상태가 'NEW'면 'NEW' 유지, 없거나 다른 상태면 'UPDATE'로 변경
-        const newStatus = group.status === 'NEW' ? 'NEW' : 'UPDATE';
+        // 기존 상태가 'NEW'면 'NEW' 유지, 그 외(undefined 포함)는 'UPDATE'로 변경
+        const newStatus: 'NEW' | 'UPDATE' = group.status === 'NEW' ? 'NEW' : 'UPDATE';
 
-        return {
+        const updated: CodeGroup = {
           ...updatedGroup,
           status: newStatus,
           updatedAt: new Date().toISOString()
         };
+
+        console.log('그룹 수정됨:', {
+          groupCode: updated.groupCode,
+          field: event.colDef?.field,
+          oldValue: event.oldValue,
+          newValue: event.newValue,
+          status: newStatus
+        });
+
+        return updated;
       })
     );
-    console.log('그룹 수정됨:', updatedGroup);
   }, []);
 
   // 상세 셀 값 변경
   const handleDetailCellValueChanged = useCallback((event: any) => {
     const updatedDetail = event.data as CodeDetail;
+
     setCodeDetails(prev =>
       prev.map(detail => {
         if (detail.detailCode !== updatedDetail.detailCode || detail.groupCode !== updatedDetail.groupCode) {
           return detail;
         }
 
-        // 기존 상태가 'NEW'면 'NEW' 유지, 없거나 다른 상태면 'UPDATE'로 변경
-        const newStatus = detail.status === 'NEW' ? 'NEW' : 'UPDATE';
+        // 기존 상태가 'NEW'면 'NEW' 유지, 그 외(undefined 포함)는 'UPDATE'로 변경
+        const newStatus: 'NEW' | 'UPDATE' = detail.status === 'NEW' ? 'NEW' : 'UPDATE';
 
-        return {
+        const updated: CodeDetail = {
           ...updatedDetail,
           status: newStatus,
           updatedAt: new Date().toISOString()
         };
+
+        console.log('상세 수정됨:', {
+          groupCode: updated.groupCode,
+          detailCode: updated.detailCode,
+          field: event.colDef?.field,
+          oldValue: event.oldValue,
+          newValue: event.newValue,
+          status: newStatus
+        });
+
+        return updated;
       })
     );
-    console.log('상세 수정됨:', updatedDetail);
   }, []);
 
   // 그룹 저장 (신규=INSERT, 수정=UPDATE)
   const handleSaveGroups = useCallback(async () => {
+    console.log('=== 저장 버튼 클릭 ===');
+    console.log('전체 그룹 개수:', codeGroups.length);
+    console.log('전체 그룹 데이터:', codeGroups.map(g => ({
+      groupCode: g.groupCode,
+      groupName: g.groupName,
+      status: g.status,
+      description: g.description
+    })));
+
     // 상태가 'NEW' 또는 'UPDATE'인 행만 필터링
     const groupsToSave = codeGroups.filter(g => g.status === 'NEW' || g.status === 'UPDATE');
+
+    console.log('저장할 그룹 개수:', groupsToSave.length);
+    console.log('저장할 그룹:', groupsToSave);
 
     if (groupsToSave.length === 0) {
       alert('저장할 데이터가 없습니다.');
@@ -515,11 +526,45 @@ const CodeMgmt: React.FC = () => {
     }
   }, [codeGroups, loadCodeGroups]);
 
-  // 그룹 삭제
-  const handleDeleteGroups = useCallback(() => {
-    // TODO: 선택된 행 삭제 로직 구현
-    console.log('그룹 삭제');
+  // 그룹 선택 변경
+  const handleGroupSelectionChange = useCallback((selectedRows: CodeGroup[]) => {
+    setSelectedGroups(selectedRows);
+    console.log('선택된 그룹:', selectedRows);
   }, []);
+
+  // 그룹 삭제
+  const handleDeleteGroups = useCallback(async () => {
+    if (selectedGroups.length === 0) {
+      alert('삭제할 데이터를 선택해주세요.');
+      return;
+    }
+
+    if (!confirm(`선택한 ${selectedGroups.length}개의 그룹을 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      for (const group of selectedGroups) {
+        // NEW 상태면 로컬에서만 삭제 (서버 전송 안함)
+        if (group.status === 'NEW') {
+          setCodeGroups(prev => prev.filter(g => g.groupCode !== group.groupCode));
+          console.log('신규 그룹 삭제 (로컬):', group.groupCode);
+        } else {
+          // 기존 데이터는 서버 API 호출
+          await codeMgmtApi.deleteCodeGroup(group.groupCode);
+          console.log('그룹 삭제 완료:', group.groupCode);
+        }
+      }
+
+      // 삭제 완료 후 데이터 다시 로드
+      await loadCodeGroups();
+      setSelectedGroups([]);
+      alert('삭제되었습니다.');
+    } catch (err) {
+      console.error('그룹 삭제 실패:', err);
+      alert('삭제에 실패했습니다.');
+    }
+  }, [selectedGroups, loadCodeGroups]);
 
   // 상세코드 저장 (신규=INSERT, 수정=UPDATE)
   const handleSaveDetails = useCallback(async () => {
@@ -581,11 +626,49 @@ const CodeMgmt: React.FC = () => {
     }
   }, [codeDetails, layoutState.selectedCodeGroup, handleGroupSelect]);
 
-  // 상세 삭제
-  const handleDeleteDetails = useCallback(() => {
-    // TODO: 선택된 행 삭제 로직 구현
-    console.log('상세 삭제');
+  // 상세 선택 변경
+  const handleDetailSelectionChange = useCallback((selectedRows: CodeDetail[]) => {
+    setSelectedDetails(selectedRows);
+    console.log('선택된 상세코드:', selectedRows);
   }, []);
+
+  // 상세 삭제
+  const handleDeleteDetails = useCallback(async () => {
+    if (selectedDetails.length === 0) {
+      alert('삭제할 데이터를 선택해주세요.');
+      return;
+    }
+
+    if (!confirm(`선택한 ${selectedDetails.length}개의 상세코드를 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      for (const detail of selectedDetails) {
+        // NEW 상태면 로컬에서만 삭제 (서버 전송 안함)
+        if (detail.status === 'NEW') {
+          setCodeDetails(prev => prev.filter(d =>
+            d.groupCode !== detail.groupCode || d.detailCode !== detail.detailCode
+          ));
+          console.log('신규 상세코드 삭제 (로컬):', detail.detailCode);
+        } else {
+          // 기존 데이터는 서버 API 호출
+          await codeMgmtApi.deleteCodeDetail(detail.groupCode, detail.detailCode);
+          console.log('상세코드 삭제 완료:', detail.detailCode);
+        }
+      }
+
+      // 삭제 완료 후 데이터 다시 로드
+      if (layoutState.selectedCodeGroup) {
+        await handleGroupSelect(layoutState.selectedCodeGroup);
+      }
+      setSelectedDetails([]);
+      alert('삭제되었습니다.');
+    } catch (err) {
+      console.error('상세코드 삭제 실패:', err);
+      alert('삭제에 실패했습니다.');
+    }
+  }, [selectedDetails, layoutState.selectedCodeGroup, handleGroupSelect]);
 
   // ===============================
   // Effects
@@ -742,9 +825,21 @@ const CodeMgmt: React.FC = () => {
                     columns={groupColumns}
                     onRowClick={handleGroupSelect}
                     onCellValueChanged={handleGroupCellValueChanged}
+                    onSelectionChange={handleGroupSelectionChange}
+                    getRowStyle={(params: any) => {
+                      if (params.data?.status === 'NEW') {
+                        return { background: '#e3f2fd' }; // 신규: 연한 파란색
+                      }
+                      if (params.data?.status === 'UPDATE') {
+                        return { background: '#fff3e0' }; // 수정: 연한 오렌지색
+                      }
+                      return undefined;
+                    }}
                     height="calc(100vh - 290px)"
                     pagination={false}
-                    rowSelection="single"
+                    rowSelection="multiple"
+                    checkboxSelection={true}
+                    headerCheckboxSelection={true}
                   />
                 )}
               </div>
@@ -857,8 +952,21 @@ const CodeMgmt: React.FC = () => {
                     data={selectedGroupDetails}
                     columns={detailColumns}
                     onCellValueChanged={handleDetailCellValueChanged}
+                    onSelectionChange={handleDetailSelectionChange}
+                    getRowStyle={(params: any) => {
+                      if (params.data?.status === 'NEW') {
+                        return { background: '#e3f2fd' }; // 신규: 연한 파란색
+                      }
+                      if (params.data?.status === 'UPDATE') {
+                        return { background: '#fff3e0' }; // 수정: 연한 오렌지색
+                      }
+                      return undefined;
+                    }}
                     height="calc(100vh - 290px)"
                     pagination={false}
+                    rowSelection="multiple"
+                    checkboxSelection={true}
+                    headerCheckboxSelection={true}
                   />
                 )}
               </div>

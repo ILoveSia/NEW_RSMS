@@ -33,6 +33,7 @@ export * from './omit';
 
 // 검증 관련 유틸리티
 export * from './validation';
+export * from './validation.types';
 export * from './email';
 export * from './phone';
 export * from './url';

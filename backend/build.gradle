@@ -49,6 +49,9 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Hibernate Types for PostgreSQL JSONB support
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
     
     // Development Tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

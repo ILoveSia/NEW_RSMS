@@ -29,9 +29,15 @@ tmp/
 temp/
 logs/
 
-# Backend specific
+# Backend specific (Gradle & Build)
 backend/.gradle/
+backend/build/
+backend/out/
 backend/logs/
+backend/bin/
+backend/.settings/
+backend/.classpath
+backend/.project
 
 # Documentation builds
 docs/_build/
