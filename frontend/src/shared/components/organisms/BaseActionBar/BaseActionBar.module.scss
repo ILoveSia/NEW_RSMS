@@ -197,64 +197,11 @@
 
 // 액션 버튼 스타일
 .actionButton {
-  background: var(--theme-button-primary) !important;
-  backdrop-filter: blur(10px) !important;
-  color: var(--theme-button-primary-text) !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  padding: 8px 16px !important;
-  height: 40px !important;
-  min-width: 100px !important;
-  border-radius: $border-radius-lg !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.1) !important,
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-  }
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px) !important;
-    box-shadow:
-      0 6px 20px rgba(0, 0, 0, 0.15) !important,
-      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-
-    &::before {
-      left: 100%;
-    }
-  }
-
-  &:active {
-    transform: translateY(0) !important;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.1) !important,
-      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  }
-
-  &:disabled {
-    opacity: 0.6 !important;
-    cursor: not-allowed !important;
-    transform: none !important;
-  }
-
+  // Button 컴포넌트의 기본 스타일 사용
+  // 추가 커스터마이징 최소화
   @include responsive-breakpoint($breakpoint-mobile) {
     width: 100%;
     justify-content: center;
-    min-width: 100px !important;
-    white-space: nowrap !important;
   }
 }
 

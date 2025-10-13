@@ -58,10 +58,12 @@
 
 // 🏛️ 맨하탄 금융센터 크기 시스템 (Wall Street Size Hierarchy)
 .size-small {
-  padding: $spacing-xs $spacing-sm;
-  font-size: $font-size-sm;
-  min-height: $trading-row-height;
-  font-weight: $font-weight-normal;
+  padding: 6px 16px !important; // 모든 small 버튼의 통일된 크기 (CodeMgmt 표준)
+  font-size: 0.875rem !important; // 14px
+  min-height: 32px !important;
+  min-width: auto !important; // Material-UI 기본 min-width 제거
+  font-weight: 500 !important;
+  line-height: 1.75 !important;
 }
 
 .size-medium {
@@ -92,6 +94,8 @@
   // 테마 Primary 색상 적용
   background: var(--theme-button-primary);
   color: var(--theme-button-primary-text);
+  box-sizing: border-box !important; // 일관된 높이 계산
+  border: 1px solid transparent !important; // outlined와 동일한 border 공간 확보
 
   &:hover {
     background: var(--theme-button-primary);
@@ -100,13 +104,17 @@
 }
 
 .variant-outlined {
-  // 테마 Secondary 색상 적용
-  border-color: var(--theme-button-secondary);
-  color: var(--theme-button-secondary-text);
-  background: var(--theme-button-secondary);
+  // 흰색 배경에 테두리 스타일 (초기화 버튼 등)
+  background: $color-background-paper !important; // 흰색 배경
+  border: 1px solid $color-border-default !important;
+  color: $color-text-secondary !important;
+  box-sizing: border-box !important; // border를 height에 포함
+  height: auto !important; // Material-UI 기본 height 제거
 
   &:hover {
-    opacity: 0.8;
+    background: $color-background-hover !important;
+    border-color: $color-border-focus !important;
+    color: $color-text-primary !important;
   }
 }
 

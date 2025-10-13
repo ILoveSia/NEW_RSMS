@@ -232,7 +232,7 @@
       transition: all 0.3s ease;
 
       &:hover {
-        background: lighten($color-background-default, 2%);
+        background: color.adjust($color-background-default, $lightness: 2%);
       }
 
       &.Mui-focused {

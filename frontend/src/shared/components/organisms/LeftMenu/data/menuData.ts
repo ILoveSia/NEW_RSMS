@@ -40,7 +40,7 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'responsibilitymgmt',
         title: '책무관리',
-        path: '/app/resps/responsibilitymgmt',
+        path: '/app/resps/responsibilitydocmgmt',
         permission: 'auth'
       },
       {
