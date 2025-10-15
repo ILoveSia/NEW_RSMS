@@ -8,9 +8,9 @@
 -- 참고:
 --   - ledger_order_id는 년도(4자리) + 순번(4자리) 형식 (예: 20250001, 20250002)
 --   - 년도별로 순번은 0001부터 시작하여 자동 증가
---   - 생성 시 기본 상태는 '진행중'
+--   - 생성 시 기본 상태는 '신규'
 --   - 상태값은 common_code_details의 'LDGR_ORDR_ST' 그룹에서 관리
---     예: 'PROG' (진행중), 'CLSD' (종료)
+--     예: 'NEW' (신규), 'PROG' (진행중), 'CLSD' (종료)
 -- =====================================================
 
 -- DROP TABLE IF EXISTS rsms.ledger_order CASCADE;
@@ -55,7 +55,7 @@ CREATE TABLE rsms.ledger_order (
 
   -- 기본 정보
   ledger_order_title VARCHAR(200) NULL,                -- 원장 제목
-  ledger_order_status VARCHAR(10) NOT NULL DEFAULT 'PROG', -- 원장상태 (PROG: 진행중, CLSD: 종료)
+  ledger_order_status VARCHAR(10) NOT NULL DEFAULT 'NEW', -- 원장상태 (NEW: 신규, PROG: 진행중, CLSD: 종료)
   ledger_order_remarks VARCHAR(500) NULL,              -- 비고
 
   -- 감사 정보
@@ -65,7 +65,7 @@ CREATE TABLE rsms.ledger_order (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 수정일시
 
   -- 제약조건
-  CONSTRAINT chk_ledger_order_status CHECK (ledger_order_status IN ('PROG', 'CLSD')),
+  CONSTRAINT chk_ledger_order_status CHECK (ledger_order_status IN ('NEW', 'PROG', 'CLSD')),
   CONSTRAINT chk_ledger_order_id_format CHECK (
     ledger_order_id ~ '^[0-9]{8}$' AND LENGTH(ledger_order_id) = 8
   )
@@ -79,7 +79,7 @@ CREATE INDEX idx_ledger_order_title ON rsms.ledger_order(ledger_order_title);
 COMMENT ON TABLE rsms.ledger_order IS '원장차수관리 테이블 - 원장차수 정보를 관리';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_id IS '원장차수ID (년도4자리+순번4자리, 예: 20250001, 자동생성)';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_title IS '원장 제목';
-COMMENT ON COLUMN rsms.ledger_order.ledger_order_status IS '원장상태 (PROG: 진행중, CLSD: 종료, common_code_details의 LDGR_ORDR_ST 그룹 참조)';
+COMMENT ON COLUMN rsms.ledger_order.ledger_order_status IS '원장상태 (NEW: 신규, PROG: 진행중, CLSD: 종료, common_code_details의 LDGR_ORDR_ST 그룹 참조)';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_remarks IS '비고';
 COMMENT ON COLUMN rsms.ledger_order.created_by IS '생성자';
 COMMENT ON COLUMN rsms.ledger_order.created_at IS '생성일시';
@@ -90,8 +90,8 @@ COMMENT ON COLUMN rsms.ledger_order.updated_at IS '수정일시';
 -- 참고: 상태코드는 common_code_details의 LDGR_ORDR_ST 그룹에 미리 등록되어 있어야 함
 /*
 INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_status, ledger_order_remarks, created_by, updated_by) VALUES
-  ('2025년도 1차 원장', 'PROG', '2025년 1분기 원장차수', 'SYSTEM', 'SYSTEM'),
-  ('2025년도 2차 원장', 'PROG', '2025년 2분기 원장차수', 'SYSTEM', 'SYSTEM'),
+  ('2025년도 1차 원장', 'NEW', '2025년 1분기 원장차수 (신규)', 'SYSTEM', 'SYSTEM'),
+  ('2025년도 2차 원장', 'PROG', '2025년 2분기 원장차수 (진행중)', 'SYSTEM', 'SYSTEM'),
   ('2024년도 4차 원장', 'CLSD', '2024년 4분기 원장차수 (종료)', 'SYSTEM', 'SYSTEM');
 */
 

@@ -29,7 +29,7 @@ export interface EndAdornment {
 // 필터 필드 타입 정의
 export interface FilterField {
   key: string;
-  type: 'text' | 'select' | 'date';
+  type: 'text' | 'select' | 'date' | 'year';
   label: string;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -148,6 +148,27 @@ const BaseSearchFilter: React.FC<BaseSearchFilterProps> = React.memo(({
             disabled={loading}
             min={field.min}
             max={field.max}
+          />
+        ) : field.type === 'year' ? (
+          <TextField
+            fullWidth
+            label={field.label}
+            placeholder={field.placeholder}
+            value={values[field.key] || ''}
+            onChange={handleInputChange(field.key)}
+            onKeyPress={handleKeyPress}
+            disabled={loading}
+            size="small"
+            variant="outlined"
+            type="number"
+            inputProps={{
+              min: field.min || '1900',
+              max: field.max || '2100',
+              step: 1
+            }}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
         ) : (
           <FormControl fullWidth size="small">

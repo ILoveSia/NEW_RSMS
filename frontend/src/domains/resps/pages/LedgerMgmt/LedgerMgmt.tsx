@@ -105,21 +105,6 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
     toast.info('새 원장차수를 등록해주세요.', { autoClose: 2000 });
   }, []);
 
-  const handleExcelDownload = useCallback(async () => {
-    await handlers.excel.execute(
-      async () => {
-        // TODO: 실제 엑셀 다운로드 API 호출
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-        console.log('엑셀 다운로드 완료');
-      },
-      {
-        loading: '엑셀 파일을 생성 중입니다...',
-        success: '엑셀 파일이 다운로드되었습니다.',
-        error: '엑셀 다운로드에 실패했습니다.'
-      }
-    );
-  }, [handlers.excel]);
-
   const handleDeleteLedgers = useCallback(async () => {
     if (selectedLedgers.length === 0) {
       toast.warning('삭제할 원장차수를 선택해주세요.');
@@ -172,7 +157,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
         const newLedger: LedgerOrder = {
           ledgerOrderId: Date.now().toString().slice(-8),
           ledgerOrderTitle: formData.ledgerOrderTitle || '',
-          ledgerOrderStatus: formData.ledgerOrderStatus || 'PROG',
+          ledgerOrderStatus: formData.ledgerOrderStatus || 'NEW',
           ledgerOrderRemarks: formData.ledgerOrderRemarks,
           createdBy: '현재사용자',
           createdAt: new Date().toISOString(),
@@ -269,12 +254,14 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
   // Memoized computed values (성능 최적화)
   const statistics = useMemo(() => {
     const total = pagination.total;
+    const newCount = ledgers.filter(l => l.ledgerOrderStatus === 'NEW').length;
     const activeCount = ledgers.filter(l => l.ledgerOrderStatus === 'PROG').length;
     const closedCount = ledgers.filter(l => l.ledgerOrderStatus === 'CLSD').length;
     const systemUptime = 98.5; // TODO: 실제 시스템 가동률 API 연동
 
     return {
       total,
+      newCount,
       activeCount,
       closedCount,
       systemUptime
@@ -314,41 +301,30 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'searchKeyword',
-      type: 'text',
-      label: '검색어',
-      placeholder: '원장차수ID, 제목, 비고 검색',
-      gridSize: { xs: 12, sm: 6, md: 4 }
-    },
-    {
       key: 'ledgerOrderStatus',
       type: 'select',
       label: '원장상태',
       options: [
         { value: '', label: '전체' },
+        { value: 'NEW', label: '신규' },
         { value: 'PROG', label: '진행중' },
         { value: 'CLSD', label: '종료' }
       ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      gridSize: { xs: 12, sm: 4, md: 2 }
     },
     {
       key: 'year',
-      type: 'text',
+      type: 'year',
       label: '년도',
       placeholder: 'YYYY',
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      min: '2020',
+      max: '2030',
+      gridSize: { xs: 12, sm: 4, md: 2 }
     }
   ], []);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
-    {
-      key: 'excel',
-      type: 'excel',
-      onClick: handleExcelDownload,
-      disabled: loadingStates.excel,
-      loading: loadingStates.excel
-    },
     {
       key: 'add',
       type: 'add',
@@ -362,10 +338,16 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
       loading: loadingStates.delete,
       confirmationRequired: true
     }
-  ], [handleExcelDownload, handleAddLedger, handleDeleteLedgers, selectedLedgers.length, loadingStates]);
+  ], [handleAddLedger, handleDeleteLedgers, selectedLedgers.length, loadingStates.delete]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
+    {
+      label: '신규',
+      value: statistics.newCount,
+      color: 'primary',
+      icon: <SecurityIcon />
+    },
     {
       label: '진행중',
       value: statistics.activeCount,
@@ -387,8 +369,8 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
       {
         ledgerOrderId: '20250001',
         ledgerOrderTitle: '2025년도 1차 원장',
-        ledgerOrderStatus: 'PROG',
-        ledgerOrderRemarks: '2025년 1분기 원장차수',
+        ledgerOrderStatus: 'NEW',
+        ledgerOrderRemarks: '2025년 1분기 원장차수 (신규)',
         createdBy: 'SYSTEM',
         createdAt: '2025-01-01T09:00:00',
         updatedBy: 'SYSTEM',
@@ -398,7 +380,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
         ledgerOrderId: '20250002',
         ledgerOrderTitle: '2025년도 2차 원장',
         ledgerOrderStatus: 'PROG',
-        ledgerOrderRemarks: '2025년 2분기 원장차수',
+        ledgerOrderRemarks: '2025년 2분기 원장차수 (진행중)',
         createdBy: 'SYSTEM',
         createdAt: '2025-04-01T09:00:00',
         updatedBy: 'SYSTEM',

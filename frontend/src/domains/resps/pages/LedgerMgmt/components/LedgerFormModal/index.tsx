@@ -38,7 +38,7 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<CreateLedgerOrderDto>({
     ledgerOrderTitle: '',
-    ledgerOrderStatus: 'PROG',
+    ledgerOrderStatus: 'NEW',
     ledgerOrderRemarks: ''
   });
 
@@ -48,7 +48,7 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
     if (mode === 'create') {
       setFormData({
         ledgerOrderTitle: '',
-        ledgerOrderStatus: 'PROG',
+        ledgerOrderStatus: 'NEW',
         ledgerOrderRemarks: ''
       });
       setIsEditing(true);
@@ -152,12 +152,13 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
           <TextField
             select
             label="원장상태"
-            value={formData.ledgerOrderStatus || 'PROG'}
+            value={formData.ledgerOrderStatus || 'NEW'}
             onChange={(e) => handleChange('ledgerOrderStatus', e.target.value)}
             fullWidth
             disabled={isReadOnly}
             variant="outlined"
           >
+            <MenuItem value="NEW">신규</MenuItem>
             <MenuItem value="PROG">진행중</MenuItem>
             <MenuItem value="CLSD">종료</MenuItem>
           </TextField>

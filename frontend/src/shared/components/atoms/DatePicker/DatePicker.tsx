@@ -12,11 +12,13 @@ export interface DatePickerProps extends Omit<TextFieldProps, 'value' | 'onChang
   min?: string;
   max?: string;
   className?: string;
+  dateType?: 'date' | 'month' | 'year';
 }
 
 /**
  * 공통 DatePicker 컴포넌트
- * HTML5 date input을 Material-UI TextField로 래핑하여 일관된 스타일 제공
+ * HTML5 date/month input을 Material-UI TextField로 래핑하여 일관된 스타일 제공
+ * dateType: 'date' (기본) - 년/월/일, 'month' - 년/월, 'year' - 년도만 (현재는 month 사용)
  */
 const DatePicker: React.FC<DatePickerProps> = ({
   value = '',
@@ -28,6 +30,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   min,
   max,
   className,
+  dateType = 'date',
   size = 'small',
   variant = 'outlined',
   fullWidth = true,
@@ -39,9 +42,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
     onChange?.(newValue);
   }, [onChange]);
 
+  // dateType에 따라 input type 결정
+  // 'year'는 HTML5에 없으므로 'month'를 사용하되, format을 조정
+  const inputType = dateType === 'year' ? 'month' : dateType;
+
   return (
     <TextField
-      type="date"
+      type={inputType}
       value={value}
       onChange={handleChange}
       placeholder={placeholder}

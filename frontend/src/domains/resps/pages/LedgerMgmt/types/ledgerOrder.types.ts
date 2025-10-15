@@ -9,7 +9,7 @@
 export interface LedgerOrder {
   ledgerOrderId: string;          // 원장차수ID (년도4자리+순번4자리, 예: 20250001)
   ledgerOrderTitle?: string;      // 원장 제목
-  ledgerOrderStatus: string;      // 원장상태 (PROG: 진행중, CLSD: 종료)
+  ledgerOrderStatus: string;      // 원장상태 (NEW: 신규, PROG: 진행중, CLSD: 종료)
   ledgerOrderRemarks?: string;    // 비고
   createdBy: string;              // 생성자
   createdAt: string;              // 생성일시
@@ -61,6 +61,7 @@ export interface LedgerOrderListResponse {
  * 원장차수 상태 코드
  */
 export const LEDGER_ORDER_STATUS = {
+  NEW: '신규',
   PROG: '진행중',
   CLSD: '종료'
 } as const;
