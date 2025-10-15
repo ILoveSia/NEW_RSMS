@@ -1,0 +1,112 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.dialog {
+  :global(.MuiDialog-paper) {
+    border-radius: $border-radius-lg;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.dialogTitle {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+  padding: $spacing-md $spacing-lg;
+}
+
+.dialogContent {
+  padding: $spacing-lg;
+  background: #fafbfc;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.dialogActions {
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+  justify-content: center;
+  gap: $spacing-sm;
+}
+
+.accordion {
+  margin-bottom: $spacing-sm !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: $border-radius-md !important;
+  box-shadow: none !important;
+
+  &:before {
+    display: none !important;
+  }
+
+  &.Mui-expanded {
+    margin: 0 0 $spacing-sm 0 !important;
+  }
+}
+
+.accordionSummary {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid #e2e8f0;
+  min-height: 48px !important;
+
+  &.Mui-expanded {
+    min-height: 48px !important;
+  }
+
+  :global(.MuiAccordionSummary-content) {
+    margin: 12px 0 !important;
+  }
+}
+
+.accordionDetails {
+  padding: $spacing-md;
+  background: white;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.miniTable {
+  margin-top: $spacing-sm;
+
+  :global(.MuiTableCell-head) {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    font-weight: 600;
+    color: #334e68;
+    font-size: 0.875rem;
+    padding: 8px;
+  }
+
+  :global(.MuiTableCell-body) {
+    padding: 8px;
+    font-size: 0.875rem;
+  }
+}
+
+// 반응형
+@include responsive-breakpoint($breakpoint-tablet) {
+  .dialogContent {
+    padding: $spacing-md;
+  }
+
+  .dialogActions {
+    padding: $spacing-sm $spacing-md;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .dialogTitle {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .dialogContent {
+    padding: $spacing-sm;
+  }
+
+  .accordionDetails {
+    padding: $spacing-sm;
+  }
+}

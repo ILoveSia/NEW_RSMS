@@ -20,6 +20,12 @@ export const MENU_DATA: MenuItem[] = [
     permission: 'auth',
     children: [
       {
+        id: 'ledgermgmt',
+        title: '원장관리',
+        path: '/app/resps/ledgermgmt',
+        permission: 'auth'
+      },
+      {
         id: 'positionmgmt',
         title: '직책관리',
         path: '/app/resps/positionmgmt',
@@ -40,7 +46,7 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'responsibilitymgmt',
         title: '책무관리',
-        path: '/app/resps/responsibilitydocmgmt',
+        path: '/app/resps/responsibilitymgmt',
         permission: 'auth'
       },
       {

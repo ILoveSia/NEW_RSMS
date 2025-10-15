@@ -56,8 +56,6 @@ CREATE TABLE rsms.ledger_order (
   -- 기본 정보
   ledger_order_title VARCHAR(200) NULL,                -- 원장 제목
   ledger_order_status VARCHAR(10) NOT NULL DEFAULT 'PROG', -- 원장상태 (PROG: 진행중, CLSD: 종료)
-  ledger_order_start_dt DATE NOT NULL,                 -- 원장차수 시작일
-  ledger_order_end_dt DATE NOT NULL,                   -- 원장차수 종료일
   ledger_order_remarks VARCHAR(500) NULL,              -- 비고
 
   -- 감사 정보
@@ -70,29 +68,18 @@ CREATE TABLE rsms.ledger_order (
   CONSTRAINT chk_ledger_order_status CHECK (ledger_order_status IN ('PROG', 'CLSD')),
   CONSTRAINT chk_ledger_order_id_format CHECK (
     ledger_order_id ~ '^[0-9]{8}$' AND LENGTH(ledger_order_id) = 8
-  ),
-  CONSTRAINT chk_ledger_order_date_range CHECK (
-    ledger_order_end_dt >= ledger_order_start_dt
   )
 );
 
 -- 인덱스 생성
 CREATE INDEX idx_ledger_order_status ON rsms.ledger_order(ledger_order_status);
-CREATE INDEX idx_ledger_order_start_dt ON rsms.ledger_order(ledger_order_start_dt);
-CREATE INDEX idx_ledger_order_end_dt ON rsms.ledger_order(ledger_order_end_dt);
 CREATE INDEX idx_ledger_order_title ON rsms.ledger_order(ledger_order_title);
-
--- 복합 인덱스 (자주 조회되는 조합)
-CREATE INDEX idx_ledger_order_status_start_dt ON rsms.ledger_order(ledger_order_status, ledger_order_start_dt);
-CREATE INDEX idx_ledger_order_date_range ON rsms.ledger_order(ledger_order_start_dt, ledger_order_end_dt);
 
 -- 코멘트 추가
 COMMENT ON TABLE rsms.ledger_order IS '원장차수관리 테이블 - 원장차수 정보를 관리';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_id IS '원장차수ID (년도4자리+순번4자리, 예: 20250001, 자동생성)';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_title IS '원장 제목';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_status IS '원장상태 (PROG: 진행중, CLSD: 종료, common_code_details의 LDGR_ORDR_ST 그룹 참조)';
-COMMENT ON COLUMN rsms.ledger_order.ledger_order_start_dt IS '원장차수 시작일';
-COMMENT ON COLUMN rsms.ledger_order.ledger_order_end_dt IS '원장차수 종료일';
 COMMENT ON COLUMN rsms.ledger_order.ledger_order_remarks IS '비고';
 COMMENT ON COLUMN rsms.ledger_order.created_by IS '생성자';
 COMMENT ON COLUMN rsms.ledger_order.created_at IS '생성일시';
@@ -102,10 +89,10 @@ COMMENT ON COLUMN rsms.ledger_order.updated_at IS '수정일시';
 -- 샘플 데이터 (선택사항 - 필요시 주석 해제)
 -- 참고: 상태코드는 common_code_details의 LDGR_ORDR_ST 그룹에 미리 등록되어 있어야 함
 /*
-INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_status, ledger_order_start_dt, ledger_order_end_dt, ledger_order_remarks, created_by, updated_by) VALUES
-  ('2025년도 1차 원장', 'PROG', '2025-01-01', '2025-03-31', '2025년 1분기 원장차수', 'SYSTEM', 'SYSTEM'),
-  ('2025년도 2차 원장', 'PROG', '2025-04-01', '2025-06-30', '2025년 2분기 원장차수', 'SYSTEM', 'SYSTEM'),
-  ('2024년도 4차 원장', 'CLSD', '2024-10-01', '2024-12-31', '2024년 4분기 원장차수 (종료)', 'SYSTEM', 'SYSTEM');
+INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_status, ledger_order_remarks, created_by, updated_by) VALUES
+  ('2025년도 1차 원장', 'PROG', '2025년 1분기 원장차수', 'SYSTEM', 'SYSTEM'),
+  ('2025년도 2차 원장', 'PROG', '2025년 2분기 원장차수', 'SYSTEM', 'SYSTEM'),
+  ('2024년도 4차 원장', 'CLSD', '2024년 4분기 원장차수 (종료)', 'SYSTEM', 'SYSTEM');
 */
 
 -- 트리거: updated_at 자동 갱신
@@ -124,13 +111,9 @@ CREATE TRIGGER trg_ledger_order_updated_at
 
 -- 사용 예시 주석
 -- INSERT 시 ledger_order_id는 자동 생성됨:
--- INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_start_dt, ledger_order_end_dt, created_by, updated_by)
--- VALUES ('2025년도 3차 원장', '2025-07-01', '2025-09-30', 'ADMIN', 'ADMIN');
+-- INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_remarks, created_by, updated_by)
+-- VALUES ('2025년도 3차 원장', '2025년 3분기 원장차수', 'ADMIN', 'ADMIN');
 --
 -- 년도가 바뀌면 자동으로 순번이 0001부터 재시작됨:
 -- 2024년: 20240001, 20240002, ...
 -- 2025년: 20250001, 20250002, ...
---
--- 날짜 연산 예시:
--- SELECT ledger_order_end_dt - ledger_order_start_dt AS days_diff FROM rsms.ledger_order;
--- SELECT * FROM rsms.ledger_order WHERE ledger_order_start_dt BETWEEN '2025-01-01' AND '2025-12-31';

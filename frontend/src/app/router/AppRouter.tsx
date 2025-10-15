@@ -11,6 +11,7 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 // Lazy-loaded pages for better performance
 const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage/LoginPage').then(module => ({ default: module.LoginPage })));
 const ResponsibilityDocMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityDocMgmt'));
+const LedgerMgmt = React.lazy(() => import('@/domains/resps/pages/LedgerMgmt/LedgerMgmt'));
 const PositionMgmt = React.lazy(() => import('@/domains/resps/pages/PositionMgmt/PositionMgmt'));
 const PositionDualMgmt = React.lazy(() => import('@/domains/resps/pages/PositionDualMgmt/PositionDualMgmt'));
 const DeliberativeMgmt = React.lazy(() => import('@/domains/resps/pages/DeliberativeMgmt/DeliberativeMgmt'));
@@ -19,6 +20,7 @@ const OfficerInfoMgmt = React.lazy(() => import('@/domains/resps/pages/OfficerIn
 const DeptOpManualsMgmt = React.lazy(() => import('@/domains/resps/pages/DeptOpManualsMgmt/DeptOpManualsMgmt'));
 const CeoMgmtDutySearch = React.lazy(() => import('@/domains/resps/pages/CeoMgmtDutySearch/CeoMgmtDutySearch'));
 const RoleHistory = React.lazy(() => import('@/domains/resps/pages/RoleHistory/RoleHistory'));
+const ResponsibilityMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityMgmt/ResponsibilityMgmt'));
 const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
 
 // Activities (책무구조도 관리 활동) 도메인
@@ -205,30 +207,19 @@ const AppRouter: React.FC = () => {
               <Suspense fallback={<LoadingSpinner text="책무 관리 로딩 중..." />}>
                 <Routes>
                   {/* 원장관리 */}
-                  <Route path="ledger-orders" element={
-                    <TemporaryPage
-                      title="원장차수관리"
-                      description="원장차수를 관리하는 페이지입니다. 구현 예정입니다."
-                    />
-                  } />
-                  <Route path="ledger-orders/:id" element={
+                  <Route path="ledgermgmt" element={<LedgerMgmt />} />
+                  <Route path="ledgermgmt/:id" element={
                     <TemporaryPage
                       title="원장차수 상세"
                       description="원장차수의 상세 정보와 관련 책무들을 관리하는 페이지입니다."
                     />
                   } />
-                  <Route path="ledger-orders/create" element={
-                    <TemporaryPage
-                      title="원장차수 생성"
-                      description="새로운 원장차수를 생성하는 페이지입니다."
-                    />
-                  } />
-                  <Route path="ledger-orders/:id/edit" element={
-                    <TemporaryPage
-                      title="원장차수 편집"
-                      description="기존 원장차수 정보를 수정하는 페이지입니다."
-                    />
-                  } />
+
+                  {/* 기존 URL 호환성 - 원장관리 */}
+                  <Route path="ledger-orders" element={<Navigate to="/app/resps/ledgermgmt" replace />} />
+                  <Route path="ledger-orders/:id" element={<Navigate to="/app/resps/ledgermgmt" replace />} />
+                  <Route path="ledger-orders/create" element={<Navigate to="/app/resps/ledgermgmt" replace />} />
+                  <Route path="ledger-orders/:id/edit" element={<Navigate to="/app/resps/ledgermgmt" replace />} />
 
                   {/* 직책관리 */}
                   <Route path="positionmgmt" element={<PositionMgmt />} />
@@ -294,12 +285,7 @@ const AppRouter: React.FC = () => {
                   } />
 
                   {/* 책무관리 */}
-                  <Route path="responsibilitymgmt" element={
-                    <TemporaryPage
-                      title="책무관리"
-                      description="책무를 관리하는 페이지입니다. 구현 예정입니다."
-                    />
-                  } />
+                  <Route path="responsibilitymgmt" element={<ResponsibilityMgmt />} />
                   <Route path="responsibilitymgmt/:id" element={
                     <TemporaryPage
                       title="책무 상세"

@@ -23,6 +23,7 @@ CREATE TABLE rsms.positions (
 
   -- 기본 정보
   positions_cd VARCHAR(20) NOT NULL,                   -- 직책코드 (common_code_details의 RSBT_RSOF_DVCD 그룹 참조)
+  positions_name VARCHAR(200) NOT NULL,                -- 직책명
   hq_code VARCHAR(20) NOT NULL,                        -- 본부코드 (common_code_details의 DPRM_CD 그룹 참조)
 
   -- 만료 정보
@@ -58,6 +59,7 @@ CREATE TABLE rsms.positions (
 -- 인덱스 생성
 CREATE INDEX idx_positions_ledger_order_id ON rsms.positions(ledger_order_id);
 CREATE INDEX idx_positions_positions_cd ON rsms.positions(positions_cd);
+CREATE INDEX idx_positions_positions_name ON rsms.positions(positions_name);
 CREATE INDEX idx_positions_hq_code ON rsms.positions(hq_code);
 CREATE INDEX idx_positions_expiration_date ON rsms.positions(expiration_date);
 CREATE INDEX idx_positions_positions_status ON rsms.positions(positions_status);
@@ -75,6 +77,7 @@ COMMENT ON TABLE rsms.positions IS '직책 테이블 - 원장차수별 직책 �
 COMMENT ON COLUMN rsms.positions.positions_id IS '직책ID (PK, 대리키, 자동증가)';
 COMMENT ON COLUMN rsms.positions.ledger_order_id IS '원장차수ID (FK → ledger_order)';
 COMMENT ON COLUMN rsms.positions.positions_cd IS '직책코드 (common_code_details의 RSBT_RSOF_DVCD 그룹 참조, 애플리케이션 레벨 검증)';
+COMMENT ON COLUMN rsms.positions.positions_name IS '직책명';
 COMMENT ON COLUMN rsms.positions.hq_code IS '본부코드 (common_code_details의 DPRM_CD 그룹 참조, 애플리케이션 레벨 검증)';
 COMMENT ON COLUMN rsms.positions.expiration_date IS '만료일 (기본값: 9999-12-31)';
 COMMENT ON COLUMN rsms.positions.positions_status IS '상태 (나중에 사용 예정)';

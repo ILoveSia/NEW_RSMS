@@ -27,7 +27,7 @@ CREATE TABLE rsms.position_concurrents (
   positions_name VARCHAR(200) NULL,                    -- 직책명 (denormalization for performance)
   is_representative VARCHAR(1) NOT NULL DEFAULT 'N',   -- 대표여부 ('Y', 'N')
   org_code VARCHAR(20) NULL,                           -- 조직코드 (organizations의 org_code 참조)
-  org_name VARCHAR(200) NULL,                          -- 조직명 (denormalization for performance)
+  org_name VARCHAR(100) NULL,                          -- 조직명 (denormalization for performance)
 
   -- 상태 정보
   is_active VARCHAR(1) NOT NULL DEFAULT 'Y',           -- 사용여부 ('Y', 'N')
