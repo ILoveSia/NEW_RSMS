@@ -43,7 +43,13 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
-    cellStyle: { fontWeight: '500' }
+    cellStyle: {
+      fontWeight: '500',
+      color: '#1976d2',
+      cursor: 'pointer',
+      textDecoration: 'underline'
+    },
+    cellClass: 'clickable-cell'
   },
   {
     headerName: '원장상태',

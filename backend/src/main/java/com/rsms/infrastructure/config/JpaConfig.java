@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = "com.rsms.domain.*.repository")
+@EnableJpaRepositories(basePackages = "com.rsms.domain")
 public class JpaConfig {
 }

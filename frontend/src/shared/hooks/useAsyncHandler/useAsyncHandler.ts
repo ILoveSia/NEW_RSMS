@@ -101,7 +101,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
 
       // 로딩 토스트가 있으면 취소 메시지로 업데이트
       if (currentToastRef.current) {
-        toast.update(currentToastRef.current, 'info', '작업이 취소되었습니다.');
+        toast.update(currentToastRef.current, 'info', '작업이 취소되었습니다.', { duration: 3000 });
         currentToastRef.current = null;
       }
 
@@ -210,7 +210,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
 
       // 성공 처리
       if (showToast && toastId && !abortControllerRef.current?.signal.aborted) {
-        toast.update(toastId, 'success', messages.success);
+        toast.update(toastId, 'success', messages.success, { duration: 3000 });
       }
 
       if (key && process.env.NODE_ENV === 'development') {
@@ -225,7 +225,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
       // 작업이 취소된 경우
       if (err.name === 'AbortError' || err.message.includes('취소')) {
         if (showToast && toastId) {
-          toast.update(toastId, 'info', messages.cancel || '작업이 취소되었습니다.');
+          toast.update(toastId, 'info', messages.cancel || '작업이 취소되었습니다.', { duration: 3000 });
         }
         return null;
       }
@@ -235,7 +235,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
 
       if (showToast && toastId) {
         const errorMessage = err.message || messages.error;
-        toast.update(toastId, 'error', errorMessage);
+        toast.update(toastId, 'error', errorMessage, { duration: 5000 });
       }
 
       if (logError) {

@@ -10,12 +10,28 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  MenuItem,
   Box,
-  Typography
+  Typography,
+  MenuItem
 } from '@mui/material';
 import { Button } from '@/shared/components/atoms/Button';
-import type { LedgerOrder, CreateLedgerOrderDto, UpdateLedgerOrderDto, LEDGER_ORDER_STATUS } from '../../types/ledgerOrder.types';
+import type { LedgerOrder, CreateLedgerOrderDto, UpdateLedgerOrderDto } from '../../types/ledgerOrder.types';
+
+// 한글 글자수 계산 유틸리티 (한글 1자 = 1자)
+const getKoreanLength = (str: string): number => {
+  return str.length;
+};
+
+// 최대 글자수 제한
+const MAX_TITLE_LENGTH = 50;
+const MAX_REMARKS_LENGTH = 100;
+
+// 원장상태 옵션
+const LEDGER_STATUS_OPTIONS = [
+  { value: 'NEW', label: '신규' },
+  { value: 'PROG', label: '진행중' },
+  { value: 'CLSD', label: '종료' }
+];
 
 interface LedgerFormModalProps {
   open: boolean;
@@ -43,6 +59,10 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({
+    title: '',
+    remarks: ''
+  });
 
   useEffect(() => {
     if (mode === 'create') {
@@ -52,6 +72,7 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
         ledgerOrderRemarks: ''
       });
       setIsEditing(true);
+      setErrors({ title: '', remarks: '' });
     } else if (ledger) {
       setFormData({
         ledgerOrderTitle: ledger.ledgerOrderTitle,
@@ -59,10 +80,28 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
         ledgerOrderRemarks: ledger.ledgerOrderRemarks
       });
       setIsEditing(false);
+      setErrors({ title: '', remarks: '' });
     }
   }, [mode, ledger]);
 
   const handleChange = useCallback((field: keyof CreateLedgerOrderDto, value: string) => {
+    // 글자수 체크
+    if (field === 'ledgerOrderTitle') {
+      if (getKoreanLength(value) > MAX_TITLE_LENGTH) {
+        setErrors(prev => ({ ...prev, title: `원장 제목은 ${MAX_TITLE_LENGTH}자까지 입력 가능합니다.` }));
+        return;
+      } else {
+        setErrors(prev => ({ ...prev, title: '' }));
+      }
+    } else if (field === 'ledgerOrderRemarks') {
+      if (getKoreanLength(value) > MAX_REMARKS_LENGTH) {
+        setErrors(prev => ({ ...prev, remarks: `비고는 ${MAX_REMARKS_LENGTH}자까지 입력 가능합니다.` }));
+        return;
+      } else {
+        setErrors(prev => ({ ...prev, remarks: '' }));
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -70,6 +109,16 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
   }, []);
 
   const handleSubmit = useCallback(async () => {
+    // 제출 전 최종 검증
+    if (!formData.ledgerOrderTitle?.trim()) {
+      setErrors(prev => ({ ...prev, title: '원장 제목을 입력해주세요.' }));
+      return;
+    }
+
+    if (errors.title || errors.remarks) {
+      return;
+    }
+
     if (mode === 'create') {
       await onSave(formData);
     } else if (ledger && isEditing) {
@@ -78,7 +127,7 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
         ledgerOrderId: ledger.ledgerOrderId
       });
     }
-  }, [mode, formData, ledger, isEditing, onSave, onUpdate]);
+  }, [mode, formData, ledger, isEditing, onSave, onUpdate, errors]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -104,12 +153,12 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 2,
-          minHeight: '400px'
+          borderRadius: 1,
+          minHeight: '350px'
         }
       }}
     >
@@ -138,65 +187,85 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
           )}
 
           {/* 원장 제목 */}
-          <TextField
-            label="원장 제목"
-            value={formData.ledgerOrderTitle || ''}
-            onChange={(e) => handleChange('ledgerOrderTitle', e.target.value)}
-            fullWidth
-            disabled={isReadOnly}
-            variant="outlined"
-            placeholder="원장 제목을 입력하세요"
-          />
+          <Box>
+            <TextField
+              label="원장 제목"
+              value={formData.ledgerOrderTitle || ''}
+              onChange={(e) => handleChange('ledgerOrderTitle', e.target.value)}
+              fullWidth
+              disabled={isReadOnly}
+              variant="outlined"
+              placeholder="원장 제목을 입력하세요 (최대 50자)"
+              required
+              error={!!errors.title}
+              helperText={errors.title}
+              inputProps={{
+                maxLength: MAX_TITLE_LENGTH
+              }}
+            />
+          </Box>
 
-          {/* 원장상태 */}
-          <TextField
-            select
-            label="원장상태"
-            value={formData.ledgerOrderStatus || 'NEW'}
-            onChange={(e) => handleChange('ledgerOrderStatus', e.target.value)}
-            fullWidth
-            disabled={isReadOnly}
-            variant="outlined"
-          >
-            <MenuItem value="NEW">신규</MenuItem>
-            <MenuItem value="PROG">진행중</MenuItem>
-            <MenuItem value="CLSD">종료</MenuItem>
-          </TextField>
+          {/* 원장상태 (상세/수정 모드일 때만 표시) */}
+          {mode === 'detail' && (
+            <TextField
+              label="원장상태"
+              value={formData.ledgerOrderStatus || ''}
+              onChange={(e) => handleChange('ledgerOrderStatus', e.target.value)}
+              fullWidth
+              disabled={isReadOnly}
+              variant="outlined"
+              select
+              required
+            >
+              {LEDGER_STATUS_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
 
           {/* 비고 */}
-          <TextField
-            label="비고"
-            value={formData.ledgerOrderRemarks || ''}
-            onChange={(e) => handleChange('ledgerOrderRemarks', e.target.value)}
-            fullWidth
-            disabled={isReadOnly}
-            variant="outlined"
-            multiline
-            rows={4}
-            placeholder="비고를 입력하세요"
-          />
+          <Box>
+            <TextField
+              label="비고"
+              value={formData.ledgerOrderRemarks || ''}
+              onChange={(e) => handleChange('ledgerOrderRemarks', e.target.value)}
+              fullWidth
+              disabled={isReadOnly}
+              variant="outlined"
+              multiline
+              rows={4}
+              placeholder="비고를 입력하세요 (최대 100자)"
+              error={!!errors.remarks}
+              helperText={errors.remarks}
+              inputProps={{
+                maxLength: MAX_REMARKS_LENGTH
+              }}
+            />
+          </Box>
 
           {/* 메타 정보 (상세보기일 때만 표시) */}
           {mode === 'detail' && ledger && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1, pt: 2, borderTop: '1px solid rgba(0,0,0,0.1)' }}>
               <Typography variant="body2" color="text.secondary">
-                생성일시: {new Date(ledger.createdAt).toLocaleString('ko-KR')}
+                <strong>생성일시:</strong> {new Date(ledger.createdAt).toLocaleString('ko-KR')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                생성자: {ledger.createdBy}
+                <strong>생성자:</strong> {ledger.createdBy}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                수정일시: {new Date(ledger.updatedAt).toLocaleString('ko-KR')}
+                <strong>수정일시:</strong> {new Date(ledger.updatedAt).toLocaleString('ko-KR')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                수정자: {ledger.updatedBy}
+                <strong>수정자:</strong> {ledger.updatedBy}
               </Typography>
             </Box>
           )}
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, gap: 1 }}>
+      <DialogActions sx={{ p: 1, gap: 1 }}>
         {mode === 'create' ? (
           <>
             <Button variant="outlined" onClick={onClose} disabled={loading}>

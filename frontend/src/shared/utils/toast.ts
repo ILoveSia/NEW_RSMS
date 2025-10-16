@@ -147,6 +147,7 @@ export const updateToast = (
     autoClose: options?.duration || durations[type],
     closeOnClick: true,
     closeButton: true,
+    isLoading: false,
     className: `toast-${type}`,
     ...options,
   });

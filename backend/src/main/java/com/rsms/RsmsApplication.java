@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -21,7 +20,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling     // 스케줄링 활성화 (세션 정리 등)
 @EnableAsync          // 비동기 처리 활성화 (Virtual Threads 지원)
 @EntityScan(basePackages = "com.rsms.domain")
-@EnableJpaRepositories(basePackages = "com.rsms.domain")
 public class RsmsApplication {
 
     public static void main(String[] args) {
