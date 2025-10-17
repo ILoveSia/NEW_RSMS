@@ -8999,3 +8999,1012 @@ where
 2025-10-16 15:55:08.350 TRACE [http-nio-8081-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
 , createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.333816386)]
 2025-10-16 15:55:08.351 DEBUG [http-nio-8081-exec-10] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:00:03.009 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL update
+2025-10-16 16:00:03.009 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL statement [DELETE FROM SPRING_SESSION
+WHERE EXPIRY_TIME < ?
+]
+2025-10-16 16:04:24.794 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-16 16:04:24.821 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-16 16:04:24.866 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-16 16:04:24.885 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown initiated...
+2025-10-16 16:04:24.899 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown completed.
+2025-10-16 16:16:50.489 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 5212 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-10-16 16:16:50.493 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-10-16 16:16:50.495 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-10-16 16:16:50.568 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-16 16:16:50.568 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-16 16:16:52.277 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-16 16:16:52.369 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 77 ms. Found 3 JPA repository interfaces.
+2025-10-16 16:16:54.426 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-10-16 16:16:54.435 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-16 16:16:54.436 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.31]
+2025-10-16 16:16:54.468 INFO  [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-16 16:16:54.468 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3899 ms
+2025-10-16 16:16:54.644 DEBUG [restartedMain] o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-16 16:16:54.812 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Starting...
+2025-10-16 16:16:55.154 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - RSMS-HikariPool-Local - Added connection org.postgresql.jdbc.PgConnection@31a3d76a
+2025-10-16 16:16:55.155 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Start completed.
+2025-10-16 16:16:55.184 INFO  [restartedMain] org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://172.21.174.2:5432/postgres (PostgreSQL 17.6)
+2025-10-16 16:16:55.194 WARN  [restartedMain] o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 17.6 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2025-10-16 16:16:55.231 INFO  [restartedMain] o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.023s)
+2025-10-16 16:16:55.265 INFO  [restartedMain] o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-16 16:16:55.268 INFO  [restartedMain] o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-16 16:16:55.368 INFO  [restartedMain] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-16 16:16:55.438 INFO  [restartedMain] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-10-16 16:16:55.475 INFO  [restartedMain] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-16 16:16:55.601 WARN  [restartedMain] org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-16 16:16:55.817 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-16 16:16:56.943 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-16 16:16:57.017 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-16 16:16:57.406 INFO  [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-16 16:16:58.730 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-10-16 16:16:58.838 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.r.d.l.c.LedgerOrderController:
+	{GET [/api/ledger-orders]}: getAllLedgerOrders()
+	{GET [/api/ledger-orders/search]}: searchLedgerOrders(String,String,String)
+	{GET [/api/ledger-orders/{ledgerOrderId}]}: getLedgerOrder(String)
+	{GET [/api/ledger-orders/year/{year}]}: getLedgerOrdersByYear(String)
+	{GET [/api/ledger-orders/recent]}: getRecentLedgerOrders(int)
+	{POST [/api/ledger-orders]}: createLedgerOrder(CreateLedgerOrderRequest,Principal)
+	{PUT [/api/ledger-orders/{ledgerOrderId}]}: updateLedgerOrder(String,UpdateLedgerOrderRequest,Principal)
+	{DELETE [/api/ledger-orders/{ledgerOrderId}]}: deleteLedgerOrder(String,Principal)
+	{DELETE [/api/ledger-orders]}: deleteLedgerOrders(List,Principal)
+	{PATCH [/api/ledger-orders/{ledgerOrderId}/status]}: changeStatus(String,Map,Principal)
+	{GET [/api/ledger-orders/status/{status}]}: getLedgerOrdersByStatus(String)
+	{GET [/api/ledger-orders/count/status/{status}]}: countByStatus(String)
+	{GET [/api/ledger-orders/count/year/{year}]}: countByYear(String)
+	{GET [/api/ledger-orders/count/search]}: countBySearchConditions(String,String,String)
+2025-10-16 16:16:58.850 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.r.d.s.c.c.CommonCodeController:
+	{GET [/api/system/codes/groups]}: getAllCodeGroups()
+	{GET [/api/system/codes/groups/{groupCode}]}: getCodeGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/with-details]}: getCodeGroupWithDetails(String)
+	{GET [/api/system/codes/groups/active/with-details]}: getAllActiveCodeGroupsWithDetails()
+	{GET [/api/system/codes/groups/category/{category}]}: getCodeGroupsByCategory(String)
+	{POST [/api/system/codes/groups]}: createCodeGroup(CreateCodeGroupRequest,Principal)
+	{PUT [/api/system/codes/groups/{groupCode}]}: updateCodeGroup(String,UpdateCodeGroupRequest,Principal)
+	{DELETE [/api/system/codes/groups/{groupCode}]}: deleteCodeGroup(String,Principal)
+	{PATCH [/api/system/codes/groups/{groupCode}/toggle-active]}: toggleCodeGroupActive(String,Principal)
+	{GET [/api/system/codes/groups/{groupCode}/details]}: getCodeDetailsByGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/active]}: getActiveCodeDetailsByGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/valid]}: getCurrentValidCodes(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: getCodeDetail(String,String)
+	{POST [/api/system/codes/details]}: createCodeDetail(CreateCodeDetailRequest,Principal)
+	{PUT [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: updateCodeDetail(String,String,UpdateCodeDetailRequest,Principal)
+	{DELETE [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: deleteCodeDetail(String,String,Principal)
+	{PATCH [/api/system/codes/groups/{groupCode}/details/{detailCode}/toggle-active]}: toggleCodeDetailActive(String,String,Principal)
+	{GET [/api/system/codes/groups/search]}: searchCodeGroups(String,String,String,Pageable)
+2025-10-16 16:16:58.855 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.b.a.w.s.e.BasicErrorController:
+	{ [/error], produces [text/html]}: errorHtml(HttpServletRequest,HttpServletResponse)
+	{ [/error]}: error(HttpServletRequest)
+2025-10-16 16:16:58.859 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.a.OpenApiWebMvcResource:
+	{GET [/v3/api-docs], produces [application/json]}: openapiJson(HttpServletRequest,String,Locale)
+	{GET [/v3/api-docs.yaml], produces [application/vnd.oai.openapi]}: openapiYaml(HttpServletRequest,String,Locale)
+2025-10-16 16:16:58.860 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	{GET [/swagger-ui.html]}: redirectToUi(HttpServletRequest)
+2025-10-16 16:16:58.861 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.u.SwaggerConfigResource:
+	{GET [/v3/api-docs/swagger-config], produces [application/json]}: openapiJson(HttpServletRequest)
+2025-10-16 16:16:58.863 DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 38 mappings in 'requestMappingHandlerMapping'
+2025-10-16 16:16:58.971 DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-10-16 16:16:59.322 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver - Exposing 17 endpoints beneath base path '/actuator'
+2025-10-16 16:16:59.478 DEBUG [restartedMain] o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, UsernamePasswordAuthenticationFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, ConcurrentSessionFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-16 16:16:59.583 DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-16 16:16:59.617 DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-16 16:16:59.885 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-10-16 16:16:59.971 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-10-16 16:16:59.982 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 10.012 seconds (process running for 10.38)
+2025-10-16 16:19:56.985 INFO  [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-16 16:19:56.985 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-16 16:19:56.986 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-16 16:19:56.986 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-16 16:19:56.986 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-16 16:19:56.989 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@35f93e0a
+2025-10-16 16:19:56.989 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@3af7e54b
+2025-10-16 16:19:56.990 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-16 16:19:56.990 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2025-10-16 16:19:57.018 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:19:57.032 DEBUG [http-nio-8081-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:19:57.036 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:19:57.039 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:19:57.042 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:19:57.050 INFO  [http-nio-8081-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:19:57.056 DEBUG [http-nio-8081-exec-1] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:19:57.114 DEBUG [http-nio-8081-exec-1] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:19:57.135 DEBUG [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:19:57.137 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:19:57.146 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:19:57.153 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:19:57.154 DEBUG [http-nio-8081-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:19:57.154 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:19:57.154 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:19:57.155 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:19:57.155 INFO  [http-nio-8081-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:19:57.155 DEBUG [http-nio-8081-exec-2] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:19:57.156 DEBUG [http-nio-8081-exec-2] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:19:57.160 DEBUG [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:19:57.161 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:19:57.162 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:30:00.008 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL update
+2025-10-16 16:30:00.010 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL statement [DELETE FROM SPRING_SESSION
+WHERE EXPIRY_TIME < ?
+]
+2025-10-16 16:35:26.894 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 68 class path changes (0 additions, 68 deletions, 0 modifications)
+2025-10-16 16:35:26.901 INFO  [Thread-5] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-16 16:35:26.905 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-16 16:35:26.919 INFO  [Thread-5] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-16 16:35:26.933 INFO  [Thread-5] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown initiated...
+2025-10-16 16:35:26.940 INFO  [Thread-5] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown completed.
+2025-10-16 16:35:31.350 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 5212 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-10-16 16:35:31.351 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-10-16 16:35:31.351 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-10-16 16:35:31.646 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-16 16:35:31.662 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 15 ms. Found 3 JPA repository interfaces.
+2025-10-16 16:35:32.104 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-10-16 16:35:32.105 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-16 16:35:32.106 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.31]
+2025-10-16 16:35:32.115 INFO  [restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-16 16:35:32.116 INFO  [restartedMain] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 761 ms
+2025-10-16 16:35:32.388 DEBUG [restartedMain] o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-16 16:35:32.549 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Starting...
+2025-10-16 16:35:32.594 INFO  [restartedMain] com.zaxxer.hikari.pool.HikariPool - RSMS-HikariPool-Local - Added connection org.postgresql.jdbc.PgConnection@628ffee4
+2025-10-16 16:35:32.595 INFO  [restartedMain] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Start completed.
+2025-10-16 16:35:32.600 INFO  [restartedMain] org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://172.21.174.2:5432/postgres (PostgreSQL 17.6)
+2025-10-16 16:35:32.609 WARN  [restartedMain] o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 17.6 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2025-10-16 16:35:32.623 INFO  [restartedMain] o.f.core.internal.command.DbValidate - Successfully validated 3 migrations (execution time 00:00.009s)
+2025-10-16 16:35:32.676 INFO  [restartedMain] o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-16 16:35:32.677 INFO  [restartedMain] o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-16 16:35:32.733 INFO  [restartedMain] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-16 16:35:32.735 INFO  [restartedMain] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-16 16:35:32.742 WARN  [restartedMain] org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-16 16:35:32.753 INFO  [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-16 16:35:32.855 INFO  [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-16 16:35:32.881 INFO  [restartedMain] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-16 16:35:33.341 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-10-16 16:35:33.392 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.r.d.l.c.LedgerOrderController:
+	{GET [/api/ledger-orders/combo]}: getActiveOrdersForComboBox()
+	{GET [/api/ledger-orders]}: getAllLedgerOrders()
+	{GET [/api/ledger-orders/search]}: searchLedgerOrders(String,String,String)
+	{GET [/api/ledger-orders/{ledgerOrderId}]}: getLedgerOrder(String)
+	{GET [/api/ledger-orders/year/{year}]}: getLedgerOrdersByYear(String)
+	{GET [/api/ledger-orders/recent]}: getRecentLedgerOrders(int)
+	{POST [/api/ledger-orders]}: createLedgerOrder(CreateLedgerOrderRequest,Principal)
+	{PUT [/api/ledger-orders/{ledgerOrderId}]}: updateLedgerOrder(String,UpdateLedgerOrderRequest,Principal)
+	{DELETE [/api/ledger-orders/{ledgerOrderId}]}: deleteLedgerOrder(String,Principal)
+	{DELETE [/api/ledger-orders]}: deleteLedgerOrders(List,Principal)
+	{PATCH [/api/ledger-orders/{ledgerOrderId}/status]}: changeStatus(String,Map,Principal)
+	{GET [/api/ledger-orders/status/{status}]}: getLedgerOrdersByStatus(String)
+	{GET [/api/ledger-orders/count/status/{status}]}: countByStatus(String)
+	{GET [/api/ledger-orders/count/year/{year}]}: countByYear(String)
+	{GET [/api/ledger-orders/count/search]}: countBySearchConditions(String,String,String)
+2025-10-16 16:35:33.399 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.r.d.s.c.c.CommonCodeController:
+	{GET [/api/system/codes/groups]}: getAllCodeGroups()
+	{GET [/api/system/codes/groups/{groupCode}]}: getCodeGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/with-details]}: getCodeGroupWithDetails(String)
+	{GET [/api/system/codes/groups/active/with-details]}: getAllActiveCodeGroupsWithDetails()
+	{GET [/api/system/codes/groups/category/{category}]}: getCodeGroupsByCategory(String)
+	{POST [/api/system/codes/groups]}: createCodeGroup(CreateCodeGroupRequest,Principal)
+	{PUT [/api/system/codes/groups/{groupCode}]}: updateCodeGroup(String,UpdateCodeGroupRequest,Principal)
+	{DELETE [/api/system/codes/groups/{groupCode}]}: deleteCodeGroup(String,Principal)
+	{PATCH [/api/system/codes/groups/{groupCode}/toggle-active]}: toggleCodeGroupActive(String,Principal)
+	{GET [/api/system/codes/groups/{groupCode}/details]}: getCodeDetailsByGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/active]}: getActiveCodeDetailsByGroup(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/valid]}: getCurrentValidCodes(String)
+	{GET [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: getCodeDetail(String,String)
+	{POST [/api/system/codes/details]}: createCodeDetail(CreateCodeDetailRequest,Principal)
+	{PUT [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: updateCodeDetail(String,String,UpdateCodeDetailRequest,Principal)
+	{DELETE [/api/system/codes/groups/{groupCode}/details/{detailCode}]}: deleteCodeDetail(String,String,Principal)
+	{PATCH [/api/system/codes/groups/{groupCode}/details/{detailCode}/toggle-active]}: toggleCodeDetailActive(String,String,Principal)
+	{GET [/api/system/codes/groups/search]}: searchCodeGroups(String,String,String,Pageable)
+2025-10-16 16:35:33.403 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.b.a.w.s.e.BasicErrorController:
+	{ [/error], produces [text/html]}: errorHtml(HttpServletRequest,HttpServletResponse)
+	{ [/error]}: error(HttpServletRequest)
+2025-10-16 16:35:33.405 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.a.OpenApiWebMvcResource:
+	{GET [/v3/api-docs], produces [application/json]}: openapiJson(HttpServletRequest,String,Locale)
+	{GET [/v3/api-docs.yaml], produces [application/vnd.oai.openapi]}: openapiYaml(HttpServletRequest,String,Locale)
+2025-10-16 16:35:33.407 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.u.SwaggerWelcomeWebMvc:
+	{GET [/swagger-ui.html]}: redirectToUi(HttpServletRequest)
+2025-10-16 16:35:33.407 TRACE [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.w.u.SwaggerConfigResource:
+	{GET [/v3/api-docs/swagger-config], produces [application/json]}: openapiJson(HttpServletRequest)
+2025-10-16 16:35:33.409 DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerMapping - 39 mappings in 'requestMappingHandlerMapping'
+2025-10-16 16:35:33.512 DEBUG [restartedMain] o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2025-10-16 16:35:33.728 INFO  [restartedMain] o.s.b.a.e.web.EndpointLinksResolver - Exposing 17 endpoints beneath base path '/actuator'
+2025-10-16 16:35:33.851 DEBUG [restartedMain] o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, UsernamePasswordAuthenticationFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, ConcurrentSessionFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-16 16:35:33.952 DEBUG [restartedMain] o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-16 16:35:33.965 DEBUG [restartedMain] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-16 16:35:34.180 INFO  [restartedMain] o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-10-16 16:35:34.199 INFO  [restartedMain] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2025-10-16 16:35:34.203 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 2.957 seconds (process running for 1124.601)
+2025-10-16 16:35:34.205 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2025-10-16 16:59:42.534 INFO  [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat-1].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-16 16:59:42.534 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-16 16:59:42.535 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-16 16:59:42.535 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-16 16:59:42.535 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-16 16:59:42.536 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5622c8e6
+2025-10-16 16:59:42.537 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@5510f73
+2025-10-16 16:59:42.537 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-16 16:59:42.537 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-10-16 16:59:42.538 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:59:42.539 DEBUG [http-nio-8081-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:59:42.540 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:59:42.540 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:59:42.542 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:59:42.544 INFO  [http-nio-8081-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:59:42.547 DEBUG [http-nio-8081-exec-1] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:59:42.551 DEBUG [http-nio-8081-exec-1] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:59:42.560 DEBUG [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:59:42.562 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:59:42.565 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:59:42.571 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:59:42.572 DEBUG [http-nio-8081-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:59:42.572 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:59:42.573 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:59:42.573 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:59:42.573 INFO  [http-nio-8081-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:59:42.574 DEBUG [http-nio-8081-exec-2] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:59:42.575 DEBUG [http-nio-8081-exec-2] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:59:42.581 DEBUG [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:59:42.581 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:59:42.584 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:59:55.266 DEBUG [http-nio-8081-exec-3] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:59:55.267 DEBUG [http-nio-8081-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:59:55.267 DEBUG [http-nio-8081-exec-3] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:59:55.268 DEBUG [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:59:55.268 TRACE [http-nio-8081-exec-3] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:59:55.268 INFO  [http-nio-8081-exec-3] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:59:55.269 DEBUG [http-nio-8081-exec-3] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:59:55.271 DEBUG [http-nio-8081-exec-3] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:59:55.273 DEBUG [http-nio-8081-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:59:55.273 TRACE [http-nio-8081-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:59:55.274 DEBUG [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 16:59:55.280 DEBUG [http-nio-8081-exec-4] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 16:59:55.281 DEBUG [http-nio-8081-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 16:59:55.282 DEBUG [http-nio-8081-exec-4] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 16:59:55.282 DEBUG [http-nio-8081-exec-4] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 16:59:55.283 TRACE [http-nio-8081-exec-4] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 16:59:55.283 INFO  [http-nio-8081-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 16:59:55.283 DEBUG [http-nio-8081-exec-4] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 16:59:55.284 DEBUG [http-nio-8081-exec-4] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 16:59:55.287 DEBUG [http-nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 16:59:55.288 TRACE [http-nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 16:59:55.288 DEBUG [http-nio-8081-exec-4] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:00.002 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL update
+2025-10-16 17:00:00.002 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL statement [DELETE FROM SPRING_SESSION
+WHERE EXPIRY_TIME < ?
+]
+2025-10-16 17:00:00.290 DEBUG [http-nio-8081-exec-5] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 17:00:00.292 DEBUG [http-nio-8081-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:00.293 DEBUG [http-nio-8081-exec-5] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 17:00:00.293 DEBUG [http-nio-8081-exec-5] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 17:00:00.294 TRACE [http-nio-8081-exec-5] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 17:00:00.295 INFO  [http-nio-8081-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 17:00:00.295 DEBUG [http-nio-8081-exec-5] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 17:00:00.298 DEBUG [http-nio-8081-exec-5] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 17:00:00.309 DEBUG [http-nio-8081-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:00.310 TRACE [http-nio-8081-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:00:00.311 DEBUG [http-nio-8081-exec-5] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:09.850 DEBUG [http-nio-8081-exec-6] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?ledgerOrderStatus=CLSD
+2025-10-16 17:00:09.856 DEBUG [http-nio-8081-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:09.856 DEBUG [http-nio-8081-exec-6] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?ledgerOrderStatus=CLSD
+2025-10-16 17:00:09.857 DEBUG [http-nio-8081-exec-6] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search?ledgerOrderStatus=CLSD", parameters={masked}
+2025-10-16 17:00:09.857 TRACE [http-nio-8081-exec-6] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:09.868 INFO  [http-nio-8081-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: CLSD, year: null
+2025-10-16 17:00:09.869 DEBUG [http-nio-8081-exec-6] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: CLSD, year: null
+2025-10-16 17:00:09.886 DEBUG [http-nio-8081-exec-6] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [CLSD]
+2025-10-16 17:00:09.887 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [CLSD]
+2025-10-16 17:00:09.888 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:09.888 TRACE [http-nio-8081-exec-6] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:09.891 DEBUG [http-nio-8081-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:09.891 TRACE [http-nio-8081-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[]]
+2025-10-16 17:00:09.892 DEBUG [http-nio-8081-exec-6] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:14.187 DEBUG [http-nio-8081-exec-7] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?ledgerOrderStatus=NEW
+2025-10-16 17:00:14.188 DEBUG [http-nio-8081-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:14.188 DEBUG [http-nio-8081-exec-7] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?ledgerOrderStatus=NEW
+2025-10-16 17:00:14.188 DEBUG [http-nio-8081-exec-7] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search?ledgerOrderStatus=NEW", parameters={masked}
+2025-10-16 17:00:14.189 TRACE [http-nio-8081-exec-7] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:14.189 INFO  [http-nio-8081-exec-7] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: NEW, year: null
+2025-10-16 17:00:14.190 DEBUG [http-nio-8081-exec-7] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: NEW, year: null
+2025-10-16 17:00:14.192 DEBUG [http-nio-8081-exec-7] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [NEW]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [NEW]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:14.192 TRACE [http-nio-8081-exec-7] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:14.195 DEBUG [http-nio-8081-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:14.195 TRACE [http-nio-8081-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[]]
+2025-10-16 17:00:14.196 DEBUG [http-nio-8081-exec-7] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:17.435 DEBUG [http-nio-8081-exec-8] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?ledgerOrderStatus=PROG
+2025-10-16 17:00:17.435 DEBUG [http-nio-8081-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:17.436 DEBUG [http-nio-8081-exec-8] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?ledgerOrderStatus=PROG
+2025-10-16 17:00:17.436 DEBUG [http-nio-8081-exec-8] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search?ledgerOrderStatus=PROG", parameters={masked}
+2025-10-16 17:00:17.436 TRACE [http-nio-8081-exec-8] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:17.437 INFO  [http-nio-8081-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: PROG, year: null
+2025-10-16 17:00:17.438 DEBUG [http-nio-8081-exec-8] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: PROG, year: null
+2025-10-16 17:00:17.439 DEBUG [http-nio-8081-exec-8] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [PROG]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [PROG]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:17.440 TRACE [http-nio-8081-exec-8] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:17.446 DEBUG [http-nio-8081-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:17.447 TRACE [http-nio-8081-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:00:17.450 DEBUG [http-nio-8081-exec-8] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:19.720 DEBUG [http-nio-8081-exec-9] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?
+2025-10-16 17:00:19.721 DEBUG [http-nio-8081-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:19.721 DEBUG [http-nio-8081-exec-9] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?
+2025-10-16 17:00:19.721 DEBUG [http-nio-8081-exec-9] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search", parameters={}
+2025-10-16 17:00:19.722 TRACE [http-nio-8081-exec-9] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:19.722 INFO  [http-nio-8081-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: null, year: null
+2025-10-16 17:00:19.723 DEBUG [http-nio-8081-exec-9] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: null, year: null
+2025-10-16 17:00:19.724 DEBUG [http-nio-8081-exec-9] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:19.725 TRACE [http-nio-8081-exec-9] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:19.729 DEBUG [http-nio-8081-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:19.729 TRACE [http-nio-8081-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:00:19.731 DEBUG [http-nio-8081-exec-9] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:25.584 DEBUG [http-nio-8081-exec-10] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?ledgerOrderStatus=PROG
+2025-10-16 17:00:25.585 DEBUG [http-nio-8081-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:25.585 DEBUG [http-nio-8081-exec-10] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?ledgerOrderStatus=PROG
+2025-10-16 17:00:25.585 DEBUG [http-nio-8081-exec-10] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search?ledgerOrderStatus=PROG", parameters={masked}
+2025-10-16 17:00:25.586 TRACE [http-nio-8081-exec-10] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:25.586 INFO  [http-nio-8081-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: PROG, year: null
+2025-10-16 17:00:25.587 DEBUG [http-nio-8081-exec-10] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: PROG, year: null
+2025-10-16 17:00:25.587 DEBUG [http-nio-8081-exec-10] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [PROG]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [PROG]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:25.588 TRACE [http-nio-8081-exec-10] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:25.589 DEBUG [http-nio-8081-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:25.590 TRACE [http-nio-8081-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:00:25.590 DEBUG [http-nio-8081-exec-10] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:00:30.635 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/search?
+2025-10-16 17:00:30.636 DEBUG [http-nio-8081-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:00:30.636 DEBUG [http-nio-8081-exec-1] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/search?
+2025-10-16 17:00:30.636 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/search", parameters={}
+2025-10-16 17:00:30.636 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#searchLedgerOrders(String, String, String)
+2025-10-16 17:00:30.636 INFO  [http-nio-8081-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/search - keyword: null, status: null, year: null
+2025-10-16 17:00:30.637 DEBUG [http-nio-8081-exec-1] c.r.d.l.service.LedgerOrderService - 원장차수 검색 - keyword: null, status: null, year: null
+2025-10-16 17:00:30.638 DEBUG [http-nio-8081-exec-1] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        (
+            :keyword IS NULL 
+            OR  lo.ledgerOrderId LIKE :keyword_1 
+            OR  lo.ledgerOrderTitle LIKE :keyword_1 
+            OR  lo.ledgerOrderRemarks LIKE :keyword_1
+        ) 
+        AND (
+            :status IS NULL 
+            OR lo.ledgerOrderStatus = :status
+        ) 
+        AND (
+            :year IS NULL 
+            OR SUBSTRING(lo.ledgerOrderId, 1, 4) = :year
+        ) 
+    ORDER BY
+        lo.ledgerOrderId DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            (
+                ? is null 
+                or lo1_0.ledger_order_id like ? escape '' 
+                or lo1_0.ledger_order_title like ? escape '' 
+                or lo1_0.ledger_order_remarks like ? escape ''
+            ) 
+            and (
+                ? is null 
+                or lo1_0.ledger_order_status=?
+            ) 
+            and (
+                ? is null 
+                or substr(lo1_0.ledger_order_id, 1, 4)=?
+            ) 
+        order by
+            lo1_0.ledger_order_id desc
+2025-10-16 17:00:30.638 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (1:JAVA_OBJECT) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (2:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (3:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (4:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (5:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (6:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (7:VARCHAR) <- [null]
+2025-10-16 17:00:30.639 TRACE [http-nio-8081-exec-1] org.hibernate.orm.jdbc.bind - binding parameter (8:VARCHAR) <- [null]
+2025-10-16 17:00:30.642 DEBUG [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:00:30.642 TRACE [http-nio-8081-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:00:30.643 DEBUG [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:17:04.453 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/combo
+2025-10-16 17:17:04.454 DEBUG [http-nio-8081-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:17:04.454 DEBUG [http-nio-8081-exec-2] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/combo
+2025-10-16 17:17:04.454 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/combo", parameters={}
+2025-10-16 17:17:04.454 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getActiveOrdersForComboBox()
+2025-10-16 17:17:04.455 INFO  [http-nio-8081-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:17:04.457 DEBUG [http-nio-8081-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:17:04.461 DEBUG [http-nio-8081-exec-2] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        lo.ledgerOrderStatus IN ('PROG', 'CLSD') 
+    ORDER BY
+        lo.createdAt DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            lo1_0.ledger_order_status in ('PROG', 'CLSD') 
+        order by
+            lo1_0.created_at desc
+2025-10-16 17:17:04.465 DEBUG [http-nio-8081-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-10-16 17:17:04.468 DEBUG [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-10-16 17:17:04.471 TRACE [http-nio-8081-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderComboDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, displayLabel=20250001-1차 점검이행[진행중])]]
+2025-10-16 17:17:04.473 DEBUG [http-nio-8081-exec-2] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:29:43.259 DEBUG [http-nio-8081-exec-3] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/combo
+2025-10-16 17:29:43.260 DEBUG [http-nio-8081-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:29:43.261 DEBUG [http-nio-8081-exec-3] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/combo
+2025-10-16 17:29:43.261 DEBUG [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/combo", parameters={}
+2025-10-16 17:29:43.262 TRACE [http-nio-8081-exec-3] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getActiveOrdersForComboBox()
+2025-10-16 17:29:43.262 INFO  [http-nio-8081-exec-3] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:29:43.264 DEBUG [http-nio-8081-exec-3] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:29:43.266 DEBUG [http-nio-8081-exec-3] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        lo.ledgerOrderStatus IN ('PROG', 'CLSD') 
+    ORDER BY
+        lo.createdAt DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            lo1_0.ledger_order_status in ('PROG', 'CLSD') 
+        order by
+            lo1_0.created_at desc
+2025-10-16 17:29:43.269 DEBUG [http-nio-8081-exec-3] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-10-16 17:29:43.270 DEBUG [http-nio-8081-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-10-16 17:29:43.271 TRACE [http-nio-8081-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderComboDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, displayLabel=20250001-1차 점검이행[진행중])]]
+2025-10-16 17:29:43.271 DEBUG [http-nio-8081-exec-3] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:30:00.001 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL update
+2025-10-16 17:30:00.001 DEBUG [spring-session-1] o.s.jdbc.core.JdbcTemplate - Executing prepared SQL statement [DELETE FROM SPRING_SESSION
+WHERE EXPIRY_TIME < ?
+]
+2025-10-16 17:32:51.015 DEBUG [http-nio-8081-exec-4] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/combo
+2025-10-16 17:32:51.015 DEBUG [http-nio-8081-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:32:51.016 DEBUG [http-nio-8081-exec-4] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/combo
+2025-10-16 17:32:51.016 DEBUG [http-nio-8081-exec-4] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/combo", parameters={}
+2025-10-16 17:32:51.016 TRACE [http-nio-8081-exec-4] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getActiveOrdersForComboBox()
+2025-10-16 17:32:51.017 INFO  [http-nio-8081-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:32:51.018 DEBUG [http-nio-8081-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:32:51.019 DEBUG [http-nio-8081-exec-4] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        lo.ledgerOrderStatus IN ('PROG', 'CLSD') 
+    ORDER BY
+        lo.createdAt DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            lo1_0.ledger_order_status in ('PROG', 'CLSD') 
+        order by
+            lo1_0.created_at desc
+2025-10-16 17:32:51.022 DEBUG [http-nio-8081-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-10-16 17:32:51.023 DEBUG [http-nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-10-16 17:32:51.023 TRACE [http-nio-8081-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderComboDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, displayLabel=20250001-1차 점검이행[진행중])]]
+2025-10-16 17:32:51.024 DEBUG [http-nio-8081-exec-4] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:42:19.379 DEBUG [http-nio-8081-exec-5] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/combo
+2025-10-16 17:42:19.381 DEBUG [http-nio-8081-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:42:19.381 DEBUG [http-nio-8081-exec-5] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/combo
+2025-10-16 17:42:19.382 DEBUG [http-nio-8081-exec-5] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/combo", parameters={}
+2025-10-16 17:42:19.382 TRACE [http-nio-8081-exec-5] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getActiveOrdersForComboBox()
+2025-10-16 17:42:19.383 INFO  [http-nio-8081-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:42:19.384 DEBUG [http-nio-8081-exec-5] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:42:19.386 DEBUG [http-nio-8081-exec-5] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        lo.ledgerOrderStatus IN ('PROG', 'CLSD') 
+    ORDER BY
+        lo.createdAt DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            lo1_0.ledger_order_status in ('PROG', 'CLSD') 
+        order by
+            lo1_0.created_at desc
+2025-10-16 17:42:19.389 DEBUG [http-nio-8081-exec-5] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-10-16 17:42:19.391 DEBUG [http-nio-8081-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-10-16 17:42:19.391 TRACE [http-nio-8081-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderComboDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, displayLabel=20250001-1차 점검이행[진행중])]]
+2025-10-16 17:42:19.392 DEBUG [http-nio-8081-exec-5] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:42:20.012 DEBUG [http-nio-8081-exec-6] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 17:42:20.013 DEBUG [http-nio-8081-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:42:20.013 DEBUG [http-nio-8081-exec-6] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 17:42:20.013 DEBUG [http-nio-8081-exec-6] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 17:42:20.014 TRACE [http-nio-8081-exec-6] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 17:42:20.014 INFO  [http-nio-8081-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 17:42:20.015 DEBUG [http-nio-8081-exec-6] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 17:42:20.018 DEBUG [http-nio-8081-exec-6] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 17:42:20.022 DEBUG [http-nio-8081-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:42:20.023 TRACE [http-nio-8081-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:42:20.024 DEBUG [http-nio-8081-exec-6] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:42:20.031 DEBUG [http-nio-8081-exec-7] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders
+2025-10-16 17:42:20.032 DEBUG [http-nio-8081-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:42:20.033 DEBUG [http-nio-8081-exec-7] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders
+2025-10-16 17:42:20.033 DEBUG [http-nio-8081-exec-7] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders", parameters={}
+2025-10-16 17:42:20.034 TRACE [http-nio-8081-exec-7] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getAllLedgerOrders()
+2025-10-16 17:42:20.035 INFO  [http-nio-8081-exec-7] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-10-16 17:42:20.036 DEBUG [http-nio-8081-exec-7] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-10-16 17:42:20.037 DEBUG [http-nio-8081-exec-7] org.hibernate.SQL - 
+    /* <criteria> */ select
+        lo1_0.ledger_order_id,
+        lo1_0.created_at,
+        lo1_0.created_by,
+        lo1_0.ledger_order_remarks,
+        lo1_0.ledger_order_status,
+        lo1_0.ledger_order_title,
+        lo1_0.updated_at,
+        lo1_0.updated_by 
+    from
+        rsms.ledger_order lo1_0
+2025-10-16 17:42:20.041 DEBUG [http-nio-8081-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-16 17:42:20.042 TRACE [http-nio-8081-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, ledgerOrderRemarks=1차 점검이행압니다. 333
+, createdBy=anonymous, createdAt=2025-10-16T15:34:47.946920, updatedBy=anonymous, updatedAt=2025-10-16T15:55:08.328748)]]
+2025-10-16 17:42:20.043 DEBUG [http-nio-8081-exec-7] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:46:47.218 DEBUG [http-nio-8081-exec-8] o.s.security.web.FilterChainProxy - Securing GET /api/ledger-orders/combo
+2025-10-16 17:46:47.219 DEBUG [http-nio-8081-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-16 17:46:47.219 DEBUG [http-nio-8081-exec-8] o.s.security.web.FilterChainProxy - Secured GET /api/ledger-orders/combo
+2025-10-16 17:46:47.219 DEBUG [http-nio-8081-exec-8] o.s.web.servlet.DispatcherServlet - GET "/api/ledger-orders/combo", parameters={}
+2025-10-16 17:46:47.219 TRACE [http-nio-8081-exec-8] o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rsms.domain.ledger.controller.LedgerOrderController#getActiveOrdersForComboBox()
+2025-10-16 17:46:47.219 INFO  [http-nio-8081-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:46:47.221 DEBUG [http-nio-8081-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-10-16 17:46:47.222 DEBUG [http-nio-8081-exec-8] org.hibernate.SQL - 
+    /* SELECT
+        lo 
+    FROM
+        LedgerOrder lo 
+    WHERE
+        lo.ledgerOrderStatus IN ('PROG', 'CLSD') 
+    ORDER BY
+        lo.createdAt DESC */ select
+            lo1_0.ledger_order_id,
+            lo1_0.created_at,
+            lo1_0.created_by,
+            lo1_0.ledger_order_remarks,
+            lo1_0.ledger_order_status,
+            lo1_0.ledger_order_title,
+            lo1_0.updated_at,
+            lo1_0.updated_by 
+        from
+            rsms.ledger_order lo1_0 
+        where
+            lo1_0.ledger_order_status in ('PROG', 'CLSD') 
+        order by
+            lo1_0.created_at desc
+2025-10-16 17:46:47.224 DEBUG [http-nio-8081-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-10-16 17:46:47.225 DEBUG [http-nio-8081-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json]
+2025-10-16 17:46:47.225 TRACE [http-nio-8081-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[LedgerOrderComboDto(ledgerOrderId=20250001, ledgerOrderTitle=1차 점검이행, ledgerOrderStatus=PROG, displayLabel=20250001-1차 점검이행[진행중])]]
+2025-10-16 17:46:47.225 DEBUG [http-nio-8081-exec-8] o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-16 17:58:51.465 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-10-16 17:58:51.469 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-10-16 17:58:51.481 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-16 17:58:51.484 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown initiated...
+2025-10-16 17:58:51.490 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - RSMS-HikariPool-Local - Shutdown completed.

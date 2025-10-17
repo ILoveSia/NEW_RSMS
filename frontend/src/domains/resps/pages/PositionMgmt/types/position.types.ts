@@ -31,9 +31,8 @@ export interface PositionFormData {
 
 // 검색 필터
 export interface PositionFilters {
+  ledgerOrderId: string;     // 원장차수 필터
   positionName: string;      // 직책명 검색
-  headquarters: string;      // 부정구분 필터
-  status: string;            // 상태 필터
   isActive: string;          // 사용여부 필터
 }
 

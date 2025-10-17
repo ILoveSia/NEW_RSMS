@@ -29,7 +29,7 @@ export interface EndAdornment {
 // 필터 필드 타입 정의
 export interface FilterField {
   key: string;
-  type: 'text' | 'select' | 'date' | 'year';
+  type: 'text' | 'select' | 'date' | 'year' | 'custom';
   label: string;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -42,6 +42,7 @@ export interface FilterField {
   endAdornment?: EndAdornment;
   min?: string;
   max?: string;
+  customComponent?: React.ReactNode;
 }
 
 // 필터 값 타입
@@ -111,7 +112,10 @@ const BaseSearchFilter: React.FC<BaseSearchFilterProps> = React.memo(({
 
     return (
       <Grid item {...gridSize} key={field.key}>
-        {field.type === 'text' ? (
+        {field.type === 'custom' ? (
+          // 커스텀 컴포넌트
+          field.customComponent
+        ) : field.type === 'text' ? (
           <TextField
             fullWidth
             label={field.label}

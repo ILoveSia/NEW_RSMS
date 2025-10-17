@@ -129,4 +129,14 @@ public interface LedgerOrderRepository extends JpaRepository<LedgerOrder, String
         @Param("status") String status,
         @Param("year") String year
     );
+
+    /**
+     * 콤보박스용 원장차수 조회 (PROG, CLSD만 조회)
+     * - 진행중(PROG)과 종료(CLSD) 상태만 조회
+     * - 생성일시 역순 정렬 (최신 순)
+     */
+    @Query("SELECT lo FROM LedgerOrder lo WHERE " +
+           "lo.ledgerOrderStatus IN ('PROG', 'CLSD') " +
+           "ORDER BY lo.createdAt DESC")
+    List<LedgerOrder> findActiveOrdersForComboBox();
 }

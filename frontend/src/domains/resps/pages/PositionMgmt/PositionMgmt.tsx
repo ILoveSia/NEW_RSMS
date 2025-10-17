@@ -25,6 +25,9 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
 import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
 
+// Domain Components
+import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
+
 // Custom Hooks
 import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
 import usePagination from '@/shared/hooks/usePagination';
@@ -35,7 +38,7 @@ import { positionColumns } from './components/PositionDataGrid/positionColumns';
 
 // Lazy-loaded components for performance optimization
 const PositionFormModal = React.lazy(() =>
-  import('./components/PositionFormModal').then(module => ({ default: module.default }))
+  import('./components/PositionFormModal/index').then(module => ({ default: module.default }))
 );
 
 interface PositionMgmtProps {
@@ -65,9 +68,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     clearFilters,
     hasFilters
   } = useFilters<PositionFilters>({
+    ledgerOrderId: '',
     positionName: '',
-    headquarters: '',
-    status: '',
     isActive: ''
   });
 
@@ -318,34 +320,26 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '원장차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId}
+          onChange={(value) => setFilter('ledgerOrderId', value || '')}
+          label="원장차수"
+          required
+          fullWidth
+          size="small"
+        />
+      )
+    },
+    {
       key: 'positionName',
       type: 'text',
       label: '직책명',
       placeholder: '직책명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'headquarters',
-      type: 'select',
-      label: '본부구분',
-      options: [
-        { value: '', label: '전체' },
-        { value: '본부부서', label: '본부부서' },
-        { value: '지역본부', label: '지역본부' },
-        { value: '영업점', label: '영업점' },
-        { value: '센터', label: '센터' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'status',
-      type: 'select',
-      label: '상태',
-      options: [
-        { value: '', label: '전체' },
-        { value: '완료', label: '완료' },
-        { value: '반영필요', label: '반영필요' }
-      ],
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
@@ -359,7 +353,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
     }
-  ], []);
+  ], [filters.ledgerOrderId, setFilter]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -648,7 +642,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
-        {/* 🔍 공통 검색 필터 */}
+        {/* 🔍 공통 검색 필터 (원장차수 포함) */}
         <BaseSearchFilter
           fields={searchFields}
           values={filters as unknown as FilterValues}

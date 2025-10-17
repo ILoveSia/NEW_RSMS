@@ -364,7 +364,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
       {/* 🏗️ 공통 페이지 헤더 */}
       <BasePageHeader
         icon={<DashboardIcon />}
-        title="원장관리"
+        title="원장관리 시스템"
         description="원장차수 정보를 체계적으로 관리합니다"
         statistics={headerStatistics}
         i18nNamespace="resps"

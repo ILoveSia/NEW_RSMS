@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -237,6 +238,30 @@ public class LedgerOrderService {
         return ledgerOrderRepository.findRecentLedgerOrders().stream()
             .limit(limit)
             .map(LedgerOrderDto::from)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 콤보박스용 원장차수 조회 (PROG, CLSD만 조회)
+     *
+     * @return PROG, CLSD 상태의 원장차수 목록 (포맷팅된 라벨 포함)
+     * @throws IllegalStateException 조회 결과가 없을 경우
+     */
+    public List<LedgerOrderComboDto> getActiveOrdersForComboBox() {
+        log.debug("콤보박스용 원장차수 조회 (PROG, CLSD만)");
+
+        List<LedgerOrder> activeOrders = ledgerOrderRepository.findActiveOrdersForComboBox();
+
+        // 데이터가 없으면 빈 리스트 반환 (프론트엔드에서 처리)
+        if (activeOrders == null || activeOrders.isEmpty()) {
+            log.warn("활성 원장차수가 없습니다. PROG 또는 CLSD 상태의 원장차수를 생성하세요.");
+            return Collections.emptyList();
+        }
+
+        log.debug("활성 원장차수 조회 완료 - count: {}", activeOrders.size());
+
+        return activeOrders.stream()
+            .map(LedgerOrderComboDto::from)
             .collect(Collectors.toList());
     }
 

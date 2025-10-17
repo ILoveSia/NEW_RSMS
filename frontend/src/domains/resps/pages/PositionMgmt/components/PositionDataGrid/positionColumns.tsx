@@ -38,14 +38,7 @@ export const positionColumns: ColDef<Position>[] = [
     width: 150,
   },
   {
-    headerName: '본부구분',
-    field: 'headquarters',
-    sortable: true,
-    filter: true,
-    width: 120
-  },
-  {
-    headerName: '부서명',
+    headerName: '본부명',
     field: 'departmentName',
     sortable: true,
     filter: true,
@@ -73,13 +66,6 @@ export const positionColumns: ColDef<Position>[] = [
     width: 100
   },
   {
-    headerName: '등록자직책',
-    field: 'registrarPosition',
-    sortable: true,
-    filter: true,
-    width: 120
-  },
-  {
     headerName: '수정일',
     field: 'modificationDate',
     sortable: true,
@@ -94,20 +80,6 @@ export const positionColumns: ColDef<Position>[] = [
     width: 100
   },
   {
-    headerName: '수정자직책',
-    field: 'modifierPosition',
-    sortable: true,
-    filter: true,
-    width: 120
-  },
-  {
-    headerName: '상태',
-    field: 'status',
-    sortable: true,
-    filter: true,
-    width: 100
-  },
-  {
     headerName: '사용여부',
     field: 'isActive',
     sortable: true,
@@ -117,21 +89,6 @@ export const positionColumns: ColDef<Position>[] = [
       <Chip
         label={params.value ? '사용' : '미사용'}
         color={getActiveColor(params.value)}
-        size="small"
-        variant="outlined"
-      />
-    )
-  },
-  {
-    headerName: '승인상태',
-    field: 'approvalStatus',
-    sortable: true,
-    filter: true,
-    width: 100,
-    cellRenderer: (params: { value: string }) => (
-      <Chip
-        label={params.value}
-        color={getStatusColor(params.value)}
         size="small"
         variant="outlined"
       />

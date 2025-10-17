@@ -101,6 +101,28 @@ public class LedgerOrderController {
     }
 
     /**
+     * 콤보박스용 원장차수 조회 (PROG, CLSD만 조회)
+     *
+     * <p>진행중(PROG)과 종료(CLSD) 상태의 원장차수만 조회하여
+     * 콤보박스 UI에 최적화된 포맷으로 반환합니다.</p>
+     *
+     * <p>응답 형식:
+     * <ul>
+     *   <li>PROG: "20250001-1차점검이행[진행중]"</li>
+     *   <li>CLSD: "20250001-1차점검이행"</li>
+     * </ul>
+     * </p>
+     *
+     * @return 활성 원장차수 목록 (빈 리스트 가능)
+     */
+    @GetMapping("/combo")
+    public ResponseEntity<List<LedgerOrderComboDto>> getActiveOrdersForComboBox() {
+        log.info("GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)");
+        List<LedgerOrderComboDto> comboOptions = ledgerOrderService.getActiveOrdersForComboBox();
+        return ResponseEntity.ok(comboOptions);
+    }
+
+    /**
      * 원장차수 생성
      */
     @PostMapping
