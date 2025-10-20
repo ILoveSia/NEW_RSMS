@@ -7,7 +7,7 @@
  */
 
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { getActiveOrdersForComboBox } from '../services/ledgerOrderService';
+import { getActiveOrdersForComboBox } from '../api/ledgerOrderApi';
 import type { LedgerOrderComboDto } from '../components/molecules/LedgerOrderComboBox/types';
 
 /**

@@ -23,10 +23,8 @@ export interface Position {
 
 // 직책 생성/수정 DTO
 export interface PositionFormData {
-  positionName: string;
-  headquarters: string;
-  departmentName: string;
-  divisionName: string;
+  positionName: string;    // 직책명 (콤보박스)
+  headquarters: string;    // 본부명 (콤보박스)
 }
 
 // 검색 필터

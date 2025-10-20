@@ -21,7 +21,7 @@ export const MENU_DATA: MenuItem[] = [
     children: [
       {
         id: 'ledgermgmt',
-        title: '원장관리',
+        title: '책무이행차수관리',
         path: '/app/resps/ledgermgmt',
         permission: 'auth'
       },
@@ -75,7 +75,7 @@ export const MENU_DATA: MenuItem[] = [
       },
       {
         id: 'ceomgmtdutysearch',
-        title: 'CEO총괄관리의무조회',
+        title: '직책총괄관리의무조회',
         path: '/app/resps/ceomgmtdutysearch',
         permission: 'executive'
       },
@@ -110,19 +110,19 @@ export const MENU_DATA: MenuItem[] = [
         title: '업무메뉴얼조회',
         path: '/app/activity/manual-inquiry',
         permission: 'auth'
-      },
-      {
-        id: 'internal-control-register',
-        title: '내부통제장치등록',
-        path: '/app/activity/internal-control-register',
-        permission: 'manager'
-      },
-      {
-        id: 'internal-control-management',
-        title: '내부통제장치관리',
-        path: '/app/activity/internal-control-management',
-        permission: 'manager'
       }
+      // {
+      //   id: 'internal-control-register',
+      //   title: '내부통제장치등록',
+      //   path: '/app/activity/internal-control-register',
+      //   permission: 'manager'
+      // },
+      // {
+      //   id: 'internal-control-management',
+      //   title: '내부통제장치관리',
+      //   path: '/app/activity/internal-control-management',
+      //   permission: 'manager'
+      // }
     ]
   },
   {

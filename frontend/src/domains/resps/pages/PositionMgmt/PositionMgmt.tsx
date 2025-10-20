@@ -173,8 +173,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           id: Date.now().toString(),
           positionName: formData.positionName,
           headquarters: formData.headquarters,
-          departmentName: formData.departmentName,
-          divisionName: formData.divisionName,
+          departmentName: '미지정',  // 기본값으로 설정
+          divisionName: '미지정',
           registrationDate: new Date().toISOString().split('T')[0],
           registrar: '현재사용자',
           registrarPosition: '관리자',
@@ -213,8 +213,6 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
                   ...pos,
                   positionName: formData.positionName,
                   headquarters: formData.headquarters,
-                  departmentName: formData.departmentName,
-                  divisionName: formData.divisionName,
                   modificationDate: new Date().toISOString().split('T')[0],
                   modifier: '현재사용자',
                   modifierPosition: '관리자'

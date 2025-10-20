@@ -14,6 +14,59 @@
 - **아키텍처 패턴**: Domain-Driven Design (DDD) + Clean Architecture
 - **개발 환경**: Fullstack (React + Spring Boot)
 
+### 🔥 **최우선 원칙: 주석 작성 필수 (MANDATORY COMMENTS)**
+
+**💥 매 세션마다 반드시 적용해야 하는 절대 원칙:**
+
+모든 Backend, Frontend 소스코드에 **간단하면서 알기 쉬운 주석**을 반드시 달아야 합니다.
+이것은 **운영 시 가장 중요한 요소**입니다.
+
+#### 주석 작성 원칙:
+1. **모든 클래스/함수/컴포넌트**: 역할과 목적을 간단히 설명
+2. **복잡한 로직**: 왜 이렇게 작성했는지 이유 설명
+3. **비즈니스 로직**: 업무 규칙을 명확히 설명
+4. **간결하게**: 한두 줄로 핵심만 설명
+5. **한글 사용**: 운영팀이 쉽게 이해할 수 있도록
+
+#### Backend 주석 예시:
+```java
+/**
+ * 직책 엔티티
+ * - 원장차수별 직책 정보를 관리
+ * - positions_id가 PK (자동 증가)
+ */
+@Entity
+public class Position {
+
+    /**
+     * 직책 활성화
+     * - is_active를 'Y'로 변경
+     */
+    public void activate() {
+        this.isActive = "Y";
+    }
+}
+```
+
+#### Frontend 주석 예시:
+```typescript
+/**
+ * 직책 관리 페이지
+ * - 직책 목록 조회/등록/수정/삭제
+ * - PositionMgmt는 모든 페이지의 표준 템플릿
+ */
+const PositionMgmt: React.FC = () => {
+
+  /**
+   * 직책 목록 조회
+   * - API: GET /api/positions
+   */
+  const fetchPositions = async () => {
+    // ...
+  };
+}
+```
+
 ### 프로젝트 구조
 ```
 RSMS/
@@ -224,6 +277,7 @@ const searchFields = useMemo<FilterField[]>(() => [
 
 ### Phase 1: 문서 확인 (필수)
 - [ ] **CLAUDE.md** (이 문서) 읽기
+- [ ] **🔥 주석 작성 필수 원칙 확인** (최최우선)
 - [ ] **🚨 PositionMgmt.tsx 절대 표준 템플릿 규칙 확인** (최우선)
 - [ ] 개발할 기능에 맞는 참조 문서 확인:
   - Frontend 작업 시: **FRONTEND_ARCHITECTURE.md** + **FRONTEND_DEVELOPMENT_GUIDE.md**
@@ -239,6 +293,7 @@ const searchFields = useMemo<FilterField[]>(() => [
 - [ ] shared/components, domain 구조 파악
 
 ### Phase 3: 개발 원칙 숙지
+- [ ] **주석 작성 필수: 모든 코드에 간단하고 알기 쉬운 주석 달기** (최최우선)
 - [ ] **PositionMgmt.tsx 100% 준수 원칙** 숙지
 - [ ] 아래 핵심 원칙들 숙지 후 개발 시작
 

@@ -258,16 +258,11 @@ const CeoMgmtDutySearch: React.FC<CeoMgmtDutySearchProps> = ({ className }) => {
     {
       key: 'implementationStatus',
       type: 'select',
-      label: '시행여부',
+      label: '직책',
       options: [
-        { value: '서울', label: '서울' },
-        { value: '부산', label: '부산' },
-        { value: '대구', label: '대구' },
-        { value: '인천', label: '인천' },
-        { value: '광주', label: '광주' },
-        { value: '대전', label: '대전' },
-        { value: '울산', label: '울산' },
-        { value: '세종', label: '세종' }
+        { value: '대표이사', label: '대표이사' },
+        { value: '이사회장', label: '이사회장' },
+        { value: '감사본부', label: '감사본부' }
       ],
       gridSize: { xs: 12, sm: 6, md: 3 }
     }
@@ -355,7 +350,7 @@ const CeoMgmtDutySearch: React.FC<CeoMgmtDutySearchProps> = ({ className }) => {
             <AssignmentIcon className={styles.headerIcon} />
             <div>
               <h1 className={styles.pageTitle}>
-                {t('ceo.duty.title', 'CEO총괄관리의무조회')}
+                {t('ceo.duty.title', '직책총괄관리의무조회')}
               </h1>
               <p className={styles.pageDescription}>
                 {t('ceo.duty.description', 'CEO의 총괄관리의무의 관리활동을 조회하고 관리합니다')}

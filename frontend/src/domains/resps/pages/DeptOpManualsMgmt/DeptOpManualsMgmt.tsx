@@ -10,7 +10,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import SecurityIcon from '@mui/icons-material/Security';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './DeptOpManualsMgmt.module.scss';
@@ -23,10 +22,8 @@ import type {
   DeptOpManualsModalState,
   DeptOpManualsPagination,
   DeptOpManualsStatistics,
-  ManagementActivityStatus,
   ManagementActivityType,
-  RiskAssessmentLevel,
-  ApprovalStatus
+  RiskAssessmentLevel
 } from './types/deptOpManuals.types';
 
 // Shared Components
@@ -280,9 +277,9 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     },
     {
       key: 'irregularityName',
-      label: '부정명',
+      label: '부점명',
       type: 'text',
-      placeholder: '부정명을 입력하세요',
+      placeholder: '부점명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2.5 }
     },
     {

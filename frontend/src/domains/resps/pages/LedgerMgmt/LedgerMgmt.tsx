@@ -17,7 +17,7 @@ import type {
 } from './types/ledgerOrder.types';
 
 // API
-import * as ledgerOrderApi from './api/ledgerOrderApi';
+import * as ledgerOrderApi from '../../api/ledgerOrderApi';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -364,7 +364,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
       {/* 🏗️ 공통 페이지 헤더 */}
       <BasePageHeader
         icon={<DashboardIcon />}
-        title="원장관리 시스템"
+        title="책무이행차수관리"
         description="원장차수 정보를 체계적으로 관리합니다"
         statistics={headerStatistics}
         i18nNamespace="resps"
