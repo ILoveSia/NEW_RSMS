@@ -183,8 +183,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
     headerClass: 'ag-header-cell-centered'
   },
   {
-    field: 'departmentName',
-    headerName: '부서명',
+    field: 'hpName',
+    headerName: '본부명',
     width: 150,
     cellStyle: { textAlign: 'left' }
   },
@@ -208,7 +208,7 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   },
   {
     field: 'modificationDate',
-    headerName: '변경일자',
+    headerName: '수정일자',
     width: 110,
     valueGetter: (params) => params.data?.modificationDate || '-',
     cellStyle: (params: any) => ({
@@ -219,7 +219,7 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   },
   {
     field: 'modifier',
-    headerName: '변경자',
+    headerName: '수정자',
     width: 120,
     cellStyle: {
       display: 'flex',
@@ -345,12 +345,12 @@ export const excelColumnMapping = {
   positionCode: '직책코드',
   positionName: '직책명',
   isRepresentative: '대표여부',
-  departmentName: '부서명',
+  hpName: '본부명',
   registrationDate: '등록일자',
   registrar: '등록자',
   registrarPosition: '등록자직책',
-  modificationDate: '변경일자',
-  modifier: '변경자',
-  modifierPosition: '변경자직책',
+  modificationDate: '수정일자',
+  modifier: '수정자',
+  modifierPosition: '수정자직책',
   isActive: '사용여부'
 };

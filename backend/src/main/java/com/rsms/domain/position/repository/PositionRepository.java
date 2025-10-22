@@ -47,6 +47,15 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     List<Position> findByHqCode(String hqCode);
 
     /**
+     * 원장차수ID로 조회
+     * - 특정 원장차수의 직책 조회
+     *
+     * @param ledgerOrderId 원장차수ID
+     * @return 직책 리스트
+     */
+    List<Position> findByLedgerOrderId(String ledgerOrderId);
+
+    /**
      * 사용여부로 조회
      * - Y 또는 N으로 필터링
      *
@@ -196,4 +205,40 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
         ORDER BY a.positions_id, b.org_code
         """, nativeQuery = true)
     List<java.util.Map<String, Object>> findAllWithDetails();
+
+    /**
+     * 모든 직책 조회 (positions 기준 그룹화)
+     * - positions 테이블 기준으로 각 직책당 1개 행 반환
+     * - 부점명은 배열로 집계 (STRING_AGG 사용)
+     * - 부점명 개수도 함께 반환
+     *
+     * @return Map 리스트 (각 직책당 1개 행, 부점명 배열 포함)
+     */
+    @Query(value = """
+        SELECT a.positions_id
+              ,a.ledger_order_id
+              ,a.positions_cd
+              ,a.positions_name
+              ,a.hq_code
+              ,a.hq_name
+              ,a.expiration_date
+              ,a.positions_status
+              ,a.is_active
+              ,a.is_concurrent
+              ,a.created_by
+              ,a.created_at
+              ,a.updated_by
+              ,a.updated_at
+              ,STRING_AGG(c.org_name, '||' ORDER BY c.org_name) as org_names
+              ,COUNT(DISTINCT b.org_code) as org_count
+        FROM rsms.positions a
+        LEFT JOIN rsms.positions_details b ON a.positions_id = b.positions_id
+        LEFT JOIN rsms.organizations c ON b.org_code = c.org_code
+        GROUP BY a.positions_id, a.ledger_order_id, a.positions_cd, a.positions_name,
+                 a.hq_code, a.hq_name, a.expiration_date, a.positions_status,
+                 a.is_active, a.is_concurrent, a.created_by, a.created_at,
+                 a.updated_by, a.updated_at
+        ORDER BY a.positions_id
+        """, nativeQuery = true)
+    List<java.util.Map<String, Object>> findAllPositionsGrouped();
 }

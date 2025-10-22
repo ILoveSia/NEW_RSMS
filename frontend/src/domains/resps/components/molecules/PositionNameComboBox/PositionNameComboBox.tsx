@@ -64,10 +64,19 @@ const PositionNameComboBox: React.FC<PositionNameComboBoxProps> = ({
 
   /**
    * 선택 변경 핸들러
+   * - 직책명(detailName)과 직책코드(detailCode)를 함께 반환
    */
   const handleChange = (event: SelectChangeEvent<string>): void => {
     const selectedValue = event.target.value;
-    onChange(selectedValue === '' ? null : selectedValue);
+
+    if (selectedValue === '') {
+      onChange(null, null);
+      return;
+    }
+
+    // 선택된 직책의 코드 찾기
+    const selectedPosition = positionNames?.find(p => p.detailName === selectedValue);
+    onChange(selectedValue, selectedPosition?.detailCode || null);
   };
 
   /**

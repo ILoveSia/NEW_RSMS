@@ -102,6 +102,20 @@ public class PositionController {
     }
 
     /**
+     * 원장차수별 조회
+     * - GET /api/positions/ledger/{ledgerOrderId}
+     *
+     * @param ledgerOrderId 원장차수ID
+     * @return 직책 리스트
+     */
+    @GetMapping("/ledger/{ledgerOrderId}")
+    public ResponseEntity<List<PositionDto>> getPositionsByLedgerOrderId(@PathVariable String ledgerOrderId) {
+        log.info("GET /api/positions/ledger/{} - 원장차수별 조회", ledgerOrderId);
+        List<PositionDto> positions = positionService.getPositionsByLedgerOrderId(ledgerOrderId);
+        return ResponseEntity.ok(positions);
+    }
+
+    /**
      * 본부코드별 조회
      * - GET /api/positions/hq/{hqCode}
      *

@@ -31,8 +31,8 @@ export interface PositionNameComboBoxProps {
   /** 선택된 직책명 */
   value?: string;
 
-  /** 선택 변경 핸들러 */
-  onChange: (positionName: string | null) => void;
+  /** 선택 변경 핸들러 - 직책명과 코드를 함께 반환 */
+  onChange: (positionName: string | null, positionCode?: string | null) => void;
 
   /** 플레이스홀더 텍스트 */
   placeholder?: string;

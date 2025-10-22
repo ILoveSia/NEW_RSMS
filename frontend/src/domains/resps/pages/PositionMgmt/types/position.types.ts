@@ -8,7 +8,8 @@ export interface Position {
   positionName: string;      // 직책명
   headquarters: string;      // 본부구분
   hqName: string;            // 본부명
-  orgName: string;           // 부점명
+  orgName: string;           // 부점명 (단일 값, 호환성 유지)
+  orgNames?: string[];       // 부점명 배열 (positions 기준 조회 시 사용)
   registrationDate: string;  // 등록일자
   registrar: string;         // 등록자
   registrarPosition: string; // 등록자직책

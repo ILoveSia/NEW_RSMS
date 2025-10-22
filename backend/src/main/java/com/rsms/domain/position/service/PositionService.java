@@ -35,46 +35,53 @@ public class PositionService {
     private final PositionDetailRepository positionDetailRepository;
 
     /**
-     * 모든 직책 조회 (부서별 행 반환)
-     * - positions + positions_details + organizations 3개 테이블 조인
-     * - 각 positions_details 행마다 별도의 DTO 반환 (GROUP BY 없음)
-     * - positions_id가 같아도 org_code가 다르면 여러 행으로 반환
+     * 모든 직책 조회 (positions 기준)
+     * - positions 테이블 기준으로 각 직책당 1개 행 반환
+     * - 부점명은 배열로 집계하여 orgNames 필드에 저장
+     * - 부점 개수도 함께 반환
      *
-     * @return 직책 DTO 리스트 (각 부서별 행)
+     * @return 직책 DTO 리스트 (각 직책당 1개 행)
      */
     public List<PositionDto> getAllPositions() {
-        log.debug("모든 직책 조회 (3개 테이블 조인 - 부서별 행 반환)");
+        log.debug("모든 직책 조회 (positions 기준 그룹화)");
 
-        // 한 방 쿼리로 3개 테이블 조인 (각 부서별 행으로 반환)
-        List<java.util.Map<String, Object>> results = positionRepository.findAllWithDetails();
-        log.debug("조회된 전체 행 수: {}", results.size());
+        // positions 기준으로 그룹화된 데이터 조회
+        List<java.util.Map<String, Object>> results = positionRepository.findAllPositionsGrouped();
+        log.debug("조회된 직책 수: {}", results.size());
 
-        // 각 행을 PositionDto로 변환 (GROUP BY 없음)
+        // 각 행을 PositionDto로 변환
         return results.stream()
-            .map(row -> PositionDto.builder()
-                .positionsId(((Number) row.get("positions_id")).longValue())
-                .ledgerOrderId((String) row.get("ledger_order_id"))
-                .positionsCd((String) row.get("positions_cd"))
-                .positionsName((String) row.get("positions_name"))
-                .hqCode((String) row.get("hq_code"))
-                .hqName((String) row.get("hq_name"))
-                .expirationDate(row.get("expiration_date") != null
-                    ? ((java.sql.Date) row.get("expiration_date")).toLocalDate()
-                    : null)
-                .positionsStatus((String) row.get("positions_status"))
-                .isActive(convertToString(row.get("is_active")))
-                .isConcurrent(convertToString(row.get("is_concurrent")))
-                .orgCode((String) row.get("org_code"))
-                .orgName((String) row.get("org_name"))
-                .createdBy((String) row.get("created_by"))
-                .createdAt(row.get("created_at") != null
-                    ? ((java.sql.Timestamp) row.get("created_at")).toLocalDateTime()
-                    : null)
-                .updatedBy((String) row.get("updated_by"))
-                .updatedAt(row.get("updated_at") != null
-                    ? ((java.sql.Timestamp) row.get("updated_at")).toLocalDateTime()
-                    : null)
-                .build())
+            .map(row -> {
+                // org_names를 "||"로 구분하여 List로 변환
+                String orgNamesString = (String) row.get("org_names");
+                List<String> orgNames = orgNamesString != null && !orgNamesString.isEmpty()
+                    ? List.of(orgNamesString.split("\\|\\|"))
+                    : List.of();
+
+                return PositionDto.builder()
+                    .positionsId(((Number) row.get("positions_id")).longValue())
+                    .ledgerOrderId((String) row.get("ledger_order_id"))
+                    .positionsCd((String) row.get("positions_cd"))
+                    .positionsName((String) row.get("positions_name"))
+                    .hqCode((String) row.get("hq_code"))
+                    .hqName((String) row.get("hq_name"))
+                    .expirationDate(row.get("expiration_date") != null
+                        ? ((java.sql.Date) row.get("expiration_date")).toLocalDate()
+                        : null)
+                    .positionsStatus((String) row.get("positions_status"))
+                    .isActive(convertToString(row.get("is_active")))
+                    .isConcurrent(convertToString(row.get("is_concurrent")))
+                    .orgNames(orgNames)  // 부점명 리스트
+                    .createdBy((String) row.get("created_by"))
+                    .createdAt(row.get("created_at") != null
+                        ? ((java.sql.Timestamp) row.get("created_at")).toLocalDateTime()
+                        : null)
+                    .updatedBy((String) row.get("updated_by"))
+                    .updatedAt(row.get("updated_at") != null
+                        ? ((java.sql.Timestamp) row.get("updated_at")).toLocalDateTime()
+                        : null)
+                    .build();
+            })
             .collect(Collectors.toList());
     }
 
@@ -165,6 +172,20 @@ public class PositionService {
     public List<PositionDto> getPositionsByActive(String isActive) {
         log.debug("사용여부별 조회 - isActive: {}", isActive);
         return positionRepository.findByIsActiveOrderByCreatedAtDesc(isActive).stream()
+            .map(PositionDto::from)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 원장차수별 조회
+     * - 원장차수ID로 직책 조회
+     *
+     * @param ledgerOrderId 원장차수ID
+     * @return 직책 DTO 리스트
+     */
+    public List<PositionDto> getPositionsByLedgerOrderId(String ledgerOrderId) {
+        log.debug("원장차수별 조회 - ledgerOrderId: {}", ledgerOrderId);
+        return positionRepository.findByLedgerOrderId(ledgerOrderId).stream()
             .map(PositionDto::from)
             .collect(Collectors.toList());
     }

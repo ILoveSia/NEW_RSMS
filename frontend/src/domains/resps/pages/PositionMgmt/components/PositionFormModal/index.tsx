@@ -63,6 +63,9 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
   // 원장차수 상태 (LedgerOrderComboBox용)
   const [ledgerOrderId, setLedgerOrderId] = useState<string | null>(null);
 
+  // 직책코드 상태 (PositionNameComboBox에서 받아온 detailCode)
+  const [positionCode, setPositionCode] = useState<string | null>(null);
+
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({
     ledgerOrderId: '',
@@ -93,12 +96,8 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
     return departments.map(dept => dept.orgCode);
   }, [departments]);
 
-  // 직책코드 추출 (PositionNameComboBox에서 선택한 값)
-  // TODO: PositionName ComboBox에서 코드를 반환하도록 수정 필요
-  const selectedPositionCd = useMemo(() => {
-    // 현재는 positionName만 있으므로 추후 수정 필요
-    return formData.positionName;
-  }, [formData.positionName]);
+  // 직책코드는 이제 positionCode 상태에서 직접 관리
+  // (PositionNameComboBox의 onChange에서 직접 설정됨)
 
   // 부점 목록 DataGrid 컬럼 정의 (조회 전용)
   const departmentColumns = useMemo<ColDef<DepartmentDto>[]>(() => [
@@ -137,6 +136,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
         headquarters: ''
       });
       setLedgerOrderId(null);
+      setPositionCode(null); // 직책코드 초기화
       setIsEditing(true);
       setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
       setDetailDepartments([]);
@@ -221,7 +221,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
         // API 호출용 요청 데이터 생성
         const request: CreatePositionRequest = {
           ledgerOrderId: ledgerOrderId,
-          positionsCd: selectedPositionCd, // TODO: PositionNameComboBox에서 코드 받아오도록 수정 필요
+          positionsCd: positionCode || '', // PositionNameComboBox에서 받아온 직책코드
           positionsName: formData.positionName,
           hqCode: selectedHqCode || '',
           hqName: formData.headquarters,
@@ -245,7 +245,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
 
         const updateRequest: Partial<CreatePositionRequest> = {
           ledgerOrderId: ledgerOrderId,
-          positionsCd: selectedPositionCd,
+          positionsCd: positionCode || '', // PositionNameComboBox에서 받아온 직책코드
           positionsName: formData.positionName,
           hqCode: selectedHqCode || '',
           hqName: formData.headquarters,
@@ -266,7 +266,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       console.error('직책 저장 실패:', error);
       alert(error instanceof Error ? error.message : '직책 저장에 실패했습니다.');
     }
-  }, [mode, formData, position, isEditing, onClose, errors, ledgerOrderId, selectedHqCode, selectedPositionCd, allOrgCodes]);
+  }, [mode, formData, position, isEditing, onClose, errors, ledgerOrderId, selectedHqCode, positionCode, allOrgCodes, onRefresh]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -329,7 +329,10 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           {/* 직책명 - 공통 컴포넌트 사용 (상세 모드에서는 항상 비활성화) */}
           <PositionNameComboBox
             value={formData.positionName}
-            onChange={(value) => handleChange('positionName', value || '')}
+            onChange={(positionName, positionCodeValue) => {
+              handleChange('positionName', positionName || '');
+              setPositionCode(positionCodeValue || null);
+            }}
             label="직책명"
             required
             disabled={mode === 'detail'}

@@ -24,6 +24,12 @@ import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/comp
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
+// Domain Components
+import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
+
+// API
+import { getPositionConcurrents, type PositionConcurrentDto } from '../../api/positionApi';
+
 // PositionDual specific components
 import { positionDualColumns } from './components/PositionDualDataGrid/positionDualColumns';
 
@@ -53,6 +59,7 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<PositionDualFilters>({
+    ledgerOrderId: '',
     positionName: '',
     isActive: '',
     isRepresentative: '',
@@ -71,6 +78,29 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     detailModal: false,
     selectedPositionDual: null
   });
+
+  /**
+   * PositionConcurrentDto -> PositionDual 변환
+   * - Backend DTO를 Frontend 타입으로 변환
+   */
+  const convertToPositionDual = useCallback((dto: PositionConcurrentDto, index: number): PositionDual => {
+    return {
+      id: dto.positionConcurrentId.toString(),
+      seq: index + 1,
+      concurrentStatusCode: dto.concurrentGroupCd,
+      positionCode: dto.positionsCd,
+      positionName: dto.positionsName,
+      isRepresentative: dto.isRepresentative === 'Y',
+      hpName: dto.hqName || '',
+      registrationDate: dto.createdAt ? dto.createdAt.split('T')[0] : '',
+      registrar: dto.createdBy,
+      registrarPosition: '',
+      modificationDate: dto.updatedAt ? dto.updatedAt.split('T')[0] : undefined,
+      modifier: dto.updatedBy || undefined,
+      modifierPosition: undefined,
+      isActive: dto.isActive === 'Y'
+    };
+  }, []);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<PositionDualFilters>) => {
@@ -161,40 +191,45 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
   }, []);
 
   // 폼 모달 핸들러들
-  const handlePositionDualSave = useCallback(async (formData: PositionDualFormData) => {
+  const handlePositionDualSave = useCallback(async (_formData: PositionDualFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 겸직 관계 생성
-      // const response = await positionDualApi.create(formData);
 
-      // 임시로 새 겸직 관계 객체들 생성
-      const newPositionDuals: PositionDual[] = formData.positions.map((position, index) => ({
-        id: `${Date.now()}_${index}`,
-        seq: positionDuals.length + index + 1,
-        concurrentStatusCode: formData.concurrentStatusCode,
-        positionCode: position.positionCode,
-        positionName: position.positionName,
-        isRepresentative: position.isRepresentative,
-        departmentName: position.departmentName,
-        registrationDate: new Date().toISOString().split('T')[0],
-        registrar: '현재사용자',
-        registrarPosition: '관리자',
-        isActive: position.isActive
-      }));
+      // API 호출은 PositionDualFormModal에서 이미 처리됨
+      // 여기서는 데이터를 다시 조회만 하면 됨
+      if (filters.ledgerOrderId) {
+        const dtos = await getPositionConcurrents(filters.ledgerOrderId);
+        const convertedData = dtos.map((dto, index) => convertToPositionDual(dto, index));
 
-      setPositionDuals(prev => [...newPositionDuals, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + newPositionDuals.length }));
+        const sortedPositionDuals = convertedData.sort((a, b) => {
+          if (a.concurrentStatusCode !== b.concurrentStatusCode) {
+            return a.concurrentStatusCode.localeCompare(b.concurrentStatusCode);
+          }
+          if (a.isRepresentative !== b.isRepresentative) {
+            return a.isRepresentative ? -1 : 1;
+          }
+          return a.seq - b.seq;
+        });
+
+        setPositionDuals(sortedPositionDuals);
+        setPagination(prev => ({
+          ...prev,
+          total: sortedPositionDuals.length,
+          totalPages: Math.ceil(sortedPositionDuals.length / prev.size)
+        }));
+      }
+
       handleModalClose();
       toast.success('겸직 관계가 성공적으로 등록되었습니다.');
     } catch (error) {
-      console.error('겸직 관계 등록 실패:', error);
-      toast.error('겸직 관계 등록에 실패했습니다.');
+      console.error('겸직 관계 조회 실패:', error);
+      toast.error('겸직 관계 목록을 다시 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  }, [positionDuals.length, handleModalClose]);
+  }, [filters.ledgerOrderId, convertToPositionDual, handleModalClose]);
 
-  const handlePositionDualUpdate = useCallback(async (id: string, formData: PositionDualFormData) => {
+  const handlePositionDualUpdate = useCallback(async (_id: string, formData: PositionDualFormData) => {
     try {
       setLoading(true);
       // TODO: API 호출로 겸직 관계 수정
@@ -237,6 +272,12 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
   }, []);
 
   const handleSearch = useCallback(async () => {
+    // 원장차수가 선택되지 않으면 경고
+    if (!filters.ledgerOrderId) {
+      toast.warning('원장차수를 선택해주세요.');
+      return;
+    }
+
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -245,25 +286,54 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     const loadingToastId = toast.loading('겸직 관계 정보를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // 실제 API 호출
+      const dtos = await getPositionConcurrents(filters.ledgerOrderId);
 
-      console.log('검색 필터:', filters);
+      // DTO를 PositionDual 타입으로 변환
+      const convertedData = dtos.map((dto, index) => convertToPositionDual(dto, index));
+
+      // 겸직그룹코드별로 정렬 (셀 병합을 위해)
+      const sortedPositionDuals = convertedData.sort((a, b) => {
+        // 1차: 겸직그룹코드로 정렬
+        if (a.concurrentStatusCode !== b.concurrentStatusCode) {
+          return a.concurrentStatusCode.localeCompare(b.concurrentStatusCode);
+        }
+        // 2차: 대표여부로 정렬 (대표가 먼저)
+        if (a.isRepresentative !== b.isRepresentative) {
+          return a.isRepresentative ? -1 : 1;
+        }
+        // 3차: 순번으로 정렬
+        return a.seq - b.seq;
+      });
+
+      setPositionDuals(sortedPositionDuals);
+      setPagination(prev => ({
+        ...prev,
+        total: sortedPositionDuals.length,
+        totalPages: Math.ceil(sortedPositionDuals.length / prev.size)
+      }));
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
+      toast.update(loadingToastId, 'success', `검색 완료: ${sortedPositionDuals.length}건`);
     } catch (error) {
       // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
       console.error('검색 실패:', error);
+      setPositionDuals([]);
+      setPagination(prev => ({
+        ...prev,
+        total: 0,
+        totalPages: 0
+      }));
     } finally {
       setLoading(false);
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, [filters]);
+  }, [filters.ledgerOrderId, convertToPositionDual]);
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
       positionName: '',
       isActive: '',
       isRepresentative: '',
@@ -310,17 +380,25 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '원장차수',
+      required: true,
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId}
+          onChange={(value) => handleFiltersChange({ ledgerOrderId: value || '' })}
+          label="원장차수"
+          required
+        />
+      )
+    },
+    {
       key: 'positionName',
       type: 'text',
       label: '직책명',
       placeholder: '직책명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'concurrentStatusCode',
-      type: 'text',
-      label: '겸직현황코드',
-      placeholder: '겸직현황코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -333,19 +411,8 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
         { value: 'N', label: '미사용' }
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'isRepresentative',
-      type: 'select',
-      label: '대표여부',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'Y', label: '대표' },
-        { value: 'N', label: '일반' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleFiltersChange]);
 
   // BaseActionBar용 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -394,136 +461,67 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     }
   ], [statistics]);
 
-  // Mock data loading
+  /**
+   * 실제 API로 겸직 데이터 조회
+   * - filters.ledgerOrderId가 변경될 때마다 자동 조회
+   */
   React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockPositionDuals: PositionDual[] = [
-      {
-        id: '1',
-        seq: 1,
-        concurrentStatusCode: 'G001',
-        positionCode: 'R106',
-        positionName: '오토금융본부장',
-        isRepresentative: true,
-        departmentName: '오토금융본부',
-        registrationDate: '2025-08-13',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-09-15',
-        modifier: '홍길동',
-        modifierPosition: '부서장',
-        isActive: true
-      },
-      {
-        id: '2',
-        seq: 2,
-        concurrentStatusCode: 'G001',
-        positionCode: 'R107',
-        positionName: '오토채널본부장',
-        isRepresentative: false,
-        departmentName: '오토채널본부',
-        registrationDate: '2025-08-13',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        isActive: true
-      },
-      {
-        id: '3',
-        seq: 3,
-        concurrentStatusCode: 'G002',
-        positionCode: 'R001',
-        positionName: '대표이사',
-        isRepresentative: true,
-        departmentName: 'CEO',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-09-18',
-        modifier: '김철수',
-        modifierPosition: '인사팀장',
-        isActive: true
-      },
-      {
-        id: '4',
-        seq: 4,
-        concurrentStatusCode: 'G002',
-        positionCode: 'R003',
-        positionName: '준법감시인',
-        isRepresentative: false,
-        departmentName: '준법감시인',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        isActive: true
-      },
-      {
-        id: '5',
-        seq: 5,
-        concurrentStatusCode: 'G003',
-        positionCode: 'R002',
-        positionName: '감사본부장',
-        isRepresentative: true,
-        departmentName: '감사본부',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-09-10',
-        modifier: '이영희',
-        modifierPosition: '감사팀장',
-        isActive: true
-      },
-      {
-        id: '6',
-        seq: 6,
-        concurrentStatusCode: 'G003',
-        positionCode: 'R004',
-        positionName: '경영전략본부장',
-        isRepresentative: false,
-        departmentName: '경영전략본부',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        isActive: true
-      },
-      {
-        id: '7',
-        seq: 7,
-        concurrentStatusCode: 'G004',
-        positionCode: 'R000',
-        positionName: '이사회의장',
-        isRepresentative: false,
-        departmentName: '이사회',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-09-17',
-        modifier: '박민수',
-        modifierPosition: '이사회사무국장',
-        isActive: false
+    const fetchPositionConcurrents = async () => {
+      // 원장차수가 선택되지 않으면 조회하지 않음
+      if (!filters.ledgerOrderId) {
+        setPositionDuals([]);
+        setPagination(prev => ({
+          ...prev,
+          total: 0,
+          totalPages: 0
+        }));
+        return;
       }
-    ];
 
-    // 겸직현황코드별로 정렬 (셀 병합을 위해)
-    const sortedPositionDuals = mockPositionDuals.sort((a, b) => {
-      // 1차: 겸직현황코드로 정렬
-      if (a.concurrentStatusCode !== b.concurrentStatusCode) {
-        return a.concurrentStatusCode.localeCompare(b.concurrentStatusCode);
-      }
-      // 2차: 대표여부로 정렬 (대표가 먼저)
-      if (a.isRepresentative !== b.isRepresentative) {
-        return a.isRepresentative ? -1 : 1;
-      }
-      // 3차: 순번으로 정렬
-      return a.seq - b.seq;
-    });
+      setLoading(true);
+      try {
+        // 실제 API 호출
+        const dtos = await getPositionConcurrents(filters.ledgerOrderId);
 
-    setPositionDuals(sortedPositionDuals);
-    setPagination(prev => ({
-      ...prev,
-      total: mockPositionDuals.length,
-      totalPages: Math.ceil(mockPositionDuals.length / prev.size)
-    }));
-  }, []);
+        // DTO를 PositionDual 타입으로 변환
+        const convertedData = dtos.map((dto, index) => convertToPositionDual(dto, index));
+
+        // 겸직그룹코드별로 정렬 (셀 병합을 위해)
+        const sortedPositionDuals = convertedData.sort((a, b) => {
+          // 1차: 겸직그룹코드로 정렬
+          if (a.concurrentStatusCode !== b.concurrentStatusCode) {
+            return a.concurrentStatusCode.localeCompare(b.concurrentStatusCode);
+          }
+          // 2차: 대표여부로 정렬 (대표가 먼저)
+          if (a.isRepresentative !== b.isRepresentative) {
+            return a.isRepresentative ? -1 : 1;
+          }
+          // 3차: 순번으로 정렬
+          return a.seq - b.seq;
+        });
+
+        setPositionDuals(sortedPositionDuals);
+        setPagination(prev => ({
+          ...prev,
+          total: sortedPositionDuals.length,
+          totalPages: Math.ceil(sortedPositionDuals.length / prev.size)
+        }));
+      } catch (error) {
+        console.error('겸직 목록 조회 실패:', error);
+        toast.error('겸직 목록을 불러오는데 실패했습니다.');
+        setPositionDuals([]);
+        setPagination(prev => ({
+          ...prev,
+          total: 0,
+          totalPages: 0
+        }));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPositionConcurrents();
+  }, [filters.ledgerOrderId, convertToPositionDual]);
 
   return (
     <div className={`${styles.container} ${className || ''}`}>

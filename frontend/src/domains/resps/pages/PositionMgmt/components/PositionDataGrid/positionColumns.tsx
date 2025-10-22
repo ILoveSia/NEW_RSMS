@@ -41,7 +41,25 @@ export const positionColumns: ColDef<Position>[] = [
     field: 'orgName',
     sortable: true,
     filter: true,
-    width: 150
+    width: 200,
+    valueGetter: (params) => {
+      const orgNames = params.data?.orgNames;
+
+      // orgNames가 없거나 빈 배열인 경우
+      if (!orgNames || orgNames.length === 0) {
+        return '';
+      }
+
+      // 부점이 1개인 경우
+      if (orgNames.length === 1) {
+        return orgNames[0];
+      }
+
+      // 부점이 2개 이상인 경우: "첫번째부점명 외 N"
+      const firstOrgName = orgNames[0];
+      const remainingCount = orgNames.length - 1;
+      return `${firstOrgName} 외 ${remainingCount}`;
+    }
   },
   {
     headerName: '등록일',

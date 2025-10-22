@@ -144,6 +144,28 @@ export const getAllPositions = async (): Promise<PositionDto[]> => {
 };
 
 /**
+ * 원장차수별 직책 조회
+ * - GET /api/positions/ledger/{ledgerOrderId}
+ *
+ * @param ledgerOrderId 원장차수ID
+ * @returns Promise<PositionDto[]> 직책 리스트
+ */
+export const getPositionsByLedgerOrderId = async (ledgerOrderId: string): Promise<PositionDto[]> => {
+  try {
+    const response = await axios.get<PositionDto[]>(`${API_BASE_URL}/ledger/${ledgerOrderId}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('원장차수별 직책 조회 실패:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || '원장차수별 직책 조회에 실패했습니다.');
+    }
+    throw error;
+  }
+};
+
+/**
  * 직책 단건 조회
  */
 export const getPosition = async (positionsId: number): Promise<PositionDto> => {
@@ -196,6 +218,111 @@ export const getPositionDepartments = async (positionsId: number): Promise<Array
     if (axios.isAxiosError(error)) {
       console.error('부점 목록 조회 실패:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || '부점 목록 조회에 실패했습니다.');
+    }
+    throw error;
+  }
+};
+
+// ===============================
+// 겸직 API
+// ===============================
+
+/**
+ * 겸직 등록 요청 DTO
+ */
+export interface CreatePositionConcurrentRequest {
+  ledgerOrderId: string;
+  positions: Array<{
+    positionsCd: string;
+    positionsName: string;
+    isRepresentative: string;
+    hqCode: string;
+    hqName: string;
+  }>;
+}
+
+/**
+ * 겸직 응답 DTO
+ */
+export interface PositionConcurrentDto {
+  positionConcurrentId: number;
+  ledgerOrderId: string;
+  positionsCd: string;
+  concurrentGroupCd: string;
+  positionsName: string;
+  isRepresentative: string;
+  hqCode: string;
+  hqName: string;
+  isActive: string;
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string;
+}
+
+/**
+ * 겸직 등록
+ * POST /api/resps/position-concurrents
+ */
+export const createPositionConcurrents = async (
+  request: CreatePositionConcurrentRequest
+): Promise<PositionConcurrentDto[]> => {
+  try {
+    const response = await axios.post<PositionConcurrentDto[]>(
+      '/api/resps/position-concurrents',
+      request,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('겸직 등록 실패:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || '겸직 등록에 실패했습니다.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * 원장차수ID로 겸직 목록 조회
+ * GET /api/resps/position-concurrents?ledgerOrderId={ledgerOrderId}
+ */
+export const getPositionConcurrents = async (
+  ledgerOrderId: string
+): Promise<PositionConcurrentDto[]> => {
+  try {
+    const response = await axios.get<PositionConcurrentDto[]>(
+      '/api/resps/position-concurrents',
+      {
+        params: { ledgerOrderId },
+        withCredentials: true
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('겸직 목록 조회 실패:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || '겸직 목록 조회에 실패했습니다.');
+    }
+    throw error;
+  }
+};
+
+/**
+ * 겸직그룹 삭제
+ * DELETE /api/resps/position-concurrents/group/{concurrentGroupCd}
+ */
+export const deletePositionConcurrentGroup = async (
+  concurrentGroupCd: string
+): Promise<void> => {
+  try {
+    await axios.delete(`/api/resps/position-concurrents/group/${concurrentGroupCd}`, {
+      withCredentials: true
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('겸직 그룹 삭제 실패:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || '겸직 그룹 삭제에 실패했습니다.');
     }
     throw error;
   }

@@ -189,7 +189,6 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           id: Date.now().toString(),
           positionName: formData.positionName,
           headquarters: formData.headquarters,
-          departmentName: '미지정',  // 기본값으로 설정
           divisionName: '미지정',
           registrationDate: new Date().toISOString().split('T')[0],
           registrar: '현재사용자',
@@ -277,13 +276,14 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           );
         }
 
-        // Position 타입으로 변환 (각 행마다 orgCode, orgName 사용)
+        // Position 타입으로 변환 (positions 기준, orgNames 배열 사용)
         const positions: Position[] = filteredData.map(dto => ({
           id: dto.positionsId.toString(),
           positionName: dto.positionsName,
           headquarters: dto.hqName,
-          hqName: dto.hqName,           // 본부명
-          orgName: dto.orgName || '-',  // 부점명
+          hqName: dto.hqName,                           // 본부명
+          orgName: dto.orgNames?.[0] || '-',            // 부점명 (첫번째 값, 호환성 유지)
+          orgNames: dto.orgNames || [],                 // 부점명 배열 (Grid valueGetter 사용)
           registrationDate: dto.createdAt.split('T')[0],
           registrar: dto.createdBy,
           registrarPosition: '-',

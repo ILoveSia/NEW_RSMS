@@ -52,6 +52,10 @@ CREATE TABLE rsms.positions (
   CONSTRAINT uk_positions_ledger_position_hq
     UNIQUE (ledger_order_id, positions_cd, hq_code),
 
+  -- 유일성 제약조건 (position_concurrents 외래키 참조용)
+  CONSTRAINT uk_positions_ledger_position
+    UNIQUE (ledger_order_id, positions_cd),
+
   -- 체크 제약조건
   CONSTRAINT chk_positions_is_active CHECK (is_active IN ('Y', 'N')),
   CONSTRAINT chk_positions_is_concurrent CHECK (is_concurrent IN ('Y', 'N'))
