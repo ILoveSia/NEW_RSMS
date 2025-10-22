@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 직책 수정 요청 DTO
@@ -21,6 +22,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class UpdatePositionRequest {
+
+    /**
+     * 원장차수ID (선택)
+     */
+    private String ledgerOrderId;
+
+    /**
+     * 직책코드 (선택)
+     */
+    private String positionsCd;
 
     /**
      * 직책명 (필수)
@@ -38,6 +49,11 @@ public class UpdatePositionRequest {
      * 본부코드 (선택)
      */
     private String hqCode;
+
+    /**
+     * 조직코드 리스트 (선택 - 본부 변경 시 부점 목록 업데이트)
+     */
+    private List<String> orgCodes;
 
     /**
      * 만료일 (선택)

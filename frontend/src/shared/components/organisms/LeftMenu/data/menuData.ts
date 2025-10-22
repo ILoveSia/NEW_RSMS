@@ -55,12 +55,12 @@ export const MENU_DATA: MenuItem[] = [
         path: '/app/resps/responsibilitydocmgmt',
         permission: 'auth'
       },
-      {
-        id: 'boardhistorymgmt',
-        title: '이사회이력관리',
-        path: '/app/resps/boardhistorymgmt',
-        permission: 'manager'
-      },
+      // {
+      //   id: 'boardhistorymgmt',
+      //   title: '이사회이력관리',
+      //   path: '/app/resps/boardhistorymgmt',
+      //   permission: 'manager'
+      // },
       {
         id: 'officerinfomgmt',
         title: '임원정보관리',
@@ -78,13 +78,13 @@ export const MENU_DATA: MenuItem[] = [
         title: '직책총괄관리의무조회',
         path: '/app/resps/ceomgmtdutysearch',
         permission: 'executive'
-      },
-      {
-        id: 'rolehistory',
-        title: '직책/책무 이력',
-        path: '/app/resps/rolehistory',
-        permission: 'manager'
       }
+      // {
+      //   id: 'rolehistory',
+      //   title: '직책/책무 이력',
+      //   path: '/app/resps/rolehistory',
+      //   permission: 'manager'
+      // }
     ]
   },
   {

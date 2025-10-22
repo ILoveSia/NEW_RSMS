@@ -4,7 +4,7 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import { LedgerOrder, LEDGER_ORDER_STATUS } from '../../types/ledgerOrder.types';
+import { LEDGER_ORDER_STATUS, LedgerOrder } from '../../types/ledgerOrder.types';
 
 /**
  * 원장차수 AG-Grid 컬럼 정의
@@ -26,7 +26,7 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     }
   },
   {
-    headerName: '원장차수ID',
+    headerName: '책무이행차수ID',
     field: 'ledgerOrderId',
     width: 150,
     sortable: true,
@@ -37,7 +37,7 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     cellStyle: { fontWeight: '500' }
   },
   {
-    headerName: '원장 제목',
+    headerName: '책무이행자수 제목',
     field: 'ledgerOrderTitle',
     width: 250,
     sortable: true,
@@ -52,7 +52,7 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     cellClass: 'clickable-cell'
   },
   {
-    headerName: '원장상태',
+    headerName: '책무차수상태',
     field: 'ledgerOrderStatus',
     width: 120,
     sortable: true,

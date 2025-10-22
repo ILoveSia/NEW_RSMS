@@ -45,25 +45,28 @@ public class PositionController {
     /**
      * 직책 검색
      * - GET /api/positions/search
-     * - 키워드, 본부코드, 사용여부로 검색
+     * - 키워드, 본부코드, 사용여부, 원장차수로 검색
      *
      * @param keyword 검색 키워드
      * @param hqCode 본부코드
      * @param isActive 사용여부 (Y/N)
+     * @param ledgerOrderId 원장차수ID
      * @return 검색 결과 리스트
      */
     @GetMapping("/search")
     public ResponseEntity<List<PositionDto>> searchPositions(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String hqCode,
-            @RequestParam(required = false) String isActive) {
-        log.info("GET /api/positions/search - keyword: {}, hqCode: {}, isActive: {}",
-                keyword, hqCode, isActive);
+            @RequestParam(required = false) String isActive,
+            @RequestParam(required = false) String ledgerOrderId) {
+        log.info("GET /api/positions/search - keyword: {}, hqCode: {}, isActive: {}, ledgerOrderId: {}",
+                keyword, hqCode, isActive, ledgerOrderId);
 
         PositionSearchRequest searchRequest = PositionSearchRequest.builder()
             .keyword(keyword)
             .hqCode(hqCode)
             .isActive(isActive)
+            .ledgerOrderId(ledgerOrderId)
             .build();
 
         List<PositionDto> positions = positionService.searchPositions(searchRequest);
@@ -273,5 +276,20 @@ public class PositionController {
 
         long count = positionService.countBySearchConditions(searchRequest);
         return ResponseEntity.ok(Map.of("count", count));
+    }
+
+    /**
+     * 직책별 부점 목록 조회
+     * - GET /api/positions/{positionsId}/departments
+     * - positions_details + organizations 조인하여 부점 목록 반환
+     *
+     * @param positionsId 직책ID
+     * @return 부점 목록 (org_code, org_name)
+     */
+    @GetMapping("/{positionsId}/departments")
+    public ResponseEntity<List<Map<String, Object>>> getPositionDepartments(@PathVariable Long positionsId) {
+        log.info("GET /api/positions/{}/departments - 직책별 부점 목록 조회", positionsId);
+        List<Map<String, Object>> departments = positionService.getPositionDepartments(positionsId);
+        return ResponseEntity.ok(departments);
     }
 }

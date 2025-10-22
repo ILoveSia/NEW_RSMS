@@ -1,17 +1,20 @@
 package com.rsms.domain.position.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 직책 생성 요청 DTO
  * - 직책 신규 등록 시 사용
  * - 필수 항목 검증 포함
+ * - positions 테이블 + positions_details 테이블 동시 등록
  *
  * @author Claude AI
  * @since 2025-10-20
@@ -51,6 +54,14 @@ public class CreatePositionRequest {
      */
     @NotBlank(message = "본부명은 필수입니다.")
     private String hqName;
+
+    /**
+     * 조직코드 리스트 (필수, positions_details 테이블에 저장)
+     * - 본부 선택 시 자동 조회된 모든 부서의 조직코드들
+     * - 최소 1개 이상의 조직코드가 필요 (본부에 속한 모든 부서)
+     */
+    @NotEmpty(message = "조직코드는 최소 1개 이상 필요합니다.")
+    private List<String> orgCodes;
 
     /**
      * 만료일 (선택, 기본값: 9999-12-31)

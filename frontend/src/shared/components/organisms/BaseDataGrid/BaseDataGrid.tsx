@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import {
   AgGridReact,
   AgGridReactProps
@@ -8,12 +8,11 @@ import {
   GridOptions,
   GridReadyEvent,
   GridApi,
-  ColumnApi,
   SelectionChangedEvent,
   CellClickedEvent,
   RowDoubleClickedEvent
 } from 'ag-grid-community';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import clsx from 'clsx';
 
 // AG-Grid CSS imports
@@ -121,7 +120,6 @@ const BaseDataGrid = <TData = any,>({
   ...gridProps
 }: BaseDataGridProps<TData>) => {
   const [gridApi, setGridApi] = useState<GridApi<TData> | null>(null);
-  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null);
 
   // 컬럼 정의에 체크박스 선택 추가 (맨 앞에 위치)
   const finalColumns = useMemo<ColDef<TData>[]>(() => {
@@ -149,12 +147,14 @@ const BaseDataGrid = <TData = any,>({
     // 기본 설정
     animateRows: true,
     enableRangeSelection: true,
-    suppressRowClickSelection: checkboxSelection,
-    rowMultiSelectWithClick: rowSelection === 'multiple',
+    suppressRowClickSelection: true, // 행 클릭 시 선택 방지 (체크박스로만 선택)
+    rowMultiSelectWithClick: false, // 클릭으로 다중 선택 방지
     suppressHtmlInCell: true, // HTML 렌더링 비활성화
+    suppressRowTransform: false, // Row Spanning 활성화 (false여야 spanRows 작동)
+    enableCellSpan: true, // 셀 병합 기능 활성화
 
-    // 편집 설정 (중요!)
-    singleClickEdit: true, // 한 번 클릭으로 편집 모드 진입
+    // 편집 설정 (클릭 이벤트를 위해 비활성화)
+    singleClickEdit: false, // 클릭 이벤트를 방해하지 않도록 비활성화
     stopEditingWhenCellsLoseFocus: true, // 포커스 잃으면 편집 종료
 
     // 페이지네이션
@@ -214,16 +214,23 @@ const BaseDataGrid = <TData = any,>({
   // Grid 준비 완료 이벤트
   const onGridReady = useCallback((params: GridReadyEvent<TData>) => {
     setGridApi(params.api);
-    setColumnApi(params.columnApi);
-    
+
     // 컬럼 자동 크기 조정
     params.api.sizeColumnsToFit();
   }, []);
 
   // 행 클릭 이벤트
   const onCellClicked = useCallback((event: CellClickedEvent<TData>) => {
+    console.log('🎯 BaseDataGrid onCellClicked 호출됨');
+    console.log('🎯 Event:', event);
+    console.log('🎯 Column:', event.column);
+    console.log('🎯 Data:', event.data);
+
     if (event.data && onRowClick) {
+      console.log('✅ onRowClick 실행');
       onRowClick(event.data, event);
+    } else {
+      console.log('❌ onRowClick 실행 안됨 - data:', event.data, 'onRowClick:', !!onRowClick);
     }
   }, [onRowClick]);
 

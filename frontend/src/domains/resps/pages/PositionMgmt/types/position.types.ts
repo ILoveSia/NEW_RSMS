@@ -7,8 +7,8 @@ export interface Position {
   id: string;
   positionName: string;      // 직책명
   headquarters: string;      // 본부구분
-  departmentName: string;    // 부서명
-  divisionName: string;      // 부정명
+  hqName: string;            // 본부명
+  orgName: string;           // 부점명
   registrationDate: string;  // 등록일자
   registrar: string;         // 등록자
   registrarPosition: string; // 등록자직책

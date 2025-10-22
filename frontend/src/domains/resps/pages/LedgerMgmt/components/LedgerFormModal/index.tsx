@@ -11,7 +11,6 @@ import {
   DialogActions,
   TextField,
   Box,
-  Typography,
   MenuItem
 } from '@mui/material';
 import { Button } from '@/shared/components/atoms/Button';
@@ -244,24 +243,6 @@ const LedgerFormModal: React.FC<LedgerFormModalProps> = ({
               }}
             />
           </Box>
-
-          {/* 메타 정보 (상세보기일 때만 표시) */}
-          {mode === 'detail' && ledger && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1, pt: 2, borderTop: '1px solid rgba(0,0,0,0.1)' }}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>생성일시:</strong> {new Date(ledger.createdAt).toLocaleString('ko-KR')}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>생성자:</strong> {ledger.createdBy}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>수정일시:</strong> {new Date(ledger.updatedAt).toLocaleString('ko-KR')}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>수정자:</strong> {ledger.updatedBy}
-              </Typography>
-            </Box>
-          )}
         </Box>
       </DialogContent>
 

@@ -4,34 +4,36 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './PositionMgmt.module.scss';
+
+// API
+import { deletePositions, getAllPositions } from '../../api/positionApi';
 
 // Types
 import type {
   Position,
   PositionFilters,
   PositionFormData,
-  PositionModalState,
-  PositionPagination
+  PositionModalState
 } from './types/position.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
-import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
 import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
+import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
 // Domain Components
 import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
 
 // Custom Hooks
 import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
-import usePagination from '@/shared/hooks/usePagination';
 import useFilters from '@/shared/hooks/useFilters';
+import usePagination from '@/shared/hooks/usePagination';
 
 // Position specific components
 import { positionColumns } from './components/PositionDataGrid/positionColumns';
@@ -54,11 +56,26 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
   // 커스텀 훅 사용
   const { handlers, loadingStates, loading: anyLoading } = useAsyncHandlers({
-    search: { key: 'position-search' },
-    excel: { key: 'position-excel' },
-    delete: { key: 'position-delete' },
-    create: { key: 'position-create' },
-    update: { key: 'position-update' }
+    search: {
+      key: 'position-search',
+      messages: { cancel: '' } // 취소 메시지 비활성화
+    },
+    excel: {
+      key: 'position-excel',
+      messages: { cancel: '' }
+    },
+    delete: {
+      key: 'position-delete',
+      messages: { cancel: '' }
+    },
+    create: {
+      key: 'position-create',
+      messages: { cancel: '' }
+    },
+    update: {
+      key: 'position-update',
+      messages: { cancel: '' }
+    }
   });
 
   const {
@@ -133,13 +150,12 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
 
     await handlers.delete.execute(
       async () => {
-        // TODO: 실제 삭제 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+        // 삭제 API 호출
+        const positionIds = selectedPositions.map(pos => Number(pos.id));
+        await deletePositions(positionIds);
 
-        // 상태 업데이트 (삭제된 항목 제거)
-        setPositions(prev =>
-          prev.filter(pos => !selectedPositions.some(selected => selected.id === pos.id))
-        );
+        // 삭제 후 목록 다시 조회
+        await handleSearch();
         updateTotal(pagination.total - selectedPositions.length);
         setSelectedPositions([]);
       },
@@ -242,9 +258,47 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   const handleSearch = useCallback(async () => {
     await handlers.search.execute(
       async () => {
-        // TODO: 실제 API 호출로 교체
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-        console.log('검색 필터:', filters);
+        // API 호출: positions + positions_details 조인 조회
+        const data = await getAllPositions();
+        console.log('🔍 API Response:', data);
+
+        // 클라이언트 사이드 필터링 (필요시)
+        let filteredData = data;
+
+        if (filters.positionName) {
+          filteredData = filteredData.filter(p =>
+            p.positionsName.includes(filters.positionName)
+          );
+        }
+
+        if (filters.isActive) {
+          filteredData = filteredData.filter(p =>
+            p.isActive === filters.isActive
+          );
+        }
+
+        // Position 타입으로 변환 (각 행마다 orgCode, orgName 사용)
+        const positions: Position[] = filteredData.map(dto => ({
+          id: dto.positionsId.toString(),
+          positionName: dto.positionsName,
+          headquarters: dto.hqName,
+          hqName: dto.hqName,           // 본부명
+          orgName: dto.orgName || '-',  // 부점명
+          registrationDate: dto.createdAt.split('T')[0],
+          registrar: dto.createdBy,
+          registrarPosition: '-',
+          modificationDate: dto.updatedAt.split('T')[0],
+          modifier: dto.updatedBy,
+          modifierPosition: '-',
+          status: dto.positionsStatus || '-',
+          isActive: dto.isActive === 'Y',
+          approvalStatus: '-',
+          dual: dto.isConcurrent
+        }));
+
+        console.log('🔍 Mapped Positions:', positions);
+        setPositions(positions);
+        updateTotal(positions.length);
       },
       {
         loading: '직책 정보를 검색 중입니다...',
@@ -252,7 +306,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         error: '검색에 실패했습니다.'
       }
     );
-  }, [filters, handlers.search]);
+  }, [filters, handlers.search, updateTotal]);
 
   const handleClearFilters = useCallback(() => {
     clearFilters();
@@ -260,17 +314,37 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   }, [clearFilters]);
 
   // Grid Event Handlers
-  const handleRowClick = useCallback((position: Position) => {
-    console.log('행 클릭:', position);
-  }, []);
+  const handleRowClick = useCallback((position: Position, event: any) => {
+    console.log('🔍 handleRowClick 호출됨');
+    console.log('🔍 Event:', event);
+
+    if (!event || !event.column) {
+      console.warn('⚠️ Event 또는 Column이 undefined입니다!');
+      return;
+    }
+
+    // AG-Grid CellClickedEvent에서 컬럼 정보 추출
+    const colId = event.column.getColId ? event.column.getColId() : event.column.colId;
+    const colField = event.colDef?.field;
+
+    console.log('🔍 Column ID:', colId);
+    console.log('🔍 Column Field:', colField);
+
+    // 직책 컬럼만 클릭 가능 (field 또는 colId로 확인)
+    if (colField === 'positionName' || colId === 'positionName') {
+      console.log('✅ 직책 컬럼 클릭 - 모달 열기');
+      handlePositionDetail(position);
+    } else {
+      console.log('❌ 다른 컬럼 클릭 - 무시 (field:', colField, ', colId:', colId, ')');
+    }
+  }, [handlePositionDetail]);
 
   const handleRowDoubleClick = useCallback((position: Position) => {
-    handlePositionDetail(position);
-  }, [handlePositionDetail]);
+    // 더블클릭은 비활성화
+  }, []);
 
   const handleSelectionChange = useCallback((selected: Position[]) => {
     setSelectedPositions(selected);
-    console.log('선택된 행:', selected.length);
   }, []);
 
   // Memoized computed values (성능 최적화)
@@ -320,13 +394,13 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     {
       key: 'ledgerOrderId',
       type: 'custom',
-      label: '원장차수',
+      label: '책무이행차수',
       gridSize: { xs: 12, sm: 6, md: 3 },
       customComponent: (
         <LedgerOrderComboBox
           value={filters.ledgerOrderId}
           onChange={(value) => setFilter('ledgerOrderId', value || '')}
-          label="원장차수"
+          label="책무이행차수"
           required
           fullWidth
           size="small"
@@ -403,12 +477,12 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     commitTime: number
   ) => {
     if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 PositionMgmt Performance Profiler`);
-      console.log(`📊 Phase: ${phase}`);
-      console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
-      console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
-      console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
-      console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
+      // console.group(`🔍 PositionMgmt Performance Profiler`);
+      // console.log(`📊 Phase: ${phase}`);
+      // console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
+      // console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
+      // console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
+      // console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
 
       if (actualDuration > 16) { // 60fps 기준 16ms 초과 시 경고
         console.warn(`⚠️ 성능 주의: 렌더링 시간이 16ms를 초과했습니다 (${actualDuration.toFixed(2)}ms)`);
@@ -445,185 +519,48 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
     }
   }, []);
 
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockPositions: Position[] = [
-        {
-          id: '1',
-          positionName: '경영진단본부장',
-          headquarters: '본부부서',
-          departmentName: '경영진단본부',
-          divisionName: '경영진단본부',
-          registrationDate: '2024-01-15',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-03-20',
-          modifier: '홍길동',
-          modifierPosition: '총합기획부',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '2',
-          positionName: '총합기획부장',
-          headquarters: '본부부서',
-          departmentName: '총합기획부',
-          divisionName: '총합기획부',
-          registrationDate: '2024-02-01',
-          registrar: '시스템관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-04-10',
-          modifier: '김철수',
-          modifierPosition: '인사팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '3',
-          positionName: '영업본부장',
-          headquarters: '본부부서',
-          departmentName: '영업본부',
-          divisionName: '영업본부',
-          registrationDate: '2024-01-20',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-05-15',
-          modifier: '박영희',
-          modifierPosition: '영업기획팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '4',
-          positionName: '기술개발팀장',
-          headquarters: '팀단위',
-          departmentName: '기술개발부',
-          divisionName: '기술개발팀',
-          registrationDate: '2024-03-05',
-          registrar: '홍길동',
-          registrarPosition: '총합기획부',
-          modificationDate: '2024-06-01',
-          modifier: '이민수',
-          modifierPosition: '기술개발팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '5',
-          positionName: '마케팅팀장',
-          headquarters: '팀단위',
-          departmentName: '마케팅부',
-          divisionName: '마케팅팀',
-          registrationDate: '2024-02-15',
-          registrar: '김철수',
-          registrarPosition: '인사팀',
-          modificationDate: '2024-05-20',
-          modifier: '정수진',
-          modifierPosition: '마케팅팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '6',
-          positionName: '인사팀장',
-          headquarters: '팀단위',
-          departmentName: '인사부',
-          divisionName: '인사팀',
-          registrationDate: '2024-01-10',
-          registrar: '관리자',
-          registrarPosition: '시스템관리자',
-          modificationDate: '2024-04-25',
-          modifier: '한상훈',
-          modifierPosition: '인사팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '7',
-          positionName: '재무팀장',
-          headquarters: '팀단위',
-          departmentName: '재무부',
-          divisionName: '재무팀',
-          registrationDate: '2024-02-28',
-          registrar: '박영희',
-          registrarPosition: '영업기획팀',
-          modificationDate: '2024-06-10',
-          modifier: '윤미래',
-          modifierPosition: '재무팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'N'
-        },
-        {
-          id: '8',
-          positionName: '품질보증팀장',
-          headquarters: '팀단위',
-          departmentName: '품질보증부',
-          divisionName: '품질보증팀',
-          registrationDate: '2024-03-15',
-          registrar: '이민수',
-          registrarPosition: '기술개발팀',
-          modificationDate: '2024-05-30',
-          modifier: '최영수',
-          modifierPosition: '품질보증팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '승인완료',
-          dual: 'Y'
-        },
-        {
-          id: '9',
-          positionName: '고객서비스팀장',
-          headquarters: '팀단위',
-          departmentName: '고객서비스부',
-          divisionName: '고객서비스팀',
-          registrationDate: '2024-04-01',
-          registrar: '정수진',
-          registrarPosition: '마케팅팀',
-          modificationDate: '2024-06-15',
-          modifier: '서현아',
-          modifierPosition: '고객서비스팀',
-          status: '반영필요',
-          isActive: true,
-          approvalStatus: '검토중',
-          dual: 'Y'
-        },
-        {
-          id: '10',
-          positionName: '연구개발팀장',
-          headquarters: '팀단위',
-          departmentName: '연구개발부',
-          divisionName: '연구개발팀',
-          registrationDate: '2024-03-20',
-          registrar: '한상훈',
-          registrarPosition: '인사팀',
-          modificationDate: '2024-05-10',
-          modifier: '김도현',
-          modifierPosition: '연구개발팀',
-          status: '반영필요',
-          isActive: false,
-          approvalStatus: '보류',
-          dual: 'Y'
-        }
-      ];
+  // 페이지 로드 시 초기 데이터 조회
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      await handlers.search.execute(
+        async () => {
+          const data = await getAllPositions();
 
-    setPositions(mockPositions);
-    updateTotal(mockPositions.length);
-  }, []);
+          // Position 타입으로 변환
+          const positions: Position[] = data.map(dto => {
+            return {
+              id: dto.positionsId.toString(),
+              positionName: dto.positionsName,
+              headquarters: dto.hqName,
+              hqName: dto.hqName,
+              orgName: dto.orgName || '-',
+              registrationDate: dto.createdAt.split('T')[0],
+              registrar: dto.createdBy,
+              registrarPosition: '-',
+              modificationDate: dto.updatedAt.split('T')[0],
+              modifier: dto.updatedBy,
+              modifierPosition: '-',
+              status: dto.positionsStatus || '-',
+              isActive: dto.isActive === 'Y',
+              approvalStatus: '-',
+              dual: dto.isConcurrent
+            };
+          });
+
+          setPositions(positions);
+          updateTotal(positions.length);
+        },
+        {
+          loading: '직책 정보를 불러오는 중입니다...',
+          success: '', // 페이지 로드 시 성공 메시지 비활성화
+          error: '직책 정보를 불러오는데 실패했습니다.'
+        }
+      );
+    };
+
+    fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 빈 배열: 페이지 로드 시 한 번만 실행
 
 
   return (
@@ -668,7 +605,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           columns={positionColumns}
           loading={anyLoading}
           theme="alpine"
-          onRowClick={(data) => handleRowClick(data)}
+          onRowClick={(data, event) => handleRowClick(data, event)}
           onRowDoubleClick={(data) => handleRowDoubleClick(data)}
           onSelectionChange={handleSelectionChange}
           height="calc(100vh - 370px)"
@@ -694,6 +631,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           onClose={handleModalClose}
           onSave={handlePositionSave}
           onUpdate={handlePositionUpdate}
+          onRefresh={handleSearch}
           loading={loadingStates.create || loadingStates.update}
         />
       </BaseModalWrapper>

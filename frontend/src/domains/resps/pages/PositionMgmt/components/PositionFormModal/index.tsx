@@ -1,61 +1,39 @@
 /**
  * 직책 등록/수정/상세 모달
  * LedgerFormModal 표준 템플릿 기반
+ *
+ * 변경사항:
+ * 1. LedgerOrderComboBox 추가 (직책명 위에, 진행중 상태만)
+ * 2. 원장차수 + 직책명 + 본부명 선택하여 등록
+ * 3. 본부 선택 시 해당 본부의 모든 부서를 자동으로 조회하여 저장 (선택 없음)
  */
 
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Box,
-  Typography,
-  MenuItem,
-  Grid
-} from '@mui/material';
-import { AgGridReact } from 'ag-grid-react';
-import type { ColDef } from 'ag-grid-community';
 import { Button } from '@/shared/components/atoms/Button';
+import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography
+} from '@mui/material';
+import type { ColDef } from 'ag-grid-community';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type { DepartmentDto } from '../../../../api/organizationsApi';
 import type { Position, PositionFormData } from '../../types/position.types';
 
-// AG-Grid 스타일 import
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-
 // Domain Components
+import { HeadquartersComboBox } from '../../../../components/molecules/HeadquartersComboBox';
+import { LedgerOrderComboBox } from '../../../../components/molecules/LedgerOrderComboBox';
 import { PositionNameComboBox } from '../../../../components/molecules/PositionNameComboBox';
 
-// 한글 글자수 계산 유틸리티 (한글 1자 = 1자)
-const getKoreanLength = (str: string): number => {
-  return str.length;
-};
+// Hooks
+import { useHeadquartersForComboBox } from '../../../../hooks/useHeadquarters';
+import { useDepartmentsByHqCode } from '../../../../hooks/useOrganizations';
 
-// 본부명 옵션
-const HEADQUARTERS_OPTIONS = [
-  { value: '본부부서', label: '본부부서' },
-  { value: '팀단위', label: '팀단위' },
-  { value: '지점', label: '지점' },
-  { value: '사업소', label: '사업소' }
-];
-
-// DataGrid 행 데이터 타입
-interface DepartmentRow {
-  id: string;
-  positionName: string;
-  headquarters: string;
-  departmentName: string;
-}
-
-// Mock 데이터
-const MOCK_DEPARTMENT_DATA: DepartmentRow[] = [
-  { id: '1', positionName: '경영진단본부장', headquarters: '본부부서', departmentName: '경영진단본부' },
-  { id: '2', positionName: '총합기획부장', headquarters: '본부부서', departmentName: '총합기획부' },
-  { id: '3', positionName: '영업본부장', headquarters: '본부부서', departmentName: '영업본부' },
-  { id: '4', positionName: '기술개발팀장', headquarters: '팀단위', departmentName: '기술개발부' },
-  { id: '5', positionName: '마케팅팀장', headquarters: '팀단위', departmentName: '마케팅부' }
-];
+// API
+import { createPosition, getPositionDepartments, type CreatePositionRequest } from '../../../../api/positionApi';
 
 interface PositionFormModalProps {
   open: boolean;
@@ -64,6 +42,7 @@ interface PositionFormModalProps {
   onClose: () => void;
   onSave: (formData: PositionFormData) => Promise<void>;
   onUpdate: (id: string, formData: PositionFormData) => Promise<void>;
+  onRefresh?: () => Promise<void>; // 목록 새로고침 콜백 추가
   loading?: boolean;
 }
 
@@ -72,20 +51,84 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
   mode,
   position,
   onClose,
-  onSave,
-  onUpdate,
+  onRefresh,
   loading = false
 }) => {
+  // 폼 데이터 상태
   const [formData, setFormData] = useState<PositionFormData>({
     positionName: '',
     headquarters: ''
   });
 
+  // 원장차수 상태 (LedgerOrderComboBox용)
+  const [ledgerOrderId, setLedgerOrderId] = useState<string | null>(null);
+
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({
+    ledgerOrderId: '',
     positionName: '',
     headquarters: ''
   });
+
+  // 본부 목록 조회 (hq_code 추출용)
+  const { data: headquarters } = useHeadquartersForComboBox();
+
+  // 선택된 본부명에서 hq_code 추출
+  const selectedHqCode = useMemo(() => {
+    if (!formData.headquarters || !headquarters) return null;
+
+    const selectedHq = headquarters.find(hq => hq.detailName === formData.headquarters);
+    return selectedHq?.detailCode || null;
+  }, [formData.headquarters, headquarters]);
+
+  // 본부 선택 시 해당 본부의 모든 부점 조회 (등록 모드 또는 수정 모드에서 본부 변경 시)
+  const { data: departments } = useDepartmentsByHqCode(selectedHqCode);
+
+  // 직책상세 모달일 때 해당 직책의 부점 목록
+  const [detailDepartments, setDetailDepartments] = useState<DepartmentDto[]>([]);
+
+  // 조회된 모든 부점의 org_code 배열 추출
+  const allOrgCodes = useMemo(() => {
+    if (!departments || departments.length === 0) return [];
+    return departments.map(dept => dept.orgCode);
+  }, [departments]);
+
+  // 직책코드 추출 (PositionNameComboBox에서 선택한 값)
+  // TODO: PositionName ComboBox에서 코드를 반환하도록 수정 필요
+  const selectedPositionCd = useMemo(() => {
+    // 현재는 positionName만 있으므로 추후 수정 필요
+    return formData.positionName;
+  }, [formData.positionName]);
+
+  // 부점 목록 DataGrid 컬럼 정의 (조회 전용)
+  const departmentColumns = useMemo<ColDef<DepartmentDto>[]>(() => [
+    {
+      field: 'orgCode',
+      headerName: '조직코드',
+      width: 120,
+      sortable: true
+    },
+    {
+      field: 'orgName',
+      headerName: '조직명',
+      flex: 1,
+      sortable: true
+    },
+    {
+      field: 'orgType',
+      headerName: '유형',
+      width: 100,
+      sortable: true,
+      valueFormatter: (params) => {
+        const typeMap: Record<string, string> = {
+          'head': '본부',
+          'dept': '부점',
+          'branch': '영업점'
+        };
+        return typeMap[params.value] || params.value;
+      }
+    }
+  ], []);
 
   useEffect(() => {
     if (mode === 'create') {
@@ -93,17 +136,59 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
         positionName: '',
         headquarters: ''
       });
+      setLedgerOrderId(null);
       setIsEditing(true);
-      setErrors({ positionName: '', headquarters: '' });
+      setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
+      setDetailDepartments([]);
     } else if (position) {
-      setFormData({
-        positionName: position.positionName,
-        headquarters: position.headquarters
-      });
-      setIsEditing(false);
-      setErrors({ positionName: '', headquarters: '' });
+      // 상세 모달일 때 원장차수도 로드
+      const fetchPositionDetail = async () => {
+        try {
+          const { getPosition } = await import('../../../../api/positionApi');
+          const positionDetail = await getPosition(Number(position.id));
+
+          setFormData({
+            positionName: positionDetail.positionsName,
+            headquarters: positionDetail.hqName
+          });
+          setLedgerOrderId(positionDetail.ledgerOrderId);
+          setIsEditing(false);
+          setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
+
+          // 부점 목록 조회
+          const depts = await getPositionDepartments(Number(position.id));
+          const convertedDepts: DepartmentDto[] = depts.map(dept => ({
+            hqCode: '',
+            orgCode: dept.org_code,
+            orgName: dept.org_name,
+            orgType: 'dept',
+            isActive: 'Y'
+          }));
+          setDetailDepartments(convertedDepts);
+        } catch (error) {
+          console.error('직책 상세 조회 실패:', error);
+          // 실패 시 기존 position 데이터 사용
+          setFormData({
+            positionName: position.positionName,
+            headquarters: position.headquarters
+          });
+          setLedgerOrderId(null);
+          setIsEditing(false);
+          setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
+          setDetailDepartments([]);
+        }
+      };
+
+      fetchPositionDetail();
     }
   }, [mode, position]);
+
+  // 수정 모드에서 본부 변경 시 부점 목록 업데이트
+  useEffect(() => {
+    if (mode === 'detail' && isEditing && departments) {
+      setDetailDepartments(departments);
+    }
+  }, [mode, isEditing, departments]);
 
   const handleChange = useCallback((field: keyof PositionFormData, value: string) => {
     setFormData(prev => ({
@@ -114,6 +199,10 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
 
   const handleSubmit = useCallback(async () => {
     // 제출 전 최종 검증
+    if (!ledgerOrderId?.trim()) {
+      setErrors(prev => ({ ...prev, ledgerOrderId: '원장차수를 선택해주세요.' }));
+      return;
+    }
     if (!formData.positionName?.trim()) {
       setErrors(prev => ({ ...prev, positionName: '직책명을 선택해주세요.' }));
       return;
@@ -123,16 +212,61 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       return;
     }
 
-    if (errors.positionName || errors.headquarters) {
+    if (errors.ledgerOrderId || errors.positionName || errors.headquarters) {
       return;
     }
 
-    if (mode === 'create') {
-      await onSave(formData);
-    } else if (position && isEditing) {
-      await onUpdate(position.id, formData);
+    try {
+      if (mode === 'create') {
+        // API 호출용 요청 데이터 생성
+        const request: CreatePositionRequest = {
+          ledgerOrderId: ledgerOrderId,
+          positionsCd: selectedPositionCd, // TODO: PositionNameComboBox에서 코드 받아오도록 수정 필요
+          positionsName: formData.positionName,
+          hqCode: selectedHqCode || '',
+          hqName: formData.headquarters,
+          orgCodes: allOrgCodes, // 조회된 모든 부점의 org_code 배열 전송
+          isActive: 'Y',
+          isConcurrent: 'N'
+        };
+
+        await createPosition(request);
+        alert('직책이 성공적으로 등록되었습니다.');
+
+        // 목록 새로고침
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
+      } else if (position && isEditing) {
+        // 수정 모드: updatePosition API 호출
+        const { updatePosition } = await import('../../../../api/positionApi');
+
+        const updateRequest: Partial<CreatePositionRequest> = {
+          ledgerOrderId: ledgerOrderId,
+          positionsCd: selectedPositionCd,
+          positionsName: formData.positionName,
+          hqCode: selectedHqCode || '',
+          hqName: formData.headquarters,
+          orgCodes: allOrgCodes.length > 0 ? allOrgCodes : undefined
+        };
+
+        await updatePosition(Number(position.id), updateRequest);
+        alert('직책이 성공적으로 수정되었습니다.');
+
+        // 목록 새로고침
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
+      }
+    } catch (error) {
+      console.error('직책 저장 실패:', error);
+      alert(error instanceof Error ? error.message : '직책 저장에 실패했습니다.');
     }
-  }, [mode, formData, position, isEditing, onSave, onUpdate, errors]);
+  }, [mode, formData, position, isEditing, onClose, errors, ledgerOrderId, selectedHqCode, selectedPositionCd, allOrgCodes]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -153,28 +287,6 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
   const title = mode === 'create' ? '직책 등록' : '직책 상세';
   const isReadOnly = mode === 'detail' && !isEditing;
 
-  // DataGrid 컬럼 정의
-  const columnDefs = useMemo<ColDef<DepartmentRow>[]>(() => [
-    {
-      field: 'positionName',
-      headerName: '직책',
-      flex: 1.5,
-      minWidth: 120
-    },
-    {
-      field: 'headquarters',
-      headerName: '본부명',
-      flex: 1,
-      minWidth: 100
-    },
-    {
-      field: 'departmentName',
-      headerName: '부서명',
-      flex: 1.5,
-      minWidth: 120
-    }
-  ], []);
-
   return (
     <Dialog
       open={open}
@@ -184,7 +296,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       PaperProps={{
         sx: {
           borderRadius: 1,
-          minHeight: '500px'
+          maxHeight: '80vh'
         }
       }}
     >
@@ -199,92 +311,89 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
         {title}
       </DialogTitle>
 
-      <DialogContent dividers sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* 직책ID (상세보기일 때만 표시) */}
-          {mode === 'detail' && position && (
-            <TextField
-              label="직책ID"
-              value={position.id}
-              fullWidth
-              disabled
-              variant="outlined"
-              size="small"
-            />
-          )}
+      <DialogContent dividers sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {/* 원장차수 - 진행중 상태만 조회 */}
+          <LedgerOrderComboBox
+            value={ledgerOrderId || undefined}
+            onChange={setLedgerOrderId}
+            label="원장차수"
+            required
+            disabled={isReadOnly}
+            error={!!errors.ledgerOrderId}
+            helperText={errors.ledgerOrderId}
+            fullWidth
+            size="small"
+          />
 
-          {/* 직책명 - 공통 컴포넌트 사용 */}
+          {/* 직책명 - 공통 컴포넌트 사용 (상세 모드에서는 항상 비활성화) */}
           <PositionNameComboBox
             value={formData.positionName}
             onChange={(value) => handleChange('positionName', value || '')}
             label="직책명"
             required
-            disabled={isReadOnly}
+            disabled={mode === 'detail'}
             error={!!errors.positionName}
             helperText={errors.positionName}
             fullWidth
             size="small"
           />
 
-          {/* 본부명 */}
-          <Box>
-            <TextField
-              label="본부명"
-              value={formData.headquarters || ''}
-              onChange={(e) => handleChange('headquarters', e.target.value)}
-              fullWidth
-              disabled={isReadOnly}
-              variant="outlined"
-              size="small"
-              select
-              required
-              error={!!errors.headquarters}
-              helperText={errors.headquarters}
-            >
-              {HEADQUARTERS_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
+          {/* 본부명 - 공통 컴포넌트 사용 */}
+          <HeadquartersComboBox
+            value={formData.headquarters}
+            onChange={(value: string | null) => handleChange('headquarters', value || '')}
+            label="본부명"
+            required
+            disabled={isReadOnly}
+            error={!!errors.headquarters}
+            helperText={errors.headquarters}
+            fullWidth
+            size="small"
+          />
 
-          {/* DataGrid - 부서 목록 */}
-          <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-              부서 목록
-            </Typography>
-            <div className="ag-theme-alpine" style={{ height: '200px', width: '100%' }}>
-              <AgGridReact<DepartmentRow>
-                rowData={MOCK_DEPARTMENT_DATA}
-                columnDefs={columnDefs}
-                domLayout="normal"
-                headerHeight={40}
-                rowHeight={35}
-                suppressMovableColumns={true}
-                suppressCellFocus={true}
-                animateRows={true}
-              />
-            </div>
-          </Box>
-
-          {/* 메타 정보 (상세보기일 때만 표시) */}
-          {mode === 'detail' && position && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1, pt: 2, borderTop: '1px solid rgba(0,0,0,0.1)' }}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>등록일:</strong> {position.registrationDate}
+          {/* 부점 목록 DataGrid (등록 모드에서만 표시) */}
+          {mode === 'create' && departments && departments.length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
+                조회된 부점 목록 ({departments.length}개) - 등록 시 모두 저장됩니다
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>등록자:</strong> {position.registrar}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>수정일:</strong> {position.modificationDate}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>수정자:</strong> {position.modifier}
-              </Typography>
+              <Box sx={{ width: '100%', height: '200px' }}>
+                <BaseDataGrid
+                  data={departments}
+                  columns={departmentColumns}
+                  rowSelection="none"
+                  pagination={false}
+                  height="200px"
+                />
+              </Box>
             </Box>
           )}
+
+          {/* 상세 모드에서도 부점 목록 Grid 표시 */}
+          {mode === 'detail' && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
+                부점 목록 ({detailDepartments.length}개)
+              </Typography>
+              {detailDepartments.length > 0 ? (
+                <Box sx={{ width: '100%', height: '200px' }}>
+                  <BaseDataGrid
+                    data={detailDepartments}
+                    columns={departmentColumns}
+                    rowSelection="none"
+                    pagination={false}
+                    height="200px"
+                  />
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  부점 목록을 불러오는 중...
+                </Typography>
+              )}
+            </Box>
+          )}
+
         </Box>
       </DialogContent>
 

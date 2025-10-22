@@ -36,4 +36,10 @@ public class PositionSearchRequest {
      * - Y 또는 N으로 필터링
      */
     private String isActive;
+
+    /**
+     * 원장차수ID 필터
+     * - 특정 원장차수로 필터링
+     */
+    private String ledgerOrderId;
 }

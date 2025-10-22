@@ -1,34 +1,34 @@
 /**
  * LedgerOrderComboBox 컴포넌트
  *
- * @description 원장차수 선택을 위한 콤보박스 컴포넌트 (PROG, CLSD만 조회)
+ * @description 책무이행차수 선택을 위한 콤보박스 컴포넌트 (PROG, CLSD만 조회)
  * @author Claude AI
  * @since 2025-10-16
  */
 
-import React from 'react';
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  CircularProgress,
   Alert,
   Box,
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
   type SelectChangeEvent,
 } from '@mui/material';
+import React from 'react';
 import { useLedgerOrdersForComboBox } from '../../../hooks/useLedgerOrders';
 import type { LedgerOrderComboBoxProps } from './types';
 
 /**
  * LedgerOrderComboBox 컴포넌트
  *
- * <p>원장차수를 선택하기 위한 콤보박스 컴포넌트입니다.</p>
+ * <p>책무이행차수를 선택하기 위한 콤보박스 컴포넌트입니다.</p>
  *
  * <p>특징:
  * <ul>
- *   <li>PROG, CLSD 상태의 원장차수만 조회</li>
+ *   <li>PROG, CLSD 상태의 책무이행차수만 조회</li>
  *   <li>PROG일 때 "[진행중]" 표시</li>
  *   <li>데이터 없을 때 "원장차수를 생성하세요" 메시지</li>
  *   <li>로딩/에러 상태 자동 처리</li>
@@ -42,7 +42,7 @@ import type { LedgerOrderComboBoxProps } from './types';
  * <LedgerOrderComboBox
  *   value={ledgerOrderId}
  *   onChange={setLedgerOrderId}
- *   label="원장차수"
+ *   label="책무이행차수"
  *   required
  * />
  * ```
@@ -50,13 +50,13 @@ import type { LedgerOrderComboBoxProps } from './types';
 const LedgerOrderComboBox: React.FC<LedgerOrderComboBoxProps> = ({
   value,
   onChange,
-  placeholder = '원장차수 선택',
+  placeholder = '책무이행차수 선택',
   disabled = false,
   error = false,
   helperText,
   required = false,
   className,
-  label = '원장차수',
+  label = '책무이행차수',
   size = 'small',
   fullWidth = true,
 }) => {
@@ -114,7 +114,7 @@ const LedgerOrderComboBox: React.FC<LedgerOrderComboBoxProps> = ({
   if (!ledgerOrders || ledgerOrders.length === 0) {
     return (
       <Alert severity="warning" className={className}>
-        원장차수를 생성하세요
+        책무이행차수를 생성하세요
       </Alert>
     );
   }

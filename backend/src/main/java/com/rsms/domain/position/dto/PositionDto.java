@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 직책 DTO
@@ -72,6 +73,32 @@ public class PositionDto {
      * 겸직여부 (Y/N)
      */
     private String isConcurrent;
+
+    /**
+     * 부점코드 (단일 값)
+     * - positions_details 조인으로 각 행마다 하나의 org_code
+     */
+    private String orgCode;
+
+    /**
+     * 부점명 (단일 값)
+     * - positions_details + organizations 조인으로 각 행마다 하나의 org_name
+     */
+    private String orgName;
+
+    /**
+     * 부서 목록 (positions_details 조인)
+     * - 직책에 연결된 모든 부서의 조직코드 리스트
+     * - 그룹핑된 결과용 (기존 API 호환성 유지)
+     */
+    private List<String> orgCodes;
+
+    /**
+     * 부점명 목록 (positions_details + organizations 조인)
+     * - 직책에 연결된 모든 부서의 조직명 리스트
+     * - 그룹핑된 결과용 (기존 API 호환성 유지)
+     */
+    private List<String> orgNames;
 
     /**
      * 생성자

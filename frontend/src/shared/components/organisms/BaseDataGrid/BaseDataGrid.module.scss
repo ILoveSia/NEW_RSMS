@@ -130,6 +130,26 @@
       }
     }
 
+    // 클릭 가능한 셀 스타일
+    .clickable-cell {
+      cursor: pointer;
+      color: #1976d2 !important; // 파란색으로 표시
+      font-weight: 500 !important;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+
+      &:hover {
+        background: rgba(25, 118, 210, 0.08) !important;
+        color: #1565c0 !important;
+        text-decoration-style: solid;
+      }
+
+      &:active {
+        background: rgba(25, 118, 210, 0.15) !important;
+      }
+    }
+
     // 행 구분선 (필요에 따라 개별 컬럼에서 조절)
     .ag-row {
       // border-bottom: none !important;

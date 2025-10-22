@@ -300,7 +300,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
     {
       key: 'ledgerOrderStatus',
       type: 'select',
-      label: '원장상태',
+      label: '책무차수상태',
       options: [
         { value: '', label: '전체' },
         { value: 'NEW', label: '신규' },
@@ -365,7 +365,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
       <BasePageHeader
         icon={<DashboardIcon />}
         title="책무이행차수관리"
-        description="원장차수 정보를 체계적으로 관리합니다"
+        description="책무이행차수 정보를 체계적으로 관리합니다"
         statistics={headerStatistics}
         i18nNamespace="resps"
       />
@@ -387,7 +387,7 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
         {/* 💎 공통 액션 바 */}
         <BaseActionBar
           totalCount={statistics.total}
-          totalLabel="총 원장차수"
+          totalLabel="총 책무이행차수"
           selectedCount={selectedLedgers.length}
           statusInfo={statusInfo}
           actions={actionButtons}
@@ -412,12 +412,12 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
         />
       </div>
 
-      {/* 원장차수 등록/상세 모달 - BaseModalWrapper 적용 */}
+      {/* 책무이행차수 등록/상세 모달 - BaseModalWrapper 적용 */}
       <BaseModalWrapper
         isOpen={modalState.addModal || modalState.detailModal}
         onClose={handleModalClose}
-        ariaLabel="원장관리 모달"
-        fallbackComponent={<LoadingSpinner text="원장 모달을 불러오는 중..." />}
+        ariaLabel="원장책무이행관리 모달"
+        fallbackComponent={<LoadingSpinner text="책무이행 모달을 불러오는 중..." />}
       >
         <LedgerFormModal
           open={modalState.addModal || modalState.detailModal}

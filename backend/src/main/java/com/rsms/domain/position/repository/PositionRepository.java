@@ -91,13 +91,14 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     );
 
     /**
-     * 복합 검색 (키워드, 본부코드, 사용여부)
+     * 복합 검색 (키워드, 본부코드, 사용여부, 원장차수)
      * - 여러 필드를 OR 조건으로 검색
-     * - 본부코드, 사용여부는 AND 조건
+     * - 본부코드, 사용여부, 원장차수는 AND 조건
      *
      * @param keyword 검색 키워드
      * @param hqCode 본부코드
      * @param isActive 사용여부
+     * @param ledgerOrderId 원장차수ID
      * @return 검색 결과 리스트
      */
     @Query("SELECT p FROM Position p WHERE " +
@@ -106,12 +107,14 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
            " p.hqName LIKE %:keyword% OR " +
            " p.positionsCd LIKE %:keyword%) AND " +
            "(:hqCode IS NULL OR p.hqCode = :hqCode) AND " +
-           "(:isActive IS NULL OR p.isActive = :isActive) " +
+           "(:isActive IS NULL OR p.isActive = :isActive) AND " +
+           "(:ledgerOrderId IS NULL OR p.ledgerOrderId = :ledgerOrderId) " +
            "ORDER BY p.createdAt DESC")
     List<Position> searchPositions(
         @Param("keyword") String keyword,
         @Param("hqCode") String hqCode,
-        @Param("isActive") String isActive
+        @Param("isActive") String isActive,
+        @Param("ledgerOrderId") String ledgerOrderId
     );
 
     /**
@@ -162,4 +165,35 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
         @Param("hqCode") String hqCode,
         @Param("isActive") String isActive
     );
+
+    /**
+     * 모든 직책 조회 (positions + positions_details + organizations 3개 테이블 조인)
+     * - 각 부서별로 별도 행 반환 (GROUP BY 없음)
+     * - positions_id가 같아도 org_code가 다르면 여러 행으로 반환
+     *
+     * @return Map 리스트 (각 부서별 행)
+     */
+    @Query(value = """
+        SELECT a.positions_id
+              ,a.ledger_order_id
+              ,a.positions_cd
+              ,a.positions_name
+              ,a.hq_code
+              ,a.hq_name
+              ,a.expiration_date
+              ,a.positions_status
+              ,a.is_active
+              ,a.is_concurrent
+              ,a.created_by
+              ,a.created_at
+              ,a.updated_by
+              ,a.updated_at
+              ,b.org_code
+              ,c.org_name
+        FROM rsms.positions a
+        INNER JOIN rsms.positions_details b ON a.positions_id = b.positions_id
+        INNER JOIN rsms.organizations c ON b.org_code = c.org_code
+        ORDER BY a.positions_id, b.org_code
+        """, nativeQuery = true)
+    List<java.util.Map<String, Object>> findAllWithDetails();
 }

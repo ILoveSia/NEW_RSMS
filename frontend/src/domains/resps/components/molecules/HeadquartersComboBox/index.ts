@@ -6,5 +6,6 @@
  * @since 2025-10-20
  */
 
+export { default as HeadquartersComboBox } from './HeadquartersComboBox';
 export { default } from './HeadquartersComboBox';
 export type { HeadquartersComboBoxProps, HeadquartersDto } from './types';

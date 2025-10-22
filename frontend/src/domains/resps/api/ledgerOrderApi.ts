@@ -1,7 +1,7 @@
 /**
- * 원장차수 API 서비스
+ * 책무이행차수 API 서비스
  *
- * @description 원장차수 관리 REST API 통신 모듈
+ * @description 책무이행(원장)차수 관리 REST API 통신 모듈
  * - 전체 CRUD API와 콤보박스용 간소화 API 통합
  * - 백엔드 API 실패 시 개발 환경에서는 Mock 데이터 제공
  *
@@ -10,13 +10,13 @@
  */
 
 import axios from 'axios';
-import type {
-  LedgerOrder,
-  CreateLedgerOrderDto,
-  UpdateLedgerOrderDto,
-  LedgerOrderSearchFilter
-} from '../pages/LedgerMgmt/types/ledgerOrder.types';
 import type { LedgerOrderComboDto } from '../components/molecules/LedgerOrderComboBox/types';
+import type {
+  CreateLedgerOrderDto,
+  LedgerOrder,
+  LedgerOrderSearchFilter,
+  UpdateLedgerOrderDto
+} from '../pages/LedgerMgmt/types/ledgerOrder.types';
 
 const API_BASE_URL = '/api/ledger-orders';
 

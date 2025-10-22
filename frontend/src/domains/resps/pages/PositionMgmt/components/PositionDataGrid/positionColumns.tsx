@@ -2,20 +2,6 @@ import { Chip } from '@mui/material';
 import type { ColDef } from 'ag-grid-community';
 import type { Position } from '../../types/position.types';
 
-// 상태별 색상 매핑
-const getStatusColor = (status: string): 'success' | 'warning' | 'error' | 'default' => {
-  switch (status) {
-    case '승인':
-      return 'success';
-    case '대기':
-      return 'warning';
-    case '반려':
-      return 'error';
-    default:
-      return 'default';
-  }
-};
-
 // 사용여부별 색상 매핑
 const getActiveColor = (isActive: boolean): 'success' | 'error' => {
   return isActive ? 'success' : 'error';
@@ -36,17 +22,23 @@ export const positionColumns: ColDef<Position>[] = [
     sortable: true,
     filter: true,
     width: 150,
+    // @ts-ignore - AG-Grid Community spanRows 기능
+    spanRows: true, // 같은 값을 가진 연속된 셀 자동 병합
+    cellClass: 'clickable-cell', // 클릭 가능한 셀 스타일
+    cellClassRules: {
+      'cell-span': 'value !== undefined'
+    }
   },
   {
     headerName: '본부명',
-    field: 'departmentName',
+    field: 'hqName',
     sortable: true,
     filter: true,
     width: 150
   },
   {
     headerName: '부점명',
-    field: 'divisionName',
+    field: 'orgName',
     sortable: true,
     filter: true,
     width: 150
