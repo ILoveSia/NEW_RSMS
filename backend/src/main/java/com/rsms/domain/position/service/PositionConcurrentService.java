@@ -103,13 +103,15 @@ public class PositionConcurrentService {
     }
 
     /**
-     * 겸직그룹코드로 겸직 목록 조회
+     * 겸직그룹코드로 겸직 목록 조회 (positions 테이블 조인)
+     * - positions 테이블의 최신 본부코드/본부명을 함께 조회
      */
     @Transactional(readOnly = true)
     public List<PositionConcurrentDto> getPositionConcurrentsByConcurrentGroupCd(String concurrentGroupCd) {
-        log.debug("겸직 그룹 조회: concurrentGroupCd={}", concurrentGroupCd);
+        log.debug("겸직 그룹 조회 (positions 조인): concurrentGroupCd={}", concurrentGroupCd);
 
-        List<PositionConcurrent> concurrents = positionConcurrentRepository.findByConcurrentGroupCd(concurrentGroupCd);
+        // positions 테이블과 조인하여 조회
+        List<PositionConcurrent> concurrents = positionConcurrentRepository.findByConcurrentGroupCdWithPositions(concurrentGroupCd);
 
         return concurrents.stream()
             .map(this::convertToDto)

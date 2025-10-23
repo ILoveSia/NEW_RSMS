@@ -28,10 +28,14 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
 
 // API
-import { getPositionConcurrents, type PositionConcurrentDto } from '../../api/positionApi';
+import {
+  getPositionConcurrents,
+  getPositionConcurrentsByGroup,
+  type PositionConcurrentDto
+} from '../../api/positionApi';
 
 // PositionDual specific components
-import { positionDualColumns } from './components/PositionDualDataGrid/positionDualColumns';
+import { getPositionDualColumns } from './components/PositionDualDataGrid/positionDualColumns';
 
 // Lazy-loaded components for performance optimization
 const PositionDualFormModal = React.lazy(() =>
@@ -78,6 +82,9 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     detailModal: false,
     selectedPositionDual: null
   });
+
+  // 상세조회용 겸직 그룹 데이터
+  const [selectedGroupData, setSelectedGroupData] = useState<PositionConcurrentDto[]>([]);
 
   /**
    * PositionConcurrentDto -> PositionDual 변환
@@ -272,9 +279,9 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    // 원장차수가 선택되지 않으면 경고
+    // 책무이행차수가 선택되지 않으면 경고
     if (!filters.ledgerOrderId) {
-      toast.warning('원장차수를 선택해주세요.');
+      toast.warning('책무이행차수를 선택해주세요.');
       return;
     }
 
@@ -343,19 +350,42 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
-  // Grid Event Handlers
-  const handleRowClick = useCallback((positionDual: PositionDual) => {
-    console.log('행 클릭:', positionDual);
-  }, []);
+  // 겸직현황코드 클릭 핸들러 (상세 모달 오픈)
+  const handleConcurrentCodeClick = useCallback(async (positionDual: PositionDual) => {
+    try {
+      setLoading(true);
 
-  const handleRowDoubleClick = useCallback((positionDual: PositionDual) => {
-    handlePositionDualDetail(positionDual);
+      // 겸직그룹코드로 해당 그룹의 모든 직책 조회
+      const loadingToastId = toast.loading('겸직 관계 상세 정보를 조회 중입니다...');
+
+      const dtos = await getPositionConcurrentsByGroup(positionDual.concurrentStatusCode);
+
+      // 조회한 데이터를 상태에 저장
+      setSelectedGroupData(dtos);
+
+      // 조회 성공 토스트
+      toast.update(loadingToastId, 'success', `겸직 그룹 ${positionDual.concurrentStatusCode}: ${dtos.length}건 조회 완료`);
+
+      // 모달 열기 (첫 번째 항목을 대표로 전달)
+      handlePositionDualDetail(positionDual);
+
+    } catch (error) {
+      console.error('겸직 상세 조회 실패:', error);
+      toast.error('겸직 관계 상세 조회에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }, [handlePositionDualDetail]);
 
   const handleSelectionChange = useCallback((selected: PositionDual[]) => {
     setSelectedPositionDuals(selected);
     console.log('선택된 행:', selected.length);
   }, []);
+
+  // 컬럼 정의 (겸직현황코드 클릭 핸들러 주입)
+  const columns = useMemo(() => {
+    return getPositionDualColumns(false, handleConcurrentCodeClick);
+  }, [handleConcurrentCodeClick]);
 
   // Memoized computed values (성능 최적화)
   const statistics = useMemo(() => {
@@ -382,14 +412,14 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     {
       key: 'ledgerOrderId',
       type: 'custom',
-      label: '원장차수',
+      label: '책무이행차수',
       required: true,
-      gridSize: { xs: 12, sm: 6, md: 3 },
+      gridSize: { xs: 12, sm: 6, md: 2.5 },
       customComponent: (
         <LedgerOrderComboBox
           value={filters.ledgerOrderId}
           onChange={(value) => handleFiltersChange({ ledgerOrderId: value || '' })}
-          label="원장차수"
+          label="책무이행차수"
           required
         />
       )
@@ -467,7 +497,7 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
    */
   React.useEffect(() => {
     const fetchPositionConcurrents = async () => {
-      // 원장차수가 선택되지 않으면 조회하지 않음
+      // 책무이행차수가 선택되지 않으면 조회하지 않음
       if (!filters.ledgerOrderId) {
         setPositionDuals([]);
         setPagination(prev => ({
@@ -603,11 +633,9 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
         {/* 🎯 공통 데이터 그리드 */}
         <BaseDataGrid
           data={displayPositionDuals}
-          columns={positionDualColumns}
+          columns={columns}
           loading={loading}
           theme="alpine"
-          onRowClick={(data) => handleRowClick(data)}
-          onRowDoubleClick={(data) => handleRowDoubleClick(data)}
           onSelectionChange={handleSelectionChange}
           height="calc(100vh - 370px)"
           pagination={true}
@@ -628,6 +656,7 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
           onSave={handlePositionDualSave}
           onUpdate={handlePositionDualUpdate}
           loading={loading}
+          groupData={modalState.detailModal ? selectedGroupData : undefined}
         />
       </React.Suspense>
     </div>

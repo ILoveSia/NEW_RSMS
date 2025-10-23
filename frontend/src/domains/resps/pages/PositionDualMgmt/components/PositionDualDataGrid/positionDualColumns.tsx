@@ -9,7 +9,7 @@ import {
   Flag as FlagIcon,
   Link as LinkIcon
 } from '@mui/icons-material';
-import { Chip, IconButton, Tooltip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 import { ColDef } from 'ag-grid-community';
 
 import type { PositionDual } from '../../types/positionDual.types';
@@ -60,49 +60,47 @@ const ActiveStatusRenderer = ({ data }: { data: PositionDual }) => {
   );
 };
 
-// 겸직현황코드 렌더러 (기본)
+// 겸직현황코드 렌더러 (링크 스타일)
 const ConcurrentStatusCodeRenderer = (params: any) => {
   const { data, onClick } = params;
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(data);
-    }
+  if (!data || !onClick) {
+    return <span>{data?.concurrentStatusCode || ''}</span>;
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    onClick(data);
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-      height: '100%',
-      justifyContent: 'center'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        height: '100%',
+        justifyContent: 'center',
+        cursor: 'pointer'
+      }}
+      onClick={handleClick}
+    >
+      <LinkIcon
+        fontSize="small"
+        sx={{
+          color: '#1976d2',
+          fontSize: '16px'
+        }}
+      />
       <span style={{
         color: '#1976d2',
-        fontWeight: 'medium',
+        fontWeight: 600,
         fontSize: '0.875rem',
-        cursor: onClick ? 'pointer' : 'default'
+        textDecoration: 'underline',
+        textUnderlineOffset: '2px'
       }}>
         {data.concurrentStatusCode}
       </span>
-      {onClick && (
-        <Tooltip title="겸직 상세 보기">
-          <IconButton
-            size="small"
-            onClick={handleClick}
-            sx={{
-              padding: '2px',
-              color: '#1976d2',
-              '&:hover': {
-                backgroundColor: 'rgba(25, 118, 210, 0.04)'
-              }
-            }}
-          >
-            <LinkIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
     </div>
   );
 };

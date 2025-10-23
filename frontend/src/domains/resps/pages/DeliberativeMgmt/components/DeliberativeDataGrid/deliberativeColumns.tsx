@@ -131,19 +131,19 @@ export const deliberativeColumns: ColDef<Deliberative>[] = [
   {
     field: 'members',
     headerName: '위원',
-    width: 180,
+    width: 250,
     sortable: false,
     filter: false,
     cellRenderer: ({ value }: { value: string }) => (
       <span title={value} style={{ fontSize: '0.875rem' }}>
-        {value && value.length > 20 ? `${value.substring(0, 20)}...` : value || ''}
+        {value && value.length > 30 ? `${value.substring(0, 30)}...` : value || ''}
       </span>
     )
   },
   {
     field: 'mainAgenda',
     headerName: '주요심의사항',
-    width: 250,
+    width: 300,
     sortable: false,
     filter: false,
     cellRenderer: MainAgendaRenderer,
@@ -160,22 +160,6 @@ export const deliberativeColumns: ColDef<Deliberative>[] = [
   {
     field: 'registrar',
     headerName: '등록자',
-    width: 100,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellStyle: { fontSize: '0.875rem' }
-  },
-  {
-    field: 'registrarPosition',
-    headerName: '등록자직책',
-    width: 120,
-    sortable: false,
-    filter: false,
-    cellStyle: { fontSize: '0.875rem' }
-  },
-  {
-    field: 'modifier',
-    headerName: '수정자',
     width: 100,
     sortable: true,
     filter: 'agTextColumnFilter',

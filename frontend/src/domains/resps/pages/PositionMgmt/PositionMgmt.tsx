@@ -395,7 +395,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
       key: 'ledgerOrderId',
       type: 'custom',
       label: '책무이행차수',
-      gridSize: { xs: 12, sm: 6, md: 3 },
+      gridSize: { xs: 12, sm: 6, md: 2.5 },
       customComponent: (
         <LedgerOrderComboBox
           value={filters.ledgerOrderId}

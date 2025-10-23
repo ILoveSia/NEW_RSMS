@@ -23,12 +23,24 @@ import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/comp
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
+// Domain Components
+import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
+
 // Deliberative specific components
 import { deliberativeColumns } from './components/DeliberativeDataGrid/deliberativeColumns';
 
+// API
+import {
+  getAllCommittees,
+  getCommitteesByLedgerOrderId,
+  deleteCommittee,
+  deleteCommittees,
+  type CommitteeDto
+} from '../../api/committeeApi';
+
 // Lazy-loaded components for performance optimization
 const DeliberativeFormModal = React.lazy(() =>
-  import('./components/DeliberativeFormModal').then(module => ({ default: module.default }))
+  import('./components/DeliberativeFormModal')
 );
 
 interface DeliberativeMgmtProps {
@@ -47,8 +59,7 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
   const [loadingStates, setLoadingStates] = useState({
     search: false,
     excel: false,
-    delete: false,
-    reorder: false
+    delete: false
   });
 
   const [filters, setFilters] = useState<DeliberativeFilters>({
@@ -57,6 +68,9 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
     isActive: '',
     holdingPeriod: ''
   });
+
+  // 책무이행차수 상태 (LedgerOrderComboBox용)
+  const [ledgerOrderId, setLedgerOrderId] = useState<string | null>(null);
 
   const [pagination, setPagination] = useState<DeliberativePagination>({
     page: 1,
@@ -70,6 +84,52 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
     detailModal: false,
     selectedDeliberative: null
   });
+
+  /**
+   * 회의체 목록 조회
+   */
+  const fetchCommittees = useCallback(async () => {
+    setLoading(true);
+    try {
+      const committees = ledgerOrderId
+        ? await getCommitteesByLedgerOrderId(ledgerOrderId)
+        : await getAllCommittees();
+
+      // CommitteeDto → Deliberative 변환
+      const deliberativeList: Deliberative[] = committees.map((committee, index) => ({
+        id: committee.committeesId?.toString() || '',
+        seq: index + 1,
+        name: committee.committeesTitle,
+        holdingPeriod: committee.committeeFrequency,
+        chairperson: committee.members?.find(m => m.committeesType === 'chairman')?.positionsName || '',
+        members: committee.members?.filter(m => m.committeesType === 'member').map(m => m.positionsName).join(', ') || '',
+        mainAgenda: committee.resolutionMatters || '',
+        registrationDate: committee.createdAt?.split(' ')[0] || '',
+        registrar: committee.createdBy || '',
+        registrarPosition: '',
+        isActive: committee.isActive === 'Y'
+      }));
+
+      setDeliberatives(deliberativeList);
+      setPagination(prev => ({
+        ...prev,
+        total: deliberativeList.length,
+        totalPages: Math.ceil(deliberativeList.length / prev.size)
+      }));
+    } catch (error) {
+      console.error('회의체 목록 조회 실패:', error);
+      toast.error('회의체 목록 조회에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [ledgerOrderId]);
+
+  /**
+   * 초기 데이터 로딩
+   */
+  React.useEffect(() => {
+    fetchCommittees();
+  }, [fetchCommittees]);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<DeliberativeFilters>) => {
@@ -125,67 +185,25 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
     const loadingToastId = toast.loading(`${selectedDeliberatives.length}개 회의체를 삭제 중입니다...`);
 
     try {
-      // TODO: 실제 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+      // 실제 삭제 API 호출
+      const committeeIds = selectedDeliberatives.map(d => Number(d.id));
+      await deleteCommittees(committeeIds);
 
-      // 상태 업데이트 (삭제된 항목 제거)
-      setDeliberatives(prev =>
-        prev.filter(deliberative => !selectedDeliberatives.some(selected => selected.id === deliberative.id))
-      );
-      setPagination(prev => ({
-        ...prev,
-        total: prev.total - selectedDeliberatives.length
-      }));
+      // 목록 새로고침
+      await fetchCommittees();
       setSelectedDeliberatives([]);
 
       // 성공 토스트로 업데이트
       toast.update(loadingToastId, 'success', `${selectedDeliberatives.length}개 회의체가 삭제되었습니다.`);
-    } catch (error) {
+    } catch (error: any) {
       // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '회의체 삭제에 실패했습니다.');
+      const errorMessage = error.response?.data?.message || '회의체 삭제에 실패했습니다.';
+      toast.update(loadingToastId, 'error', errorMessage);
       console.error('회의체 삭제 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedDeliberatives]);
-
-  const handleReorderUp = useCallback(async () => {
-    if (selectedDeliberatives.length !== 1) {
-      toast.warning('순서를 변경할 회의체를 하나만 선택해주세요.');
-      return;
-    }
-
-    setLoadingStates(prev => ({ ...prev, reorder: true }));
-
-    try {
-      // TODO: 실제 순서 변경 API 호출
-      await new Promise(resolve => setTimeout(resolve, 500));
-      toast.success('순서가 변경되었습니다.');
-    } catch (error) {
-      toast.error('순서 변경에 실패했습니다.');
-    } finally {
-      setLoadingStates(prev => ({ ...prev, reorder: false }));
-    }
-  }, [selectedDeliberatives]);
-
-  const handleReorderDown = useCallback(async () => {
-    if (selectedDeliberatives.length !== 1) {
-      toast.warning('순서를 변경할 회의체를 하나만 선택해주세요.');
-      return;
-    }
-
-    setLoadingStates(prev => ({ ...prev, reorder: true }));
-
-    try {
-      // TODO: 실제 순서 변경 API 호출
-      await new Promise(resolve => setTimeout(resolve, 500));
-      toast.success('순서가 변경되었습니다.');
-    } catch (error) {
-      toast.error('순서 변경에 실패했습니다.');
-    } finally {
-      setLoadingStates(prev => ({ ...prev, reorder: false }));
-    }
-  }, [selectedDeliberatives]);
+  }, [selectedDeliberatives, fetchCommittees]);
 
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({
@@ -197,73 +215,26 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
   }, []);
 
   // 폼 모달 핸들러들
-  const handleDeliberativeSave = useCallback(async (formData: DeliberativeFormData) => {
+  const handleDeliberativeSave = useCallback(async (_formData: DeliberativeFormData) => {
     try {
-      setLoading(true);
-      // TODO: API 호출로 회의체 생성
-      // const response = await deliberativeApi.create(formData);
-
-      // 임시로 새 회의체 객체 생성
-      const newDeliberative: Deliberative = {
-        id: Date.now().toString(),
-        seq: deliberatives.length + 1,
-        name: formData.name,
-        holdingPeriod: formData.holdingPeriod,
-        chairperson: formData.members.find(m => m.type === 'chairman')?.name || '',
-        members: formData.members.filter(m => m.type === 'member').map(m => m.name).join(', '),
-        mainAgenda: formData.mainAgenda,
-        registrationDate: new Date().toISOString().split('T')[0],
-        registrar: '현재사용자',
-        registrarPosition: '관리자',
-        isActive: formData.isActive
-      };
-
-      setDeliberatives(prev => [newDeliberative, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
+      // API 호출은 모달 내부에서 처리됨
+      // 여기서는 목록만 새로고침
+      await fetchCommittees();
       handleModalClose();
-      toast.success('회의체가 성공적으로 등록되었습니다.');
     } catch (error) {
-      console.error('회의체 등록 실패:', error);
-      toast.error('회의체 등록에 실패했습니다.');
-    } finally {
-      setLoading(false);
+      console.error('회의체 저장 후 목록 새로고침 실패:', error);
     }
-  }, [deliberatives.length, handleModalClose]);
+  }, [fetchCommittees, handleModalClose]);
 
-  const handleDeliberativeUpdate = useCallback(async (id: string, formData: DeliberativeFormData) => {
+  const handleDeliberativeUpdate = useCallback(async (_id: string, _formData: DeliberativeFormData) => {
     try {
-      setLoading(true);
-      // TODO: API 호출로 회의체 수정
-      // const response = await deliberativeApi.update(id, formData);
-
-      // 임시로 기존 회의체 업데이트
-      setDeliberatives(prev =>
-        prev.map(deliberative =>
-          deliberative.id === id
-            ? {
-                ...deliberative,
-                name: formData.name,
-                holdingPeriod: formData.holdingPeriod,
-                chairperson: formData.members.find(m => m.type === 'chairman')?.name || '',
-                members: formData.members.filter(m => m.type === 'member').map(m => m.name).join(', '),
-                mainAgenda: formData.mainAgenda,
-                modificationDate: new Date().toISOString().split('T')[0],
-                modifier: '현재사용자',
-                isActive: formData.isActive
-              }
-            : deliberative
-        )
-      );
-
-      handleModalClose();
-      toast.success('회의체가 성공적으로 수정되었습니다.');
+      // API 호출은 모달 내부에서 처리됨
+      // 여기서는 목록만 새로고침
+      await fetchCommittees();
     } catch (error) {
-      console.error('회의체 수정 실패:', error);
-      toast.error('회의체 수정에 실패했습니다.');
-    } finally {
-      setLoading(false);
+      console.error('회의체 수정 후 목록 새로고침 실패:', error);
     }
-  }, [handleModalClose]);
+  }, [fetchCommittees]);
 
   const handleDeliberativeDetail = useCallback((deliberative: Deliberative) => {
     setModalState(prev => ({
@@ -306,6 +277,7 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
       isActive: '',
       holdingPeriod: ''
     });
+    setLedgerOrderId(null);
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
@@ -347,17 +319,25 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 2.5 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={ledgerOrderId || undefined}
+          onChange={setLedgerOrderId}
+          label="책무이행장차수"
+          fullWidth
+          size="small"
+        />
+      )
+    },
+    {
       key: 'name',
       type: 'text',
       label: '회의체명',
       placeholder: '회의체명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'chairperson',
-      type: 'text',
-      label: '위원장',
-      placeholder: '위원장명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -382,9 +362,9 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
         { value: 'semiannually', label: '반기' },
         { value: 'annually', label: '년' }
       ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      gridSize: { xs: 12, sm: 6, md: 1 }
     }
-  ], []);
+  ], [ledgerOrderId]);
 
   // BaseActionBar용 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -408,24 +388,8 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
       disabled: selectedDeliberatives.length === 0 || loadingStates.delete,
       loading: loadingStates.delete,
       confirmationRequired: true
-    },
-    {
-      key: 'up',
-      type: 'custom',
-      label: 'UP',
-      onClick: handleReorderUp,
-      disabled: selectedDeliberatives.length !== 1 || loadingStates.reorder,
-      loading: loadingStates.reorder && selectedDeliberatives.length === 1
-    },
-    {
-      key: 'down',
-      type: 'custom',
-      label: 'DOWN',
-      onClick: handleReorderDown,
-      disabled: selectedDeliberatives.length !== 1 || loadingStates.reorder,
-      loading: loadingStates.reorder && selectedDeliberatives.length === 1
     }
-  ], [handleExcelDownload, handleAddDeliberative, handleDeleteDeliberatives, handleReorderUp, handleReorderDown, selectedDeliberatives.length, loadingStates]);
+  ], [handleExcelDownload, handleAddDeliberative, handleDeleteDeliberatives, selectedDeliberatives.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -577,7 +541,7 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
-        {/* 🔍 공통 검색 필터 */}
+        {/* 🔍 공통 검색 필터 (책무이행차수 포함) */}
         <BaseSearchFilter
           fields={searchFields}
           values={filters as unknown as FilterValues}

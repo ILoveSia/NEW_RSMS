@@ -309,6 +309,28 @@ export const getPositionConcurrents = async (
 };
 
 /**
+ * 겸직그룹코드로 겸직 목록 조회 (상세조회)
+ * GET /api/resps/position-concurrents/group/{concurrentGroupCd}
+ */
+export const getPositionConcurrentsByGroup = async (
+  concurrentGroupCd: string
+): Promise<PositionConcurrentDto[]> => {
+  try {
+    const response = await axios.get<PositionConcurrentDto[]>(
+      `/api/resps/position-concurrents/group/${concurrentGroupCd}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('겸직 그룹 조회 실패:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || '겸직 그룹 조회에 실패했습니다.');
+    }
+    throw error;
+  }
+};
+
+/**
  * 겸직그룹 삭제
  * DELETE /api/resps/position-concurrents/group/{concurrentGroupCd}
  */

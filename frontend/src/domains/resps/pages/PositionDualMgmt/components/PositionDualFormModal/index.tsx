@@ -24,7 +24,8 @@ import {
   getPositionsByLedgerOrderId,
   createPositionConcurrents,
   type CreatePositionConcurrentRequest,
-  type PositionDto
+  type PositionDto,
+  type PositionConcurrentDto
 } from '@/domains/resps/api/positionApi';
 import type { PositionNameDto } from '@/domains/resps/components/molecules/PositionNameComboBox/types';
 import type {
@@ -34,14 +35,22 @@ import type {
   PositionDualFormModalProps
 } from '../../types/positionDual.types';
 
-const PositionDualFormModal: React.FC<PositionDualFormModalProps> = ({
+/**
+ * 확장된 Props 타입 - groupData 추가
+ */
+interface ExtendedPositionDualFormModalProps extends PositionDualFormModalProps {
+  groupData?: PositionConcurrentDto[];  // 상세조회 시 API로부터 받은 실제 데이터
+}
+
+const PositionDualFormModal: React.FC<ExtendedPositionDualFormModalProps> = ({
   open,
   mode,
   positionDual,
   onClose,
   onSave,
   onUpdate,
-  loading = false
+  loading = false,
+  groupData
 }) => {
   // 상태 관리
   const [ledgerOrderId, setLedgerOrderId] = useState<string>('');
@@ -85,45 +94,52 @@ const PositionDualFormModal: React.FC<PositionDualFormModalProps> = ({
     fetchPositionsByLedger();
   }, [ledgerOrderId]);
 
-  // 폼 초기화
+  /**
+   * PositionConcurrentDto → PositionDualPosition 변환 함수
+   */
+  const convertDtoToPosition = useCallback((dto: PositionConcurrentDto, index: number): PositionDualPosition => {
+    return {
+      id: dto.positionConcurrentId.toString(),
+      positionCode: dto.positionsCd,
+      positionName: dto.positionsName,
+      hpName: dto.hqName || '',
+      isRepresentative: dto.isRepresentative === 'Y',
+      isActive: dto.isActive === 'Y'
+    };
+  }, []);
+
+  // 폼 초기화 - groupData를 활용하여 실제 데이터 로드
   useEffect(() => {
     if (mode === 'create') {
       setLedgerOrderId('');
       setPositions([]);
       setIsEditing(true);
+    } else if (mode === 'detail' && groupData && groupData.length > 0) {
+      // 상세조회 모드: groupData가 있으면 실제 API 데이터 사용
+      const convertedPositions = groupData.map((dto, index) => convertDtoToPosition(dto, index));
+      setPositions(convertedPositions);
+
+      // 원장차수ID 설정 (첫 번째 데이터에서 가져오기)
+      if (groupData[0].ledgerOrderId) {
+        setLedgerOrderId(groupData[0].ledgerOrderId);
+      }
+
+      setIsEditing(false);
     } else if (positionDual) {
+      // groupData가 없는 경우 (이전 방식)
       loadPositionsByCode(positionDual.concurrentStatusCode);
       setIsEditing(false);
     }
-  }, [mode, positionDual, open]);
+  }, [mode, positionDual, groupData, open, convertDtoToPosition]);
 
-  // 겸직현황코드별 직책 목록 로드
+  // 겸직현황코드별 직책 목록 로드 (groupData가 없는 경우 대비)
   const loadPositionsByCode = useCallback(async (code: string) => {
     try {
-      // TODO: API 호출로 해당 겸직현황코드의 직책들 로드
-      // const response = await positionDualApi.getPositionsByCode(code);
-      // setPositions(response.data);
+      // groupData가 이미 있으면 이 함수는 호출되지 않음
+      console.warn('loadPositionsByCode called without groupData - this should not happen in detail mode');
 
-      // 임시 데이터 (같은 겸직현황코드를 가진 직책들)
-      const mockPositions: PositionDualPosition[] = [
-        {
-          id: '1',
-          positionCode: 'R106',
-          positionName: '오토금융본부장',
-          hpName: '오토금융본부',
-          isRepresentative: true,
-          isActive: true
-        },
-        {
-          id: '2',
-          positionCode: 'R107',
-          positionName: '오토채널본부장',
-          hpName: '오토채널본부',
-          isRepresentative: false,
-          isActive: true
-        }
-      ];
-      setPositions(mockPositions);
+      // Fallback: 빈 배열로 초기화
+      setPositions([]);
     } catch (error) {
       console.error('직책 목록 로드 실패:', error);
     }

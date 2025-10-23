@@ -106,4 +106,31 @@ public interface PositionConcurrentRepository extends JpaRepository<PositionConc
         ORDER BY pc.concurrent_group_cd, pc.is_representative DESC
         """, nativeQuery = true)
     List<PositionConcurrent> findByLedgerOrderIdWithPositions(@Param("ledgerOrderId") String ledgerOrderId);
+
+    /**
+     * 겸직그룹코드로 겸직 목록 조회 (positions 테이블 조인)
+     * - positions 테이블의 hq_code, hq_name을 함께 조회
+     */
+    @Query(value = """
+        SELECT pc.position_concurrent_id,
+               pc.ledger_order_id,
+               pc.positions_cd,
+               pc.concurrent_group_cd,
+               pc.positions_name,
+               pc.is_representative,
+               COALESCE(p.hq_code, pc.hq_code) as hq_code,
+               COALESCE(p.hq_name, pc.hq_name) as hq_name,
+               pc.is_active,
+               pc.created_by,
+               pc.created_at,
+               pc.updated_by,
+               pc.updated_at
+        FROM rsms.position_concurrents pc
+        LEFT JOIN rsms.positions p
+            ON pc.ledger_order_id = p.ledger_order_id
+            AND pc.positions_cd = p.positions_cd
+        WHERE pc.concurrent_group_cd = :concurrentGroupCd
+        ORDER BY pc.is_representative DESC
+        """, nativeQuery = true)
+    List<PositionConcurrent> findByConcurrentGroupCdWithPositions(@Param("concurrentGroupCd") String concurrentGroupCd);
 }

@@ -125,3 +125,14 @@ export interface DeliberativeSortOption {
   field: keyof Deliberative;
   direction: 'asc' | 'desc';
 }
+
+// 회의체 모달 Props (PositionDualFormModal 패턴)
+export interface DeliberativeFormModalProps {
+  open: boolean;
+  mode: 'create' | 'detail';
+  deliberative: Deliberative | null;
+  onClose: () => void;
+  onSave: (formData: DeliberativeFormData) => void;
+  onUpdate: (id: string, formData: DeliberativeFormData) => void;
+  loading?: boolean;
+}
