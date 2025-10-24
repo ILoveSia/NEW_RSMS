@@ -95,19 +95,11 @@ INSERT INTO rsms.ledger_order (ledger_order_title, ledger_order_status, ledger_o
   ('2024년도 4차 원장', 'CLSD', '2024년 4분기 원장차수 (종료)', 'SYSTEM', 'SYSTEM');
 */
 
--- 트리거: updated_at 자동 갱신
-CREATE OR REPLACE FUNCTION rsms.update_ledger_order_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
+-- 트리거: updated_at 자동 갱신 (공통 함수 사용)
 CREATE TRIGGER trg_ledger_order_updated_at
   BEFORE UPDATE ON rsms.ledger_order
   FOR EACH ROW
-  EXECUTE FUNCTION rsms.update_ledger_order_updated_at();
+  EXECUTE FUNCTION rsms.update_updated_at_column();
 
 -- 사용 예시 주석
 -- INSERT 시 ledger_order_id는 자동 생성됨:

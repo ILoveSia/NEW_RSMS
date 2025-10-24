@@ -32,10 +32,10 @@ export interface Responsibility {
  * 책무 검색 필터
  */
 export interface ResponsibilityFilters {
+  책무이행차수?: string;
   직책명?: string;
   책무?: string;
   본부구분?: string;
-  부점명?: string;
   관리의무?: string;
   상태?: string;
   사용여부?: string;

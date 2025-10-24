@@ -192,8 +192,8 @@ INSERT INTO rsms.resp_statement_execs (
 -- 권한 설정
 -- =====================================================================================
 -- rsms_app 역할에 테이블 권한 부여
-GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.resp_statement_execs TO rsms_app;
-GRANT USAGE, SELECT ON SEQUENCE rsms.resp_statement_execs_resp_stmt_exec_id_seq TO rsms_app;
+--GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.resp_statement_execs TO rsms_app;
+--GRANT USAGE, SELECT ON SEQUENCE rsms.resp_statement_execs_resp_stmt_exec_id_seq TO rsms_app;
 
 -- =====================================================================================
 -- 스크립트 완료

@@ -4,9 +4,15 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ResponsibilityMgmt.module.scss';
+
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+
+// API
+import { getAllResponsibilitiesWithJoin, type ResponsibilityListDto } from '@/domains/resps/api/responsibilityApi';
 
 // Types
 import type {
@@ -64,10 +70,10 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
     clearFilters,
     hasFilters
   } = useFilters<ResponsibilityFilters>({
+    책무이행차수: '',
     직책명: '',
     책무: '',
     본부구분: '',
-    부점명: '',
     관리의무: '',
     상태: '',
     사용여부: ''
@@ -241,9 +247,36 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
   const handleSearch = useCallback(async () => {
     await handlers.search.execute(
       async () => {
-        // TODO: 실제 API 호출로 교체
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-        console.log('검색 필터:', filters);
+        // 4테이블 조인 API 호출
+        const response = await getAllResponsibilitiesWithJoin({
+          ledgerOrderId: filters.책무이행차수 || undefined,
+          positionsName: filters.직책명 || undefined,
+          responsibilityCd: filters.책무 || undefined
+        });
+
+        console.log('[책무목록 조회] API 응답:', response);
+
+        // API 응답을 Responsibility 타입으로 변환
+        const responsibilities: Responsibility[] = response.map((item: ResponsibilityListDto, index: number) => ({
+          id: item.responsibilityId?.toString() || `temp-${index}`,
+          순번: index + 1,
+          직책: item.positionsName || '',
+          책무: item.responsibilityCdName || '',
+          책무세부내용: item.responsibilityDetailInfo || '',
+          관리의무: item.obligationInfo || '',
+          부점명: item.hqName || '',
+          등록일자: '', // TODO: 등록일자 필드 추가 필요
+          등록자: '', // TODO: 등록자 필드 추가 필요
+          등록자직책: '', // TODO: 등록자직책 필드 추가 필요
+          상태: item.responsibilityIsActive === 'Y' ? '정상' : '비활성',
+          사용여부: item.responsibilityIsActive === 'Y',
+          본부구분: item.hqCode || '',
+          부서명: item.orgCode || ''
+        }));
+
+        setResponsibilities(responsibilities);
+        updateTotal(responsibilities.length);
+        console.log('[책무목록 조회] 변환된 데이터:', responsibilities);
       },
       {
         loading: '책무 정보를 검색 중입니다...',
@@ -251,12 +284,18 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
         error: '검색에 실패했습니다.'
       }
     );
-  }, [filters, handlers.search]);
+  }, [filters, handlers.search, updateTotal]);
 
   const handleClearFilters = useCallback(() => {
     clearFilters();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, [clearFilters]);
+
+  // 초기 로딩 시 자동 조회
+  useEffect(() => {
+    handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 빈 배열: 컴포넌트 마운트 시 1회만 실행
 
   // Grid Event Handlers
   const handleRowClick = useCallback((responsibility: Responsibility) => {
@@ -317,6 +356,19 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: '책무이행차수',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.책무이행차수 || ''}
+          onChange={(newValue) => setFilter('책무이행차수', newValue || '')}
+          label="책무이행차수"
+        />
+      )
+    },
+    {
       key: '직책명',
       type: 'text',
       label: '직책명',
@@ -329,15 +381,8 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
       label: '책무',
       placeholder: '책무를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: '부점명',
-      type: 'text',
-      label: '부점명',
-      placeholder: '부점명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
     }
-  ], []);
+  ], [filters.책무이행차수, setFilter]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -402,58 +447,6 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
       console.groupEnd();
     }
   }, []);
-
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockResponsibilities: Responsibility[] = [
-      {
-        id: '1',
-        순번: 1,
-        직책: '이사회의장',
-        책무: '이사회 운영업무 관련된 책무',
-        책무세부내용: '책무구조도의 미래 관리 컨설 책무 세부내용',
-        관리의무: '내부통제기준 및 위험관리기준 수립 책무에 대한 관리의무',
-        부점명: '경영진',
-        등록일자: '2025-08-13',
-        등록자: '관리자',
-        등록자직책: '시스템관리자',
-        상태: '반영필요',
-        사용여부: true
-      },
-      {
-        id: '2',
-        순번: 2,
-        직책: '내규인사',
-        책무: '책무구조도의 미래 관리 컨설 책무 관리업무',
-        책무세부내용: '내부통제기준 및 위험관리기준 수립 책무에 대한 관리의무',
-        관리의무: '내부통제기준 및 위험관리기준 수립 책무에 대한 관리의무',
-        부점명: '감사부',
-        등록일자: '2025-08-13',
-        등록자: '김철수',
-        등록자직책: '관리자',
-        상태: '반영필요',
-        사용여부: true
-      },
-      {
-        id: '3',
-        순번: 3,
-        직책: '감사본부장',
-        책무: '내부감사 업무와 관련된 책무',
-        책무세부내용: '내부감사 업무와 관련된 책무 세부 내용',
-        관리의무: '내부통제기준 및 위험관리기준 수립 책무에 대한 관리의무',
-        부점명: '감사부',
-        등록일자: '2025-08-13',
-        등록자: '홍길동',
-        등록자직책: '관리자',
-        상태: '반영필요',
-        사용여부: true
-      }
-    ];
-
-    setResponsibilities(mockResponsibilities);
-    updateTotal(mockResponsibilities.length);
-  }, [updateTotal]);
 
   return (
     <React.Profiler id="ResponsibilityMgmt" onRender={onRenderProfiler}>

@@ -72,19 +72,11 @@ COMMENT ON COLUMN rsms.committee_details.created_at IS '생성일시';
 COMMENT ON COLUMN rsms.committee_details.updated_by IS '수정자';
 COMMENT ON COLUMN rsms.committee_details.updated_at IS '수정일시';
 
--- 트리거: updated_at 자동 갱신
-CREATE OR REPLACE FUNCTION rsms.update_committee_details_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
+-- 트리거: updated_at 자동 갱신 (공통 함수 사용)
 CREATE TRIGGER trg_committee_details_updated_at
   BEFORE UPDATE ON rsms.committee_details
   FOR EACH ROW
-  EXECUTE FUNCTION rsms.update_committee_details_updated_at();
+  EXECUTE FUNCTION rsms.update_updated_at_column();
 
 -- 샘플 데이터 (선택사항 - 필요시 주석 해제)
 -- 참고: committees, positions, common_code_details에 데이터가 미리 등록되어 있어야 함

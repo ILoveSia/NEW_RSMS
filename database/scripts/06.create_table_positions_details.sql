@@ -63,18 +63,11 @@ COMMENT ON COLUMN rsms.positions_details.updated_by IS '수정자';
 COMMENT ON COLUMN rsms.positions_details.updated_at IS '수정일시';
 
 -- 트리거: updated_at 자동 갱신
-CREATE OR REPLACE FUNCTION rsms.update_positions_details_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
+-- 트리거: updated_at 자동 갱신 (공통 함수 사용)
 CREATE TRIGGER trg_positions_details_updated_at
   BEFORE UPDATE ON rsms.positions_details
   FOR EACH ROW
-  EXECUTE FUNCTION rsms.update_positions_details_updated_at();
+  EXECUTE FUNCTION rsms.update_updated_at_column();
 
 -- 샘플 데이터 (선택사항 - 필요시 주석 해제)
 -- 참고: positions, organizations 테이블에 데이터가 미리 등록되어 있어야 함

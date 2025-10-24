@@ -20,7 +20,7 @@ CREATE TABLE rsms.responsibilities (
   -- 기본 정보
   responsibility_cat VARCHAR(20) NOT NULL,                -- 책무카테고리 (common_code_details의 RSBT_OBLG_CLCD 그룹 참조)
   responsibility_cd VARCHAR(20) NOT NULL,                 -- 책무코드 (common_code_details의 RSBT_OBLG_CD 그룹 참조)
-  responsibility_info VARCHAR(1000) NOT NULL,             -- 책무내용 (common_code_details의 RSBT_OBLG_CD 그룹 중 하나 선택후 저장)
+  responsibility_info VARCHAR(1000) NOT NULL,             -- 책무내용
   responsibility_legal VARCHAR(1000) NOT NULL,            -- 책무관련근거 (직접입력)
 
   -- 만료 정보
@@ -89,7 +89,7 @@ COMMENT ON COLUMN rsms.responsibilities.ledger_order_id IS '원장차수ID (FK �
 COMMENT ON COLUMN rsms.responsibilities.positions_id IS '직책ID (FK → positions)';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_cat IS '책무카테고리 (common_code_details의 RSBT_OBLG_CLCD 그룹 참조)';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_cd IS '책무코드 (common_code_details의 RSBT_OBLG_CD 그룹 참조)';
-COMMENT ON COLUMN rsms.responsibilities.responsibility_info IS '책무내용 (common_code_details의 RSBT_OBLG_CD 그룹 중 하나 선택후 저장)';
+COMMENT ON COLUMN rsms.responsibilities.responsibility_info IS '책무내용';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_legal IS '책무관련근거 (직접입력)';
 COMMENT ON COLUMN rsms.responsibilities.expiration_date IS '만료일 (기본값: 9999-12-31)';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_status IS '상태 (나중에 사용 예정)';
@@ -173,8 +173,8 @@ INSERT INTO rsms.responsibilities (
 -- 권한 설정
 -- =====================================================================================
 -- rsms_app 역할에 테이블 권한 부여
-GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.responsibilities TO rsms_app;
-GRANT USAGE, SELECT ON SEQUENCE rsms.responsibilities_responsibility_id_seq TO rsms_app;
+--GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.responsibilities TO rsms_app;
+--GRANT USAGE, SELECT ON SEQUENCE rsms.responsibilities_responsibility_id_seq TO rsms_app;
 
 -- =====================================================================================
 -- 스크립트 완료

@@ -103,8 +103,8 @@ INSERT INTO rsms.responsibility_details (
 -- 권한 설정
 -- =====================================================================================
 -- rsms_app 역할에 테이블 권한 부여
-GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.responsibility_details TO rsms_app;
-GRANT USAGE, SELECT ON SEQUENCE rsms.responsibility_details_responsibility_detail_id_seq TO rsms_app;
+--GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.responsibility_details TO rsms_app;
+--GRANT USAGE, SELECT ON SEQUENCE rsms.responsibility_details_responsibility_detail_id_seq TO rsms_app;
 
 -- =====================================================================================
 -- 스크립트 완료

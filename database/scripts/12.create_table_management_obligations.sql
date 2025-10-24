@@ -135,8 +135,8 @@ INSERT INTO rsms.management_obligations (
 -- 권한 설정
 -- =====================================================================================
 -- rsms_app 역할에 테이블 권한 부여
-GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.management_obligations TO rsms_app;
-GRANT USAGE, SELECT ON SEQUENCE rsms.management_obligations_management_obligation_id_seq TO rsms_app;
+--GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.management_obligations TO rsms_app;
+--GRANT USAGE, SELECT ON SEQUENCE rsms.management_obligations_management_obligation_id_seq TO rsms_app;
 
 -- =====================================================================================
 -- 스크립트 완료
