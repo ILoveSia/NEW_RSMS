@@ -3,8 +3,39 @@
  * PositionMgmt 표준 템플릿 기반
  */
 
+import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { LEDGER_ORDER_STATUS, LedgerOrder } from '../../types/ledgerOrder.types';
+
+// 책무이행차수 제목 링크 렌더러 (상세조회용)
+const LedgerOrderTitleRenderer = ({ value, data, onCellClicked }: any) => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (onCellClicked) {
+      onCellClicked(data);
+    }
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={handleClick}
+      style={{
+        color: '#1976d2',
+        textDecoration: 'none',
+        fontWeight: '500'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {value}
+    </a>
+  );
+};
 
 /**
  * 원장차수 AG-Grid 컬럼 정의
@@ -37,19 +68,14 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     cellStyle: { fontWeight: '500' }
   },
   {
-    headerName: '책무이행자수 제목',
+    headerName: '책무이행차수 제목',
     field: 'ledgerOrderTitle',
     width: 250,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
-    cellStyle: {
-      fontWeight: '500',
-      color: '#1976d2',
-      cursor: 'pointer',
-      textDecoration: 'underline'
-    },
-    cellClass: 'clickable-cell'
+    cellRenderer: LedgerOrderTitleRenderer,
+    cellStyle: { fontWeight: '500' }
   },
   {
     headerName: '책무차수상태',

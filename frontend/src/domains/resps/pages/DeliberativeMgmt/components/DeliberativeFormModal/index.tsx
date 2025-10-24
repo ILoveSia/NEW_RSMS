@@ -37,6 +37,7 @@ import {
   type PositionDto
 } from '@/domains/resps/api/positionApi';
 import {
+  getCommitteeById,
   createCommittee,
   updateCommittee,
   type CommitteeCreateRequest,
@@ -68,6 +69,7 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [availablePositions, setAvailablePositions] = useState<PositionDto[]>([]);
   const [isLoadingPositions, setIsLoadingPositions] = useState(false);
+  const [isLoadingCommitteeDetail, setIsLoadingCommitteeDetail] = useState(false);
 
   /**
    * 원장차수 변경 시 직책 목록 조회
@@ -75,16 +77,20 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
   useEffect(() => {
     const fetchPositionsByLedger = async () => {
       if (!ledgerOrderId) {
+        console.log('[DeliberativeFormModal] 원장차수가 선택되지 않음. 직책 목록 초기화');
         setAvailablePositions([]);
         return;
       }
 
+      console.log('[DeliberativeFormModal] 원장차수:', ledgerOrderId, '로 직책 목록 조회 시작');
       setIsLoadingPositions(true);
       try {
         const positionDtos = await getPositionsByLedgerOrderId(ledgerOrderId);
+        console.log('[DeliberativeFormModal] 직책 목록 조회 성공:', positionDtos.length, '개');
+        console.log('[DeliberativeFormModal] 직책 목록:', positionDtos.map(p => p.positionsName).join(', '));
         setAvailablePositions(positionDtos);
       } catch (error) {
-        console.error('직책 목록 조회 실패:', error);
+        console.error('[DeliberativeFormModal] 직책 목록 조회 실패:', error);
         toast.error('직책 목록을 불러오는데 실패했습니다.');
         setAvailablePositions([]);
       } finally {
@@ -98,66 +104,87 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
   /**
    * 폼 초기화
    * - 등록 모드: 빈 폼
-   * - 상세 모드: deliberative 데이터 로드
+   * - 상세 모드: API로 회의체 상세 정보 조회
    */
   useEffect(() => {
-    if (mode === 'create') {
-      // 등록 모드: 초기화
-      setLedgerOrderId('');
-      setName('');
-      setHoldingPeriod('monthly');
-      setMainAgenda('');
-      setIsActive(true);
-      setMembers([]);
-      setIsEditing(true);
-    } else if (mode === 'detail' && deliberative) {
-      // 상세 모드: 데이터 로드
-      setName(deliberative.name);
-      setHoldingPeriod(deliberative.holdingPeriod);
-      setMainAgenda(deliberative.mainAgenda);
-      setIsActive(deliberative.isActive);
+    const initializeForm = async () => {
+      if (mode === 'create') {
+        // 등록 모드: 초기화
+        setLedgerOrderId('');
+        setName('');
+        setHoldingPeriod('monthly');
+        setMainAgenda('');
+        setIsActive(true);
+        setMembers([]);
+        setIsEditing(true);
+      } else if (mode === 'detail' && deliberative && open) {
+        // 상세 모드: 실제 API로 회의체 상세 조회
+        setIsLoadingCommitteeDetail(true);
+        try {
+          const committeeDetail = await getCommitteeById(Number(deliberative.id));
 
-      // 위원 데이터 파싱 (실제로는 API로 받아와야 함)
-      const parsedMembers: DeliberativeMember[] = [];
+          // 기본 정보 설정
+          setLedgerOrderId(committeeDetail.ledgerOrderId);
+          setName(committeeDetail.committeesTitle);
+          setHoldingPeriod(committeeDetail.committeeFrequency);
+          setMainAgenda(committeeDetail.resolutionMatters || '');
+          setIsActive(committeeDetail.isActive === 'Y');
 
-      // 위원장 추가
-      if (deliberative.chairperson) {
-        parsedMembers.push({
-          id: `chairman-${Date.now()}`,
-          deliberativeId: deliberative.id,
-          seq: 1,
-          type: 'chairman',
-          name: deliberative.chairperson,
-          position: '',
-          organization: ''
-        });
-      }
-
-      // 위원 추가 (콤마로 구분된 문자열 파싱)
-      if (deliberative.members) {
-        const memberNames = deliberative.members.split(', ').filter(m => m.trim());
-        memberNames.forEach((memberName, index) => {
-          parsedMembers.push({
-            id: `member-${Date.now()}-${index}`,
+          // 위원 정보 변환 (API 응답에서 직책 정보 포함됨)
+          const parsedMembers: DeliberativeMember[] = committeeDetail.members.map((member, index) => ({
+            id: member.committeeDetailsId?.toString() || `member-${Date.now()}-${index}`,
             deliberativeId: deliberative.id,
-            seq: index + 2,
-            type: 'member',
-            name: memberName.trim(),
-            position: '',
+            seq: index + 1,
+            type: member.committeesType,
+            name: member.positionsName, // 직책명을 성명으로도 사용
+            position: member.positionsName, // 직책 정보
             organization: ''
-          });
-        });
-      }
+          }));
 
-      setMembers(parsedMembers);
-      setIsEditing(false);
-    }
+          setMembers(parsedMembers);
+          setIsEditing(false);
+        } catch (error) {
+          console.error('회의체 상세 조회 실패:', error);
+          toast.error('회의체 상세 정보를 불러오는데 실패했습니다.');
+
+          // 에러 발생 시 기본값으로 폼 초기화
+          setName(deliberative.name);
+          setHoldingPeriod(deliberative.holdingPeriod);
+          setMainAgenda(deliberative.mainAgenda);
+          setIsActive(deliberative.isActive);
+          setMembers([]);
+          setIsEditing(false);
+        } finally {
+          setIsLoadingCommitteeDetail(false);
+        }
+      }
+    };
+
+    initializeForm();
   }, [mode, deliberative, open]);
 
   /**
    * 위원 추가 핸들러
    */
   const handleAddMember = useCallback(() => {
+    // 원장차수 선택 여부 검증
+    if (!ledgerOrderId) {
+      toast.warning('먼저 원장차수를 선택해주세요.');
+      return;
+    }
+
+    // 직책 목록 로딩 여부 확인
+    if (isLoadingPositions) {
+      toast.info('직책 목록을 불러오는 중입니다. 잠시만 기다려주세요.');
+      return;
+    }
+
+    // 직책 목록이 비어있는지 확인
+    if (availablePositions.length === 0) {
+      toast.warning('해당 원장차수에 등록된 직책이 없습니다.');
+      return;
+    }
+
     const newMember: DeliberativeMember = {
       id: Date.now().toString(),
       deliberativeId: deliberative?.id || '',
@@ -169,7 +196,8 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
     };
 
     setMembers(prev => [...prev, newMember]);
-  }, [members.length, deliberative]);
+    toast.success('위원이 추가되었습니다. 직책을 선택해주세요.', { autoClose: 2000 });
+  }, [members.length, deliberative, ledgerOrderId, isLoadingPositions, availablePositions]);
 
   /**
    * 위원 삭제 핸들러
@@ -313,6 +341,10 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
    * 위원 DataGrid 컬럼 정의 - 구분, 직책만 표시
    */
   const memberColumns = useMemo<ColDef<DeliberativeMember>[]>(() => {
+    // 직책 목록 (availablePositions에서 추출)
+    const positionNames = availablePositions.map(p => p.positionsName);
+    console.log('[DeliberativeFormModal] memberColumns 재생성 - 직책 목록:', positionNames.join(', '));
+
     const columns: ColDef<DeliberativeMember>[] = [
       {
         field: 'type',
@@ -340,10 +372,14 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
         sortable: true,
         editable: !isReadOnly,
         cellEditor: 'agSelectCellEditor',
-        cellEditorParams: () => ({
-          values: availablePositions.map(p => p.positionsName)
-        }),
+        cellEditorParams: {
+          values: positionNames
+        },
+        onCellClicked: (params) => {
+          console.log('[DeliberativeFormModal] 직책 셀 클릭 - 사용 가능한 직책:', positionNames);
+        },
         valueSetter: (params) => {
+          console.log('[DeliberativeFormModal] 직책 선택:', params.newValue);
           const selectedPosition = availablePositions.find(p => p.positionsName === params.newValue);
           if (selectedPosition && params.data) {
             params.data.position = selectedPosition.positionsName;
@@ -404,7 +440,12 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {isLoadingCommitteeDetail ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+            <Typography>회의체 정보를 불러오는 중...</Typography>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* 1번째 행: 원장차수, 개최주기 */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
             {/* 원장차수 */}
@@ -543,6 +584,7 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
             )}
           </Box>
         </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ p: 1, gap: 1 }}>

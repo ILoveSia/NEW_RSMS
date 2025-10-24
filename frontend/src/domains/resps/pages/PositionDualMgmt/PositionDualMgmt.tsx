@@ -377,6 +377,18 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     }
   }, [handlePositionDualDetail]);
 
+  // 행 클릭 핸들러 (원클릭으로 상세 모달 열기)
+  const handleRowClick = useCallback((positionDual: PositionDual) => {
+    // 원클릭으로 상세 모달 열기
+    handleConcurrentCodeClick(positionDual);
+  }, [handleConcurrentCodeClick]);
+
+  // 더블클릭 핸들러 (동일하게 상세 모달 열기)
+  const handleRowDoubleClick = useCallback((positionDual: PositionDual) => {
+    // 더블클릭도 동일하게 상세 모달 열기
+    handleConcurrentCodeClick(positionDual);
+  }, [handleConcurrentCodeClick]);
+
   const handleSelectionChange = useCallback((selected: PositionDual[]) => {
     setSelectedPositionDuals(selected);
     console.log('선택된 행:', selected.length);
@@ -637,6 +649,8 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
           loading={loading}
           theme="alpine"
           onSelectionChange={handleSelectionChange}
+          onRowClick={(data) => handleRowClick(data)}
+          onRowDoubleClick={(data) => handleRowDoubleClick(data)}
           height="calc(100vh - 370px)"
           pagination={true}
           pageSize={25}

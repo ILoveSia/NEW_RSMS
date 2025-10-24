@@ -284,10 +284,12 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
 
   // Grid Event Handlers
   const handleRowClick = useCallback((deliberative: Deliberative) => {
-    console.log('행 클릭:', deliberative);
-  }, []);
+    // 원클릭으로 상세 모달 열기
+    handleDeliberativeDetail(deliberative);
+  }, [handleDeliberativeDetail]);
 
   const handleRowDoubleClick = useCallback((deliberative: Deliberative) => {
+    // 더블클릭도 동일하게 상세 모달 열기
     handleDeliberativeDetail(deliberative);
   }, [handleDeliberativeDetail]);
 

@@ -66,9 +66,9 @@ public class CommitteeController {
      * @return 회의체 상세 정보 (위원 목록 포함)
      */
     @GetMapping("/{committeeId}")
-    public ResponseEntity<CommitteeDto> getCommitteeById(@PathVariable Long committeesId) {
-        log.info("GET /api/committees/{} - 회의체 상세 조회", committeesId);
-        CommitteeDto committee = committeeService.getCommitteeById(committeesId);
+    public ResponseEntity<CommitteeDto> getCommitteeById(@PathVariable Long committeeId) {
+        log.info("GET /api/committees/{} - 회의체 상세 조회", committeeId);
+        CommitteeDto committee = committeeService.getCommitteeById(committeeId);
         return ResponseEntity.ok(committee);
     }
 
@@ -103,13 +103,13 @@ public class CommitteeController {
      */
     @PutMapping("/{committeeId}")
     public ResponseEntity<CommitteeDto> updateCommittee(
-            @PathVariable Long committeesId,
+            @PathVariable Long committeeId,
             @Valid @RequestBody CommitteeUpdateRequest request,
             Principal principal) {
-        log.info("PUT /api/committees/{} - 회의체 수정", committeesId);
+        log.info("PUT /api/committees/{} - 회의체 수정", committeeId);
 
         String updatedBy = principal != null ? principal.getName() : "system";
-        CommitteeDto updated = committeeService.updateCommittee(committeesId, request, updatedBy);
+        CommitteeDto updated = committeeService.updateCommittee(committeeId, request, updatedBy);
 
         return ResponseEntity.ok(updated);
     }
@@ -122,9 +122,9 @@ public class CommitteeController {
      * @return 삭제 성공 메시지
      */
     @DeleteMapping("/{committeeId}")
-    public ResponseEntity<Map<String, String>> deleteCommittee(@PathVariable Long committeesId) {
-        log.info("DELETE /api/committees/{} - 회의체 삭제", committeesId);
-        committeeService.deleteCommittee(committeesId);
+    public ResponseEntity<Map<String, String>> deleteCommittee(@PathVariable Long committeeId) {
+        log.info("DELETE /api/committees/{} - 회의체 삭제", committeeId);
+        committeeService.deleteCommittee(committeeId);
         return ResponseEntity.ok(Map.of("message", "회의체가 삭제되었습니다"));
     }
 

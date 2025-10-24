@@ -60,48 +60,33 @@ const ActiveStatusRenderer = ({ data }: { data: PositionDual }) => {
   );
 };
 
-// 겸직현황코드 렌더러 (링크 스타일)
-const ConcurrentStatusCodeRenderer = (params: any) => {
-  const { data, onClick } = params;
-
-  if (!data || !onClick) {
-    return <span>{data?.concurrentStatusCode || ''}</span>;
-  }
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 이벤트 버블링 방지
-    onClick(data);
+// 겸직현황코드 렌더러 (DeliberativeMgmt 스타일)
+const ConcurrentStatusCodeRenderer = ({ value, data, onCellClicked }: any) => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (onCellClicked) {
+      onCellClicked(data);
+    }
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        height: '100%',
-        justifyContent: 'center',
-        cursor: 'pointer'
-      }}
+    <a
+      href="#"
       onClick={handleClick}
-    >
-      <LinkIcon
-        fontSize="small"
-        sx={{
-          color: '#1976d2',
-          fontSize: '16px'
-        }}
-      />
-      <span style={{
+      style={{
         color: '#1976d2',
-        fontWeight: 600,
-        fontSize: '0.875rem',
-        textDecoration: 'underline',
-        textUnderlineOffset: '2px'
-      }}>
-        {data.concurrentStatusCode}
-      </span>
-    </div>
+        textDecoration: 'none',
+        fontWeight: '500'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {value || data?.concurrentStatusCode}
+    </a>
   );
 };
 
@@ -144,9 +129,7 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
     headerName: '겸직현황코드',
     width: 140,
     cellRenderer: ConcurrentStatusCodeRenderer,
-    cellStyle: {
-      textAlign: 'center'
-    },
+    cellStyle: { fontWeight: '500', textAlign: 'center' },
     headerClass: 'ag-header-cell-centered'
   },
   {
@@ -252,11 +235,7 @@ export const positionDualMobileColumns: ColDef<PositionDual>[] = [
     headerName: '겸직코드',
     width: 100,
     cellRenderer: ConcurrentStatusCodeRenderer,
-    cellStyle: {
-      display: 'flex',
-      alignItems: 'center',
-      textAlign: 'center'
-    },
+    cellStyle: { fontWeight: '500', textAlign: 'center' },
     headerClass: 'ag-header-cell-centered'
   },
   {

@@ -99,9 +99,9 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
 
-      // 로딩 토스트가 있으면 취소 메시지로 업데이트
+      // 로딩 토스트가 있으면 닫기만 (메시지 표시 안함)
       if (currentToastRef.current) {
-        toast.update(currentToastRef.current, 'info', '작업이 취소되었습니다.', { duration: 3000 });
+        toast.dismiss(currentToastRef.current);
         currentToastRef.current = null;
       }
 
@@ -225,7 +225,12 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
       // 작업이 취소된 경우
       if (err.name === 'AbortError' || err.message.includes('취소')) {
         if (showToast && toastId) {
-          toast.update(toastId, 'info', messages.cancel || '작업이 취소되었습니다.', { duration: 3000 });
+          // messages.cancel이 명시적으로 설정된 경우에만 메시지 표시
+          if (messages.cancel !== undefined && messages.cancel !== '') {
+            toast.update(toastId, 'info', messages.cancel, { duration: 3000 });
+          } else {
+            toast.dismiss(toastId);
+          }
         }
         return null;
       }

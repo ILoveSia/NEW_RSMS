@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './PositionMgmt.module.scss';
 
 // API
-import { deletePositions, getAllPositions } from '../../api/positionApi';
+import { deletePositions, getAllPositions, getPositionsByLedgerOrderId } from '../../api/positionApi';
 
 // Types
 import type {
@@ -257,9 +257,15 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   const handleSearch = useCallback(async () => {
     await handlers.search.execute(
       async () => {
-        // API 호출: positions + positions_details 조인 조회
-        const data = await getAllPositions();
-        console.log('🔍 API Response:', data);
+        // API 호출: ledgerOrderId가 있으면 원장차수별 조회, 없으면 전체 조회
+        let data;
+        if (filters.ledgerOrderId) {
+          data = await getPositionsByLedgerOrderId(filters.ledgerOrderId);
+          console.log('🔍 원장차수별 조회 API Response:', data);
+        } else {
+          data = await getAllPositions();
+          console.log('🔍 전체 조회 API Response:', data);
+        }
 
         // 클라이언트 사이드 필터링 (필요시)
         let filteredData = data;
@@ -314,34 +320,15 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
   }, [clearFilters]);
 
   // Grid Event Handlers
-  const handleRowClick = useCallback((position: Position, event: any) => {
-    console.log('🔍 handleRowClick 호출됨');
-    console.log('🔍 Event:', event);
-
-    if (!event || !event.column) {
-      console.warn('⚠️ Event 또는 Column이 undefined입니다!');
-      return;
-    }
-
-    // AG-Grid CellClickedEvent에서 컬럼 정보 추출
-    const colId = event.column.getColId ? event.column.getColId() : event.column.colId;
-    const colField = event.colDef?.field;
-
-    console.log('🔍 Column ID:', colId);
-    console.log('🔍 Column Field:', colField);
-
-    // 직책 컬럼만 클릭 가능 (field 또는 colId로 확인)
-    if (colField === 'positionName' || colId === 'positionName') {
-      console.log('✅ 직책 컬럼 클릭 - 모달 열기');
-      handlePositionDetail(position);
-    } else {
-      console.log('❌ 다른 컬럼 클릭 - 무시 (field:', colField, ', colId:', colId, ')');
-    }
+  const handleRowClick = useCallback((position: Position) => {
+    // 원클릭으로 상세 모달 열기
+    handlePositionDetail(position);
   }, [handlePositionDetail]);
 
   const handleRowDoubleClick = useCallback((position: Position) => {
-    // 더블클릭은 비활성화
-  }, []);
+    // 더블클릭도 동일하게 상세 모달 열기
+    handlePositionDetail(position);
+  }, [handlePositionDetail]);
 
   const handleSelectionChange = useCallback((selected: Position[]) => {
     setSelectedPositions(selected);
@@ -605,7 +592,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           columns={positionColumns}
           loading={anyLoading}
           theme="alpine"
-          onRowClick={(data, event) => handleRowClick(data, event)}
+          onRowClick={(data) => handleRowClick(data)}
           onRowDoubleClick={(data) => handleRowDoubleClick(data)}
           onSelectionChange={handleSelectionChange}
           height="calc(100vh - 370px)"
