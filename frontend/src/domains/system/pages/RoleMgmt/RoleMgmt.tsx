@@ -193,6 +193,15 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
     }
 
     setMockPermissions(permissionData);
+
+    // 선택된 역활의 detailRoleCount 업데이트
+    setRoles(prevRoles =>
+      prevRoles.map(r =>
+        r.id === role.id
+          ? { ...r, detailRoleCount: permissionData.length }
+          : r
+      )
+    );
   }, []);
 
   const handleAddRole = useCallback(() => {
@@ -271,7 +280,8 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         permissions: [],
-        userCount: 2
+        userCount: 2,
+        detailRoleCount: 2  // 초기 상세역활수
       },
       {
         id: '2',
@@ -285,7 +295,8 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         permissions: [],
-        userCount: 5
+        userCount: 5,
+        detailRoleCount: 1  // 초기 상세역활수
       },
       {
         id: '3',
@@ -299,7 +310,8 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         permissions: [],
-        userCount: 5
+        userCount: 5,
+        detailRoleCount: 5  // 초기 상세역활수
       },
       {
         id: '4',
@@ -313,7 +325,8 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         permissions: [],
-        userCount: 0
+        userCount: 0,
+        detailRoleCount: 0  // 초기 상세역활수
       }
     ];
 
@@ -434,7 +447,7 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
       <div className={styles.content}>
         <Grid container spacing={2} sx={{ height: '100%' }}>
           {/* 좌측 패널 - 역활 목록 */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={3.6}>
             <Paper className={styles.leftPanel}>
               {/* 좌측 헤더 */}
               <div className={styles.leftHeader}>
@@ -497,7 +510,7 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
           </Grid>
 
           {/* 우측 패널 - 상세역활 (권한) */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8.4}>
             <Paper className={styles.rightPanel}>
               {/* 우측 헤더 */}
               <div className={styles.rightHeader}>

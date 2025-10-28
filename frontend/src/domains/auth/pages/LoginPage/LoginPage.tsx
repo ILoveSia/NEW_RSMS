@@ -65,37 +65,87 @@ export const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // 실제 API 호출 대신 임시 로그인 로직
-      // TODO: 실제 API 연동 시 이 부분을 수정
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 로딩 시뮬레이션
+      // 실제 API 호출
+      const { loginApi } = await import('@/domains/auth/api/authApi');
 
-      // 임시 사용자 데이터 (개발용)
-      const mockUser = {
-        id: 'user-123',
+      const response = await loginApi({
         username: formData.username,
-        name: formData.username === 'admin' ? '관리자' : '사용자',
-        email: `${formData.username}@rsms.com`,
-        roleCodes: formData.username === 'admin' ? ['ADMIN'] : ['EMPLOYEE'],
-        permissions: [
-          { permissionId: 'READ', name: '읽기' },
-          { permissionId: 'WRITE', name: '쓰기' },
-          ...(formData.username === 'admin' ? [{ permissionId: 'ADMIN', name: '관리자' }] : [])
-        ],
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+        password: formData.password,
+        rememberMe: false
+      });
 
-      const mockSessionId = `session-${Date.now()}`;
+      if (response.success && response.userInfo) {
+        // Backend 사용자 정보를 Frontend User 타입으로 변환
+        const user = {
+          userId: String(response.userInfo.userId),
+          email: `${response.userInfo.username}@rsms.com`, // 임시 (Backend에서 직원 정보 조인 필요)
+          empNo: response.userInfo.empNo,
+          password: undefined, // 클라이언트에서는 제외
+          role: response.userInfo.isAdmin ? 'ADMIN' : 'EMPLOYEE', // 기본 역할
+          active: true,
 
-      // 로그인 처리
-      login(mockUser, mockSessionId);
+          // Employee 조인 정보 (임시)
+          empName: response.userInfo.username,
 
-      // 성공 후 리다이렉트
-      navigate(from, { replace: true });
+          // 역할 및 권한
+          roles: undefined, // 필요시 추가 API 호출
+          permissions: response.userInfo.roles.map(role => ({
+            permissionId: role,
+            permissionName: role,
+            category: 'SYSTEM' as const,
+            displayOrder: 0,
+            active: true,
+            id: role,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            createdBy: 'system',
+            updatedBy: 'system',
+            version: 1
+          })),
 
-    } catch (err) {
-      setError('로그인에 실패했습니다. 다시 시도해주세요.');
+          // 세션 정보
+          lastLoginAt: new Date().toISOString(),
+
+          // computed fields
+          fullName: response.userInfo.username,
+          roleCodes: response.userInfo.roles,
+
+          // BaseEntity 필드
+          id: String(response.userInfo.userId),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: 'system',
+          updatedBy: 'system',
+          version: 1
+        };
+
+        const sessionId = response.sessionId || `session-${Date.now()}`;
+
+        // 로그인 처리
+        login(user, sessionId);
+
+        // 비밀번호 변경 필요 시 알림 (TODO: 비밀번호 변경 페이지로 이동)
+        if (response.userInfo.needsPasswordChange) {
+          console.warn('비밀번호 변경이 필요합니다');
+        }
+
+        // 성공 후 리다이렉트
+        navigate(from, { replace: true });
+
+      } else {
+        setError(response.message || '로그인에 실패했습니다.');
+      }
+
+    } catch (err: any) {
+      console.error('로그인 에러:', err);
+
+      if (err.response?.status === 401) {
+        setError('아이디 또는 비밀번호가 일치하지 않습니다.');
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('로그인에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setLoading(false);
     }
@@ -202,8 +252,8 @@ export const LoginPage: React.FC = () => {
               개발 테스트용 로그인
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              • <strong>admin</strong> / 아무 비밀번호 → 관리자 권한<br />
-              • <strong>user</strong> / 아무 비밀번호 → 일반 사용자 권한
+              • <strong>admin</strong> / <strong>admin123!</strong> → 관리자 권한<br />
+              • 비밀번호: <strong style={{ color: '#e74c3c' }}>admin123!</strong> (초기 비밀번호)
             </Typography>
           </Box>
         </Paper>

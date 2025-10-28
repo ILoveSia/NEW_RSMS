@@ -10,16 +10,9 @@
 import { ColDef } from 'ag-grid-community';
 import type { User } from '../../types/user.types';
 
-// 계정 상태 렌더러
+// 계정 상태 렌더러 (HTML 제거, 텍스트만 반환)
 const AccountStatusRenderer = (params: any) => {
   const status = params.value;
-  const statusClasses = {
-    ACTIVE: 'active',
-    LOCKED: 'locked',
-    SUSPENDED: 'suspended',
-    RESIGNED: 'resigned'
-  };
-
   const statusLabels = {
     ACTIVE: '재직',
     LOCKED: '잠김',
@@ -27,48 +20,40 @@ const AccountStatusRenderer = (params: any) => {
     RESIGNED: '퇴직'
   };
 
-  return `<span class="user-status ${statusClasses[status as keyof typeof statusClasses] || 'resigned'}">${statusLabels[status as keyof typeof statusLabels] || status}</span>`;
+  return statusLabels[status as keyof typeof statusLabels] || status;
 };
 
-// 활성화 상태 렌더러
-const ActiveStatusRenderer = (params: any) => {
+// 활성화 체크박스 렌더러
+const ActiveCheckboxRenderer = (params: any) => {
   const isActive = params.value;
-  return `<span class="active-status ${isActive ? 'active' : 'inactive'}">${isActive ? '활성화' : '비활성화'}</span>`;
+  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+    <input type="checkbox" ${isActive ? 'checked' : ''} disabled style="cursor: not-allowed;" />
+  </div>`;
 };
 
-// 로그인 시간 렌더러
-const LoginTimeRenderer = (params: any) => {
-  const loginTime = params.value;
-  if (!loginTime) return '-';
-
-  try {
-    const date = new Date(loginTime);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch {
-    return '-';
-  }
+// 로그인차단 체크박스 렌더러
+const LoginBlockCheckboxRenderer = (params: any) => {
+  const isBlocked = params.value || false;
+  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+    <input type="checkbox" ${isBlocked ? 'checked' : ''} disabled style="cursor: not-allowed;" />
+  </div>`;
 };
 
-// 역할 개수 렌더러
+// 역할 개수 렌더러 (텍스트만 반환)
 const RoleCountRenderer = (params: any) => {
   const count = params.value || 0;
-  return `<span class="role-count">${count}개</span>`;
+  return `${count}개`;
 };
 
 /**
- * 사용자관리 AG-Grid 컬럼 정의 - 이미지 기준 11개 컬럼
+ * 사용자관리 AG-Grid 컬럼 정의 - 수정된 11개 컬럼
+ * 수정사항: 직번→사용자ID, 부정→부점명, 근무상태(텍스트), 로그인시간→로그인차단(체크박스), 활성화(체크박스)
  */
 export const userColumns: ColDef<User>[] = [
   {
-    headerName: '직번',
+    headerName: '사용자 ID',
     field: 'employeeNo',
-    width: 100,
+    width: 120,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'employee-no-cell',
@@ -84,7 +69,7 @@ export const userColumns: ColDef<User>[] = [
     headerClass: 'user-header'
   },
   {
-    headerName: '부정',
+    headerName: '부점명',
     field: 'deptName',
     width: 140,
     sortable: true,
@@ -139,23 +124,24 @@ export const userColumns: ColDef<User>[] = [
     }
   },
   {
-    headerName: '로그인시간',
-    field: 'lastLoginAt',
-    width: 140,
+    headerName: '로그인차단',
+    field: 'isLoginBlocked',
+    width: 100,
     sortable: true,
-    cellClass: 'login-time-cell',
+    filter: 'agSetColumnFilter',
+    cellClass: 'login-block-cell',
     headerClass: 'user-header',
-    cellRenderer: LoginTimeRenderer
+    cellRenderer: LoginBlockCheckboxRenderer
   },
   {
     headerName: '활성화',
     field: 'isActive',
-    width: 100,
+    width: 90,
     sortable: true,
     filter: 'agSetColumnFilter',
     cellClass: 'active-status-cell',
     headerClass: 'user-header',
-    cellRenderer: ActiveStatusRenderer
+    cellRenderer: ActiveCheckboxRenderer
   },
   {
     headerName: '언어',

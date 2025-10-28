@@ -1,7 +1,12 @@
 package com.rsms.infrastructure.config;
 
+import com.rsms.domain.auth.security.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,8 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
-import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,13 +25,20 @@ import java.util.List;
 /**
  * Spring Security 설정
  * - Database 기반 세션 관리
+ * - CustomUserDetailsService 연동
  * - CORS 설정
  * - 권한 설정
+ *
+ * @author RSMS Development Team
+ * @since 1.0
  */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * 보안 필터 체인 설정
@@ -46,52 +58,22 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(auth -> auth
-                // 개발 중: 모든 API 허용 (로그인 기능 개발 후 주석 해제)
-                .anyRequest().permitAll()
-
-                // TODO: 로그인 기능 개발 후 아래 주석 해제
-                /*
                 // 공개 API
                 .requestMatchers("/", "/health", "/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
 
-                // 인증이 필요한 API
-                .requestMatchers("/api/auth/**").permitAll()
+                // 인증 API (로그인/로그아웃은 인증 불필요)
+                .requestMatchers("/api/auth/login", "/api/auth/logout", "/api/auth/health").permitAll()
+
+                // 관리자 API
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                // 나머지 API는 인증 필요
                 .requestMatchers("/api/**").authenticated()
 
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
-                */
-            )
-            
-            // 로그인/로그아웃 설정
-            .formLogin(form -> form
-                .loginProcessingUrl("/api/auth/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler((request, response, authentication) -> {
-                    response.setStatus(200);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": true, \"message\": \"로그인 성공\"}");
-                })
-                .failureHandler((request, response, exception) -> {
-                    response.setStatus(401);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": false, \"message\": \"로그인 실패\"}");
-                })
-            )
-            
-            .logout(logout -> logout
-                .logoutUrl("/api/auth/logout")
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.setStatus(200);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"success\": true, \"message\": \"로그아웃 성공\"}");
-                })
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
             )
             
             .build();
@@ -133,10 +115,40 @@ public class SecurityConfig {
     }
 
     /**
-     * 세션 ID를 헤더에서 읽도록 설정 (API 친화적)
+     * 세션 쿠키 직렬화 설정
+     * - 쿠키 기반 세션 관리로 브라우저 새로고침 시에도 세션 유지
+     * - SameSite=Lax로 CSRF 보호
      */
     @Bean
-    public HttpSessionIdResolver httpSessionIdResolver() {
-        return HeaderHttpSessionIdResolver.xAuthToken();
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName("SESSIONID");
+        serializer.setUseHttpOnlyCookie(true);
+        serializer.setUseSecureCookie(false);  // 로컬 환경 (운영에서는 true)
+        serializer.setSameSite("Lax");
+        serializer.setCookiePath("/");
+        serializer.setCookieMaxAge(1800);  // 30분
+        return serializer;
+    }
+
+    /**
+     * AuthenticationProvider 설정
+     * - CustomUserDetailsService와 PasswordEncoder 연동
+     */
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    /**
+     * AuthenticationManager Bean
+     * - 인증 처리를 위한 매니저
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

@@ -9,7 +9,9 @@ import {
   List,
   Box,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { MenuHeader } from './components/MenuHeader';
 import { MenuGroup } from './components/MenuGroup';
@@ -17,7 +19,8 @@ import { MenuItem } from './components/MenuItem';
 import { useMenuState } from './hooks/useMenuState';
 import { useActiveMenu } from './hooks/useActiveMenu';
 import { MENU_DATA, filterMenuByPermission } from './data/menuData';
-import { useAuthStore } from '@/app/store/authStore'; // 인증 스토어 (가정)
+import { useAuthStore } from '@/app/store/authStore';
+import { useMenuStore } from '@/app/store/menuStore';
 import styles from './LeftMenu.module.scss';
 
 interface LeftMenuProps {
@@ -32,13 +35,34 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ className }) => {
   // 활성 메뉴 감지
   useActiveMenu();
 
-  // 사용자 권한 정보 (실제로는 useAuthStore에서 가져옴)
-  // const { user } = useAuthStore();
-  // 임시로 관리자 권한으로 설정
+  // 인증 및 메뉴 스토어
+  const { isAuthenticated } = useAuthStore();
+  const { menus, isLoading, error, fetchMenus } = useMenuStore();
+
+  // 메뉴 데이터 로드 (로그인 시 한 번만)
+  useEffect(() => {
+    if (isAuthenticated && menus.length === 0 && !isLoading && !error) {
+      console.log('LeftMenu: 메뉴 데이터 로드 시작');
+      fetchMenus();
+    }
+  }, [isAuthenticated, menus.length, isLoading, error, fetchMenus]);
+
+  // Real 데이터가 있으면 사용, 없으면 Fallback (MENU_DATA)
+  const menuData = menus.length > 0 ? menus : MENU_DATA;
+
+  console.log('LeftMenu: menuData', {
+    isAuthenticated,
+    menusLength: menus.length,
+    isLoading,
+    error,
+    usingRealData: menus.length > 0
+  });
+
+  // 사용자 권한 정보 (임시로 모든 권한 허용)
   const userRoles = ['USER', 'MANAGER', 'ADMIN', 'EXECUTIVE'];
 
   // 권한에 따른 메뉴 필터링
-  const filteredMenuData = filterMenuByPermission(MENU_DATA, userRoles);
+  const filteredMenuData = filterMenuByPermission(menuData, userRoles);
 
   // 모바일에서는 자동으로 축소 모드로 변경
   useEffect(() => {
@@ -53,6 +77,24 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ className }) => {
     <Box className={styles.drawerContent}>
       {/* 메뉴 헤더 */}
       <MenuHeader isCollapsed={isCollapsed} />
+
+      {/* 로딩 상태 */}
+      {isLoading && isAuthenticated && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
+
+      {/* 에러 상태 */}
+      {error && !isLoading && (
+        <Box sx={{ p: 2 }}>
+          <Alert severity="warning" sx={{ fontSize: '0.75rem' }}>
+            {error}
+            <br />
+            <small>기본 메뉴를 표시합니다.</small>
+          </Alert>
+        </Box>
+      )}
 
       {/* 메뉴 리스트 */}
       <Box className={styles.menuContainer}>

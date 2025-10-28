@@ -56,10 +56,34 @@ const PermissionCountRenderer = (params: any) => {
   return `<span class="permission-count ${isEmpty ? 'empty' : ''}">${count}</span>`;
 };
 
-// 사용자 수 렌더러
-const UserCountRenderer = (params: any) => {
+// 상세역활수 렌더러 (숫자만 표시)
+const DetailRoleCountRenderer = (params: any) => {
   const count = params.value || 0;
-  return `<span class="user-count">${count}명</span>`;
+  return count;  // HTML 태그 없이 순수 숫자만 반환
+};
+
+// 체크박스 렌더러 (본점기본)
+const MainBusinessCheckboxRenderer = (params: any) => {
+  const isChecked = params.value || false;
+  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+    <input type="checkbox" ${isChecked ? 'checked' : ''} disabled style="cursor: not-allowed;" />
+  </div>`;
+};
+
+// 체크박스 렌더러 (영업점기본)
+const ExecutionCheckboxRenderer = (params: any) => {
+  const isChecked = params.value || false;
+  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+    <input type="checkbox" ${isChecked ? 'checked' : ''} disabled style="cursor: not-allowed;" />
+  </div>`;
+};
+
+// 체크박스 렌더러 (사용여부)
+const ActiveCheckboxRenderer = (params: any) => {
+  const isChecked = params.value || false;
+  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+    <input type="checkbox" ${isChecked ? 'checked' : ''} disabled style="cursor: not-allowed;" />
+  </div>`;
 };
 
 // 날짜 포맷 함수
@@ -85,20 +109,20 @@ const DateRenderer = (params: any) => {
 };
 
 /**
- * 역활관리 AG-Grid 컬럼 정의 (왼쪽 그리드) - 이미지 기반 5개 컬럼
+ * 역활관리 AG-Grid 컬럼 정의 (왼쪽 그리드) - 4개 컬럼 (상세설명 삭제, 사용자수→상세역활수 변경)
  */
 export const roleColumns: ColDef<RoleWithPermissions>[] = [
   {
     headerName: '순번',
     valueGetter: (params: any) => params.node.rowIndex + 1,
-    width: 60,
+    width: 80,
     cellClass: 'row-number-cell',
     headerClass: 'role-header',
   },
   {
     headerName: '역활코드',
     field: 'roleCode',
-    width: 120,
+    width: 150,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'role-code-cell',
@@ -107,30 +131,20 @@ export const roleColumns: ColDef<RoleWithPermissions>[] = [
   {
     headerName: '역활명',
     field: 'roleName',
-    width: 140,
+    flex: 1,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'role-name-cell',
     headerClass: 'role-header'
   },
   {
-    headerName: '상세설명',
-    field: 'description',
-    flex: 1,
+    headerName: '상세역활수',
+    field: 'detailRoleCount',
+    width: 100,
     sortable: true,
-    filter: 'agTextColumnFilter',
-    cellClass: 'description-cell',
+    cellClass: 'detail-role-count-cell',
     headerClass: 'role-header',
-    tooltipField: 'description'
-  },
-  {
-    headerName: '사용자수',
-    field: 'userCount',
-    width: 90,
-    sortable: true,
-    cellClass: 'user-count-cell',
-    headerClass: 'role-header',
-    cellRenderer: UserCountRenderer
+    cellRenderer: DetailRoleCountRenderer
   }
 ];
 
@@ -189,7 +203,8 @@ export const roleGridOptions = {
 };
 
 /**
- * 상세역활 AG-Grid 컬럼 정의 (오른쪽 그리드) - 이미지 기반 9개 컬럼 구조
+ * 상세역활 AG-Grid 컬럼 정의 (오른쪽 그리드) - 9개 컬럼
+ * 헤더명 변경: 업무권한→역활유형, 본업무권한→본점기본, 업무실행권한→영업점기본
  */
 export const permissionDetailColumns: ColDef<Permission>[] = [
   {
@@ -226,37 +241,31 @@ export const permissionDetailColumns: ColDef<Permission>[] = [
     headerClass: 'permission-header'
   },
   {
-    headerName: '업무권한',
+    headerName: '역활유형',
     field: 'businessPermission',
     width: 80,
-    cellClass: 'checkbox-cell',
+    cellClass: 'text-cell',
     headerClass: 'permission-header',
     cellRenderer: (params: any) => {
       const hasPermission = params.data?.businessPermission || false;
-      return `<input type="checkbox" ${hasPermission ? 'checked' : ''} onclick="return false;" />`;
+      return hasPermission ? '업무' : '일반';
     }
   },
   {
-    headerName: '본업무권한',
+    headerName: '본점기본',
     field: 'mainBusinessPermission',
-    width: 95,
+    width: 80,
     cellClass: 'checkbox-cell',
     headerClass: 'permission-header',
-    cellRenderer: (params: any) => {
-      const hasPermission = params.data?.mainBusinessPermission || false;
-      return `<input type="checkbox" ${hasPermission ? 'checked' : ''} onclick="return false;" />`;
-    }
+    cellRenderer: MainBusinessCheckboxRenderer
   },
   {
-    headerName: '업무실행권한',
+    headerName: '영업점기본',
     field: 'executionPermission',
-    width: 105,
+    width: 90,
     cellClass: 'checkbox-cell',
     headerClass: 'permission-header',
-    cellRenderer: (params: any) => {
-      const hasPermission = params.data?.executionPermission || false;
-      return `<input type="checkbox" ${hasPermission ? 'checked' : ''} onclick="return false;" />`;
-    }
+    cellRenderer: ExecutionCheckboxRenderer
   },
   {
     headerName: '역활설명',
@@ -276,9 +285,6 @@ export const permissionDetailColumns: ColDef<Permission>[] = [
     filter: 'agSetColumnFilter',
     cellClass: 'permission-active-cell',
     headerClass: 'permission-header',
-    cellRenderer: (params: any) => {
-      const isActive = params.data?.isActive || false;
-      return `<input type="checkbox" ${isActive ? 'checked' : ''} onclick="return false;" />`;
-    }
+    cellRenderer: ActiveCheckboxRenderer
   }
 ];

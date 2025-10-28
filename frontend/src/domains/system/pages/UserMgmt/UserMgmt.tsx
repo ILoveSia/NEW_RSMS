@@ -413,6 +413,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
       timezone: '(GMT+09:00) Seoul/Asia',
       language: 'English, United States',
       isActive: true,
+      isLoginBlocked: false,  // 로그인차단 필드 추가
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
       isDeleted: false
@@ -449,6 +450,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
       timezone: '(GMT+09:00) Seoul/Asia',
       language: 'English, United States',
       isActive: true,
+      isLoginBlocked: false,  // 로그인차단 필드 추가
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
       isDeleted: false
@@ -485,6 +487,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
       timezone: '(GMT+09:00) Seoul/Asia',
       language: 'English, United States',
       isActive: true,
+      isLoginBlocked: true,  // 로그인차단 필드 추가 (예시로 차단된 사용자)
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
       isDeleted: false
@@ -521,6 +524,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
       timezone: '(GMT+09:00) Seoul/Asia',
       language: 'English, United States',
       isActive: true,
+      isLoginBlocked: false,  // 로그인차단 필드 추가
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
       isDeleted: false

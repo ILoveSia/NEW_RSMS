@@ -14,6 +14,7 @@ spring:
       idle-timeout: 300000
       connection-timeout: 20000
       leak-detection-threshold: 60000
+      connection-init-sql: SET search_path TO rsms, public  # rsms 스키마 우선 사용
       
   # JPA Configuration for Development
   jpa:
@@ -31,8 +32,8 @@ spring:
       
   # Flyway Configuration
   flyway:
-    enabled: true
-    baseline-on-migrate: true
+    enabled: false  # 임시로 비활성화 (테이블이 이미 존재)
+    baseline-on-migrate: true  # 기존 스키마에 flyway_schema_history 자동 생성
     locations: classpath:db/migration
     sql-migration-prefix: V
     sql-migration-suffixes: .sql

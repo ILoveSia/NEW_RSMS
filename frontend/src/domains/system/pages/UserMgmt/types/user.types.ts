@@ -37,6 +37,7 @@ export interface User {
   passwordLastChangedAt?: string;
   lastLoginAt?: string;
   failedLoginCount: number;
+  isLoginBlocked?: boolean;
 
   // 권한 레벨
   isAdmin: boolean;
