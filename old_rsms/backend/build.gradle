@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.itcen'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+bootRun {
+    jvmArgs = [
+        // 인코딩 설정
+        "-Dfile.encoding=UTF-8", 
+        "-Dconsole.encoding=UTF-8",
+        
+        // JVM 성능 최적화 (Java 21 호환)
+        "-XX:+UseG1GC",                    // G1 가비지 컬렉터 사용
+        "-XX:MaxGCPauseMillis=100",        // GC 일시정지 시간 최대 100ms
+        "-Xms512m",                        // 초기 힙 크기
+        "-Xmx2g",                          // 최대 힙 크기
+        "-XX:+UseStringDeduplication",     // 문자열 중복 제거
+        
+        // 개발 환경 최적화 (Java 21 호환)
+        "-XX:TieredStopAtLevel=1",         // 컴파일 최적화 레벨 제한 (빠른 시작)
+        
+        // Spring Boot DevTools 최적화
+        "-Dspring.devtools.restart.enabled=true",
+        "-Dspring.devtools.livereload.enabled=true"
+    ]
+    systemProperty "spring.profiles.active", "local"
+}

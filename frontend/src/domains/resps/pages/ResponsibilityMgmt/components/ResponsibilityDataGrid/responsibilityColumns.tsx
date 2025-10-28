@@ -1,11 +1,46 @@
+import React from 'react';
 import type { ColDef } from 'ag-grid-community';
 import type { Responsibility } from '../../types/responsibility.types';
 
 /**
- * 책무관리 AG-Grid 컬럼 정의
- * PositionMgmt와 동일한 스타일 및 구조 적용
+ * 책무 컬럼 링크 렌더러 (상세 모달 열기용)
  */
-export const responsibilityColumns: ColDef<Responsibility>[] = [
+const ResponsibilityNameRenderer = (params: any) => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (params.onCellClicked) {
+      params.onCellClicked(params.data);
+    }
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={handleClick}
+      style={{
+        color: '#1976d2',
+        textDecoration: 'none',
+        fontWeight: '500'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {params.value}
+    </a>
+  );
+};
+
+/**
+ * 책무관리 AG-Grid 컬럼 정의 생성 함수
+ * @param onResponsibilityClick 책무 클릭 핸들러
+ */
+export const createResponsibilityColumns = (
+  onResponsibilityClick?: (data: Responsibility) => void
+): ColDef<Responsibility>[] => [
   {
     headerName: '순번',
     field: '순번',
@@ -37,13 +72,11 @@ export const responsibilityColumns: ColDef<Responsibility>[] = [
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
-    wrapText: false,
-    autoHeight: false,
-    cellStyle: {
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden'
+    cellRenderer: ResponsibilityNameRenderer,
+    cellRendererParams: {
+      onCellClicked: onResponsibilityClick
     },
+    cellStyle: { fontWeight: '500' },
     tooltipField: '책무'
   },
   {

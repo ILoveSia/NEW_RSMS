@@ -38,6 +38,13 @@ CREATE TABLE rsms.positions_details (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
 
+  -- 외래키 제약조건 (org_code → organizations)
+  CONSTRAINT fk_positions_details_org_code
+    FOREIGN KEY (org_code)
+    REFERENCES rsms.organizations(org_code)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+
   -- 유일성 제약조건 (비즈니스 로직: 직책 + 조직코드 조합은 유일)
   CONSTRAINT uk_positions_details_position_org
     UNIQUE (positions_id, org_code)
@@ -56,7 +63,7 @@ COMMENT ON TABLE rsms.positions_details IS '직책 상세정보 테이블 - 직�
 COMMENT ON COLUMN rsms.positions_details.positions_details_id IS '직책상세ID (PK, 대리키, 자동증가)';
 COMMENT ON COLUMN rsms.positions_details.positions_id IS '직책ID (FK → positions)';
 COMMENT ON COLUMN rsms.positions_details.hq_code IS '본부코드 (positions의 hq_code와 동일, common_code_details의 DPRM_CD 그룹 참조)';
-COMMENT ON COLUMN rsms.positions_details.org_code IS '조직코드 (organizations의 org_code 참조)';
+COMMENT ON COLUMN rsms.positions_details.org_code IS '조직코드 (FK → organizations.org_code)';
 COMMENT ON COLUMN rsms.positions_details.created_by IS '생성자';
 COMMENT ON COLUMN rsms.positions_details.created_at IS '생성일시';
 COMMENT ON COLUMN rsms.positions_details.updated_by IS '수정자';

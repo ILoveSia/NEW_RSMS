@@ -211,8 +211,10 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
      * - positions 테이블 기준으로 각 직책당 1개 행 반환
      * - 부점명은 배열로 집계 (STRING_AGG 사용)
      * - 부점명 개수도 함께 반환
+     * - position_concurrents 테이블과 LEFT JOIN하여 실제 겸직 여부 실시간 반영
+     * - 겸직의 대표(is_representative = 'Y')일 때만 겸직여부 'Y' 표시
      *
-     * @return Map 리스트 (각 직책당 1개 행, 부점명 배열 포함)
+     * @return Map 리스트 (각 직책당 1개 행, 부점명 배열 및 실제 겸직 여부 포함)
      */
     @Query(value = """
         SELECT a.positions_id
@@ -224,7 +226,10 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
               ,a.expiration_date
               ,a.positions_status
               ,a.is_active
-              ,a.is_concurrent
+              ,CASE
+                WHEN COUNT(CASE WHEN pc.is_representative = 'Y' THEN 1 END) > 0 THEN 'Y'
+                ELSE 'N'
+               END as is_concurrent
               ,a.created_by
               ,a.created_at
               ,a.updated_by
@@ -234,9 +239,13 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
         FROM rsms.positions a
         LEFT JOIN rsms.positions_details b ON a.positions_id = b.positions_id
         LEFT JOIN rsms.organizations c ON b.org_code = c.org_code
+        LEFT JOIN rsms.position_concurrents pc
+          ON a.ledger_order_id = pc.ledger_order_id
+          AND a.positions_cd = pc.positions_cd
+          AND pc.is_active = 'Y'
         GROUP BY a.positions_id, a.ledger_order_id, a.positions_cd, a.positions_name,
                  a.hq_code, a.hq_name, a.expiration_date, a.positions_status,
-                 a.is_active, a.is_concurrent, a.created_by, a.created_at,
+                 a.is_active, a.created_by, a.created_at,
                  a.updated_by, a.updated_at
         ORDER BY a.positions_id
         """, nativeQuery = true)

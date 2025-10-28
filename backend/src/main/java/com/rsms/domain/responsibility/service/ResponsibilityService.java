@@ -1,7 +1,11 @@
 package com.rsms.domain.responsibility.service;
 
 import com.rsms.domain.responsibility.dto.*;
+import com.rsms.domain.responsibility.entity.ManagementObligation;
 import com.rsms.domain.responsibility.entity.Responsibility;
+import com.rsms.domain.responsibility.entity.ResponsibilityDetail;
+import com.rsms.domain.responsibility.repository.ManagementObligationRepository;
+import com.rsms.domain.responsibility.repository.ResponsibilityDetailRepository;
 import com.rsms.domain.responsibility.repository.ResponsibilityRepository;
 import com.rsms.domain.system.code.entity.CommonCodeDetail;
 import com.rsms.domain.system.code.repository.CommonCodeDetailRepository;
@@ -29,6 +33,8 @@ import java.util.stream.Collectors;
 public class ResponsibilityService {
 
     private final ResponsibilityRepository responsibilityRepository;
+    private final ResponsibilityDetailRepository responsibilityDetailRepository;
+    private final ManagementObligationRepository managementObligationRepository;
     private final CommonCodeDetailRepository commonCodeDetailRepository;
 
     /**
@@ -51,15 +57,16 @@ public class ResponsibilityService {
 
     /**
      * 4개 테이블 조인 책무 목록 조회
-     * - positions, responsibilities, responsibility_details, management_obligations
-     * - 1:N 관계로 인해 직책, 책무, 책무세부가 중복될 수 있음 (정상)
+     * - responsibilities(마스터), positions, responsibility_details, management_obligations
+     * - responsibilities를 마스터로 positions 및 하위 테이블 LEFT JOIN
+     * - 1:N 관계로 인해 책무, 책무세부가 중복될 수 있음 (정상)
      */
-    public List<ResponsibilityListDto> getAllResponsibilitiesWithJoin(String ledgerOrderId, String positionsName, String responsibilityCd) {
-        log.debug("4테이블 조인 책무 목록 조회 - ledgerOrderId: {}, positionsName: {}, responsibilityCd: {}",
-                  ledgerOrderId, positionsName, responsibilityCd);
+    public List<ResponsibilityListDto> getAllResponsibilitiesWithJoin(String ledgerOrderId, String responsibilityInfo, String responsibilityCd) {
+        log.debug("4테이블 조인 책무 목록 조회 - ledgerOrderId: {}, responsibilityInfo: {}, responsibilityCd: {}",
+                  ledgerOrderId, responsibilityInfo, responsibilityCd);
 
         List<Map<String, Object>> results = responsibilityRepository.findAllResponsibilitiesWithJoin(
-            ledgerOrderId, positionsName, responsibilityCd);
+            ledgerOrderId, responsibilityInfo, responsibilityCd);
 
         // 공통코드 조회
         Map<String, String> responsibilityCatMap = getCommonCodeMap("RSBT_OBLG_CLCD");
@@ -200,6 +207,78 @@ public class ResponsibilityService {
     }
 
     /**
+     * 책무, 책무세부, 관리의무를 한 번에 생성
+     * - responsibilities, responsibility_details, management_obligations 3개 테이블 저장
+     * - 트랜잭션으로 전체 성공 또는 전체 실패 보장
+     */
+    @Transactional
+    public ResponsibilityDto createResponsibilityWithDetails(CreateResponsibilityWithDetailsRequest request, String username) {
+        log.debug("책무 전체 생성 요청 - username: {}", username);
+
+        // 1. 책무(responsibilities) 저장
+        Responsibility responsibility = Responsibility.builder()
+            .ledgerOrderId(request.getLedgerOrderId())
+            .positionsId(request.getPositionsId())
+            .responsibilityCat(request.getResponsibilityCat())
+            .responsibilityCd(request.getResponsibilityCd())
+            .responsibilityInfo(request.getResponsibilityInfo())
+            .responsibilityLegal(request.getResponsibilityLegal())
+            .isActive(request.getIsActive() != null ? request.getIsActive() : "Y")
+            .createdBy(username)
+            .updatedBy(username)
+            .build();
+
+        Responsibility savedResponsibility = responsibilityRepository.save(responsibility);
+        log.info("책무 생성 완료 - responsibilityId: {}", savedResponsibility.getResponsibilityId());
+
+        // 2. 책무세부(responsibility_details) 저장
+        if (request.getDetails() != null && !request.getDetails().isEmpty()) {
+            for (CreateResponsibilityWithDetailsRequest.ResponsibilityDetailDto detailDto : request.getDetails()) {
+                ResponsibilityDetail detail = ResponsibilityDetail.builder()
+                    .responsibilityId(savedResponsibility.getResponsibilityId())
+                    .responsibilityDetailInfo(detailDto.getResponsibilityDetailInfo())
+                    .isActive(detailDto.getIsActive() != null ? detailDto.getIsActive() : "Y")
+                    .createdBy(username)
+                    .updatedBy(username)
+                    .build();
+
+                ResponsibilityDetail savedDetail = responsibilityDetailRepository.save(detail);
+                log.debug("책무세부 생성 완료 - responsibilityDetailId: {}", savedDetail.getResponsibilityDetailId());
+
+                // 3. 관리의무(management_obligations) 저장
+                if (detailDto.getObligations() != null && !detailDto.getObligations().isEmpty()) {
+                    for (CreateResponsibilityWithDetailsRequest.ManagementObligationDto obligationDto : detailDto.getObligations()) {
+                        ManagementObligation obligation = ManagementObligation.builder()
+                            .responsibilityDetailId(savedDetail.getResponsibilityDetailId())
+                            .obligationMajorCatCd(obligationDto.getObligationMajorCatCd())
+                            .obligationMiddleCatCd(obligationDto.getObligationMiddleCatCd())
+                            .obligationCd(obligationDto.getObligationCd())
+                            .obligationInfo(obligationDto.getObligationInfo())
+                            .orgCode(obligationDto.getOrgCode())
+                            .isActive(obligationDto.getIsActive() != null ? obligationDto.getIsActive() : "Y")
+                            .createdBy(username)
+                            .updatedBy(username)
+                            .build();
+
+                        ManagementObligation savedObligation = managementObligationRepository.save(obligation);
+                        log.debug("관리의무 생성 완료 - managementObligationId: {}", savedObligation.getManagementObligationId());
+                    }
+                }
+            }
+        }
+
+        log.info("책무 전체 생성 완료 - responsibilityId: {}, details: {}",
+                 savedResponsibility.getResponsibilityId(),
+                 request.getDetails() != null ? request.getDetails().size() : 0);
+
+        // 공통코드 조회하여 DTO 변환
+        Map<String, String> categoryMap = getCommonCodeMap("RSBT_OBLG_CLCD");
+        Map<String, String> codeMap = getCommonCodeMap("RSBT_OBLG_CD");
+
+        return convertToDto(savedResponsibility, categoryMap, codeMap);
+    }
+
+    /**
      * 공통코드 맵 조회 (코드 -> 명칭)
      */
     private Map<String, String> getCommonCodeMap(String groupCode) {
@@ -248,22 +327,28 @@ public class ResponsibilityService {
                                                       Map<String, String> obligationMajorCatMap,
                                                       Map<String, String> obligationMiddleCatMap) {
         return ResponsibilityListDto.builder()
-            // positions 테이블
-            .positionsId(getLongValue(row, "positions_id"))
-            .ledgerOrderId(getStringValue(row, "ledger_order_id"))
-            .positionsCd(getStringValue(row, "positions_cd"))
-            .positionsName(getStringValue(row, "positions_name"))
-            .hqCode(getStringValue(row, "hq_code"))
-            .hqName(getStringValue(row, "hq_name"))
             // responsibilities 테이블
             .responsibilityId(getLongValue(row, "responsibility_id"))
+            .ledgerOrderId(getStringValue(row, "ledger_order_id"))
+            .positionsId(getLongValue(row, "positions_id"))
             .responsibilityCat(getStringValue(row, "responsibility_cat"))
             .responsibilityCatName(responsibilityCatMap.get(getStringValue(row, "responsibility_cat")))
             .responsibilityCd(getStringValue(row, "responsibility_cd"))
             .responsibilityCdName(responsibilityCdMap.get(getStringValue(row, "responsibility_cd")))
             .responsibilityInfo(getStringValue(row, "responsibility_info"))
             .responsibilityLegal(getStringValue(row, "responsibility_legal"))
+            .expirationDate(getStringValue(row, "expiration_date"))
+            .responsibilityStatus(getStringValue(row, "responsibility_status"))
             .responsibilityIsActive(getStringValue(row, "responsibility_is_active"))
+            .createdBy(getStringValue(row, "created_by"))
+            .createdAt(getStringValue(row, "created_at"))
+            .updatedBy(getStringValue(row, "updated_by"))
+            .updatedAt(getStringValue(row, "updated_at"))
+            // positions 테이블
+            .positionsCd(getStringValue(row, "positions_cd"))
+            .positionsName(getStringValue(row, "positions_name"))
+            .hqCode(getStringValue(row, "hq_code"))
+            .hqName(getStringValue(row, "hq_name"))
             // responsibility_details 테이블
             .responsibilityDetailId(getLongValue(row, "responsibility_detail_id"))
             .responsibilityDetailInfo(getStringValue(row, "responsibility_detail_info"))

@@ -30,22 +30,22 @@ public class ResponsibilityController {
     /**
      * 4개 테이블 조인 책무 목록 조회
      * - GET /api/resps/responsibilities/list-with-join
-     * - positions, responsibilities, responsibility_details, management_obligations 조인
+     * - responsibilities(마스터), positions, responsibility_details, management_obligations 조인
      *
      * @param ledgerOrderId 원장차수ID (선택적)
-     * @param positionsName 직책명 (선택적, LIKE 검색)
+     * @param responsibilityInfo 책무정보 (선택적, LIKE 검색)
      * @param responsibilityCd 책무코드 (선택적)
      * @return 4테이블 조인된 책무 목록
      */
     @GetMapping("/list-with-join")
     public ResponseEntity<List<ResponsibilityListDto>> getAllResponsibilitiesWithJoin(
             @RequestParam(required = false) String ledgerOrderId,
-            @RequestParam(required = false) String positionsName,
+            @RequestParam(required = false) String responsibilityInfo,
             @RequestParam(required = false) String responsibilityCd) {
-        log.info("GET /api/resps/responsibilities/list-with-join - ledgerOrderId: {}, positionsName: {}, responsibilityCd: {}",
-                 ledgerOrderId, positionsName, responsibilityCd);
+        log.info("GET /api/resps/responsibilities/list-with-join - ledgerOrderId: {}, responsibilityInfo: {}, responsibilityCd: {}",
+                 ledgerOrderId, responsibilityInfo, responsibilityCd);
         List<ResponsibilityListDto> responsibilities = responsibilityService
-            .getAllResponsibilitiesWithJoin(ledgerOrderId, positionsName, responsibilityCd);
+            .getAllResponsibilitiesWithJoin(ledgerOrderId, responsibilityInfo, responsibilityCd);
         return ResponseEntity.ok(responsibilities);
     }
 
@@ -155,5 +155,24 @@ public class ResponsibilityController {
         List<ResponsibilityDto> saved = responsibilityService
             .saveAllResponsibilities(ledgerOrderId, positionsId, requests, username);
         return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * 책무, 책무세부, 관리의무를 한 번에 생성
+     * - POST /api/resps/responsibilities/with-details
+     * - responsibilities, responsibility_details, management_obligations 3개 테이블 저장
+     *
+     * @param request 책무 전체 생성 요청 (책무, 책무세부, 관리의무 포함)
+     * @param principal 현재 로그인 사용자
+     * @return 생성된 책무 정보
+     */
+    @PostMapping("/with-details")
+    public ResponseEntity<ResponsibilityDto> createResponsibilityWithDetails(
+            @RequestBody CreateResponsibilityWithDetailsRequest request,
+            Principal principal) {
+        log.info("POST /api/resps/responsibilities/with-details - 책무 전체 생성: {}", request);
+        String username = principal != null ? principal.getName() : "system";
+        ResponsibilityDto created = responsibilityService.createResponsibilityWithDetails(request, username);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

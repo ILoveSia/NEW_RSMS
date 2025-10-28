@@ -22,7 +22,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { LoadingSpinner } from '../../atoms/LoadingSpinner';
 import styles from './BaseDataGrid.module.scss';
 
-export interface BaseDataGridProps<TData = any> extends Omit<AgGridReactProps, 'columnDefs' | 'rowData'> {
+export interface BaseDataGridProps<TData = any> extends Omit<AgGridReactProps, 'columnDefs' | 'rowData' | 'theme'> {
   /** 테이블 데이터 */
   data?: TData[];
   /** 컬럼 정의 */
@@ -53,10 +53,20 @@ export interface BaseDataGridProps<TData = any> extends Omit<AgGridReactProps, '
   enableColumnResize?: boolean;
   /** 컬럼 재정렬 활성화 */
   enableColumnReorder?: boolean;
+  /** Master-Detail 활성화 */
+  masterDetail?: boolean;
+  /** Detail Cell Renderer (Master-Detail용) */
+  detailCellRenderer?: any;
+  /** Detail Cell Renderer Params (Master-Detail용) */
+  detailCellRendererParams?: any;
+  /** Detail Row Height (Master-Detail용) */
+  detailRowHeight?: number;
   /** 행 클릭 이벤트 */
   onRowClick?: (data: TData, event: CellClickedEvent<TData>) => void;
   /** 행 더블클릭 이벤트 */
   onRowDoubleClick?: (data: TData, event: RowDoubleClickedEvent<TData>) => void;
+  /** 셀 클릭 이벤트 (특정 셀 클릭 처리용) */
+  onCellClicked?: (event: CellClickedEvent<TData>) => void;
   /** 선택 변경 이벤트 */
   onSelectionChange?: (selectedRows: TData[]) => void;
   /** 셀 값 변경 이벤트 */
@@ -109,8 +119,13 @@ const BaseDataGrid = <TData = any,>({
   enableSorting = true,
   enableColumnResize = true,
   enableColumnReorder = true,
+  masterDetail = false,
+  detailCellRenderer,
+  detailCellRendererParams,
+  detailRowHeight = 200,
   onRowClick,
   onRowDoubleClick,
+  onCellClicked,
   onSelectionChange,
   onCellValueChanged,
   emptyMessage = '데이터가 없습니다',
@@ -119,7 +134,7 @@ const BaseDataGrid = <TData = any,>({
   'data-testid': dataTestId = 'base-data-grid',
   ...gridProps
 }: BaseDataGridProps<TData>) => {
-  const [gridApi, setGridApi] = useState<GridApi<TData> | null>(null);
+  const [, setGridApi] = useState<GridApi<TData> | null>(null);
 
   // 컬럼 정의에 체크박스 선택 추가 (맨 앞에 위치)
   const finalColumns = useMemo<ColDef<TData>[]>(() => {
@@ -172,7 +187,29 @@ const BaseDataGrid = <TData = any,>({
     // 컬럼 조작
     enableColResize: enableColumnResize,
     enableColumnReorder: enableColumnReorder,
-    
+
+    // Master-Detail 설정
+    masterDetail: masterDetail,
+    detailCellRenderer: detailCellRenderer,
+    detailCellRendererParams: detailCellRendererParams,
+    detailRowHeight: detailRowHeight,
+    detailRowAutoHeight: true,
+
+    // 행 고유 식별자 설정 (중복 선택 방지)
+    getRowId: (params) => {
+      // data에 id 필드가 있으면 사용
+      const rowData = params.data as any;
+      if (rowData?.id) {
+        return rowData.id.toString();
+      }
+      // level이 있으면 인덱스 기반 ID 생성
+      if (params.level !== undefined) {
+        return `row-${params.level}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      // 둘 다 없으면 랜덤 ID 생성
+      return `row-${Math.random().toString(36).substr(2, 9)}`;
+    },
+
     // 로케일 (한국어)
     localeText: {
       // 페이지네이션
@@ -185,7 +222,7 @@ const BaseDataGrid = <TData = any,>({
       first: '처음',
       previous: '이전',
       loadingOoo: '로딩 중...',
-      
+
       // 필터
       filterOoo: '필터...',
       equals: '같음',
@@ -194,20 +231,24 @@ const BaseDataGrid = <TData = any,>({
       notContains: '포함하지 않음',
       startsWith: '시작',
       endsWith: '끝',
-      
+
       // 기타
       noRowsToShow: emptyMessage,
     },
   }), [
-    checkboxSelection, 
-    rowSelection, 
-    pagination, 
-    pageSize, 
+    checkboxSelection,
+    rowSelection,
+    pagination,
+    pageSize,
     pageSizeOptions,
     enableFilter,
     enableSorting,
     enableColumnResize,
     enableColumnReorder,
+    masterDetail,
+    detailCellRenderer,
+    detailCellRendererParams,
+    detailRowHeight,
     emptyMessage
   ]);
 
@@ -219,20 +260,26 @@ const BaseDataGrid = <TData = any,>({
     params.api.sizeColumnsToFit();
   }, []);
 
-  // 행 클릭 이벤트
-  const onCellClicked = useCallback((event: CellClickedEvent<TData>) => {
+  // 셀 클릭 이벤트
+  const handleCellClicked = useCallback((event: CellClickedEvent<TData>) => {
     console.log('🎯 BaseDataGrid onCellClicked 호출됨');
     console.log('🎯 Event:', event);
     console.log('🎯 Column:', event.column);
     console.log('🎯 Data:', event.data);
 
+    // onCellClicked prop이 있으면 먼저 실행 (특정 셀 클릭 처리)
+    if (onCellClicked) {
+      onCellClicked(event);
+    }
+
+    // onRowClick prop이 있으면 실행 (일반 행 클릭 처리)
     if (event.data && onRowClick) {
       console.log('✅ onRowClick 실행');
       onRowClick(event.data, event);
     } else {
       console.log('❌ onRowClick 실행 안됨 - data:', event.data, 'onRowClick:', !!onRowClick);
     }
-  }, [onRowClick]);
+  }, [onRowClick, onCellClicked]);
 
   // 행 더블클릭 이벤트
   const onRowDoubleClicked = useCallback((event: RowDoubleClickedEvent<TData>) => {
@@ -296,7 +343,7 @@ const BaseDataGrid = <TData = any,>({
         columnDefs={finalColumns}
         gridOptions={defaultGridOptions}
         onGridReady={onGridReady}
-        onCellClicked={onCellClicked}
+        onCellClicked={handleCellClicked}
         onRowDoubleClicked={onRowDoubleClicked}
         onSelectionChanged={onSelectionChanged}
         onCellValueChanged={onCellValueChanged}

@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex, WebRequest request) {
-        logger.warn("Business exception: {}", ex.getMessage(), ex);
-        
+        logger.warn("[BusinessException] {} - {}", ex.getErrorCode(), ex.getMessage());
+
         ErrorResponse errorResponse = ErrorResponse.builder()
             .timestamp(LocalDateTime.now())
             .status(HttpStatus.BAD_REQUEST.value())
@@ -154,8 +154,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
-        logger.error("Unexpected error occurred", ex);
-        
+        // 간결한 에러 로그 (스택트레이스 제외, 원인만 출력)
+        String errorCause = ex.getCause() != null ? ex.getCause().getClass().getSimpleName() : "Unknown";
+        logger.error("[{}] {} - Cause: {}", ex.getClass().getSimpleName(), ex.getMessage(), errorCause);
+
         ErrorResponse errorResponse = ErrorResponse.builder()
             .timestamp(LocalDateTime.now())
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

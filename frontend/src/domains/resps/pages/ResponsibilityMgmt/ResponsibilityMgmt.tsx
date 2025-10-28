@@ -12,7 +12,11 @@ import styles from './ResponsibilityMgmt.module.scss';
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // API
-import { getAllResponsibilitiesWithJoin, type ResponsibilityListDto } from '@/domains/resps/api/responsibilityApi';
+import {
+  getAllResponsibilitiesWithJoin,
+  deleteResponsibility,
+  type ResponsibilityListDto
+} from '@/domains/resps/api/responsibilityApi';
 
 // Types
 import type {
@@ -36,7 +40,7 @@ import useFilters from '@/shared/hooks/useFilters';
 import usePagination from '@/shared/hooks/usePagination';
 
 // Responsibility specific components
-import { responsibilityColumns } from './components/ResponsibilityDataGrid/responsibilityColumns';
+import { createResponsibilityColumns } from './components/ResponsibilityDataGrid/responsibilityColumns';
 
 // Lazy-loaded components for performance optimization
 const ResponsibilityFormModal = React.lazy(() =>
@@ -138,8 +142,13 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
 
     await handlers.delete.execute(
       async () => {
-        // TODO: 실제 삭제 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+        // 실제 삭제 API 호출 (각 책무를 개별 삭제)
+        const deletePromises = selectedResponsibilities.map(resp =>
+          deleteResponsibility(Number(resp.id))
+        );
+
+        // 모든 삭제가 완료될 때까지 대기
+        await Promise.all(deletePromises);
 
         // 상태 업데이트 (삭제된 항목 제거)
         setResponsibilities(prev =>
@@ -247,36 +256,90 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
   const handleSearch = useCallback(async () => {
     await handlers.search.execute(
       async () => {
-        // 4테이블 조인 API 호출
+        // 4테이블 조인 API 호출 (responsibilities가 마스터, positions 포함)
         const response = await getAllResponsibilitiesWithJoin({
           ledgerOrderId: filters.책무이행차수 || undefined,
-          positionsName: filters.직책명 || undefined,
+          responsibilityInfo: filters.직책명 || undefined, // 책무정보로 검색
           responsibilityCd: filters.책무 || undefined
         });
 
         console.log('[책무목록 조회] API 응답:', response);
 
-        // API 응답을 Responsibility 타입으로 변환
-        const responsibilities: Responsibility[] = response.map((item: ResponsibilityListDto, index: number) => ({
-          id: item.responsibilityId?.toString() || `temp-${index}`,
-          순번: index + 1,
-          직책: item.positionsName || '',
-          책무: item.responsibilityCdName || '',
-          책무세부내용: item.responsibilityDetailInfo || '',
-          관리의무: item.obligationInfo || '',
-          부점명: item.hqName || '',
-          등록일자: '', // TODO: 등록일자 필드 추가 필요
-          등록자: '', // TODO: 등록자 필드 추가 필요
-          등록자직책: '', // TODO: 등록자직책 필드 추가 필요
-          상태: item.responsibilityIsActive === 'Y' ? '정상' : '비활성',
-          사용여부: item.responsibilityIsActive === 'Y',
-          본부구분: item.hqCode || '',
-          부서명: item.orgCode || ''
-        }));
+        // API 응답을 책무별로 그룹핑 (1책무 = 1행)
+        const groupedMap = new Map<string, {
+          master: ResponsibilityListDto;
+          detailInfos: string[];
+          obligationInfos: string[];
+        }>();
+
+        response.forEach((item: ResponsibilityListDto) => {
+          const respId = item.responsibilityId.toString();
+
+          if (!groupedMap.has(respId)) {
+            groupedMap.set(respId, {
+              master: item,
+              detailInfos: [],
+              obligationInfos: []
+            });
+          }
+
+          const group = groupedMap.get(respId)!;
+
+          // 책무세부내용 수집 (중복 제거)
+          if (item.responsibilityDetailInfo && !group.detailInfos.includes(item.responsibilityDetailInfo)) {
+            group.detailInfos.push(item.responsibilityDetailInfo);
+          }
+
+          // 관리의무 수집 (중복 제거)
+          if (item.obligationInfo && !group.obligationInfos.includes(item.obligationInfo)) {
+            group.obligationInfos.push(item.obligationInfo);
+          }
+        });
+
+        // 그룹핑된 데이터를 Responsibility 타입으로 변환
+        const responsibilities: Responsibility[] = Array.from(groupedMap.entries()).map(([respId, group], index) => {
+          const item = group.master;
+          const detailCount = group.detailInfos.length;
+          const obligationCount = group.obligationInfos.length;
+
+          // 요약 텍스트 생성: "첫번째내용 외 N건"
+          let detailSummary = '';
+          if (detailCount > 0) {
+            const firstDetail = group.detailInfos[0];
+            detailSummary = detailCount > 1
+              ? `${firstDetail.substring(0, 15)}... 외 ${detailCount - 1}건`
+              : firstDetail;
+          }
+
+          let obligationSummary = '';
+          if (obligationCount > 0) {
+            const firstObligation = group.obligationInfos[0];
+            obligationSummary = obligationCount > 1
+              ? `${firstObligation.substring(0, 15)}... 외 ${obligationCount - 1}건`
+              : firstObligation;
+          }
+
+          return {
+            id: respId,
+            순번: index + 1,
+            직책: item.positionsName || '',
+            책무: item.responsibilityCdName || item.responsibilityInfo || '',
+            책무세부내용: detailSummary,
+            관리의무: obligationSummary,
+            부점명: item.hqName || '',
+            등록일자: item.createdAt ? item.createdAt.split('T')[0] : '',
+            등록자: item.createdBy || '',
+            등록자직책: '',
+            상태: item.responsibilityStatus || (item.responsibilityIsActive === 'Y' ? '정상' : '비활성'),
+            사용여부: item.responsibilityIsActive === 'Y',
+            본부구분: item.hqCode || '',
+            부서명: item.orgCode || ''
+          };
+        });
 
         setResponsibilities(responsibilities);
         updateTotal(responsibilities.length);
-        console.log('[책무목록 조회] 변환된 데이터:', responsibilities);
+        console.log('[책무목록 조회] 그룹핑된 데이터 (1책무=1행):', responsibilities);
       },
       {
         loading: '책무 정보를 검색 중입니다...',
@@ -304,6 +367,18 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
 
   const handleRowDoubleClick = useCallback((responsibility: Responsibility) => {
     handleResponsibilityDetail(responsibility);
+  }, [handleResponsibilityDetail]);
+
+  // 책무 컬럼 클릭 핸들러
+  const handleCellClick = useCallback((event: any) => {
+    // 책무 컬럼 클릭 시에만 상세 모달 열기
+    if (event.colDef?.cellClass === 'responsibility-clickable-cell') {
+      const responsibility = event.data as Responsibility;
+      if (responsibility) {
+        console.log('책무 컬럼 클릭:', responsibility);
+        handleResponsibilityDetail(responsibility);
+      }
+    }
   }, [handleResponsibilityDetail]);
 
   const handleSelectionChange = useCallback((selected: Responsibility[]) => {
@@ -424,6 +499,9 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
     }
   ], [statistics]);
 
+  // 컬럼 정의 (책무 클릭 핸들러 포함)
+  const columns = useMemo(() => createResponsibilityColumns(handleResponsibilityDetail), [handleResponsibilityDetail]);
+
   // 성능 모니터링 함수
   const onRenderProfiler = useCallback((
     id: string,
@@ -487,11 +565,9 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
           {/* 🎯 공통 데이터 그리드 */}
           <BaseDataGrid
             data={displayResponsibilities}
-            columns={responsibilityColumns}
+            columns={columns}
             loading={anyLoading}
             theme="alpine"
-            onRowClick={(data) => handleRowClick(data)}
-            onRowDoubleClick={(data) => handleRowDoubleClick(data)}
             onSelectionChange={handleSelectionChange}
             height="calc(100vh - 370px)"
             pagination={true}

@@ -35,6 +35,11 @@ CREATE TABLE rsms.management_obligations (
   -- 제약조건
   CONSTRAINT fk_management_obligations_resp_detail FOREIGN KEY (responsibility_detail_id)
     REFERENCES rsms.responsibility_details(responsibility_detail_id) ON DELETE CASCADE,
+
+  -- 외래키 제약조건 (org_code → organizations)
+  CONSTRAINT fk_management_obligations_org_code FOREIGN KEY (org_code)
+    REFERENCES rsms.organizations(org_code) ON DELETE RESTRICT ON UPDATE CASCADE,
+
   CONSTRAINT chk_management_obligations_is_active CHECK (is_active IN ('Y', 'N'))
 );
 
@@ -81,7 +86,7 @@ COMMENT ON COLUMN rsms.management_obligations.obligation_major_cat_cd IS '관리
 COMMENT ON COLUMN rsms.management_obligations.obligation_middle_cat_cd IS '관리의무 중분류 구분코드 (common_code_details 참조)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_cd IS '관리의무코드 (common_code_details 참조)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_info IS '관리의무내용';
-COMMENT ON COLUMN rsms.management_obligations.org_code IS '조직코드 (common_code_details 참조)';
+COMMENT ON COLUMN rsms.management_obligations.org_code IS '조직코드 (FK → organizations.org_code)';
 COMMENT ON COLUMN rsms.management_obligations.is_active IS '사용여부 (Y: 사용, N: 미사용)';
 COMMENT ON COLUMN rsms.management_obligations.created_at IS '생성일시';
 COMMENT ON COLUMN rsms.management_obligations.created_by IS '생성자';

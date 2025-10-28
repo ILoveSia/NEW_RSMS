@@ -1,15 +1,15 @@
 // 책무관리 타입 정의
 
 /**
- * 책무 인터페이스
+ * 책무 인터페이스 (Master-Detail 구조)
  */
 export interface Responsibility {
   id: string;
   순번?: number;
   직책: string;
   책무: string;
-  책무세부내용: string;
-  관리의무: string;
+  책무세부내용: string; // "세부내용1 외 2건" 형식으로 표시
+  관리의무: string; // "관리의무1 외 5건" 형식으로 표시
   부점명: string;
   등록일자: string;
   등록자: string;
@@ -26,6 +26,31 @@ export interface Responsibility {
   관리의무코드?: string;
   관리의무대본부구분?: string;
   관리의무중본부구분?: string;
+
+  // Master-Detail을 위한 상세 데이터
+  details?: ResponsibilityDetailItem[];
+  obligations?: ManagementObligationItem[];
+}
+
+/**
+ * 책무 세부내용 아이템 (Detail Panel용)
+ */
+export interface ResponsibilityDetailItem {
+  id: string;
+  detailInfo: string;
+  isActive: string;
+}
+
+/**
+ * 관리의무 아이템 (Detail Panel용)
+ */
+export interface ManagementObligationItem {
+  id: string;
+  majorCat: string;
+  middleCat: string;
+  obligationInfo: string;
+  orgName: string;
+  isActive: string;
 }
 
 /**
