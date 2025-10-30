@@ -32,8 +32,15 @@ public class ResponsibilityDetail {
     /**
      * 책무ID (FK)
      */
-    @Column(name = "responsibility_id", nullable = false)
+    @Column(name = "responsibility_id", nullable = false, insertable = false, updatable = false)
     private Long responsibilityId;
+
+    /**
+     * 책무 엔티티 (ManyToOne 관계)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsibility_id", nullable = false)
+    private Responsibility responsibility;
 
     /**
      * 책무세부내용

@@ -68,29 +68,37 @@ export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'LOCKED' | 'PENDING_VERIFICATIO
 
 // 사용자 엔티티 (DB rsms.users 테이블)
 export interface User extends BaseEntity {
-  userId: string;           // user_id: 사용자 고유 ID
-  email: string;            // email: 이메일 (로그인용)
-  empNo: string;            // emp_no: 사원번호 (employee 테이블과 연결)
-  password?: string;        // password: 비밀번호 (클라이언트에서는 보통 제외)
-  role: string;             // role: 기본 역할 (DEFAULT 'EMPLOYEE')
-  active: boolean;          // active: 활성화 상태
-  
-  // Employee 테이블에서 조인으로 가져오는 정보
-  empName?: string;         // employee.emp_name
-  deptCd?: string;          // employee.dept_cd
-  positionCd?: string;      // employee.position_cd
-  jobRankCd?: string;       // employee.job_rank_cd
-  phoneNo?: string;         // employee.phone_no
-  
+  userId: number;           // user_id: 사용자 고유 ID (BIGSERIAL)
+  username: string;         // username: 사용자 아이디 (로그인 ID)
+  passwordHash?: string;    // password_hash: BCrypt 해시 (클라이언트에서는 보통 제외)
+  empNo: string;            // emp_no: 사원번호 (employees FK)
+
+  // 계정 보안
+  accountStatus: string;    // account_status: ACTIVE, LOCKED, SUSPENDED, RESIGNED
+  passwordChangeRequired?: string; // password_change_required: 'Y', 'N'
+  passwordLastChangedAt?: Timestamp; // password_last_changed_at
+  lastLoginAt?: Timestamp;  // last_login_at
+  failedLoginCount?: number; // failed_login_count
+  lockedUntil?: Timestamp;  // locked_until
+
+  // 권한 레벨
+  isAdmin?: boolean;        // is_admin: 'Y' → true, 'N' → false
+  isExecutive?: boolean;    // is_executive: 'Y' → true, 'N' → false
+  authLevel?: number;       // auth_level: 1~10
+
+  // 로그인 차단 및 활성화
+  isLoginBlocked?: string;  // is_login_blocked: 'Y', 'N'
+
+  // 시스템 정보
+  timezone?: string;        // timezone: Asia/Seoul
+  language?: string;        // language: ko, en
+  isActive?: string;        // is_active: 'Y', 'N'
+
   // 역할 및 권한 (조인으로 가져오는 데이터)
   roles?: Role[];           // user_roles를 통해 조인된 역할들
   permissions?: Permission[]; // role_permissions를 통해 조인된 권한들
-  
-  // 세션 정보 (선택적으로 포함)
-  lastLoginAt?: Timestamp;
-  
+
   // computed fields (프론트엔드에서 계산)
-  fullName?: string;        // empName 기반으로 계산
   roleCodes?: UserRoleCode[]; // roles 배열에서 roleId 추출
 }
 

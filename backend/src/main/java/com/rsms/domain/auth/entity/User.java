@@ -3,6 +3,7 @@ package com.rsms.domain.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  * - Spring Security 인증에 사용되는 사용자 계정 정보
  * - employees 테이블과 1:1 관계 (emp_no FK)
  * - BCrypt 해시 (강도 12) 사용
+ * - Serializable 구현: Spring Session에 세션 저장을 위해 필요
  *
  * @author RSMS Development Team
  * @since 1.0
@@ -21,7 +23,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * 사용자ID (PK, 자동증가)

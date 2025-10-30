@@ -1,60 +1,16 @@
 /**
  * 인증 API 클라이언트
  * - 로그인, 로그아웃, 세션 관리 API 호출
+ * - 공통 apiClient 사용 (401 에러 시 자동 로그아웃)
  *
  * @author RSMS Development Team
  * @since 1.0
  */
 
-import axios from 'axios';
+import apiClient from '@/shared/api/apiClient';
 
-// API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-
-// Axios 인스턴스 생성
-const authApiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true, // 세션 쿠키 전송을 위해 필수
-});
-
-// 요청 인터셉터: 세션 ID를 헤더에 추가
-authApiClient.interceptors.request.use(
-  (config) => {
-    // LocalStorage에서 세션 ID 가져오기
-    const authStore = localStorage.getItem('rsms-auth-store');
-    if (authStore) {
-      try {
-        const { state } = JSON.parse(authStore);
-        if (state?.sessionId) {
-          config.headers['X-Auth-Token'] = state.sessionId;
-        }
-      } catch (e) {
-        console.error('세션 ID 파싱 실패:', e);
-      }
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// 응답 인터셉터: 에러 처리
-authApiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // 인증 실패 시 로그아웃 처리
-      console.error('인증 실패 - 세션이 만료되었습니다');
-      // authStore.logout() 호출은 컴포넌트에서 처리
-    }
-    return Promise.reject(error);
-  }
-);
+// authApiClient는 공통 apiClient를 사용
+const authApiClient = apiClient;
 
 // =====================
 // 타입 정의

@@ -48,14 +48,18 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
+
+            // SecurityContext를 세션에 저장하도록 명시적 설정
+            .securityContext(securityContext -> securityContext
+                .requireExplicitSave(false))  // SecurityContext를 자동으로 세션에 저장
+
             // 세션 설정 (Database 기반)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(false)
             )
-            
+
             // 권한 설정
             .authorizeHttpRequests(auth -> auth
                 // 공개 API
@@ -75,7 +79,7 @@ public class SecurityConfig {
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )
-            
+
             .build();
     }
 

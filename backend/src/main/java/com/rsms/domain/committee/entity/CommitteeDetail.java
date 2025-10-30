@@ -36,10 +36,20 @@ public class CommitteeDetail {
     private Long committeeDetailsId;
 
     /**
-     * 회의체ID (FK → committees)
+     * 회의체 엔티티 (ManyToOne 관계)
+     * - committees_id 컬럼을 통해 Committee와 연결
      */
-    @Column(name = "committees_id", nullable = false)
-    private Long committeesId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "committees_id", nullable = false)
+    private Committee committee;
+
+    /**
+     * 회의체ID 조회용 헬퍼 메서드
+     * - committee 객체에서 ID 추출
+     */
+    public Long getCommitteesId() {
+        return committee != null ? committee.getCommitteesId() : null;
+    }
 
     /**
      * 직책ID (FK → positions)

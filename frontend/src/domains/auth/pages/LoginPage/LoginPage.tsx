@@ -1,4 +1,10 @@
 import {
+  Lock,
+  Person,
+  Visibility,
+  VisibilityOff
+} from '@mui/icons-material';
+import {
   Alert,
   Box,
   Button,
@@ -9,16 +15,11 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import {
-  Person,
-  Lock,
-  Visibility,
-  VisibilityOff
-} from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuthStore } from '@/app/store/authStore';
+import { initializeAppData } from '@/app/utils/initializeApp';
 import styles from './LoginPage.module.scss';
 
 interface LoginFormData {
@@ -33,7 +34,7 @@ export const LoginPage: React.FC = () => {
 
   const [formData, setFormData] = useState<LoginFormData>({
     username: 'admin', // 개발용 기본값
-    password: ''
+    password: 'admin123!'
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -128,6 +129,11 @@ export const LoginPage: React.FC = () => {
         if (response.userInfo.needsPasswordChange) {
           console.warn('비밀번호 변경이 필요합니다');
         }
+
+        // 로그인 후 필요한 데이터 로드 (공통코드, 메뉴 등)
+        console.log('[LoginPage] 애플리케이션 데이터 로드 시작...');
+        await initializeAppData();
+        console.log('[LoginPage] 애플리케이션 데이터 로드 완료');
 
         // 성공 후 리다이렉트
         navigate(from, { replace: true });

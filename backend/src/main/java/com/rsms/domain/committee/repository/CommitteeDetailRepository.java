@@ -23,12 +23,12 @@ public interface CommitteeDetailRepository extends JpaRepository<CommitteeDetail
     /**
      * 회의체ID로 위원 목록 조회
      */
-    List<CommitteeDetail> findByCommitteesIdOrderByCommitteeDetailsIdAsc(Long committeesId);
+    List<CommitteeDetail> findByCommittee_CommitteesIdOrderByCommitteeDetailsIdAsc(Long committeesId);
 
     /**
      * 회의체ID + 구분으로 조회
      */
-    List<CommitteeDetail> findByCommitteesIdAndCommitteesTypeOrderByCommitteeDetailsIdAsc(
+    List<CommitteeDetail> findByCommittee_CommitteesIdAndCommitteesTypeOrderByCommitteeDetailsIdAsc(
             Long committeesId,
             String committeesType
     );
@@ -75,11 +75,23 @@ public interface CommitteeDetailRepository extends JpaRepository<CommitteeDetail
      * 회의체ID로 위원 전체 삭제
      */
     @Modifying
-    @Query("DELETE FROM CommitteeDetail cd WHERE cd.committeesId = :committeesId")
+    @Query("DELETE FROM CommitteeDetail cd WHERE cd.committee.committeesId = :committeesId")
     void deleteByCommitteesId(@Param("committeesId") Long committeesId);
 
     /**
      * 회의체ID + 직책ID로 중복 체크
      */
-    boolean existsByCommitteesIdAndPositionsId(Long committeesId, Long positionsId);
+    boolean existsByCommittee_CommitteesIdAndPositionsId(Long committeesId, Long positionsId);
+
+    /**
+     * 직책ID로 주관회의체 목록 조회
+     * - 직책이 소속된 모든 회의체 정보 조회
+     *
+     * @param positionId 직책ID
+     * @return 회의체 상세 목록
+     */
+    @Query("SELECT cd FROM CommitteeDetail cd " +
+           "JOIN FETCH cd.committee " +
+           "WHERE cd.positionsId = :positionId")
+    List<CommitteeDetail> findCommitteesByPositionId(@Param("positionId") Long positionId);
 }

@@ -6,6 +6,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCommonCode } from '@/shared/hooks';
 import styles from './DeliberativeMgmt.module.scss';
 
 // Types
@@ -27,7 +28,7 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import { LedgerOrderComboBox } from '../../components/molecules/LedgerOrderComboBox';
 
 // Deliberative specific components
-import { deliberativeColumns } from './components/DeliberativeDataGrid/deliberativeColumns';
+import { createDeliberativeColumns } from './components/DeliberativeDataGrid/deliberativeColumns';
 
 // API
 import {
@@ -49,6 +50,15 @@ interface DeliberativeMgmtProps {
 
 const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
   const { t } = useTranslation('resps');
+
+  // 공통코드에서 개최주기 조회 (useCommonCode hook 사용)
+  const holdingPeriod = useCommonCode('CFRN_CYCL_DVCD');
+
+  // AG-Grid 컬럼 정의 (공통코드 기반 동적 생성)
+  const deliberativeColumns = useMemo(() =>
+    createDeliberativeColumns(holdingPeriod.codes),
+    [holdingPeriod.codes]
+  );
 
   // State Management
   const [deliberatives, setDeliberatives] = useState<Deliberative[]>([]);
@@ -357,16 +367,10 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
       key: 'holdingPeriod',
       type: 'select',
       label: '개최주기',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'monthly', label: '월' },
-        { value: 'quarterly', label: '분기' },
-        { value: 'semiannually', label: '반기' },
-        { value: 'annually', label: '년' }
-      ],
+      options: holdingPeriod.optionsWithAll,  // useCommonCode hook 사용
       gridSize: { xs: 12, sm: 6, md: 1 }
     }
-  ], [ledgerOrderId]);
+  ], [ledgerOrderId, holdingPeriod.optionsWithAll]);
 
   // BaseActionBar용 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [

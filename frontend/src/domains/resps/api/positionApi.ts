@@ -3,12 +3,14 @@
  * - common_code_details 테이블에서 직책명 데이터를 조회하는 API
  * - group_code = 'RSBT_RSOF_DVCD' 공통코드 조회
  * - positions 테이블 CRUD API
+ * - 공통 apiClient 사용 (401 에러 시 자동 로그아웃)
  *
  * @author Claude AI
  * @since 2025-10-20
  */
 
-import axios from 'axios';
+import apiClient from '@/shared/api/apiClient';
+import axios from 'axios'; // axios.isAxiosError 사용을 위해 필요
 import type { PositionNameDto } from '../components/molecules/PositionNameComboBox/types';
 
 const API_BASE_URL = '/api/positions';
@@ -105,7 +107,7 @@ export const getPositionNamesForComboBox = async (): Promise<PositionNameDto[]> 
  */
 export const createPosition = async (request: CreatePositionRequest): Promise<PositionDto> => {
   try {
-    const response = await axios.post<PositionDto>(API_BASE_URL, request, {
+    const response = await apiClient.post<PositionDto>(API_BASE_URL, request, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -130,7 +132,7 @@ export const createPosition = async (request: CreatePositionRequest): Promise<Po
  */
 export const getAllPositions = async (): Promise<PositionDto[]> => {
   try {
-    const response = await axios.get<PositionDto[]>(API_BASE_URL, {
+    const response = await apiClient.get<PositionDto[]>(API_BASE_URL, {
       withCredentials: true,
     });
     return response.data;
@@ -152,7 +154,7 @@ export const getAllPositions = async (): Promise<PositionDto[]> => {
  */
 export const getPositionsByLedgerOrderId = async (ledgerOrderId: string): Promise<PositionDto[]> => {
   try {
-    const response = await axios.get<PositionDto[]>(`${API_BASE_URL}/ledger/${ledgerOrderId}`, {
+    const response = await apiClient.get<PositionDto[]>(`${API_BASE_URL}/ledger/${ledgerOrderId}`, {
       withCredentials: true,
     });
     return response.data;
@@ -169,7 +171,7 @@ export const getPositionsByLedgerOrderId = async (ledgerOrderId: string): Promis
  * 직책 단건 조회
  */
 export const getPosition = async (positionsId: number): Promise<PositionDto> => {
-  const response = await axios.get<PositionDto>(`${API_BASE_URL}/${positionsId}`);
+  const response = await apiClient.get<PositionDto>(`${API_BASE_URL}/${positionsId}`);
   return response.data;
 };
 
@@ -180,7 +182,7 @@ export const updatePosition = async (
   positionsId: number,
   request: Partial<CreatePositionRequest>
 ): Promise<PositionDto> => {
-  const response = await axios.put<PositionDto>(`${API_BASE_URL}/${positionsId}`, request);
+  const response = await apiClient.put<PositionDto>(`${API_BASE_URL}/${positionsId}`, request);
   return response.data;
 };
 
@@ -188,14 +190,14 @@ export const updatePosition = async (
  * 직책 삭제
  */
 export const deletePosition = async (positionsId: number): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/${positionsId}`);
+  await apiClient.delete(`${API_BASE_URL}/${positionsId}`);
 };
 
 /**
  * 직책 복수 삭제
  */
 export const deletePositions = async (positionsIds: number[]): Promise<void> => {
-  await axios.delete(API_BASE_URL, {
+  await apiClient.delete(API_BASE_URL, {
     data: positionsIds,
   });
 };
@@ -210,7 +212,7 @@ export const deletePositions = async (positionsIds: number[]): Promise<void> => 
  */
 export const getPositionDepartments = async (positionsId: number): Promise<Array<{org_code: string; org_name: string}>> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/${positionsId}/departments`, {
+    const response = await apiClient.get(`${API_BASE_URL}/${positionsId}/departments`, {
       withCredentials: true,
     });
     return response.data;
@@ -268,7 +270,7 @@ export const createPositionConcurrents = async (
   request: CreatePositionConcurrentRequest
 ): Promise<PositionConcurrentDto[]> => {
   try {
-    const response = await axios.post<PositionConcurrentDto[]>(
+    const response = await apiClient.post<PositionConcurrentDto[]>(
       '/api/resps/position-concurrents',
       request,
       { withCredentials: true }
@@ -291,7 +293,7 @@ export const getPositionConcurrents = async (
   ledgerOrderId: string
 ): Promise<PositionConcurrentDto[]> => {
   try {
-    const response = await axios.get<PositionConcurrentDto[]>(
+    const response = await apiClient.get<PositionConcurrentDto[]>(
       '/api/resps/position-concurrents',
       {
         params: { ledgerOrderId },
@@ -316,7 +318,7 @@ export const getPositionConcurrentsByGroup = async (
   concurrentGroupCd: string
 ): Promise<PositionConcurrentDto[]> => {
   try {
-    const response = await axios.get<PositionConcurrentDto[]>(
+    const response = await apiClient.get<PositionConcurrentDto[]>(
       `/api/resps/position-concurrents/group/${concurrentGroupCd}`,
       { withCredentials: true }
     );
@@ -338,7 +340,7 @@ export const deletePositionConcurrentGroup = async (
   concurrentGroupCd: string
 ): Promise<void> => {
   try {
-    await axios.delete(`/api/resps/position-concurrents/group/${concurrentGroupCd}`, {
+    await apiClient.delete(`/api/resps/position-concurrents/group/${concurrentGroupCd}`, {
       withCredentials: true
     });
   } catch (error) {

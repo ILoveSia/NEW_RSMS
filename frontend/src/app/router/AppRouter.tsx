@@ -106,16 +106,7 @@ const TemporaryPage: React.FC<{ title: string; description?: string }> = ({
 );
 
 const AppRouter: React.FC = () => {
-  const { login, logout, isAuthenticated } = useAuthStore();
-
-  // 개발 환경에서 강제 로그아웃 (로그인 페이지 테스트용)
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      // 개발 중 로그인 페이지를 테스트하기 위해 강제 로그아웃
-      logout();
-      console.log('🔧 [개발 모드] 로그인 페이지 테스트를 위한 강제 로그아웃');
-    }
-  }, [logout]);
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <Suspense fallback={<LoadingSpinner />}>

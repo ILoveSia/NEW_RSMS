@@ -31,6 +31,7 @@ import type { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { Button } from '@/shared/components/atoms/Button';
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+import { useCommonCode } from '@/shared/hooks';
 import toast from '@/shared/utils/toast';
 import {
   getPositionsByLedgerOrderId,
@@ -59,10 +60,13 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
   onUpdate,
   loading = false
 }) => {
+  // 공통코드에서 개최주기 조회 (useCommonCode hook 사용)
+  const holdingPeriodCode = useCommonCode('CFRN_CYCL_DVCD');
+
   // 상태 관리
   const [ledgerOrderId, setLedgerOrderId] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [holdingPeriod, setHoldingPeriod] = useState<string>('monthly');
+  const [holdingPeriod, setHoldingPeriod] = useState<string>('');
   const [mainAgenda, setMainAgenda] = useState<string>('');
   const [isActive, setIsActive] = useState<boolean>(true);
   const [members, setMembers] = useState<DeliberativeMember[]>([]);
@@ -112,7 +116,7 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
         // 등록 모드: 초기화
         setLedgerOrderId('');
         setName('');
-        setHoldingPeriod('monthly');
+        setHoldingPeriod(holdingPeriodCode.codes.length > 0 ? holdingPeriodCode.codes[0].detailCode : '');
         setMainAgenda('');
         setIsActive(true);
         setMembers([]);
@@ -161,7 +165,7 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
     };
 
     initializeForm();
-  }, [mode, deliberative, open]);
+  }, [mode, deliberative, open, holdingPeriodCode.codes]);
 
   /**
    * 위원 추가 핸들러
@@ -468,10 +472,11 @@ const DeliberativeFormModal: React.FC<DeliberativeFormModalProps> = ({
                 onChange={(e) => setHoldingPeriod(e.target.value)}
                 label="개최주기"
               >
-                <MenuItem value="monthly">월</MenuItem>
-                <MenuItem value="quarterly">분기</MenuItem>
-                <MenuItem value="semiannually">반기</MenuItem>
-                <MenuItem value="annually">년</MenuItem>
+                {holdingPeriodCode.options.map(opt => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>

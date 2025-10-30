@@ -40,4 +40,17 @@ public interface ManagementObligationRepository extends JpaRepository<Management
      * 책무세부ID로 관리의무 전체 삭제
      */
     void deleteByResponsibilityDetailId(Long responsibilityDetailId);
+
+    /**
+     * 책무ID 목록으로 관리의무 전체 조회
+     * - responsibilities → responsibility_details → management_obligations 전체 조회
+     *
+     * @param responsibilityIds 책무ID 목록
+     * @return 관리의무 목록
+     */
+    @Query("SELECT mo FROM ManagementObligation mo " +
+           "JOIN FETCH mo.responsibilityDetail rd " +
+           "JOIN FETCH rd.responsibility r " +
+           "WHERE r.responsibilityId IN :responsibilityIds")
+    List<ManagementObligation> findByResponsibilityIds(@Param("responsibilityIds") List<Long> responsibilityIds);
 }

@@ -32,8 +32,15 @@ public class ManagementObligation {
     /**
      * 책무세부ID (FK)
      */
-    @Column(name = "responsibility_detail_id", nullable = false)
+    @Column(name = "responsibility_detail_id", nullable = false, insertable = false, updatable = false)
     private Long responsibilityDetailId;
+
+    /**
+     * 책무세부 엔티티 (ManyToOne 관계)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsibility_detail_id", nullable = false)
+    private ResponsibilityDetail responsibilityDetail;
 
     /**
      * 관리의무 대분류 구분코드 (MGMT_OBLG_LCCD)

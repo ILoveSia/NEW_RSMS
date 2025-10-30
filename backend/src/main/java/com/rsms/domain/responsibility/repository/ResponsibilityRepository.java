@@ -94,4 +94,16 @@ public interface ResponsibilityRepository extends JpaRepository<Responsibility, 
         @Param("responsibilityInfo") String responsibilityInfo,
         @Param("responsibilityCd") String responsibilityCd
     );
+
+    /**
+     * 직책ID로 책무 목록 조회 (positions 엔티티와 함께)
+     * - 책무기술서 데이터 조회용
+     *
+     * @param positionsId 직책ID
+     * @return 책무 목록
+     */
+    @Query("SELECT r FROM Responsibility r " +
+           "JOIN FETCH r.positions " +
+           "WHERE r.positions.positionsId = :positionsId")
+    List<Responsibility> findByPositions_PositionsId(@Param("positionsId") Long positionsId);
 }

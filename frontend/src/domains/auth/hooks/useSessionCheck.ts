@@ -117,19 +117,14 @@ export const useSessionCheck = (options: UseSessionCheckOptions = {}) => {
       return;
     }
 
-    // 초기 세션 체크 (1초 후)
-    const initialTimeout = setTimeout(() => {
-      checkSession();
-    }, 1000);
-
-    // 주기적인 세션 체크
+    // 로그인 직후에는 세션 체크를 하지 않고, checkInterval 후에 시작
+    // (로그인 직후 1초에 체크하면 쿠키가 아직 설정되지 않아 403 에러 발생 가능)
     intervalRef.current = setInterval(() => {
       checkSession();
     }, checkInterval);
 
     // 클린업
     return () => {
-      clearTimeout(initialTimeout);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }

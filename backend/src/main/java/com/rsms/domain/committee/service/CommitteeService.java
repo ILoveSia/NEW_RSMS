@@ -126,7 +126,7 @@ public class CommitteeService {
         List<CommitteeDetail> details = request.getMembers().stream()
                 .map(member -> {
                     CommitteeDetail detail = CommitteeDetail.builder()
-                            .committeesId(savedCommittee.getCommitteesId())
+                            .committee(savedCommittee)  // Committee 객체 설정 (committees_id는 자동으로 채워짐)
                             .committeesType(member.getCommitteesType())
                             .positionsId(member.getPositionsId())
                             .createdBy(createdBy)
@@ -181,7 +181,7 @@ public class CommitteeService {
         List<CommitteeDetail> newDetails = request.getMembers().stream()
                 .map(member -> {
                     CommitteeDetail detail = CommitteeDetail.builder()
-                            .committeesId(committeeId)
+                            .committee(committee)  // Committee 객체 설정 (committees_id는 자동으로 채워짐)
                             .committeesType(member.getCommitteesType())
                             .positionsId(member.getPositionsId())
                             .createdBy(updatedBy)

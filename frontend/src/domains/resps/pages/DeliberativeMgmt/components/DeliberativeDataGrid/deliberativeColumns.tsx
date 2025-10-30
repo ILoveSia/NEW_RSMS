@@ -6,6 +6,7 @@
 import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { Deliberative } from '../../types/deliberative.types';
+import { CommonCodeDetail } from '@/app/store/codeStore';
 
 // 사용여부 렌더러
 const ActiveStatusRenderer = ({ value }: { value: boolean }) => {
@@ -55,28 +56,24 @@ const DeliberativeNameRenderer = ({ value, data, onCellClicked }: any) => {
   );
 };
 
-// 개최주기 렌더러
-const HoldingPeriodRenderer = ({ value }: { value: string }) => {
-  const getDisplayText = (period: string) => {
-    switch (period) {
-      case 'monthly': return '월';
-      case 'quarterly': return '분기';
-      case 'semiannually': return '반기';
-      case 'annually': return '년';
-      default: return period;
-    }
-  };
+// 개최주기 렌더러 (공통코드 기반)
+const createHoldingPeriodRenderer = (holdingPeriodCodes: CommonCodeDetail[]) => {
+  return ({ value }: { value: string }) => {
+    // 공통코드에서 detailCode에 해당하는 detailName 찾기
+    const code = holdingPeriodCodes.find(c => c.detailCode === value);
+    const displayText = code ? code.detailName : value;
 
-  return (
-    <span style={{
-      padding: '2px 6px',
-      backgroundColor: '#f1f5f9',
-      borderRadius: '3px',
-      fontSize: '0.875rem'
-    }}>
-      {getDisplayText(value)}
-    </span>
-  );
+    return (
+      <span style={{
+        padding: '2px 6px',
+        backgroundColor: '#f1f5f9',
+        borderRadius: '3px',
+        fontSize: '0.875rem'
+      }}>
+        {displayText}
+      </span>
+    );
+  };
 };
 
 // 주요심의사항 요약 렌더러
@@ -93,7 +90,12 @@ const MainAgendaRenderer = ({ value }: { value: string }) => {
   );
 };
 
-export const deliberativeColumns: ColDef<Deliberative>[] = [
+/**
+ * 회의체관리 컬럼 정의 생성 함수
+ * @param holdingPeriodCodes 개최주기 공통코드 목록
+ * @returns AG-Grid 컬럼 정의
+ */
+export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]): ColDef<Deliberative>[] => [
   {
     field: 'seq',
     headerName: '순번',
@@ -117,7 +119,7 @@ export const deliberativeColumns: ColDef<Deliberative>[] = [
     width: 100,
     sortable: true,
     filter: 'agSetColumnFilter',
-    cellRenderer: HoldingPeriodRenderer,
+    cellRenderer: createHoldingPeriodRenderer(holdingPeriodCodes),
     cellStyle: { textAlign: 'center' }
   },
   {

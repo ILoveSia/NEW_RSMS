@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 import type { User, PermissionCode, UserRoleCode } from '@/domains/auth/types';
+import { clearAppData } from '@/app/utils/initializeApp';
 
 // Auth Store Interface
 interface AuthStore {
@@ -110,16 +111,20 @@ export const useAuthStore = create<AuthStore>()(
           }, false, 'login');
         },
         
-        logout: () => 
-          set({ 
-            user: null, 
+        logout: () => {
+          // 모든 스토어 데이터 초기화
+          clearAppData();
+
+          set({
+            user: null,
             sessionId: null,
             permissions: [],
             roleCodes: [],
             isAuthenticated: false,
             isLoading: false,
-            error: null 
-          }, false, 'logout'),
+            error: null
+          }, false, 'logout');
+        },
         
         reset: () => 
           set(initialState, false, 'reset'),
@@ -154,10 +159,25 @@ export const useAuthStore = create<AuthStore>()(
       }),
       {
         name: 'rsms-auth-store',
+        // 보안 강화: 민감한 데이터는 localStorage에 저장하지 않음
         partialize: (state) => ({
-          user: state.user,
-          sessionId: state.sessionId,
+          // 최소한의 사용자 정보만 저장 (UI 표시용)
+          user: state.user ? {
+            userId: state.user.userId,      // 사용자 ID
+            username: state.user.username,  // 사용자 아이디 (UI 표시용)
+            isAdmin: state.user.isAdmin,    // 관리자 여부 (UI 제어용)
+            isExecutive: state.user.isExecutive, // 임원 여부 (UI 제어용)
+            authLevel: state.user.authLevel, // 권한 레벨 (UI 제어용)
+            // 민감 정보 제외: empNo, email, phoneNumber 등
+          } as Partial<User> : null,
+
+          // sessionId 제외 - 실제 인증은 HttpOnly 쿠키(SESSIONID)로 관리
+          // sessionId: state.sessionId, ❌ 제거
+
           isAuthenticated: state.isAuthenticated,
+
+          // permissions, roleCodes는 UI 표시용 캐시
+          // 실제 권한 검증은 서버 API에서 매번 수행
           permissions: state.permissions,
           roleCodes: state.roleCodes,
         }),

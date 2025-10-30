@@ -1,5 +1,6 @@
 package com.rsms.domain.responsibility.entity;
 
+import com.rsms.domain.position.entity.Position;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,8 +40,15 @@ public class Responsibility {
     /**
      * 직책ID
      */
-    @Column(name = "positions_id", nullable = false)
+    @Column(name = "positions_id", nullable = false, insertable = false, updatable = false)
     private Long positionsId;
+
+    /**
+     * 직책 엔티티 (ManyToOne 관계)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "positions_id", nullable = false)
+    private Position positions;
 
     /**
      * 책무카테고리 (RSBT_OBLG_CLCD)

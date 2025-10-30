@@ -60,4 +60,20 @@ public interface PositionDetailRepository extends JpaRepository<PositionDetail, 
         ORDER BY pd.org_code
         """, nativeQuery = true)
     List<Map<String, Object>> findOrgInfoByPositionsId(@Param("positionsId") Long positionsId);
+
+    /**
+     * 직책ID로 조직코드 목록 조회 (소관부점 한줄 표시용)
+     * - 조직코드들을 콤마로 구분하여 한줄로 표시
+     *
+     * @param positionId 직책ID
+     * @return 조직코드 리스트
+     */
+    @Query(value = """
+        SELECT o.org_name
+        FROM rsms.positions_details pd
+        INNER JOIN rsms.organizations o ON pd.org_code = o.org_code
+        WHERE pd.positions_id = :positionId
+        ORDER BY pd.org_code
+        """, nativeQuery = true)
+    List<String> findOrgCodesByPositionId(@Param("positionId") Long positionId);
 }

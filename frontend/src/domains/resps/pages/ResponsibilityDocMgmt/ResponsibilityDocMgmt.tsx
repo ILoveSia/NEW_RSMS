@@ -28,7 +28,7 @@ import { responsibilityDocColumns } from './components/ResponsibilityDocDataGrid
 
 // Lazy-loaded components for performance optimization
 const ResponsibilityDocFormModal = React.lazy(() =>
-  import('./components/ResponsibilityDocFormModal').then(module => ({ default: module.default }))
+  import('./components/ResponsibilityDocFormModal/index.tsx').then(module => ({ default: module.default }))
 );
 
 interface ResponsibilityDocMgmtProps {
