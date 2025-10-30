@@ -21,7 +21,7 @@ CREATE TABLE rsms.users (
   -- 기본 정보
   username VARCHAR(50) NOT NULL UNIQUE,                -- 사용자 아이디 (로그인 ID)
   password_hash VARCHAR(255) NOT NULL,                 -- BCrypt 해시 (강도 12)
-  emp_no VARCHAR(20) NOT NULL UNIQUE,                  -- 직원번호 (employees FK)
+  emp_no VARCHAR(20) UNIQUE,                           -- 직원번호 (employees FK, NULL 가능: 외주/임시계정)
 
   -- 계정 보안
   account_status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE', -- 계정상태: ACTIVE, LOCKED, SUSPENDED, RESIGNED
@@ -83,7 +83,7 @@ COMMENT ON TABLE rsms.users IS '사용자 계정 정보 (Spring Security + emplo
 COMMENT ON COLUMN rsms.users.user_id IS '사용자ID (PK, 자동증가)';
 COMMENT ON COLUMN rsms.users.username IS '사용자 아이디 (로그인 ID)';
 COMMENT ON COLUMN rsms.users.password_hash IS 'BCrypt 해시 (강도 12) - Spring Security 표준';
-COMMENT ON COLUMN rsms.users.emp_no IS '직원번호 (employees FK)';
+COMMENT ON COLUMN rsms.users.emp_no IS '직원번호 (employees FK, NULL 가능 - 외주직원/파견직/임시계정/시스템계정)';
 COMMENT ON COLUMN rsms.users.account_status IS '계정상태: ACTIVE(재직), LOCKED(잠김), SUSPENDED(정지), RESIGNED(퇴직)';
 COMMENT ON COLUMN rsms.users.password_change_required IS '비밀번호 변경 필요 여부';
 COMMENT ON COLUMN rsms.users.password_last_changed_at IS '비밀번호 마지막 변경일시';
@@ -97,6 +97,24 @@ COMMENT ON COLUMN rsms.users.is_login_blocked IS 'UserMgmt UI의 "로그인차�
 COMMENT ON COLUMN rsms.users.timezone IS '타임존 (기본값: Asia/Seoul)';
 COMMENT ON COLUMN rsms.users.language IS '언어 (ko, en)';
 COMMENT ON COLUMN rsms.users.is_active IS 'UserMgmt UI의 "활성화" 체크박스';
+
+-- =====================================================
+-- 중요: emp_no는 NULL 허용됩니다
+-- =====================================================
+-- 사용 케이스:
+--   1. 정규 직원: emp_no 값 있음 (employees 테이블과 연결)
+--   2. 외주 직원: emp_no NULL (employees 없음)
+--   3. 파견직: emp_no NULL (외부 소속)
+--   4. 임시 계정: emp_no NULL (단기 사용)
+--   5. 시스템 계정: emp_no NULL 또는 가상 직원번호
+--
+-- FK 제약조건은 128.insert_initial_employees.sql에서 추가됩니다:
+--   ALTER TABLE rsms.users
+--     ADD CONSTRAINT fk_users_emp_no FOREIGN KEY (emp_no)
+--       REFERENCES rsms.employees(emp_no)
+--       ON DELETE RESTRICT
+--       ON UPDATE CASCADE;
+-- =====================================================
 
 -- updated_at 자동 갱신 트리거 생성
 CREATE TRIGGER trigger_users_updated_at

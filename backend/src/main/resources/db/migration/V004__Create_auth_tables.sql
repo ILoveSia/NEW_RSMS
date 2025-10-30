@@ -26,7 +26,8 @@
 -- 작성자: Claude AI
 -- 작성일: 2025-10-28
 -- 참고:
---   - employees 테이블과 1:1 관계 (emp_no FK)
+--   - employees 테이블과 선택적 1:1 관계 (emp_no FK, NULL 가능)
+--   - emp_no NULL: 외주직원, 파견직, 임시계정, 시스템계정
 --   - Spring Security 인증에 사용
 --   - BCrypt 해시 (강도 12) 사용
 --   - 로그인 차단, 계정 잠금 등 보안 기능 포함
@@ -41,7 +42,7 @@ CREATE TABLE rsms.users (
   -- 기본 정보
   username VARCHAR(50) NOT NULL UNIQUE,                -- 사용자 아이디 (로그인 ID)
   password_hash VARCHAR(255) NOT NULL,                 -- BCrypt 해시 (강도 12)
-  emp_no VARCHAR(20) NOT NULL UNIQUE,                  -- 직원번호 (employees FK)
+  emp_no VARCHAR(20) UNIQUE,                           -- 직원번호 (employees FK, NULL 가능: 외주/임시계정)
 
   -- 계정 보안
   account_status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE', -- 계정상태: ACTIVE, LOCKED, SUSPENDED, RESIGNED
@@ -103,7 +104,7 @@ COMMENT ON TABLE rsms.users IS '사용자 계정 정보 (Spring Security + emplo
 COMMENT ON COLUMN rsms.users.user_id IS '사용자ID (PK, 자동증가)';
 COMMENT ON COLUMN rsms.users.username IS '사용자 아이디 (로그인 ID)';
 COMMENT ON COLUMN rsms.users.password_hash IS 'BCrypt 해시 (강도 12) - Spring Security 표준';
-COMMENT ON COLUMN rsms.users.emp_no IS '직원번호 (employees FK)';
+COMMENT ON COLUMN rsms.users.emp_no IS '직원번호 (employees FK, NULL 가능 - 외주직원/파견직/임시계정/시스템계정)';
 COMMENT ON COLUMN rsms.users.account_status IS '계정상태: ACTIVE(재직), LOCKED(잠김), SUSPENDED(정지), RESIGNED(퇴직)';
 COMMENT ON COLUMN rsms.users.password_change_required IS '비밀번호 변경 필요 여부';
 COMMENT ON COLUMN rsms.users.password_last_changed_at IS '비밀번호 마지막 변경일시';

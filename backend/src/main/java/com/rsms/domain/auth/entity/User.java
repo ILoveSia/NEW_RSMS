@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 /**
  * 사용자 엔티티
  * - Spring Security 인증에 사용되는 사용자 계정 정보
- * - employees 테이블과 1:1 관계 (emp_no FK)
+ * - employees 테이블과 선택적 1:1 관계 (emp_no FK, NULL 가능)
+ * - emp_no NULL: 외주직원, 파견직, 임시계정, 시스템계정
  * - BCrypt 해시 (강도 12) 사용
  * - Serializable 구현: Spring Session에 세션 저장을 위해 필요
  *
@@ -48,9 +49,11 @@ public class User implements Serializable {
     private String passwordHash;
 
     /**
-     * 직원번호 (employees FK)
+     * 직원번호 (employees FK, NULL 가능)
+     * - 정규 직원: employees 테이블과 연결
+     * - 외주/파견/임시/시스템 계정: NULL 가능
      */
-    @Column(name = "emp_no", length = 20, nullable = false, unique = true)
+    @Column(name = "emp_no", length = 20, nullable = true, unique = true)
     private String empNo;
 
     /**

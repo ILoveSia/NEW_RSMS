@@ -76,7 +76,41 @@ CREATE TRIGGER trg_positions_details_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION rsms.update_updated_at_column();
 
+-- =====================================================
+-- 외래키 제약조건 검증 쿼리 (선택사항)
+-- =====================================================
+-- 외래키 추가 전 기존 데이터 검증 (잘못된 org_code가 있는지 확인)
+/*
+SELECT pd.positions_details_id, pd.org_code, pd.hq_code
+FROM rsms.positions_details pd
+LEFT JOIN rsms.organizations o ON pd.org_code = o.org_code
+WHERE o.org_code IS NULL;
+*/
+
+-- 외래키 제약조건 확인 쿼리
+/*
+SELECT
+  tc.constraint_name,
+  tc.table_name,
+  kcu.column_name,
+  ccu.table_name AS foreign_table_name,
+  ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+  AND tc.table_schema = kcu.table_schema
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+  AND ccu.table_schema = tc.table_schema
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.table_schema = 'rsms'
+  AND tc.table_name = 'positions_details'
+  AND kcu.column_name = 'org_code';
+*/
+
+-- =====================================================
 -- 샘플 데이터 (선택사항 - 필요시 주석 해제)
+-- =====================================================
 -- 참고: positions, organizations 테이블에 데이터가 미리 등록되어 있어야 함
 /*
 -- positions_id = 1 (본부코드 '1010')에 3개 조직 소속

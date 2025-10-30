@@ -568,17 +568,23 @@ const AppRouter: React.FC = () => {
                     <Routes>
                       {/* 코드관리 */}
                       <Route path="code-mgmt" element={<CodeMgmt />} />
+                      <Route path="codemgmt" element={<CodeMgmt />} />
 
                       {/* 메뉴관리 */}
                       <Route path="menu-mgmt" element={<MenuMgmt />} />
+                      <Route path="menumgmt" element={<MenuMgmt />} />
 
                       {/* 역활관리 */}
                       <Route path="role-mgmt" element={<RoleMgmt />} />
+                      <Route path="rolemgmt" element={<RoleMgmt />} />
 
                       {/* 사용자관리 */}
                       <Route path="user-mgmt" element={<UserMgmt />} />
+                      <Route path="usermgmt" element={<UserMgmt />} />
+
                       {/* 접근로그 */}
                       <Route path="access-log" element={<AccessLog />} />
+                      <Route path="accesslog" element={<AccessLog />} />
 
                       {/* 기타 시스템 설정 (임시 페이지) */}
                       <Route path="general" element={

@@ -102,6 +102,40 @@ CREATE TRIGGER trigger_management_obligations_updated_at
   EXECUTE FUNCTION rsms.update_updated_at_column();
 
 -- =====================================================================================
+-- 외래키 제약조건 검증 쿼리 (선택사항)
+-- =====================================================================================
+-- 외래키 추가 전 기존 데이터 검증 (잘못된 org_code가 있는지 확인)
+-- 이 쿼리가 결과를 반환하면 FK 추가 전에 데이터 정리 필요
+/*
+SELECT mo.management_obligation_id, mo.org_code, mo.obligation_info
+FROM rsms.management_obligations mo
+LEFT JOIN rsms.organizations o ON mo.org_code = o.org_code
+WHERE o.org_code IS NULL;
+*/
+
+-- 외래키 제약조건 확인 쿼리
+-- 외래키가 정상적으로 추가되었는지 확인
+/*
+SELECT
+  tc.constraint_name,
+  tc.table_name,
+  kcu.column_name,
+  ccu.table_name AS foreign_table_name,
+  ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+  AND tc.table_schema = kcu.table_schema
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+  AND ccu.table_schema = tc.table_schema
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.table_schema = 'rsms'
+  AND tc.table_name = 'management_obligations'
+  AND kcu.column_name = 'org_code';
+*/
+
+-- =====================================================================================
 -- 샘플 데이터 삽입 (개발/테스트용)
 -- =====================================================================================
 -- 운영 환경에서는 이 섹션을 주석 처리하거나 제거하세요

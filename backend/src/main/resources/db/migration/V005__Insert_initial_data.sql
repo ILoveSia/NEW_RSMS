@@ -1385,13 +1385,13 @@ INSERT INTO rsms.users (
   timezone, language,
   created_by, updated_by
 ) VALUES
--- 슈퍼 관리자 계정
+-- 슈퍼 관리자 계정 (emp_no NULL: 시스템 계정)
 (
   'admin',
   -- BCrypt 해시: admin123! (강도 12)
   -- 주의: 운영 환경에서는 반드시 비밀번호 변경 필요
   '$2a$12$9EjEA3LvXY9rf/1XS739Zud7Tol45alg63P7NF/m8NTetegXvDt.6',
-  'ADMIN001',
+  NULL,  -- emp_no NULL: 시스템 계정 (employees 테이블 불필요)
   'ACTIVE',           -- 계정 상태: 활성화
   'Y',                -- 최초 로그인 시 비밀번호 변경 필요
   0,                  -- 로그인 실패 횟수: 0으로 초기화

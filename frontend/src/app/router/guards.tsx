@@ -112,7 +112,10 @@ function checkPermission(user: any, permission: RoutePermission): boolean {
       return true; // 이미 인증된 사용자
     
     case 'admin':
-      return user.roleCodes?.includes('ADMIN') || false;
+      // 실제 DB 역할 코드 체크: 002(최고관리자), 103(시스템관리자)
+      return user.roleCodes?.some((role: string) =>
+        ['ADMIN', '002', '103'].includes(role)
+      ) || false;
     
     case 'manager':
       return user.roleCodes?.some((role: string) => 
