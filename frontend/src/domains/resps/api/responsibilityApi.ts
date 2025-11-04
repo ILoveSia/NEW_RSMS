@@ -1,14 +1,13 @@
 /**
  * 책무 API
  * - responsibilities 테이블 CRUD API
+ * - 공통 apiClient 사용 (401 에러 시 자동 로그아웃)
  *
  * @author Claude AI
  * @since 2025-09-24
  */
 
-import axios from 'axios';
-
-const API_BASE_URL = '/api/resps/responsibilities';
+import apiClient from '@/shared/api/apiClient';
 
 // ===============================
 // 타입 정의
@@ -110,7 +109,7 @@ export interface ResponsibilityListDto {
 
 /**
  * 4테이블 조인 책무 목록 조회
- * GET /api/resps/responsibilities/list-with-join
+ * GET /resps/responsibilities/list-with-join
  * @param params 검색 파라미터 (선택적)
  * @returns 책무 목록 (책무(마스터), 직책, 책무세부, 관리의무 조인)
  */
@@ -120,138 +119,111 @@ export const getAllResponsibilitiesWithJoin = async (params?: {
   responsibilityCd?: string;
 }): Promise<ResponsibilityListDto[]> => {
   try {
-    const response = await axios.get<ResponsibilityListDto[]>(
-      `${API_BASE_URL}/list-with-join`,
-      {
-        params,
-        withCredentials: true
-      }
+    const response = await apiClient.get<ResponsibilityListDto[]>(
+      '/resps/responsibilities/list-with-join',
+      { params }
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 목록 조회 실패 (4테이블 조인):', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 목록 조회에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 목록 조회 실패 (4테이블 조인):', error);
+    throw new Error('책무 목록 조회에 실패했습니다.');
   }
 };
 
 /**
  * 원장차수ID와 직책ID로 책무 목록 조회
- * GET /api/resps/responsibilities?ledgerOrderId={ledgerOrderId}&positionsId={positionsId}
+ * GET /resps/responsibilities?ledgerOrderId={ledgerOrderId}&positionsId={positionsId}
  */
 export const getResponsibilities = async (
   ledgerOrderId: string,
   positionsId: number
 ): Promise<ResponsibilityDto[]> => {
   try {
-    const response = await axios.get<ResponsibilityDto[]>(API_BASE_URL, {
-      params: { ledgerOrderId, positionsId },
-      withCredentials: true
+    const response = await apiClient.get<ResponsibilityDto[]>('/resps/responsibilities', {
+      params: { ledgerOrderId, positionsId }
     });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 목록 조회 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 목록 조회에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 목록 조회 실패:', error);
+    throw new Error('책무 목록 조회에 실패했습니다.');
   }
 };
 
 /**
  * 책무 단건 조회
- * GET /api/resps/responsibilities/{responsibilityId}
+ * GET /resps/responsibilities/{responsibilityId}
  */
 export const getResponsibility = async (
   responsibilityId: number
 ): Promise<ResponsibilityDto> => {
   try {
-    const response = await axios.get<ResponsibilityDto>(
-      `${API_BASE_URL}/${responsibilityId}`,
-      { withCredentials: true }
+    const response = await apiClient.get<ResponsibilityDto>(
+      `/resps/responsibilities/${responsibilityId}`
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 단건 조회 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 조회에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 단건 조회 실패:', error);
+    throw new Error('책무 조회에 실패했습니다.');
   }
 };
 
 /**
  * 책무 생성
- * POST /api/resps/responsibilities
+ * POST /resps/responsibilities
  */
 export const createResponsibility = async (
   request: CreateResponsibilityRequest
 ): Promise<ResponsibilityDto> => {
   try {
-    const response = await axios.post<ResponsibilityDto>(
-      API_BASE_URL,
-      request,
-      { withCredentials: true }
+    const response = await apiClient.post<ResponsibilityDto>(
+      '/resps/responsibilities',
+      request
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 생성 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 생성에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 생성 실패:', error);
+    throw new Error('책무 생성에 실패했습니다.');
   }
 };
 
 /**
  * 책무 수정
- * PUT /api/resps/responsibilities/{responsibilityId}
+ * PUT /resps/responsibilities/{responsibilityId}
  */
 export const updateResponsibility = async (
   responsibilityId: number,
   request: UpdateResponsibilityRequest
 ): Promise<ResponsibilityDto> => {
   try {
-    const response = await axios.put<ResponsibilityDto>(
-      `${API_BASE_URL}/${responsibilityId}`,
-      request,
-      { withCredentials: true }
+    const response = await apiClient.put<ResponsibilityDto>(
+      `/resps/responsibilities/${responsibilityId}`,
+      request
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 수정 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 수정에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 수정 실패:', error);
+    throw new Error('책무 수정에 실패했습니다.');
   }
 };
 
 /**
  * 책무 삭제
- * DELETE /api/resps/responsibilities/{responsibilityId}
+ * DELETE /resps/responsibilities/{responsibilityId}
  */
 export const deleteResponsibility = async (
   responsibilityId: number
 ): Promise<void> => {
   try {
-    await axios.delete(`${API_BASE_URL}/${responsibilityId}`, {
-      withCredentials: true
-    });
+    await apiClient.delete(`/resps/responsibilities/${responsibilityId}`);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 삭제 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 삭제에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 삭제 실패:', error);
+    throw new Error('책무 삭제에 실패했습니다.');
   }
 };
 
 /**
  * 원장차수ID와 직책ID로 모든 책무 저장 (기존 삭제 후 신규 저장)
- * POST /api/resps/responsibilities/save-all
+ * POST /resps/responsibilities/save-all
  */
 export const saveAllResponsibilities = async (
   ledgerOrderId: string,
@@ -259,21 +231,17 @@ export const saveAllResponsibilities = async (
   requests: CreateResponsibilityRequest[]
 ): Promise<ResponsibilityDto[]> => {
   try {
-    const response = await axios.post<ResponsibilityDto[]>(
-      `${API_BASE_URL}/save-all`,
+    const response = await apiClient.post<ResponsibilityDto[]>(
+      '/resps/responsibilities/save-all',
       requests,
       {
-        params: { ledgerOrderId, positionsId },
-        withCredentials: true
+        params: { ledgerOrderId, positionsId }
       }
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 전체 저장 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 저장에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 전체 저장 실패:', error);
+    throw new Error('책무 저장에 실패했습니다.');
   }
 };
 
@@ -317,24 +285,20 @@ export interface ManagementObligationDto {
 
 /**
  * 책무, 책무세부, 관리의무를 한 번에 생성
- * POST /api/resps/responsibilities/with-details
+ * POST /resps/responsibilities/with-details
  */
 export const createResponsibilityWithDetails = async (
   request: CreateResponsibilityWithDetailsRequest
 ): Promise<ResponsibilityDto> => {
   try {
-    const response = await axios.post<ResponsibilityDto>(
-      `${API_BASE_URL}/with-details`,
-      request,
-      { withCredentials: true }
+    const response = await apiClient.post<ResponsibilityDto>(
+      '/resps/responsibilities/with-details',
+      request
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무 전체 생성 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무 전체 생성에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무 전체 생성 실패:', error);
+    throw new Error('책무 전체 생성에 실패했습니다.');
   }
 };
 
@@ -378,67 +342,55 @@ export interface ManagementObligationDto {
 
 /**
  * 관리의무 생성 API
- * POST /api/resps/management-obligations
+ * POST /resps/management-obligations
  */
 export const createManagementObligation = async (
   request: CreateManagementObligationRequest
 ): Promise<ManagementObligationDto> => {
   try {
-    const response = await axios.post<ManagementObligationDto>(
-      `${API_BASE_URL.replace('/responsibilities', '')}/management-obligations`,
-      request,
-      { withCredentials: true }
+    const response = await apiClient.post<ManagementObligationDto>(
+      '/resps/management-obligations',
+      request
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 관리의무 생성 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '관리의무 생성에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 관리의무 생성 실패:', error);
+    throw new Error('관리의무 생성에 실패했습니다.');
   }
 };
 
 /**
  * 책무세부ID로 관리의무 목록 조회 API
- * GET /api/resps/management-obligations/detail/{responsibilityDetailId}
+ * GET /resps/management-obligations/detail/{responsibilityDetailId}
  */
 export const getManagementObligationsByDetailId = async (
   responsibilityDetailId: number
 ): Promise<ManagementObligationDto[]> => {
   try {
-    const response = await axios.get<ManagementObligationDto[]>(
-      `${API_BASE_URL.replace('/responsibilities', '')}/management-obligations/detail/${responsibilityDetailId}`,
-      { withCredentials: true }
+    const response = await apiClient.get<ManagementObligationDto[]>(
+      `/resps/management-obligations/detail/${responsibilityDetailId}`
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 관리의무 목록 조회 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '관리의무 목록 조회에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 관리의무 목록 조회 실패:', error);
+    throw new Error('관리의무 목록 조회에 실패했습니다.');
   }
 };
 
 /**
  * 관리의무 삭제 API
- * DELETE /api/resps/management-obligations/{managementObligationId}
+ * DELETE /resps/management-obligations/{managementObligationId}
  */
 export const deleteManagementObligation = async (
   managementObligationId: number
 ): Promise<void> => {
   try {
-    await axios.delete(
-      `${API_BASE_URL.replace('/responsibilities', '')}/management-obligations/${managementObligationId}`,
-      { withCredentials: true }
+    await apiClient.delete(
+      `/resps/management-obligations/${managementObligationId}`
     );
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 관리의무 삭제 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '관리의무 삭제에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 관리의무 삭제 실패:', error);
+    throw new Error('관리의무 삭제에 실패했습니다.');
   }
 };
 
@@ -471,66 +423,54 @@ export interface ResponsibilityDetailDto {
 
 /**
  * 책무세부 생성 API
- * POST /api/resps/responsibility-details
+ * POST /resps/responsibility-details
  */
 export const createResponsibilityDetail = async (
   request: CreateResponsibilityDetailRequest
 ): Promise<ResponsibilityDetailDto> => {
   try {
-    const response = await axios.post<ResponsibilityDetailDto>(
-      `${API_BASE_URL.replace('/responsibilities', '')}/responsibility-details`,
-      request,
-      { withCredentials: true }
+    const response = await apiClient.post<ResponsibilityDetailDto>(
+      '/resps/responsibility-details',
+      request
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무세부 생성 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무세부 생성에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무세부 생성 실패:', error);
+    throw new Error('책무세부 생성에 실패했습니다.');
   }
 };
 
 /**
  * 책무ID로 책무세부 목록 조회 API
- * GET /api/resps/responsibility-details/responsibility/{responsibilityId}
+ * GET /resps/responsibility-details/responsibility/{responsibilityId}
  */
 export const getResponsibilityDetailsByResponsibilityId = async (
   responsibilityId: number
 ): Promise<ResponsibilityDetailDto[]> => {
   try {
-    const response = await axios.get<ResponsibilityDetailDto[]>(
-      `${API_BASE_URL.replace('/responsibilities', '')}/responsibility-details/responsibility/${responsibilityId}`,
-      { withCredentials: true }
+    const response = await apiClient.get<ResponsibilityDetailDto[]>(
+      `/resps/responsibility-details/responsibility/${responsibilityId}`
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무세부 목록 조회 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무세부 목록 조회에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무세부 목록 조회 실패:', error);
+    throw new Error('책무세부 목록 조회에 실패했습니다.');
   }
 };
 
 /**
  * 책무세부 삭제 API
- * DELETE /api/resps/responsibility-details/{responsibilityDetailId}
+ * DELETE /resps/responsibility-details/{responsibilityDetailId}
  */
 export const deleteResponsibilityDetail = async (
   responsibilityDetailId: number
 ): Promise<void> => {
   try {
-    await axios.delete(
-      `${API_BASE_URL.replace('/responsibilities', '')}/responsibility-details/${responsibilityDetailId}`,
-      { withCredentials: true }
+    await apiClient.delete(
+      `/resps/responsibility-details/${responsibilityDetailId}`
     );
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('[responsibilityApi] 책무세부 삭제 실패:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || '책무세부 삭제에 실패했습니다.');
-    }
-    throw error;
+    console.error('[responsibilityApi] 책무세부 삭제 실패:', error);
+    throw new Error('책무세부 삭제에 실패했습니다.');
   }
 };

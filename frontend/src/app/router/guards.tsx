@@ -118,13 +118,15 @@ function checkPermission(user: any, permission: RoutePermission): boolean {
       ) || false;
     
     case 'manager':
-      return user.roleCodes?.some((role: string) => 
-        ['ADMIN', 'CEO', 'EXECUTIVE', 'MANAGER'].includes(role)
+      // 실제 DB 역할 코드 포함: 002(최고관리자), 103(시스템관리자), 201(임원), 202(부서장)
+      return user.roleCodes?.some((role: string) =>
+        ['ADMIN', 'CEO', 'EXECUTIVE', 'MANAGER', '002', '103', '201', '202'].includes(role)
       ) || false;
-    
+
     case 'executive':
-      return user.roleCodes?.some((role: string) => 
-        ['ADMIN', 'CEO', 'EXECUTIVE'].includes(role)
+      // 실제 DB 역할 코드 포함: 002(최고관리자), 103(시스템관리자), 201(임원)
+      return user.roleCodes?.some((role: string) =>
+        ['ADMIN', 'CEO', 'EXECUTIVE', '002', '103', '201'].includes(role)
       ) || false;
     
     default:

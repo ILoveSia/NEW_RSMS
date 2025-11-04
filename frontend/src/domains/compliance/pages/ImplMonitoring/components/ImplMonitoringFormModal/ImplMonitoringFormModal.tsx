@@ -16,11 +16,11 @@ import {
 } from '@mui/material';
 import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import { PeriodSetting, PeriodSettingFormData, StatusOption } from '../../types/periodSetting.types';
+import { PeriodSetting, PeriodSettingFormData, StatusOption } from '../../types/implMonitoring.types';
 import { ColDef } from 'ag-grid-community';
-import styles from './PeriodFormModal.module.scss';
+import styles from './ImplMonitoringFormModal.module.scss';
 
-interface PeriodFormModalProps {
+interface ImplMonitoringFormModalProps {
   open: boolean;
   mode: 'create' | 'detail';
   period?: PeriodSetting | null;
@@ -68,7 +68,7 @@ const schema = yup.object({
     .oneOf(['ACTIVE', 'INACTIVE', 'DRAFT'], '유효한 상태를 선택해주세요'),
 });
 
-const PeriodFormModal: React.FC<PeriodFormModalProps> = ({
+const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
   open,
   mode,
   period,
@@ -430,6 +430,6 @@ const PeriodFormModal: React.FC<PeriodFormModalProps> = ({
   );
 };
 
-PeriodFormModal.displayName = 'PeriodFormModal';
+ImplMonitoringFormModal.displayName = 'ImplMonitoringFormModal';
 
-export default PeriodFormModal;
+export default ImplMonitoringFormModal;

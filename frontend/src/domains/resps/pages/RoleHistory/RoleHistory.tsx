@@ -129,17 +129,17 @@ const RoleHistory: React.FC<RoleHistoryProps> = ({ className }) => {
 
     try {
       // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // TODO: 실제 API 호출로 변경 필요
+      // const response = await fetchRoleHistory(filters);
+      // setHistoryData(response.data);
+      // setPagination(response.pagination);
 
-      console.log('검색 필터:', filters);
-
-      // Mock 데이터 생성
-      const mockData = generateMockData(filters.tabType);
-      setHistoryData(mockData);
+      // 임시: 빈 데이터 반환
+      setHistoryData([]);
       setPagination(prev => ({
         ...prev,
-        total: mockData.length,
-        totalPages: Math.ceil(mockData.length / prev.size)
+        total: 0,
+        totalPages: 0
       }));
 
       // 성공 토스트로 업데이트
@@ -319,15 +319,15 @@ const RoleHistory: React.FC<RoleHistoryProps> = ({ className }) => {
     }
   }, [filters.tabType]);
 
-  // Mock data loading
+  // 초기 데이터 로드
   React.useEffect(() => {
-    // 초기 데이터 로드
-    const initialData = generateMockData(filters.tabType);
-    setHistoryData(initialData);
+    // TODO: 실제 API 호출로 변경 필요
+    // 임시: 빈 데이터로 초기화
+    setHistoryData([]);
     setPagination(prev => ({
       ...prev,
-      total: initialData.length,
-      totalPages: Math.ceil(initialData.length / prev.size)
+      total: 0,
+      totalPages: 0
     }));
   }, []);
 
@@ -447,56 +447,6 @@ const RoleHistory: React.FC<RoleHistoryProps> = ({ className }) => {
       </React.Suspense>
     </div>
   );
-};
-
-// Mock 데이터 생성 함수
-const generateMockData = (tabType: RoleHistoryTabType): (RoleHistoryType | PositionOnlyHistory)[] => {
-  switch (tabType) {
-    case 'responsibility':
-      return [
-        {
-          id: '1',
-          seq: 1,
-          boardResolutionDate: '2025-01-15',
-          positionCode: 'CEO001',
-          positionName: '대표이사',
-          responsibilityCode: 'RM001',
-          responsibilityName: '경영전략 업무의 관련된 책무',
-          registrationDate: '2025-01-15',
-          registrar: '관리자',
-          isActive: true
-        }
-      ] as RoleHistoryType[];
-
-    case 'position':
-      return [
-        {
-          id: '1',
-          seq: 1,
-          boardResolutionDate: '2025-01-15',
-          positionCode: 'CEO001',
-          positionName: '대표이사',
-          responsibilityCode: 'RM001',
-          responsibilityName: '경영전략 업무의 관련된 책무',
-          registrationDate: '2025-01-15',
-          registrar: '관리자',
-          isActive: true
-        }
-      ] as RoleHistoryType[];
-
-    case 'positionOnly':
-      return [
-        {
-          id: '1',
-          positionCode: 'CEO001',
-          positionName: '대표이사',
-          isActive: true
-        }
-      ] as PositionOnlyHistory[];
-
-    default:
-      return [];
-  }
 };
 
 export default RoleHistory;

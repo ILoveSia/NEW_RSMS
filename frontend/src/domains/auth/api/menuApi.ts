@@ -68,46 +68,46 @@ export interface MenuListResponse {
 
 /**
  * 메뉴 계층 구조 조회 (LeftMenu용)
- * GET /api/menus/hierarchy
+ * GET /menus/hierarchy
  */
 export const getMenuHierarchyApi = async (): Promise<MenuHierarchyResponse> => {
-  const response = await authApiClient.get<MenuHierarchyResponse>('/api/menus/hierarchy');
+  const response = await authApiClient.get<MenuHierarchyResponse>('/menus/hierarchy');
   return response.data;
 };
 
 /**
  * 최상위 메뉴 목록 조회
- * GET /api/menus/top
+ * GET /menus/top
  */
 export const getTopLevelMenusApi = async (): Promise<MenuListResponse> => {
-  const response = await authApiClient.get<MenuListResponse>('/api/menus/top');
+  const response = await authApiClient.get<MenuListResponse>('/menus/top');
   return response.data;
 };
 
 /**
  * 특정 메뉴의 하위 메뉴 조회
- * GET /api/menus/{parentId}/children
+ * GET /menus/{parentId}/children
  */
 export const getChildMenusApi = async (parentId: number): Promise<MenuListResponse> => {
-  const response = await authApiClient.get<MenuListResponse>(`/api/menus/${parentId}/children`);
+  const response = await authApiClient.get<MenuListResponse>(`/menus/${parentId}/children`);
   return response.data;
 };
 
 /**
  * 메뉴 코드로 단일 메뉴 조회
- * GET /api/menus/code/{menuCode}
+ * GET /menus/code/{menuCode}
  */
 export const getMenuByCodeApi = async (menuCode: string): Promise<MenuResponse> => {
-  const response = await authApiClient.get<MenuResponse>(`/api/menus/code/${menuCode}`);
+  const response = await authApiClient.get<MenuResponse>(`/menus/code/${menuCode}`);
   return response.data;
 };
 
 /**
  * URL로 메뉴 조회
- * GET /api/menus/url?url={url}
+ * GET /menus/url?url={url}
  */
 export const getMenuByUrlApi = async (url: string): Promise<MenuResponse> => {
-  const response = await authApiClient.get<MenuResponse>('/api/menus/url', {
+  const response = await authApiClient.get<MenuResponse>('/menus/url', {
     params: { url }
   });
   return response.data;
@@ -115,10 +115,10 @@ export const getMenuByUrlApi = async (url: string): Promise<MenuResponse> => {
 
 /**
  * 메뉴명으로 검색
- * GET /api/menus/search?menuName={menuName}
+ * GET /menus/search?menuName={menuName}
  */
 export const searchMenusApi = async (menuName: string): Promise<MenuListResponse> => {
-  const response = await authApiClient.get<MenuListResponse>('/api/menus/search', {
+  const response = await authApiClient.get<MenuListResponse>('/menus/search', {
     params: { menuName }
   });
   return response.data;
@@ -126,9 +126,9 @@ export const searchMenusApi = async (menuName: string): Promise<MenuListResponse
 
 /**
  * 헬스 체크
- * GET /api/menus/health
+ * GET /menus/health
  */
 export const menuHealthCheckApi = async (): Promise<{ status: string; service: string }> => {
-  const response = await authApiClient.get('/api/menus/health');
+  const response = await authApiClient.get('/menus/health');
   return response.data;
 };

@@ -132,21 +132,21 @@ export const MENU_DATA: MenuItem[] = [
     permission: 'manager',
     children: [
       {
-        id: 'period-setting',
-        title: '기간설정',
-        path: '/app/compliance/period-setting',
+        id: 'impl-monitoring',
+        title: '이행점검계획',
+        path: '/app/compliance/impl-monitoring',
         permission: 'manager'
       },
       {
-        id: 'inspector-assignment',
+        id: 'inspector-assign',
         title: '점검자지정',
-        path: '/app/compliance/inspector-assignment',
+        path: '/app/compliance/inspector-assign',
         permission: 'manager'
       },
       {
-        id: 'execution-approval',
-        title: '점검수행 및 결재',
-        path: '/app/compliance/execution-approval',
+        id: 'impl-monitoring-status',
+        title: '이행점검현황',
+        path: '/app/compliance/impl-monitoring-status',
         permission: 'manager'
       },
       {

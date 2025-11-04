@@ -1,11 +1,11 @@
 /**
- * 기간설정 AG-Grid 컬럼 정의
+ * 이행점검 AG-Grid 컬럼 정의
  * 요구사항에 따른 컬럼: 선택, 순번, 점검명, 점검 수행기간, 활동 대상 기간, 등록일자, 등록자권한, 등록자, 상태
  */
 
 import { ColDef } from 'ag-grid-community';
 import { Chip } from '@mui/material';
-import { PeriodSetting } from '../../types/periodSetting.types';
+import { PeriodSetting } from '../../types/implMonitoring.types';
 
 // 상태별 색상 매핑
 const getStatusColor = (status: string): 'success' | 'warning' | 'error' | 'default' => {
@@ -36,9 +36,9 @@ const getStatusText = (status: string): string => {
 };
 
 /**
- * 기간설정 목록 컬럼 정의
+ * 이행점검 목록 컬럼 정의
  */
-export const periodColumns: ColDef<PeriodSetting>[] = [
+export const implMonitoringColumns: ColDef<PeriodSetting>[] = [
   {
     field: 'sequence',
     headerName: '순번',

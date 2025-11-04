@@ -11,7 +11,7 @@
 import axios, { type AxiosInstance } from 'axios';
 
 // API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090/api';
 
 /**
  * 공통 API 클라이언트 인스턴스

@@ -6,7 +6,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './ExecutionApproval.module.scss';
+import styles from './ImplMonitoringStatus.module.scss';
 
 // Types
 import type {
@@ -18,7 +18,7 @@ import type {
   PerformanceTargetOption,
   InspectionPeriod,
   ExecutionStatistics
-} from './types/executionApproval.types';
+} from './types/implMonitoringStatus.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -28,19 +28,19 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import { BranchLookupModal } from '@/shared/components/organisms/BranchLookupModal';
 import type { Branch } from '@/shared/components/organisms/BranchLookupModal/types/branchLookup.types';
 
-// ExecutionApproval specific components
-import { executionColumns } from './components/ExecutionDataGrid/executionColumns';
+// ImplMonitoringStatus specific components
+import { executionColumns } from './components/ImplMonitoringDataGrid/implMonitoringColumns';
 
 // Lazy-loaded components for performance optimization
-const ExecutionDetailModal = React.lazy(() =>
-  import('./components/ExecutionDetailModal').then(module => ({ default: module.default }))
+const ImplMonitoringDetailModal = React.lazy(() =>
+  import('./components/ImplMonitoringDetailModal').then(module => ({ default: module.default }))
 );
 
-interface ExecutionApprovalProps {
+interface ImplMonitoringStatusProps {
   className?: string;
 }
 
-const ExecutionApproval: React.FC<ExecutionApprovalProps> = ({ className }) => {
+const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }) => {
   const { t } = useTranslation('compliance');
 
   // State Management
@@ -389,7 +389,7 @@ const ExecutionApproval: React.FC<ExecutionApprovalProps> = ({ className }) => {
     commitTime: number
   ) => {
     if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 ExecutionApproval Performance Profiler`);
+      console.group(`🔍 ImplMonitoringStatus Performance Profiler`);
       console.log(`📊 Phase: ${phase}`);
       console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
       console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
@@ -467,7 +467,7 @@ const ExecutionApproval: React.FC<ExecutionApprovalProps> = ({ className }) => {
   }, []);
 
   return (
-    <React.Profiler id="ExecutionApproval" onRender={onRenderProfiler}>
+    <React.Profiler id="ImplMonitoringStatus" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
         {/* 🏗️ 페이지 헤더 */}
         <div className={styles.pageHeader}>
@@ -584,7 +584,7 @@ const ExecutionApproval: React.FC<ExecutionApprovalProps> = ({ className }) => {
 
         {/* 점검 상세 모달 */}
         <React.Suspense fallback={<LoadingSpinner />}>
-          <ExecutionDetailModal
+          <ImplMonitoringDetailModal
             open={modalState.detailModal}
             execution={modalState.selectedExecution}
             onClose={handleModalClose}
@@ -596,4 +596,4 @@ const ExecutionApproval: React.FC<ExecutionApprovalProps> = ({ className }) => {
   );
 };
 
-export default ExecutionApproval;
+export default ImplMonitoringStatus;

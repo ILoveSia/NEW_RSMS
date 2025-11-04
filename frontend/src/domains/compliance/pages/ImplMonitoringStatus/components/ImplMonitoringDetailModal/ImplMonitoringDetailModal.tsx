@@ -20,10 +20,10 @@ import {
   Paper
 } from '@mui/material';
 import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
-import { InspectionExecution, ManagementActivityDetail, InspectionPerformanceFormData, InspectionResult } from '../../types/executionApproval.types';
-import styles from './ExecutionDetailModal.module.scss';
+import { InspectionExecution, ManagementActivityDetail, InspectionPerformanceFormData, InspectionResult } from '../../types/implMonitoringStatus.types';
+import styles from './ImplMonitoringDetailModal.module.scss';
 
-interface ExecutionDetailModalProps {
+interface ImplMonitoringDetailModalProps {
   open: boolean;
   execution?: InspectionExecution | null;
   onClose: () => void;
@@ -43,7 +43,7 @@ const schema = yup.object({
     .required('점검 결과는 필수입니다')
 });
 
-const ExecutionDetailModal: React.FC<ExecutionDetailModalProps> = ({
+const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
   open,
   execution,
   onClose,
@@ -460,6 +460,6 @@ const ExecutionDetailModal: React.FC<ExecutionDetailModalProps> = ({
   );
 };
 
-ExecutionDetailModal.displayName = 'ExecutionDetailModal';
+ImplMonitoringDetailModal.displayName = 'ImplMonitoringDetailModal';
 
-export default ExecutionDetailModal;
+export default ImplMonitoringDetailModal;

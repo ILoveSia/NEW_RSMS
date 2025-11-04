@@ -82,46 +82,46 @@ export interface SessionCheckResponse {
 
 /**
  * 로그인
- * POST /api/auth/login
+ * POST /auth/login
  */
 export const loginApi = async (request: LoginRequest): Promise<LoginResponse> => {
-  const response = await authApiClient.post<LoginResponse>('/api/auth/login', request);
+  const response = await authApiClient.post<LoginResponse>('/auth/login', request);
   return response.data;
 };
 
 /**
  * 로그아웃
- * POST /api/auth/logout
+ * POST /auth/logout
  */
 export const logoutApi = async (): Promise<LogoutResponse> => {
-  const response = await authApiClient.post<LogoutResponse>('/api/auth/logout');
+  const response = await authApiClient.post<LogoutResponse>('/auth/logout');
   return response.data;
 };
 
 /**
  * 현재 로그인한 사용자 정보 조회
- * GET /api/auth/me
+ * GET /auth/me
  */
 export const getCurrentUserApi = async (): Promise<CurrentUserResponse> => {
-  const response = await authApiClient.get<CurrentUserResponse>('/api/auth/me');
+  const response = await authApiClient.get<CurrentUserResponse>('/auth/me');
   return response.data;
 };
 
 /**
  * 세션 유효성 확인
- * GET /api/auth/session
+ * GET /auth/session
  */
 export const checkSessionApi = async (): Promise<SessionCheckResponse> => {
-  const response = await authApiClient.get<SessionCheckResponse>('/api/auth/session');
+  const response = await authApiClient.get<SessionCheckResponse>('/auth/session');
   return response.data;
 };
 
 /**
  * 헬스 체크
- * GET /api/auth/health
+ * GET /auth/health
  */
 export const authHealthCheckApi = async (): Promise<{ status: string; service: string }> => {
-  const response = await authApiClient.get('/api/auth/health');
+  const response = await authApiClient.get('/auth/health');
   return response.data;
 };
 

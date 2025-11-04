@@ -2,13 +2,14 @@
  * 코드관리 API 서비스
  *
  * @description 공통코드 관리 REST API 통신 모듈
+ * - 공통 apiClient 사용 (401 에러 시 자동 로그아웃)
+ *
  * @author Claude AI
  * @since 2025-09-24
  */
 
+import apiClient from '@/shared/api/apiClient';
 import type { CodeGroup, CodeDetail } from '../types/codeMgmt.types';
-
-const API_BASE_URL = '/api/system/codes';
 
 // ===============================
 // 타입 정의
@@ -72,19 +73,8 @@ export interface UpdateCodeDetailRequest {
  * 모든 코드 그룹 조회
  */
 export const getAllCodeGroups = async (): Promise<CodeGroup[]> => {
-  const response = await fetch(`${API_BASE_URL}/groups`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeGroup[]>('/system/codes/groups');
+  return response.data;
 };
 
 /**
@@ -97,65 +87,35 @@ export const searchCodeGroups = async (
   page: number = 0,
   size: number = 20
 ): Promise<{ content: CodeGroup[]; totalElements: number }> => {
-  const params = new URLSearchParams();
-  if (keyword) params.append('keyword', keyword);
-  if (category) params.append('category', category);
-  if (isActive) params.append('isActive', isActive);
-  params.append('page', page.toString());
-  params.append('size', size.toString());
+  const params: Record<string, string> = {
+    page: page.toString(),
+    size: size.toString()
+  };
+  if (keyword) params.keyword = keyword;
+  if (category) params.category = category;
+  if (isActive) params.isActive = isActive;
 
-  const response = await fetch(`${API_BASE_URL}/groups/search?${params.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 검색에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<{ content: CodeGroup[]; totalElements: number }>(
+    '/system/codes/groups/search',
+    { params }
+  );
+  return response.data;
 };
 
 /**
  * 코드 그룹 단건 조회
  */
 export const getCodeGroup = async (groupCode: string): Promise<CodeGroup> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeGroup>(`/system/codes/groups/${groupCode}`);
+  return response.data;
 };
 
 /**
  * 코드 그룹 생성
  */
 export const createCodeGroup = async (request: CreateCodeGroupRequest): Promise<CodeGroup> => {
-  const response = await fetch(`${API_BASE_URL}/groups`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 생성에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.post<CodeGroup>('/system/codes/groups', request);
+  return response.data;
 };
 
 /**
@@ -165,37 +125,15 @@ export const updateCodeGroup = async (
   groupCode: string,
   request: UpdateCodeGroupRequest
 ): Promise<CodeGroup> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 수정에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.put<CodeGroup>(`/system/codes/groups/${groupCode}`, request);
+  return response.data;
 };
 
 /**
  * 코드 그룹 삭제
  */
 export const deleteCodeGroup = async (groupCode: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}`, {
-    method: 'DELETE',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('코드 그룹 삭제에 실패했습니다.');
-  }
+  await apiClient.delete(`/system/codes/groups/${groupCode}`);
 };
 
 // ===============================
@@ -206,57 +144,24 @@ export const deleteCodeGroup = async (groupCode: string): Promise<void> => {
  * 그룹별 상세 코드 조회
  */
 export const getCodeDetailsByGroup = async (groupCode: string): Promise<CodeDetail[]> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('상세 코드 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeDetail[]>(`/system/codes/groups/${groupCode}/details`);
+  return response.data;
 };
 
 /**
  * 그룹별 활성화된 상세 코드 조회
  */
 export const getActiveCodeDetailsByGroup = async (groupCode: string): Promise<CodeDetail[]> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details/active`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('활성화된 상세 코드 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeDetail[]>(`/system/codes/groups/${groupCode}/details/active`);
+  return response.data;
 };
 
 /**
  * 현재 유효한 코드 조회
  */
 export const getCurrentValidCodes = async (groupCode: string): Promise<CodeDetail[]> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details/valid`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('유효한 코드 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeDetail[]>(`/system/codes/groups/${groupCode}/details/valid`);
+  return response.data;
 };
 
 /**
@@ -266,39 +171,16 @@ export const getCodeDetail = async (
   groupCode: string,
   detailCode: string
 ): Promise<CodeDetail> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details/${detailCode}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('상세 코드 조회에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.get<CodeDetail>(`/system/codes/groups/${groupCode}/details/${detailCode}`);
+  return response.data;
 };
 
 /**
  * 상세 코드 생성
  */
 export const createCodeDetail = async (request: CreateCodeDetailRequest): Promise<CodeDetail> => {
-  const response = await fetch(`${API_BASE_URL}/details`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error('상세 코드 생성에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.post<CodeDetail>('/system/codes/details', request);
+  return response.data;
 };
 
 /**
@@ -309,35 +191,16 @@ export const updateCodeDetail = async (
   detailCode: string,
   request: UpdateCodeDetailRequest
 ): Promise<CodeDetail> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details/${detailCode}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error('상세 코드 수정에 실패했습니다.');
-  }
-
-  return response.json();
+  const response = await apiClient.put<CodeDetail>(
+    `/system/codes/groups/${groupCode}/details/${detailCode}`,
+    request
+  );
+  return response.data;
 };
 
 /**
  * 상세 코드 삭제
  */
 export const deleteCodeDetail = async (groupCode: string, detailCode: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/groups/${groupCode}/details/${detailCode}`, {
-    method: 'DELETE',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('상세 코드 삭제에 실패했습니다.');
-  }
+  await apiClient.delete(`/system/codes/groups/${groupCode}/details/${detailCode}`);
 };

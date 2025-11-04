@@ -1,47 +1,54 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+/**
+ * 공통 직원조회팝업 컴포넌트
+ * 여러 도메인에서 공통으로 사용하는 직원 선택 팝업
+ *
+ * 주요 기능:
+ * - 직원 목록 조회 및 검색
+ * - AG-Grid를 통한 직원 표시 (직번, 직원명, 부점, 직급, 상태)
+ * - 행 선택 및 선택 버튼 클릭으로 직원 선택
+ * - 행 더블클릭으로 빠른 선택
+ * - 단일 선택 모드 지원
+ */
+
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
-  IconButton,
   Box,
-  Chip
+  Typography,
+  CircularProgress,
+  IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
-import type { ColDef } from 'ag-grid-community';
+import { ColDef } from 'ag-grid-community';
+import { toast } from 'react-toastify';
 
-import { Button } from '@/shared/components/atoms/Button';
-import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import Button from '@/shared/components/atoms/Button';
 import { useEmployeeLookup } from './hooks/useEmployeeLookup';
 import type {
   Employee,
-  EmployeeLookupModalProps,
-  EmployeeLookupFilters
+  EmployeeLookupFilters,
+  EmployeeLookupModalProps
 } from './types/employeeLookup.types';
 import styles from './EmployeeLookupModal.module.scss';
 
 /**
- * 직원조회팝업 컴포넌트
- * 여러 도메인에서 공통으로 사용하는 직원 선택 팝업
+ * 공통 직원조회팝업 컴포넌트
  */
 const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
   open,
-  title = '직원 조회 팝업',
-  multiple = false,
   onClose,
   onSelect,
-  onConfirm,
-  onCancel,
-  initialFilters = {},
-  excludeEmployeeIds = [],
-  loading: externalLoading = false,
-  showActiveOnly = true
+  title = '직원 조회 팝업',
+  initialFilters = {}
 }) => {
+  // ===== Custom Hook =====
   const {
     employees,
     loading: searchLoading,
@@ -51,8 +58,8 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
     totalCount
   } = useEmployeeLookup();
 
-  // Local state
-  const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
+  // ===== Local State =====
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [filters, setFilters] = useState<EmployeeLookupFilters>({
     name: '',
     employeeId: '',
@@ -61,151 +68,110 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
     ...initialFilters
   });
 
-  const loading = searchLoading || externalLoading;
+  const loading = searchLoading;
 
-  // AG-Grid 컬럼 정의
-  const columns = useMemo<ColDef<Employee>[]>(() => [
-    {
-      field: 'employeeId',
-      headerName: '직번',
-      width: 100,
-      minWidth: 80,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '600', color: '#1976d2' }
-    },
-    {
-      field: 'name',
-      headerName: '직원명',
-      width: 120,
-      minWidth: 100,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-left',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500' }
-    },
-    {
-      field: 'branchCode',
-      headerName: '부점코드',
-      width: 100,
-      minWidth: 80,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { color: '#ed6c02', fontWeight: '500' }
-    },
-    {
-      field: 'branchName',
-      headerName: '부점명',
-      width: 130,
-      minWidth: 110,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-left',
-      headerClass: 'ag-header-center'
-    },
-    {
-      field: 'department',
-      headerName: '직급',
-      width: 80,
-      minWidth: 60,
-      sortable: true,
-      filter: 'agSetColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { color: '#7b1fa2', fontWeight: '500' }
-    },
-    {
-      field: 'status',
-      headerName: '상태',
-      width: 80,
-      minWidth: 60,
-      sortable: true,
-      filter: 'agSetColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellRenderer: (params: any) => {
-        const employee = params.data as Employee;
-        return (
-          <Chip
-            label={employee.status === 'ACTIVE' ? '재직' : '퇴직'}
-            size="small"
-            color={employee.status === 'ACTIVE' ? 'success' : 'default'}
-            variant="outlined"
-          />
-        );
-      }
-    }
-  ], []);
-
-  // Event Handlers
-  const handleFiltersChange = useCallback((newFilters: Partial<EmployeeLookupFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
-
-  async function handleSearch() {
-    await searchEmployees(filters);
-  }
-
-  // BaseSearchFilter용 필드 정의
+  // ===== 검색 필드 정의 =====
   const searchFields = useMemo<FilterField[]>(() => [
     {
       key: 'name',
       type: 'text',
       label: '직원명',
       placeholder: '직원명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 6 }
-    },
-    {
-      key: 'employeeId',
-      type: 'text',
-      label: '직번',
-      placeholder: '직번을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 6 }
-    },
-    {
-      key: 'department',
-      type: 'text',
-      label: '직급',
-      placeholder: '직급을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 6 }
-    },
-    {
-      key: 'branchCode',
-      type: 'text',
-      label: '부점',
-      placeholder: '부점을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 6 },
-      endAdornment: {
-        type: 'button',
-        icon: 'Search',
-        onClick: handleSearch,
-        tooltip: '직원 검색'
-      }
+      gridSize: { xs: 12, sm: 12, md: 12 }
     }
   ], []);
 
-  // 필터된 직원 목록 (제외할 직원 ID 제거 및 재직자 필터)
-  const filteredEmployees = useMemo(() => {
-    let filtered = employees;
-
-    // 제외할 직원 ID 제거
-    if (excludeEmployeeIds.length > 0) {
-      filtered = filtered.filter(employee => !excludeEmployeeIds.includes(employee.id));
+  // ===== AG-Grid 컬럼 정의 =====
+  const columnDefs = useMemo<ColDef<Employee>[]>(() => [
+    {
+      headerName: '순번',
+      width: 80,
+      valueGetter: (params) => {
+        const index = employees.findIndex(e => e.id === params.data?.id);
+        return index >= 0 ? index + 1 : '';
+      },
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center'
+    },
+    {
+      headerName: '직번',
+      field: 'employeeId',
+      width: 100,
+      sortable: true,
+      filter: true,
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center'
+    },
+    {
+      headerName: '직원명',
+      field: 'name',
+      flex: 1,
+      minWidth: 120,
+      sortable: true,
+      filter: true,
+      cellClass: 'ag-cell-left',
+      headerClass: 'ag-header-center'
+    },
+    {
+      headerName: '부점명',
+      field: 'branchName',
+      flex: 1,
+      minWidth: 130,
+      sortable: true,
+      filter: true,
+      cellClass: 'ag-cell-left',
+      headerClass: 'ag-header-center'
+    },
+    {
+      headerName: '직급',
+      field: 'department',
+      width: 100,
+      sortable: true,
+      filter: true,
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center'
+    },
+    {
+      headerName: '상태',
+      field: 'status',
+      width: 80,
+      sortable: true,
+      filter: true,
+      cellRenderer: (params: any) => {
+        return params.value === 'ACTIVE' ? '재직' : '퇴직';
+      },
+      cellStyle: (params: any) => {
+        const color = params.value === 'ACTIVE' ? '#4caf50' : '#9e9e9e';
+        return {
+          color,
+          fontWeight: '500',
+          textAlign: 'center'
+        };
+      },
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center'
     }
+  ], [employees]);
 
-    // 재직자만 표시 옵션
-    if (showActiveOnly) {
-      filtered = filtered.filter(employee => employee.status === 'ACTIVE');
-    }
+  // ===== Event Handlers =====
 
-    return filtered;
-  }, [employees, excludeEmployeeIds, showActiveOnly]);
+  /**
+   * 검색 버튼 클릭 핸들러
+   */
+  async function handleSearch() {
+    await searchEmployees(filters);
+  }
 
+  /**
+   * 필터 변경 핸들러
+   */
+  const handleFiltersChange = useCallback((newFilters: Partial<EmployeeLookupFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  }, []);
+
+  /**
+   * 필터 초기화 핸들러
+   */
   const handleClearFilters = useCallback(() => {
     const clearedFilters: EmployeeLookupFilters = {
       name: '',
@@ -215,74 +181,71 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
     };
     setFilters(clearedFilters);
     clearResults();
-    setSelectedEmployees([]);
+    setSelectedEmployee(null);
   }, [clearResults]);
 
-  const handleRowClick = useCallback((employee: Employee) => {
-    if (multiple) {
-      setSelectedEmployees(prev => {
-        const exists = prev.find(item => item.id === employee.id);
-        if (exists) {
-          return prev.filter(item => item.id !== employee.id);
-        } else {
-          return [...prev, employee];
-        }
-      });
+  /**
+   * 행 선택 변경 핸들러
+   */
+  const handleSelectionChange = useCallback((selectedRows: Employee[]) => {
+    if (selectedRows.length > 0) {
+      setSelectedEmployee(selectedRows[0]);
     } else {
-      setSelectedEmployees([employee]);
+      setSelectedEmployee(null);
     }
-  }, [multiple]);
-
-  const handleRowDoubleClick = useCallback((employee: Employee) => {
-    if (!multiple) {
-      onSelect(employee);
-      onClose();
-    }
-  }, [multiple, onSelect, onClose]);
-
-  const handleSelectionChange = useCallback((selected: Employee[]) => {
-    setSelectedEmployees(selected);
   }, []);
 
-  const handleConfirm = useCallback(() => {
-    if (selectedEmployees.length === 0) {
-      return;
+  /**
+   * 행 더블클릭 핸들러 (빠른 선택)
+   */
+  const handleRowDoubleClick = useCallback((data: Employee) => {
+    if (data) {
+      onSelect(data);
+      onClose();
     }
+  }, [onSelect, onClose]);
 
-    const result = multiple ? selectedEmployees : selectedEmployees[0];
-
-    if (onConfirm) {
-      onConfirm(result);
+  /**
+   * 선택 버튼 클릭 핸들러
+   */
+  const handleSelectClick = useCallback(() => {
+    if (selectedEmployee) {
+      onSelect(selectedEmployee);
+      onClose();
     } else {
-      onSelect(result);
+      toast.warning('직원을 선택해주세요.');
     }
-    onClose();
-  }, [selectedEmployees, multiple, onSelect, onConfirm, onClose]);
+  }, [selectedEmployee, onSelect, onClose]);
 
+  /**
+   * 취소 버튼 클릭 핸들러
+   */
   const handleCancel = useCallback(() => {
-    setSelectedEmployees([]);
-    if (onCancel) {
-      onCancel();
-    }
+    setSelectedEmployee(null);
     onClose();
-  }, [onCancel, onClose]);
+  }, [onClose]);
 
-  // 모달이 열릴 때 초기 검색 실행
+  // ===== Effects =====
+
+  /**
+   * 다이얼로그 열릴 때 직원 목록 조회
+   */
   useEffect(() => {
     if (open) {
       handleSearch();
     } else {
       // 모달이 닫힐 때 상태 초기화
-      setSelectedEmployees([]);
+      setSelectedEmployee(null);
       clearResults();
     }
   }, [open]);
 
+  // ===== 렌더링 =====
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="lg"
+      maxWidth="sm"
       fullWidth
       className={styles.modal}
       PaperProps={{
@@ -307,7 +270,7 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
       </DialogTitle>
 
       {/* 모달 콘텐츠 */}
-      <DialogContent className={styles.modalContent}>
+      <DialogContent dividers className={styles.modalContent}>
         {/* 검색 필터 */}
         <div className={styles.searchSection}>
           <BaseSearchFilter
@@ -318,7 +281,7 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
             onClear={handleClearFilters}
             loading={loading}
             searchLoading={loading}
-            showClearButton={true}
+            showClearButton={false}
           />
         </div>
 
@@ -328,51 +291,47 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
             <SearchIcon className={styles.resultIcon} />
             직원 목록 ({totalCount}건)
           </Typography>
-          {showActiveOnly && (
-            <Chip
-              label="재직자만 표시"
-              size="small"
-              color="primary"
-              variant="outlined"
-              className={styles.filterChip}
+        </div>
+
+        {/* 직원 목록 그리드 */}
+        <div className={styles.gridSection}>
+          {loading ? (
+            <Box className={styles.loadingBox}>
+              <CircularProgress size={40} />
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                직원 목록을 불러오는 중...
+              </Typography>
+            </Box>
+          ) : (
+            <BaseDataGrid
+              data={employees}
+              columns={columnDefs}
+              rowSelection="single"
+              onSelectionChange={handleSelectionChange}
+              onRowDoubleClick={handleRowDoubleClick}
+              height="350px"
+              emptyMessage="조회된 직원이 없습니다."
+              theme="alpine"
+              pagination={false}
             />
           )}
         </div>
 
-        {/* 데이터 그리드 */}
-        <div className={styles.gridSection}>
-          <BaseDataGrid
-            data={filteredEmployees}
-            columns={columns}
-            loading={loading}
-            theme="alpine"
-            onRowClick={handleRowClick}
-            onRowDoubleClick={handleRowDoubleClick}
-            onSelectionChange={handleSelectionChange}
-            height="400px"
-            pagination={true}
-            pageSize={20}
-            rowSelection={multiple ? "multiple" : "single"}
-            checkboxSelection={multiple}
-            headerCheckboxSelection={multiple}
-            emptyMessage={filteredEmployees.length === 0 && !loading ? "조회된 정보가 없습니다." : undefined}
-          />
-        </div>
+        {/* 선택된 직원 정보 */}
+        {selectedEmployee && (
+          <Box className={styles.selectedInfo}>
+            <Typography variant="body2" color="primary" fontWeight={500}>
+              선택된 직원: {selectedEmployee.name}
+              {selectedEmployee.branchName && ` (${selectedEmployee.branchName})`}
+            </Typography>
+          </Box>
+        )}
 
         {/* 에러 메시지 */}
         {error && (
           <Box className={styles.errorMessage}>
             <Typography color="error" variant="body2">
               {error}
-            </Typography>
-          </Box>
-        )}
-
-        {/* 선택된 직원 정보 */}
-        {selectedEmployees.length > 0 && (
-          <Box className={styles.selectionInfo}>
-            <Typography variant="body2" className={styles.selectionText}>
-              선택된 직원: {selectedEmployees.map(emp => emp.name).join(', ')}
             </Typography>
           </Box>
         )}
@@ -383,8 +342,8 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
         <Button
           variant="contained"
           color="primary"
-          onClick={handleConfirm}
-          disabled={selectedEmployees.length === 0 || loading}
+          onClick={handleSelectClick}
+          disabled={!selectedEmployee || loading}
           startIcon="Check"
         >
           확인

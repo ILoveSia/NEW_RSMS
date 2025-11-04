@@ -25,6 +25,19 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     /**
+     * 활성 조직 목록 조회
+     * - GET /api/organizations/active
+     *
+     * @return 활성 조직 목록 (is_active='Y')
+     */
+    @GetMapping("/active")
+    public ResponseEntity<List<Map<String, Object>>> getActiveOrganizations() {
+        log.info("GET /api/organizations/active - 활성 조직 목록 조회");
+        List<Map<String, Object>> organizations = organizationService.getActiveOrganizations();
+        return ResponseEntity.ok(organizations);
+    }
+
+    /**
      * 본부코드별 부점 목록 조회
      * - GET /api/organizations/by-hq/{hqCode}
      *

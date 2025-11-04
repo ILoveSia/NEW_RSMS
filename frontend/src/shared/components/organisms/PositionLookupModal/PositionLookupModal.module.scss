@@ -1,0 +1,230 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+// 🏗️ 직책조회팝업 모달 스타일 (프로젝트 표준)
+.modal {
+  .modalPaper {
+    border-radius: $border-radius-md;
+    max-height: 90vh;
+  }
+}
+
+// 🎯 모달 헤더 (프로젝트 표준 - 테마 변수 사용)
+.modalTitle {
+  background: var(--theme-page-header-bg);
+  color: var(--theme-page-header-text);
+  padding: $spacing-md $spacing-lg;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+
+  .titleIcon {
+    font-size: 1.5rem !important;
+    opacity: 0.9;
+  }
+
+  .titleText {
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+
+  .closeButton {
+    color: var(--theme-page-header-text);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// 📄 모달 콘텐츠
+.modalContent {
+  padding: $spacing-lg;
+  background: #fff;
+  overflow-y: auto;
+  max-height: calc(90vh - 200px);
+}
+
+// 🔍 검색 섹션
+.searchSection {
+  background: #f8f9fa;
+  border-radius: $border-radius-sm;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  border: 1px solid #e0e0e0;
+}
+
+// 📊 검색 결과 정보
+.resultInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+
+  .resultIcon {
+    font-size: 1rem !important;
+    margin-right: $spacing-xs;
+    color: #666;
+  }
+
+  .resultText {
+    color: #666;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+}
+
+// 🎯 그리드 섹션
+.gridSection {
+  background: white;
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+
+  // AG-Grid 커스터마이징
+  :global(.ag-theme-alpine) {
+    border: none;
+
+    .ag-header {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .ag-header-cell-text {
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .ag-row {
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(25, 118, 210, 0.04);
+      }
+
+      &.ag-row-selected {
+        background: rgba(25, 118, 210, 0.08);
+
+        &:hover {
+          background: rgba(25, 118, 210, 0.12);
+        }
+      }
+    }
+
+    .ag-cell {
+      border-bottom: 1px solid #f0f0f0;
+      padding: $spacing-sm;
+      display: flex;
+      align-items: center;
+    }
+
+    .ag-cell-center {
+      justify-content: center;
+    }
+
+    .ag-cell-left {
+      justify-content: flex-start;
+    }
+  }
+}
+
+// 📋 선택된 항목 정보
+.selectedInfo {
+  padding: $spacing-sm $spacing-md;
+  background: #f0f7ff;
+  border-left: 4px solid var(--theme-button-primary);
+  border-radius: $border-radius-sm;
+  margin-top: $spacing-md;
+}
+
+// ⚠️ 에러 메시지
+.errorMessage {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(211, 47, 47, 0.05);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  border-radius: $border-radius-sm;
+  text-align: center;
+}
+
+// 🔄 로딩 상태
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+  background: white;
+  border-radius: $border-radius-sm;
+}
+
+// 🎬 모달 액션 (프로젝트 표준)
+.modalActions {
+  padding: $spacing-md $spacing-lg;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  gap: $spacing-sm;
+
+  button {
+    min-width: 80px;
+  }
+}
+
+// 📱 반응형 디자인
+@include responsive-breakpoint($breakpoint-tablet) {
+  .modal {
+    .modalPaper {
+      margin: $spacing-sm;
+      max-height: calc(100vh - #{$spacing-md});
+    }
+  }
+
+  .modalTitle {
+    padding: $spacing-sm $spacing-md;
+
+    .titleText {
+      font-size: 1.125rem;
+    }
+  }
+
+  .modalContent {
+    padding: $spacing-md;
+  }
+
+  .searchSection {
+    padding: $spacing-sm;
+  }
+
+  .modalActions {
+    padding: $spacing-sm $spacing-md;
+
+    button {
+      min-width: 70px;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .modal {
+    .modalPaper {
+      margin: 0;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+  }
+
+  .gridSection {
+    :global(.ag-theme-alpine) {
+      .ag-cell {
+        padding: $spacing-xs;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

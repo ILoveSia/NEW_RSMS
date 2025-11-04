@@ -31,9 +31,9 @@ const InternalControlRegister = React.lazy(() => import('@/domains/activities/pa
 const InternalControlMgmt = React.lazy(() => import('@/domains/activities/pages/InternalControlMgmt/InternalControlMgmt'));
 
 // Compliance (이행점검 관리) 도메인
-const PeriodSetting = React.lazy(() => import('@/domains/compliance/pages/PeriodSetting/PeriodSetting'));
+const ImplMonitoring = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoring'));
 const InspectorAssign = React.lazy(() => import('@/domains/compliance/pages/InspectorAssign'));
-const ExecutionApproval = React.lazy(() => import('@/domains/compliance/pages/ExecutionApproval'));
+const ImplMonitoringStatus = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoringStatus'));
 const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/RejectionMgmt'));
 
 // Reports (보고서) 도메인
@@ -788,66 +788,66 @@ const AppRouter: React.FC = () => {
             <ManagerGuard>
               <Suspense fallback={<LoadingSpinner text="이행점검 관리 로딩 중..." />}>
                 <Routes>
-                  {/* 기간설정 */}
-                  <Route path="period-setting" element={<PeriodSetting />} />
-                  <Route path="period-setting/:id" element={
+                  {/* 이행점검계획 */}
+                  <Route path="impl-monitoring" element={<ImplMonitoring />} />
+                  <Route path="impl-monitoring/:id" element={
                     <TemporaryPage
-                      title="기간설정 상세"
-                      description="기간설정의 상세 정보와 관련 항목을 확인하는 페이지입니다."
+                      title="이행점검계획 상세"
+                      description="이행점검계획의 상세 정보와 관련 항목을 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="period-setting/create" element={
+                  <Route path="impl-monitoring/create" element={
                     <TemporaryPage
-                      title="기간설정 등록"
-                      description="새로운 기간설정을 등록하는 페이지입니다."
+                      title="이행점검계획 등록"
+                      description="새로운 이행점검계획을 등록하는 페이지입니다."
                     />
                   } />
-                  <Route path="period-setting/:id/edit" element={
+                  <Route path="impl-monitoring/:id/edit" element={
                     <TemporaryPage
-                      title="기간설정 편집"
-                      description="기존 기간설정 정보를 수정하는 페이지입니다."
+                      title="이행점검계획 편집"
+                      description="기존 이행점검계획 정보를 수정하는 페이지입니다."
                     />
                   } />
 
                   {/* 점검자지정 */}
-                  <Route path="inspector-assignment" element={<InspectorAssign />} />
-                  <Route path="inspector-assignment/:id" element={
+                  <Route path="inspector-assign" element={<InspectorAssign />} />
+                  <Route path="inspector-assign/:id" element={
                     <TemporaryPage
                       title="점검자 상세"
                       description="점검자의 상세 정보와 지정 이력을 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="inspector-assignment/create" element={
+                  <Route path="inspector-assign/create" element={
                     <TemporaryPage
                       title="점검자 지정"
                       description="새로운 점검자를 지정하는 페이지입니다."
                     />
                   } />
-                  <Route path="inspector-assignment/:id/edit" element={
+                  <Route path="inspector-assign/:id/edit" element={
                     <TemporaryPage
                       title="점검자 변경"
                       description="기존 점검자 정보를 변경하는 페이지입니다."
                     />
                   } />
 
-                  {/* 점검수행 및 결재 */}
-                  <Route path="execution-approval" element={<ExecutionApproval />} />
-                  <Route path="execution-approval/:id" element={
+                  {/* 이행점검현황 */}
+                  <Route path="impl-monitoring-status" element={<ImplMonitoringStatus />} />
+                  <Route path="impl-monitoring-status/:id" element={
                     <TemporaryPage
-                      title="점검수행 상세"
-                      description="점검수행의 상세 정보와 결재 상태를 확인하는 페이지입니다."
+                      title="이행점검현황 상세"
+                      description="이행점검현황의 상세 정보와 진행 상태를 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="execution-approval/create" element={
+                  <Route path="impl-monitoring-status/create" element={
                     <TemporaryPage
-                      title="점검수행 등록"
-                      description="새로운 점검수행을 등록하는 페이지입니다."
+                      title="이행점검현황 등록"
+                      description="새로운 이행점검현황을 등록하는 페이지입니다."
                     />
                   } />
-                  <Route path="execution-approval/:id/edit" element={
+                  <Route path="impl-monitoring-status/:id/edit" element={
                     <TemporaryPage
-                      title="점검수행 편집"
-                      description="기존 점검수행 정보를 수정하는 페이지입니다."
+                      title="이행점검현황 편집"
+                      description="기존 이행점검현황 정보를 수정하는 페이지입니다."
                     />
                   } />
 
@@ -872,8 +872,13 @@ const AppRouter: React.FC = () => {
                     />
                   } />
 
+                  {/* 기존 URL 호환성 유지 */}
+                  <Route path="period-setting" element={<Navigate to="/app/compliance/impl-monitoring" replace />} />
+                  <Route path="inspector-assignment" element={<Navigate to="/app/compliance/inspector-assign" replace />} />
+                  <Route path="execution-approval" element={<Navigate to="/app/compliance/impl-monitoring-status" replace />} />
+
                   {/* 기본 리다이렉트 */}
-                  <Route index element={<Navigate to="/app/compliance/period-setting" replace />} />
+                  <Route index element={<Navigate to="/app/compliance/impl-monitoring" replace />} />
                 </Routes>
               </Suspense>
             </ManagerGuard>

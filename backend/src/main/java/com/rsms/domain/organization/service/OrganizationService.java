@@ -27,6 +27,31 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
 
     /**
+     * 활성 조직 목록 조회
+     * - 사용중이고 폐쇄되지 않은 모든 조직 반환
+     * - snake_case를 camelCase로 변환
+     *
+     * @return 활성 조직 목록 (camelCase)
+     */
+    public List<Map<String, Object>> getActiveOrganizations() {
+        log.debug("활성 조직 목록 조회");
+        List<Map<String, Object>> results = organizationRepository.findAllActive();
+
+        // snake_case를 camelCase로 변환
+        return results.stream()
+            .map(row -> {
+                Map<String, Object> converted = new HashMap<>();
+                converted.put("orgCode", row.get("org_code"));
+                converted.put("hqCode", row.get("hq_code"));
+                converted.put("orgName", row.get("org_name"));
+                converted.put("orgType", row.get("org_type"));
+                converted.put("isActive", row.get("is_active"));
+                return converted;
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
      * 본부코드별 조직 목록 조회
      * - 사용중이고 폐쇄되지 않은 조직만 반환
      * - snake_case를 camelCase로 변환

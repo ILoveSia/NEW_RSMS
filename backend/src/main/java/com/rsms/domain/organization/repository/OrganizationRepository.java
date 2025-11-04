@@ -21,6 +21,22 @@ import java.util.Map;
 public interface OrganizationRepository extends JpaRepository<Organization, String> {
 
     /**
+     * 모든 활성 조직 목록 조회
+     * - 사용중(is_active='Y')이고 폐쇄되지 않은(is_closed='N') 조직만 조회
+     * - org_code 기준 정렬
+     *
+     * @return 조직 목록 (org_code, hq_code, org_name, org_type, is_active)
+     */
+    @Query(value = """
+        SELECT org_code, hq_code, org_name, org_type, is_active
+        FROM rsms.organizations
+        WHERE is_active = 'Y'
+          AND is_closed = 'N'
+        ORDER BY org_code
+        """, nativeQuery = true)
+    List<Map<String, Object>> findAllActive();
+
+    /**
      * 본부코드별 조직 목록 조회
      * - 사용중(is_active='Y')이고 폐쇄되지 않은(is_closed='N') 조직만 조회
      * - org_code 기준 정렬

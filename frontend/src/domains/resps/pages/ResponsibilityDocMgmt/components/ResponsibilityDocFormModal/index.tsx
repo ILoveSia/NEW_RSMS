@@ -36,12 +36,14 @@ import {
 } from '@mui/icons-material';
 import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import { PositionLookupModal } from '@/shared/components/organisms/PositionLookupModal';
+import { EmployeeLookupModal, type Employee } from '@/shared/components/organisms/EmployeeLookupModal';
+import { Position } from '@/shared/types/position';
 import type { ColDef } from 'ag-grid-community';
 import type {
   ResponsibilityDoc,
   ResponsibilityDocFormData
 } from '../../types/responsibilityDoc.types';
-import { getPositionsByLedgerOrderId, type PositionDto } from '@/domains/resps/api/positionApi';
 import {
   getPositionResponsibilityData,
   type PositionResponsibilityData
@@ -130,8 +132,9 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
 
   // 직책 선택 모달 상태
   const [positionSelectOpen, setPositionSelectOpen] = useState(false);
-  const [positions, setPositions] = useState<PositionSelectData[]>([]);
-  const [isLoadingPositions, setIsLoadingPositions] = useState(false);
+
+  // 직원 조회 모달 상태
+  const [employeeSelectOpen, setEmployeeSelectOpen] = useState(false);
 
   // 회의체, 책무, 관리의무 상태 관리
   const [committees, setCommittees] = useState<CommitteeData[]>([]);
@@ -178,43 +181,11 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     }
   }, [mode, open, reset]);
 
-  // 직책 선택 핸들러 - API 호출하여 직책 목록 조회
-  const handlePositionSelect = useCallback(async () => {
-    // 원장차수가 선택되지 않은 경우
-    if (!selectedLedgerOrderId) {
-      toast.error('먼저 책무이행차수를 선택해주세요.');
-      return;
-    }
-
+  // 직책 선택 핸들러 - 직책 검색 모달 열기
+  const handlePositionSelect = useCallback(() => {
+    // 직책 선택 모달 열기
     setPositionSelectOpen(true);
-    setIsLoadingPositions(true);
-
-    try {
-      const positionDtos: PositionDto[] = await getPositionsByLedgerOrderId(selectedLedgerOrderId);
-
-      // PositionDto → PositionSelectData 변환
-      const positionSelectData: PositionSelectData[] = positionDtos.map(dto => ({
-        positionId: dto.positionsId,
-        positionName: dto.positionsName,
-        hqName: dto.hqName,
-        isConcurrent: dto.isConcurrent,
-        // TODO: 실제 데이터는 API에서 가져와야 함
-        employeeName: '',
-        currentPositionDate: '',
-        dualPositionDetails: '',
-        responsibleDepts: '',
-        mainCommittees: []
-      }));
-
-      setPositions(positionSelectData);
-    } catch (error) {
-      console.error('[ResponsibilityDocFormModal] 직책 목록 조회 실패:', error);
-      toast.error('직책 목록을 불러오는데 실패했습니다.');
-      setPositions([]);
-    } finally {
-      setIsLoadingPositions(false);
-    }
-  }, [selectedLedgerOrderId]);
+  }, []);
 
   // 직책 선택 확인 핸들러 (실제 API 호출하여 7개 필드 자동 설정)
   const handlePositionConfirm = useCallback(async (position: PositionSelectData) => {
@@ -273,66 +244,33 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     }
   }, [setValue]);
 
-  // 직책 선택 모달
-  const renderPositionSelectModal = () => {
-    const columns: ColDef<PositionSelectData>[] = [
-      {
-        headerName: '순번',
-        width: 80,
-        valueGetter: (params) => {
-          const index = positions.findIndex(p => p.positionId === params.data?.positionId);
-          return index + 1;
-        }
-      },
-      { field: 'positionName', headerName: '직책', flex: 1 },
-      { field: 'hqName', headerName: '본부명', flex: 1 },
-      {
-        field: 'isConcurrent',
-        headerName: '겸직여부',
-        width: 100
-      }
-    ];
+  // 공통 직책 선택 다이얼로그에서 직책 선택 시 호출되는 핸들러
+  const handlePositionSelectFromDialog = useCallback((position: Position) => {
+    // Position 타입을 PositionSelectData 타입으로 변환하여 기존 로직 재사용
+    const positionData: PositionSelectData = {
+      positionId: position.positionId,
+      positionName: position.positionName,
+      hqName: position.hqName || '',
+      isConcurrent: position.isConcurrent || 'N',
+      employeeName: '',
+      currentPositionDate: '',
+      dualPositionDetails: '',
+      responsibleDepts: '',
+      mainCommittees: []
+    };
+    handlePositionConfirm(positionData);
+  }, []);
 
-    return (
-      <Dialog
-        open={positionSelectOpen}
-        onClose={() => setPositionSelectOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{
-          background: 'var(--theme-page-header-bg)',
-          color: 'var(--theme-page-header-text)',
-          fontWeight: 600
-        }}>
-          직책 선택
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ height: '400px' }}>
-            {isLoadingPositions ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <Typography>직책 목록을 불러오는 중...</Typography>
-              </Box>
-            ) : (
-              <BaseDataGrid
-                data={positions}
-                columns={columns}
-                rowSelection="single"
-                onRowDoubleClick={(data) => handlePositionConfirm(data)}
-                height="400px"
-                emptyMessage="조회된 직책이 없습니다."
-              />
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={() => setPositionSelectOpen(false)}>
-            취소
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
+  // 직원 조회 모달 열기
+  const handleEmployeeSelect = useCallback(() => {
+    setEmployeeSelectOpen(true);
+  }, []);
+
+  // 직원 선택 시 성명 설정
+  const handleEmployeeSelectFromDialog = useCallback((employee: Employee) => {
+    setValue('employeeName', employee.name);
+    setEmployeeSelectOpen(false);
+  }, [setValue]);
 
   // 회의체 그리드 컬럼
   const committeeColumns = useMemo<ColDef<CommitteeData>[]>(() => [
@@ -637,6 +575,19 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                           fullWidth
                           size="small"
                           disabled={isReadOnly}
+                          InputProps={{
+                            endAdornment: !isReadOnly && (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  onClick={handleEmployeeSelect}
+                                  edge="end"
+                                  size="small"
+                                >
+                                  <SearchIcon />
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          }}
                         />
                       )}
                     />
@@ -682,7 +633,24 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                     </Box>
                   </Grid>
 
-                  {/* 세 번째 행: 겸직사항 */}
+                  {/* 세 번째 행: 소관부점 */}
+                  <Grid item xs={12}>
+                    <Controller
+                      name="responsibleDepts"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="소관부점"
+                          fullWidth
+                          size="small"
+                          disabled={isReadOnly}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* 네 번째 행: 겸직사항 */}
                   <Grid item xs={12}>
                     <Controller
                       name="dualPositionDetails"
@@ -696,23 +664,6 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                           disabled={isReadOnly}
                           multiline
                           rows={2}
-                        />
-                      )}
-                    />
-                  </Grid>
-
-                  {/* 네 번째 행: 소관부점 */}
-                  <Grid item xs={12}>
-                    <Controller
-                      name="responsibleDepts"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="소관부점"
-                          fullWidth
-                          size="small"
-                          disabled={isReadOnly}
                         />
                       )}
                     />
@@ -894,7 +845,18 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       </Dialog>
 
       {/* 직책 선택 모달 */}
-      {renderPositionSelectModal()}
+      <PositionLookupModal
+        open={positionSelectOpen}
+        onClose={() => setPositionSelectOpen(false)}
+        onSelect={handlePositionSelectFromDialog}
+      />
+
+      {/* 직원 조회 모달 */}
+      <EmployeeLookupModal
+        open={employeeSelectOpen}
+        onClose={() => setEmployeeSelectOpen(false)}
+        onSelect={handleEmployeeSelectFromDialog}
+      />
     </>
   );
 };

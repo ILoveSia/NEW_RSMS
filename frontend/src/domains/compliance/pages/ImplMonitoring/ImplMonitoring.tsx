@@ -7,7 +7,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ColDef } from 'ag-grid-community';
-import styles from './PeriodSetting.module.scss';
+import styles from './ImplMonitoring.module.scss';
 
 // Types
 import type {
@@ -16,7 +16,7 @@ import type {
   PeriodSettingFormData,
   PeriodSettingModalState,
   PeriodSettingPagination
-} from './types/periodSetting.types';
+} from './types/implMonitoring.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -24,23 +24,23 @@ import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/comp
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
-// PeriodSetting specific components
-// import { periodColumns } from './components/PeriodDataGrid/periodColumns';
+// ImplMonitoring specific components
+// import { implMonitoringColumns } from './components/ImplMonitoringDataGrid/implMonitoringColumns';
 
 // Lazy-loaded components for performance optimization
-const PeriodFormModal = React.lazy(() =>
-  import('./components/PeriodFormModal/PeriodFormModal')
+const ImplMonitoringFormModal = React.lazy(() =>
+  import('./components/ImplMonitoringFormModal/ImplMonitoringFormModal')
 );
 
-interface PeriodSettingProps {
+interface ImplMonitoringProps {
   className?: string;
 }
 
-const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
+const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
   const { t } = useTranslation('compliance');
 
   // 기간설정 컬럼 정의 (모든 컬럼 포함)
-  const periodColumns = useMemo<ColDef<PeriodSetting>[]>(() => [
+  const implMonitoringColumns = useMemo<ColDef<PeriodSetting>[]>(() => [
     {
       field: 'sequence',
       headerName: '순번',
@@ -706,7 +706,7 @@ const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
   }, []);
 
   return (
-    <React.Profiler id="PeriodSetting" onRender={onRenderProfiler}>
+    <React.Profiler id="ImplMonitoring" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
         {/* 🏗️ 페이지 헤더 */}
         <div className={styles.pageHeader}>
@@ -715,10 +715,10 @@ const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
               <CalendarTodayIcon className={styles.headerIcon} />
               <div>
                 <h1 className={styles.pageTitle}>
-                  {t('period.management.title', '기간설정 관리')}
+                  {t('implMonitoring.management.title', '이행점검 관리')}
                 </h1>
                 <p className={styles.pageDescription}>
-                  {t('period.management.description', '점검 기간 및 활동 대상 기간을 체계적으로 관리합니다')}
+                  {t('implMonitoring.management.description', '이행점검 현황 및 진행 상황을 체계적으로 관리합니다')}
                 </p>
               </div>
             </div>
@@ -786,7 +786,7 @@ const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
           {/* 🎯 공통 데이터 그리드 */}
           <BaseDataGrid
             data={displayPeriods}
-            columns={periodColumns}
+            columns={implMonitoringColumns}
             loading={loading}
             theme="alpine"
             onRowClick={(data) => handleRowClick(data)}
@@ -801,9 +801,9 @@ const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
           />
         </div>
 
-        {/* 기간설정 등록/상세 모달 */}
+        {/* 이행점검 등록/상세 모달 */}
         <React.Suspense fallback={<LoadingSpinner />}>
-          <PeriodFormModal
+          <ImplMonitoringFormModal
             open={modalState.addModal || modalState.detailModal}
             mode={modalState.addModal ? 'create' : 'detail'}
             period={modalState.selectedPeriod}
@@ -818,4 +818,4 @@ const PeriodSetting: React.FC<PeriodSettingProps> = ({ className }) => {
   );
 };
 
-export default PeriodSetting;
+export default ImplMonitoring;

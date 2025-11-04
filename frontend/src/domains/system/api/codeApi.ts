@@ -6,20 +6,7 @@
  * @since 1.0
  */
 
-import axios from 'axios';
-
-// API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-
-// Axios 인스턴스 생성
-const codeApiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
+import apiClient from '@/shared/api/apiClient';
 
 // =====================
 // 타입 정의
@@ -75,8 +62,8 @@ export interface CommonCodeGroupsResponse {
  * GET /api/system/codes/groups/active/with-details
  */
 export const getAllActiveCodeGroupsApi = async (): Promise<CommonCodeGroup[]> => {
-  const response = await codeApiClient.get<CommonCodeGroup[]>(
-    '/api/system/codes/groups/active/with-details'
+  const response = await apiClient.get<CommonCodeGroup[]>(
+    '/system/codes/groups/active/with-details'
   );
   return response.data;
 };
@@ -88,8 +75,8 @@ export const getAllActiveCodeGroupsApi = async (): Promise<CommonCodeGroup[]> =>
 export const getCodeGroupWithDetailsApi = async (
   groupCode: string
 ): Promise<CommonCodeGroup> => {
-  const response = await codeApiClient.get<CommonCodeGroup>(
-    `/api/system/codes/groups/${groupCode}/with-details`
+  const response = await apiClient.get<CommonCodeGroup>(
+    `/system/codes/groups/${groupCode}/with-details`
   );
   return response.data;
 };
@@ -101,10 +88,10 @@ export const getCodeGroupWithDetailsApi = async (
 export const getCodeGroupsByCategoryApi = async (
   category: string
 ): Promise<CommonCodeGroup[]> => {
-  const response = await codeApiClient.get<CommonCodeGroup[]>(
-    `/api/system/codes/groups/category/${category}`
+  const response = await apiClient.get<CommonCodeGroup[]>(
+    `/system/codes/groups/category/${category}`
   );
   return response.data;
 };
 
-export default codeApiClient;
+export default apiClient;

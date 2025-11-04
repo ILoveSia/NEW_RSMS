@@ -2,13 +2,13 @@
  * 회의체 API 클라이언트
  *
  * @description 회의체 관리 REST API 호출 함수 모음
+ * - 공통 apiClient 사용 (401 에러 시 자동 로그아웃)
+ *
  * @author Claude AI
  * @since 2025-10-24
  */
 
-import axios from 'axios';
-
-const API_BASE_URL = '/api/committees';
+import apiClient from '@/shared/api/apiClient';
 
 /**
  * 회의체 DTO 인터페이스
@@ -88,7 +88,7 @@ export interface CommitteeStats {
  * @returns 전체 회의체 리스트 (위원 목록 포함)
  */
 export const getAllCommittees = async (): Promise<CommitteeDto[]> => {
-  const response = await axios.get<CommitteeDto[]>(API_BASE_URL);
+  const response = await apiClient.get<CommitteeDto[]>('/committees');
   return response.data;
 };
 
@@ -101,8 +101,8 @@ export const getAllCommittees = async (): Promise<CommitteeDto[]> => {
 export const getCommitteesByLedgerOrderId = async (
   ledgerOrderId: string
 ): Promise<CommitteeDto[]> => {
-  const response = await axios.get<CommitteeDto[]>(
-    `${API_BASE_URL}/ledger/${ledgerOrderId}`
+  const response = await apiClient.get<CommitteeDto[]>(
+    `/committees/ledger/${ledgerOrderId}`
   );
   return response.data;
 };
@@ -116,8 +116,8 @@ export const getCommitteesByLedgerOrderId = async (
 export const getCommitteeById = async (
   committeeId: number
 ): Promise<CommitteeDto> => {
-  const response = await axios.get<CommitteeDto>(
-    `${API_BASE_URL}/${committeeId}`
+  const response = await apiClient.get<CommitteeDto>(
+    `/committees/${committeeId}`
   );
   return response.data;
 };
@@ -131,7 +131,7 @@ export const getCommitteeById = async (
 export const createCommittee = async (
   request: CommitteeCreateRequest
 ): Promise<CommitteeDto> => {
-  const response = await axios.post<CommitteeDto>(API_BASE_URL, request);
+  const response = await apiClient.post<CommitteeDto>('/committees', request);
   return response.data;
 };
 
@@ -146,8 +146,8 @@ export const updateCommittee = async (
   committeeId: number,
   request: CommitteeUpdateRequest
 ): Promise<CommitteeDto> => {
-  const response = await axios.put<CommitteeDto>(
-    `${API_BASE_URL}/${committeeId}`,
+  const response = await apiClient.put<CommitteeDto>(
+    `/committees/${committeeId}`,
     request
   );
   return response.data;
@@ -159,7 +159,7 @@ export const updateCommittee = async (
  * @param committeeId 회의체ID
  */
 export const deleteCommittee = async (committeeId: number): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/${committeeId}`);
+  await apiClient.delete(`/committees/${committeeId}`);
 };
 
 /**
@@ -170,7 +170,7 @@ export const deleteCommittee = async (committeeId: number): Promise<void> => {
 export const deleteCommittees = async (
   committeeIds: number[]
 ): Promise<void> => {
-  await axios.post(`${API_BASE_URL}/delete-batch`, { committeeIds });
+  await apiClient.post('/committees/delete-batch', { committeeIds });
 };
 
 /**
@@ -179,6 +179,6 @@ export const deleteCommittees = async (
  * @returns 회의체 통계 정보
  */
 export const getCommitteeStats = async (): Promise<CommitteeStats> => {
-  const response = await axios.get<CommitteeStats>(`${API_BASE_URL}/stats`);
+  const response = await apiClient.get<CommitteeStats>('/committees/stats');
   return response.data;
 };

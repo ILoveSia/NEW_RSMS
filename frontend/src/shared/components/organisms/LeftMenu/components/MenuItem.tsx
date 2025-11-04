@@ -55,7 +55,9 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   const isActive = activeMenuItem === item.id;
 
   // Material-UI 아이콘 동적 로딩
-  const IconComponent = item.icon ? (Icons as any)[item.icon] : null;
+  // 아이콘 이름에서 공백 제거 (데이터베이스 입력 오류 방어)
+  const iconName = item.icon?.trim();
+  const IconComponent = iconName ? (Icons as any)[iconName] : null;
 
   const handleClick = () => {
     if (item.path) {
