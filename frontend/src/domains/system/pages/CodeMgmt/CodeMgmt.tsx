@@ -351,6 +351,9 @@ const CodeMgmt: React.FC = () => {
       ? Math.max(...codeGroups.map(g => g.sortOrder))
       : 0;
 
+    // 임시 고유 ID 생성 (편집 중에도 변경되지 않음)
+    const tempId = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const newGroup: CodeGroup = {
       status: 'NEW', // 새로 추가된 행은 'NEW' 상태
       groupCode: `NEW_${Date.now()}`,
@@ -365,7 +368,9 @@ const CodeMgmt: React.FC = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: 'admin',
-      updatedBy: 'admin'
+      updatedBy: 'admin',
+      // @ts-ignore - 임시 ID (타입에는 없지만 런타임에서 사용)
+      _tempId: tempId
     };
     setCodeGroups(prev => [newGroup, ...prev]);
   }, [codeGroups]);
@@ -378,6 +383,9 @@ const CodeMgmt: React.FC = () => {
     const maxOrder = codeDetails.length > 0
       ? Math.max(...codeDetails.map(d => d.sortOrder))
       : 0;
+
+    // 임시 고유 ID 생성 (편집 중에도 변경되지 않음)
+    const tempId = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     const newDetail: CodeDetail = {
       status: 'NEW', // 새로 추가된 행은 'NEW' 상태
@@ -398,7 +406,9 @@ const CodeMgmt: React.FC = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: 'admin',
-      updatedBy: 'admin'
+      updatedBy: 'admin',
+      // @ts-ignore - 임시 ID (타입에는 없지만 런타임에서 사용)
+      _tempId: tempId
     };
     setCodeDetails(prev => [newDetail, ...prev]);
   }, [layoutState.selectedCodeGroup, codeDetails]);
@@ -406,10 +416,19 @@ const CodeMgmt: React.FC = () => {
   // 그룹 셀 값 변경
   const handleGroupCellValueChanged = useCallback((event: any) => {
     const updatedGroup = event.data as CodeGroup;
+    const rowNode = event.node;
 
     setCodeGroups(prev =>
-      prev.map(group => {
-        if (group.groupCode !== updatedGroup.groupCode) return group;
+      prev.map((group, index) => {
+        // AG-Grid의 rowIndex를 사용하여 정확한 행 매칭
+        if (rowNode && rowNode.rowIndex !== index) {
+          return group;
+        }
+
+        // rowNode가 없는 경우 기존 방식 사용
+        if (!rowNode && group.groupCode !== updatedGroup.groupCode) {
+          return group;
+        }
 
         // 기존 상태가 'NEW'면 'NEW' 유지, 그 외(undefined 포함)는 'UPDATE'로 변경
         const newStatus: 'NEW' | 'UPDATE' = group.status === 'NEW' ? 'NEW' : 'UPDATE';
@@ -417,7 +436,9 @@ const CodeMgmt: React.FC = () => {
         const updated: CodeGroup = {
           ...updatedGroup,
           status: newStatus,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          // @ts-ignore - 임시 ID 보존
+          _tempId: (group as any)._tempId
         };
 
         console.log('그룹 수정됨:', {
@@ -425,7 +446,9 @@ const CodeMgmt: React.FC = () => {
           field: event.colDef?.field,
           oldValue: event.oldValue,
           newValue: event.newValue,
-          status: newStatus
+          status: newStatus,
+          rowIndex: rowNode?.rowIndex,
+          _tempId: (updated as any)._tempId
         });
 
         return updated;
@@ -436,10 +459,18 @@ const CodeMgmt: React.FC = () => {
   // 상세 셀 값 변경
   const handleDetailCellValueChanged = useCallback((event: any) => {
     const updatedDetail = event.data as CodeDetail;
+    const rowNode = event.node;
+    const field = event.colDef?.field;
 
     setCodeDetails(prev =>
-      prev.map(detail => {
-        if (detail.detailCode !== updatedDetail.detailCode || detail.groupCode !== updatedDetail.groupCode) {
+      prev.map((detail, index) => {
+        // AG-Grid의 rowIndex를 사용하여 정확한 행 매칭
+        if (rowNode && rowNode.rowIndex !== index) {
+          return detail;
+        }
+
+        // rowNode가 없는 경우 기존 방식 사용
+        if (!rowNode && (detail.detailCode !== updatedDetail.detailCode || detail.groupCode !== updatedDetail.groupCode)) {
           return detail;
         }
 
@@ -449,16 +480,23 @@ const CodeMgmt: React.FC = () => {
         const updated: CodeDetail = {
           ...updatedDetail,
           status: newStatus,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          // @ts-ignore - 임시 ID 보존
+          _tempId: (detail as any)._tempId,
+          // @ts-ignore - 원본 detailCode 보존 (detailCode 변경 시 UPDATE API에서 사용)
+          _originalDetailCode: (detail as any)._originalDetailCode || (field === 'detailCode' ? event.oldValue : detail.detailCode)
         };
 
         console.log('상세 수정됨:', {
           groupCode: updated.groupCode,
           detailCode: updated.detailCode,
-          field: event.colDef?.field,
+          originalDetailCode: (updated as any)._originalDetailCode,
+          field: field,
           oldValue: event.oldValue,
           newValue: event.newValue,
-          status: newStatus
+          status: newStatus,
+          rowIndex: rowNode?.rowIndex,
+          _tempId: (updated as any)._tempId
         });
 
         return updated;
@@ -598,8 +636,10 @@ const CodeMgmt: React.FC = () => {
           });
           console.log('상세코드 생성 완료:', detail.detailCode);
         } else if (detail.status === 'UPDATE') {
-          // UPDATE
-          await codeMgmtApi.updateCodeDetail(detail.groupCode, detail.detailCode, {
+          // UPDATE - 원본 detailCode 사용 (detailCode가 변경되었을 수 있음)
+          const originalDetailCode = (detail as any)._originalDetailCode || detail.detailCode;
+          await codeMgmtApi.updateCodeDetail(detail.groupCode, originalDetailCode, {
+            detailCode: detail.detailCode, // 변경된 detailCode 전달
             detailName: detail.detailName,
             description: detail.description,
             sortOrder: detail.sortOrder,
@@ -611,7 +651,7 @@ const CodeMgmt: React.FC = () => {
             validUntil: detail.validUntil,
             isActive: detail.isActive
           });
-          console.log('상세코드 수정 완료:', detail.detailCode);
+          console.log('상세코드 수정 완료:', originalDetailCode, '->', detail.detailCode);
         }
       }
 
@@ -826,6 +866,14 @@ const CodeMgmt: React.FC = () => {
                     onRowClick={handleGroupSelect}
                     onCellValueChanged={handleGroupCellValueChanged}
                     onSelectionChange={handleGroupSelectionChange}
+                    getRowId={(params) => {
+                      // 임시 ID가 있으면 사용 (새로 추가된 행, 편집 중에도 변경되지 않음)
+                      if ((params.data as any)._tempId) {
+                        return (params.data as any)._tempId;
+                      }
+                      // 기존 행은 groupCode 사용
+                      return params.data.groupCode;
+                    }}
                     getRowStyle={(params: any) => {
                       if (params.data?.status === 'NEW') {
                         return { background: '#e3f2fd' }; // 신규: 연한 파란색
@@ -953,6 +1001,14 @@ const CodeMgmt: React.FC = () => {
                     columns={detailColumns}
                     onCellValueChanged={handleDetailCellValueChanged}
                     onSelectionChange={handleDetailSelectionChange}
+                    getRowId={(params) => {
+                      // 임시 ID가 있으면 사용 (새로 추가된 행, 편집 중에도 변경되지 않음)
+                      if ((params.data as any)._tempId) {
+                        return (params.data as any)._tempId;
+                      }
+                      // 기존 행은 groupCode + detailCode 조합 사용
+                      return `${params.data.groupCode}_${params.data.detailCode}`;
+                    }}
                     getRowStyle={(params: any) => {
                       if (params.data?.status === 'NEW') {
                         return { background: '#e3f2fd' }; // 신규: 연한 파란색

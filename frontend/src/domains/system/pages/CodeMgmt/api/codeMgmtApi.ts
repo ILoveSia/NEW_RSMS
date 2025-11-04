@@ -53,6 +53,7 @@ export interface CreateCodeDetailRequest {
 }
 
 export interface UpdateCodeDetailRequest {
+  detailCode?: string; // 코드 변경 가능 (선택적)
   detailName: string;
   description?: string;
   sortOrder: number;

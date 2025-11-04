@@ -9,7 +9,7 @@ import { getCurrentUserApi } from './domains/auth/api/authApi';
 import styles from './App.module.scss';
 
 const App: React.FC = () => {
-  const { isAuthenticated, logout, login } = useAuthStore();
+  const { isAuthenticated, logout, login, setInitializing } = useAuthStore();
   const isInitialMount = useRef(true);
 
   useEffect(() => {
@@ -24,12 +24,13 @@ const App: React.FC = () => {
     // - 로그인 직후 useEffect 재실행 시에는 건너뜀
     const validateSession = async () => {
       const currentPath = window.location.pathname;
-      const isLoginPage = currentPath === '/login' || currentPath === '/';
+      const isLoginPage = currentPath.includes('/login') || currentPath === '/' || currentPath.includes('/auth');
 
       // 조건: 최초 마운트 + 인증됨 + 로그인 페이지 아님
       if (isInitialMount.current && isAuthenticated && !isLoginPage) {
         try {
           console.log('[App] 세션 유효성 검증 시작...');
+          setInitializing(true);
           const response = await getCurrentUserApi();
 
           if (!response.success || !response.userInfo) {
@@ -41,11 +42,13 @@ const App: React.FC = () => {
             console.log('[App] 세션 유효 - 사용자 정보 업데이트');
             const user = {
               userId: String(response.userInfo.userId),
+              username: response.userInfo.username,
               email: `${response.userInfo.username}@rsms.com`,
               empNo: response.userInfo.empNo,
               password: undefined,
               role: response.userInfo.isAdmin ? 'ADMIN' : 'EMPLOYEE',
               active: true,
+              accountStatus: 'ACTIVE' as const,
               empName: response.userInfo.username,
               roles: undefined,
               permissions: response.userInfo.roles.map(role => ({
@@ -64,6 +67,9 @@ const App: React.FC = () => {
               lastLoginAt: new Date().toISOString(),
               fullName: response.userInfo.username,
               roleCodes: response.userInfo.roles,
+              isAdmin: response.userInfo.isAdmin,
+              isExecutive: response.userInfo.roles.includes('201'),
+              authLevel: response.userInfo.isAdmin ? 1 : 4,
               id: String(response.userInfo.userId),
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
@@ -79,15 +85,20 @@ const App: React.FC = () => {
         } catch (error: any) {
           console.error('[App] 세션 검증 실패:', error);
 
-          // 401 Unauthorized인 경우에만 로그아웃 (세션 만료)
-          if (error.response?.status === 401) {
+          // 401 Unauthorized 또는 403 Forbidden인 경우 로그아웃 (세션 만료)
+          if (error.response?.status === 401 || error.response?.status === 403) {
             console.warn('[App] 인증이 만료되어 로그아웃합니다.');
             logout();
           } else {
-            // 403이나 다른 에러는 무시 (로그인 직후일 수 있음)
+            // 다른 에러는 무시 (네트워크 오류 등)
             console.warn('[App] 세션 검증 실패했지만 로그아웃하지 않음 (상태 코드:', error.response?.status, ')');
           }
+        } finally {
+          setInitializing(false);
         }
+      } else {
+        // 로그인 페이지이거나 인증되지 않은 경우 초기화 완료
+        setInitializing(false);
       }
 
       // 최초 마운트 플래그 해제

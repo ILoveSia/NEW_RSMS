@@ -17,33 +17,49 @@ interface RouteGuardProps {
 /**
  * 권한 기반 라우트 보호 컴포넌트
  */
-export const RouteGuard: React.FC<RouteGuardProps> = ({ 
-  children, 
-  permission, 
-  fallback 
+export const RouteGuard: React.FC<RouteGuardProps> = ({
+  children,
+  permission,
+  fallback
 }) => {
   const location = useLocation();
-  const { isAuthenticated, user, hasRoleLevel } = useAuthStore();
+  const { isAuthenticated, user, isInitializing } = useAuthStore();
 
   // Public 라우트는 항상 허용
   if (permission === 'public') {
     return <>{children}</>;
   }
 
+  // 앱 초기화 중 (세션 검증 중) - 로딩 표시
+  if (isInitializing) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '1.2rem',
+        color: '#666'
+      }}>
+        세션 검증 중...
+      </div>
+    );
+  }
+
   // 인증이 필요한데 로그인하지 않은 경우
   if (!isAuthenticated || !user) {
     return (
-      <Navigate 
-        to={routes.auth.login} 
-        state={{ from: location }} 
-        replace 
+      <Navigate
+        to={routes.auth.login}
+        state={{ from: location }}
+        replace
       />
     );
   }
 
   // 권한 레벨 체크
   const hasPermission = checkPermission(user, permission);
-  
+
   if (!hasPermission) {
     if (fallback) {
       return <>{fallback}</>;

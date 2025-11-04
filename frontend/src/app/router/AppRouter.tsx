@@ -460,6 +460,7 @@ const AppRouter: React.FC = () => {
                 <Routes>
                   {/* 임원이행점검보고서 */}
                   <Route path="executive-report" element={<ExecutiveReport />} />
+                  <Route path="executivereport" element={<ExecutiveReport />} />
                   <Route path="executive-report/:id" element={
                     <TemporaryPage
                       title="임원이행점검보고서 상세"

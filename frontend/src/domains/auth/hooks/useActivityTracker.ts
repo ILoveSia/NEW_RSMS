@@ -81,7 +81,7 @@ export const useActivityTracker = (options: UseActivityTrackerOptions = {}) => {
       }
 
       logout();
-      window.location.href = '/login?reason=inactivity';
+      window.location.href = '/auth/login?reason=inactivity';
       return;
     }
 

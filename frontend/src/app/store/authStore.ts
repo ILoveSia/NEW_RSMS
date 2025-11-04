@@ -16,22 +16,24 @@ interface AuthStore {
   sessionId: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitializing: boolean; // 앱 초기화 중 (세션 검증)
   error: string | null;
-  
+
   // Computed values (권한 관련)
   permissions: PermissionCode[];
   roleCodes: UserRoleCode[];
-  
+
   // Actions
   setUser: (user: User | null) => void;
   setSession: (sessionId: string) => void;
   clearSession: () => void;
   setLoading: (loading: boolean) => void;
+  setInitializing: (initializing: boolean) => void;
   setError: (error: string | null) => void;
   login: (user: User, sessionId: string) => void;
   logout: () => void;
   reset: () => void;
-  
+
   // Permission & Role helpers
   hasPermission: (permission: PermissionCode) => boolean;
   hasRole: (roleCode: UserRoleCode) => boolean;
@@ -54,6 +56,7 @@ const initialState = {
   sessionId: null,
   isAuthenticated: false,
   isLoading: false,
+  isInitializing: true, // 앱 시작 시 초기화 중
   error: null,
   permissions: [] as PermissionCode[],
   roleCodes: [] as UserRoleCode[],
@@ -90,10 +93,13 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: false 
           }, false, 'clearSession'),
         
-        setLoading: (isLoading) => 
+        setLoading: (isLoading) =>
           set({ isLoading }, false, 'setLoading'),
-        
-        setError: (error) => 
+
+        setInitializing: (isInitializing) =>
+          set({ isInitializing }, false, 'setInitializing'),
+
+        setError: (error) =>
           set({ error }, false, 'setError'),
         
         login: (user, sessionId) => {
