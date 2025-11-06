@@ -22,6 +22,8 @@ import type {
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
 // Domain Components
@@ -414,6 +416,28 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     };
   }, [pagination.total, positionDuals]);
 
+  // BasePageHeader용 통계 데이터
+  const headerStatistics = useMemo(() => [
+    {
+      icon: <TrendingUpIcon />,
+      value: statistics.total,
+      label: '총 겸직',
+      color: 'primary' as const
+    },
+    {
+      icon: <FlagIcon />,
+      value: statistics.representativeCount,
+      label: '대표 직책',
+      color: 'warning' as const
+    },
+    {
+      icon: <AnalyticsIcon />,
+      value: statistics.activeCount,
+      label: '활성 겸직',
+      color: 'success' as const
+    }
+  ], [statistics]);
+
   // Filtered position duals for display (성능 최적화)
   const displayPositionDuals = useMemo(() => {
     return positionDuals; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
@@ -567,56 +591,14 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <DashboardIcon className={styles.headerIcon} />
-            <div>
-              <h1 className={styles.pageTitle}>
-                {t('positionDual.management.title', '직책겸직관리 시스템')}
-              </h1>
-              <p className={styles.pageDescription}>
-                {t('positionDual.management.description', '직책별 겸직 현황을 체계적으로 관리합니다')}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.headerStats}>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <TrendingUpIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.total}</div>
-                <div className={styles.statLabel}>총 겸직</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <FlagIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>
-                  {statistics.representativeCount}
-                </div>
-                <div className={styles.statLabel}>대표 직책</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <AnalyticsIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.activeCount}</div>
-                <div className={styles.statLabel}>활성 겸직</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 🏗️ 공통 페이지 헤더 */}
+      <BasePageHeader
+        icon={<DashboardIcon />}
+        title={t('positionDual.management.title', '직책겸직관리 시스템')}
+        description={t('positionDual.management.description', '직책별 겸직 현황을 체계적으로 관리합니다')}
+        statistics={headerStatistics}
+        i18nNamespace="resps"
+      />
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
@@ -660,8 +642,13 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
         />
       </div>
 
-      {/* 겸직 등록/상세 모달 */}
-      <React.Suspense fallback={<LoadingSpinner />}>
+      {/* 겸직 등록/상세 모달 - BaseModalWrapper 적용 */}
+      <BaseModalWrapper
+        isOpen={modalState.addModal || modalState.detailModal}
+        onClose={handleModalClose}
+        ariaLabel="겸직 관리 모달"
+        fallbackComponent={<LoadingSpinner text="겸직 모달을 불러오는 중..." />}
+      >
         <PositionDualFormModal
           open={modalState.addModal || modalState.detailModal}
           mode={modalState.addModal ? 'create' : 'detail'}
@@ -672,7 +659,7 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
           loading={loading}
           groupData={modalState.detailModal ? selectedGroupData : undefined}
         />
-      </React.Suspense>
+      </BaseModalWrapper>
     </div>
   );
 };

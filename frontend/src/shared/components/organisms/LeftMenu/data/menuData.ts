@@ -233,25 +233,25 @@ export const MENU_DATA: MenuItem[] = [
       {
         id: 'code-management',
         title: '코드관리',
-        path: '/app/settings/system/code-mgmt',
+        path: '/app/settings/system/codemgmt',
         permission: 'admin'
       },
       {
         id: 'menu-management',
         title: '메뉴관리',
-        path: '/app/settings/system/menu-mgmt',
+        path: '/app/settings/system/menumgmt',
         permission: 'admin'
       },
       {
         id: 'role-management',
         title: '역활관리',
-        path: '/app/settings/system/role-mgmt',
+        path: '/app/settings/system/rolemgmt',
         permission: 'admin'
       },
       {
         id: 'user-management',
         title: '사용자관리',
-        path: '/app/settings/system/user-mgmt',
+        path: '/app/settings/system/usermgmt',
         permission: 'admin'
       },
       {

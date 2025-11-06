@@ -46,7 +46,7 @@
  * ```
  */
 
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import BaseAlert, { type AlertType, type AlertAction, type BaseAlertProps } from '../../components/organisms/BaseAlert';
 
 export interface AlertOptions {

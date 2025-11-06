@@ -150,7 +150,7 @@
 시스템 운영을 위한 기본 설정 화면들입니다.
 
 #### 2.1 UserMgmt (사용자관리) ✅ **완성**
-- **URL**: `/app/settings/system/user-mgmt`
+- **URL**: `/app/settings/system/usermgmt`
 - **기능**:
   - 시스템 사용자 등록/수정/삭제
   - 사용자 권한 부여
@@ -165,7 +165,7 @@
 - **상태**: UI 완성, Backend API 연동 필요
 
 #### 2.2 RoleMgmt (권한관리)
-- **URL**: `/app/settings/system/role-mgmt`
+- **URL**: `/app/settings/system/rolemgmt`
 - **기능**:
   - 권한 그룹 생성/관리
   - 메뉴별 권한 설정 (조회/등록/수정/삭제)
@@ -178,7 +178,7 @@
 - **상태**: 기본 구조만 생성됨
 
 #### 2.3 MenuMgmt (메뉴관리)
-- **URL**: `/app/settings/system/menu-mgmt`
+- **URL**: `/app/settings/system/menumgmt`
 - **기능**:
   - 메뉴 트리 구조 관리
   - 메뉴 등록/수정/삭제
@@ -189,7 +189,7 @@
 - **상태**: 기본 구조만 생성됨
 
 #### 2.4 CodeMgmt (코드관리)
-- **URL**: `/app/settings/system/code-mgmt`
+- **URL**: `/app/settings/system/codemgmt`
 - **기능**:
   - 공통코드 등록/수정/삭제
   - 코드 그룹 관리
@@ -198,7 +198,7 @@
 - **상태**: 기본 구조만 생성됨
 
 #### 2.5 AccessLog (접근로그) ✅ **완성**
-- **URL**: `/app/settings/system/access-log`
+- **URL**: `/app/settings/system/accesslog`
 - **기능**:
   - 시스템 접근 로그 조회
   - 사용자별 접근 이력 추적

@@ -191,12 +191,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
     let toastId: string | null = null;
 
     try {
-      // 로딩 토스트 표시
-      if (showToast) {
-        toastId = toast.loading(messages.loading);
-        currentToastRef.current = toastId;
-      }
-
+      // 로딩 토스트 제거 - 너무 많은 토스트 방지
       if (key && process.env.NODE_ENV === 'development') {
         console.log(`[useAsyncHandler:${key}] 작업 시작:`, messages.loading);
       }
@@ -208,11 +203,7 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
         timeout
       });
 
-      // 성공 처리
-      if (showToast && toastId && !abortControllerRef.current?.signal.aborted) {
-        toast.update(toastId, 'success', messages.success, { duration: 3000 });
-      }
-
+      // 성공 처리 - 성공 메시지도 표시하지 않음 (조용히 성공)
       if (key && process.env.NODE_ENV === 'development') {
         console.log(`[useAsyncHandler:${key}] 작업 완료:`, messages.success);
       }
@@ -222,25 +213,17 @@ const useAsyncHandler = (key?: string): UseAsyncHandlerReturn => {
     } catch (error) {
       const err = error as Error;
 
-      // 작업이 취소된 경우
+      // 작업이 취소된 경우 - 메시지 표시 안 함
       if (err.name === 'AbortError' || err.message.includes('취소')) {
-        if (showToast && toastId) {
-          // messages.cancel이 명시적으로 설정된 경우에만 메시지 표시
-          if (messages.cancel !== undefined && messages.cancel !== '') {
-            toast.update(toastId, 'info', messages.cancel, { duration: 3000 });
-          } else {
-            toast.dismiss(toastId);
-          }
-        }
         return null;
       }
 
-      // 에러 처리
+      // 에러 처리 - 간단한 에러 메시지만 표시
       setError(err);
 
-      if (showToast && toastId) {
+      if (showToast) {
         const errorMessage = err.message || messages.error;
-        toast.update(toastId, 'error', errorMessage, { duration: 5000 });
+        toast.error(errorMessage, { autoClose: 3000 });
       }
 
       if (logError) {

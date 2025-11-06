@@ -15,61 +15,66 @@ import apiClient from '@/shared/api/apiClient';
 
 /**
  * 책무 생성 요청 DTO
+ * - responsibilityCd는 서버에서 자동 생성되므로 제외
  */
 export interface CreateResponsibilityRequest {
   ledgerOrderId: string;
   positionsId: number;
   responsibilityCat: string;
-  responsibilityCd: string;
   responsibilityInfo: string;
   responsibilityLegal: string;
-  isActive: string;
+  expirationDate?: string;
+  responsibilityStatus?: string;
+  isActive?: string;  // 기본값: 'Y'
 }
 
 /**
  * 책무 수정 요청 DTO
  */
 export interface UpdateResponsibilityRequest {
+  ledgerOrderId: string;
+  positionsId: number;
+  responsibilityCat: string;
   responsibilityInfo: string;
   responsibilityLegal: string;
-  isActive: string;
+  expirationDate?: string;
+  responsibilityStatus?: string;
+  isActive?: string;
 }
 
 /**
  * 책무 응답 DTO
+ * - PK: responsibilityCd (String, 자동생성)
  */
 export interface ResponsibilityDto {
-  responsibilityId: number;
+  responsibilityCd: string;          // PK (코드, 자동생성)
   ledgerOrderId: string;
   positionsId: number;
   responsibilityCat: string;
-  responsibilityCatName: string;
-  responsibilityCd: string;
-  responsibilityCdName: string;
+  responsibilityCatName?: string;
+  responsibilityCdName?: string;
   responsibilityInfo: string;
   responsibilityLegal: string;
-  expirationDate: string;
+  expirationDate?: string;
   responsibilityStatus?: string;
   isActive: string;
-  createdBy: string;
-  createdAt: string;
-  updatedBy: string;
-  updatedAt: string;
+  createdBy?: string;
+  createdAt?: string;
+  updatedBy?: string;
+  updatedAt?: string;
 }
 
 /**
- * 4테이블 조인 책무 목록 응답 DTO
- * - responsibilities (마스터), positions, responsibility_details, management_obligations
+ * 2테이블 조인 책무 목록 응답 DTO
+ * - responsibilities (마스터), positions
  */
 export interface ResponsibilityListDto {
   // responsibilities 테이블
-  responsibilityId: number;
   ledgerOrderId: string;
   positionsId: number;
   responsibilityCat: string | null;
   responsibilityCatName: string | null;
   responsibilityCd: string | null;
-  responsibilityCdName: string | null;
   responsibilityInfo: string | null;
   responsibilityLegal: string | null;
   expirationDate: string | null;
@@ -85,22 +90,6 @@ export interface ResponsibilityListDto {
   positionsName: string | null;
   hqCode: string | null;
   hqName: string | null;
-
-  // responsibility_details 테이블
-  responsibilityDetailId: number | null;
-  responsibilityDetailInfo: string | null;
-  detailIsActive: string | null;
-
-  // management_obligations 테이블
-  managementObligationId: number | null;
-  obligationMajorCatCd: string | null;
-  obligationMajorCatName: string | null;
-  obligationMiddleCatCd: string | null;
-  obligationMiddleCatName: string | null;
-  obligationCd: string | null;
-  obligationInfo: string | null;
-  orgCode: string | null;
-  obligationIsActive: string | null;
 }
 
 // ===============================
@@ -108,10 +97,10 @@ export interface ResponsibilityListDto {
 // ===============================
 
 /**
- * 4테이블 조인 책무 목록 조회
+ * 2테이블 조인 책무 목록 조회
  * GET /resps/responsibilities/list-with-join
  * @param params 검색 파라미터 (선택적)
- * @returns 책무 목록 (책무(마스터), 직책, 책무세부, 관리의무 조인)
+ * @returns 책무 목록 (책무(마스터), 직책 조인)
  */
 export const getAllResponsibilitiesWithJoin = async (params?: {
   ledgerOrderId?: string;
@@ -125,21 +114,21 @@ export const getAllResponsibilitiesWithJoin = async (params?: {
     );
     return response.data;
   } catch (error) {
-    console.error('[responsibilityApi] 책무 목록 조회 실패 (4테이블 조인):', error);
+    console.error('[responsibilityApi] 책무 목록 조회 실패 (2테이블 조인):', error);
     throw new Error('책무 목록 조회에 실패했습니다.');
   }
 };
 
 /**
  * 원장차수ID와 직책ID로 책무 목록 조회
- * GET /resps/responsibilities?ledgerOrderId={ledgerOrderId}&positionsId={positionsId}
+ * GET /resps/responsibilities/responsibilities?ledgerOrderId={ledgerOrderId}&positionsId={positionsId}
  */
 export const getResponsibilities = async (
   ledgerOrderId: string,
   positionsId: number
 ): Promise<ResponsibilityDto[]> => {
   try {
-    const response = await apiClient.get<ResponsibilityDto[]>('/resps/responsibilities', {
+    const response = await apiClient.get<ResponsibilityDto[]>('/resps/responsibilities/responsibilities', {
       params: { ledgerOrderId, positionsId }
     });
     return response.data;
@@ -151,14 +140,14 @@ export const getResponsibilities = async (
 
 /**
  * 책무 단건 조회
- * GET /resps/responsibilities/{responsibilityId}
+ * GET /resps/responsibilities/{responsibilityCd}
  */
 export const getResponsibility = async (
-  responsibilityId: number
+  responsibilityCd: string
 ): Promise<ResponsibilityDto> => {
   try {
     const response = await apiClient.get<ResponsibilityDto>(
-      `/resps/responsibilities/${responsibilityId}`
+      `/resps/responsibilities/${responsibilityCd}`
     );
     return response.data;
   } catch (error) {
@@ -168,7 +157,7 @@ export const getResponsibility = async (
 };
 
 /**
- * 책무 생성
+ * 책무 생성 (코드 자동생성)
  * POST /resps/responsibilities
  */
 export const createResponsibility = async (
@@ -188,15 +177,15 @@ export const createResponsibility = async (
 
 /**
  * 책무 수정
- * PUT /resps/responsibilities/{responsibilityId}
+ * PUT /resps/responsibilities/{responsibilityCd}
  */
 export const updateResponsibility = async (
-  responsibilityId: number,
+  responsibilityCd: string,
   request: UpdateResponsibilityRequest
 ): Promise<ResponsibilityDto> => {
   try {
     const response = await apiClient.put<ResponsibilityDto>(
-      `/resps/responsibilities/${responsibilityId}`,
+      `/resps/responsibilities/${responsibilityCd}`,
       request
     );
     return response.data;
@@ -208,13 +197,13 @@ export const updateResponsibility = async (
 
 /**
  * 책무 삭제
- * DELETE /resps/responsibilities/{responsibilityId}
+ * DELETE /resps/responsibilities/{responsibilityCd}
  */
 export const deleteResponsibility = async (
-  responsibilityId: number
+  responsibilityCd: string
 ): Promise<void> => {
   try {
-    await apiClient.delete(`/resps/responsibilities/${responsibilityId}`);
+    await apiClient.delete(`/resps/responsibilities/${responsibilityCd}`);
   } catch (error) {
     console.error('[responsibilityApi] 책무 삭제 실패:', error);
     throw new Error('책무 삭제에 실패했습니다.');
@@ -223,7 +212,7 @@ export const deleteResponsibility = async (
 
 /**
  * 원장차수ID와 직책ID로 모든 책무 저장 (기존 삭제 후 신규 저장)
- * POST /resps/responsibilities/save-all
+ * POST /resps/responsibilities/responsibilities/save-all
  */
 export const saveAllResponsibilities = async (
   ledgerOrderId: string,
@@ -232,7 +221,7 @@ export const saveAllResponsibilities = async (
 ): Promise<ResponsibilityDto[]> => {
   try {
     const response = await apiClient.post<ResponsibilityDto[]>(
-      '/resps/responsibilities/save-all',
+      '/resps/responsibilities/responsibilities/save-all',
       requests,
       {
         params: { ledgerOrderId, positionsId }
@@ -285,14 +274,14 @@ export interface ManagementObligationDto {
 
 /**
  * 책무, 책무세부, 관리의무를 한 번에 생성
- * POST /resps/responsibilities/with-details
+ * POST /resps/responsibilities/responsibilities/with-details
  */
 export const createResponsibilityWithDetails = async (
   request: CreateResponsibilityWithDetailsRequest
 ): Promise<ResponsibilityDto> => {
   try {
     const response = await apiClient.post<ResponsibilityDto>(
-      '/resps/responsibilities/with-details',
+      '/resps/responsibilities/responsibilities/with-details',
       request
     );
     return response.data;
@@ -342,14 +331,14 @@ export interface ManagementObligationDto {
 
 /**
  * 관리의무 생성 API
- * POST /resps/management-obligations
+ * POST /resps/responsibilities/management-obligations
  */
 export const createManagementObligation = async (
   request: CreateManagementObligationRequest
 ): Promise<ManagementObligationDto> => {
   try {
     const response = await apiClient.post<ManagementObligationDto>(
-      '/resps/management-obligations',
+      '/resps/responsibilities/management-obligations',
       request
     );
     return response.data;
@@ -361,14 +350,14 @@ export const createManagementObligation = async (
 
 /**
  * 책무세부ID로 관리의무 목록 조회 API
- * GET /resps/management-obligations/detail/{responsibilityDetailId}
+ * GET /resps/responsibilities/management-obligations/detail/{responsibilityDetailId}
  */
 export const getManagementObligationsByDetailId = async (
   responsibilityDetailId: number
 ): Promise<ManagementObligationDto[]> => {
   try {
     const response = await apiClient.get<ManagementObligationDto[]>(
-      `/resps/management-obligations/detail/${responsibilityDetailId}`
+      `/resps/responsibilities/management-obligations/detail/${responsibilityDetailId}`
     );
     return response.data;
   } catch (error) {
@@ -379,14 +368,14 @@ export const getManagementObligationsByDetailId = async (
 
 /**
  * 관리의무 삭제 API
- * DELETE /resps/management-obligations/{managementObligationId}
+ * DELETE /resps/responsibilities/management-obligations/{managementObligationId}
  */
 export const deleteManagementObligation = async (
   managementObligationId: number
 ): Promise<void> => {
   try {
     await apiClient.delete(
-      `/resps/management-obligations/${managementObligationId}`
+      `/resps/responsibilities/management-obligations/${managementObligationId}`
     );
   } catch (error) {
     console.error('[responsibilityApi] 관리의무 삭제 실패:', error);
@@ -423,14 +412,14 @@ export interface ResponsibilityDetailDto {
 
 /**
  * 책무세부 생성 API
- * POST /resps/responsibility-details
+ * POST /resps/responsibilities/responsibility-details
  */
 export const createResponsibilityDetail = async (
   request: CreateResponsibilityDetailRequest
 ): Promise<ResponsibilityDetailDto> => {
   try {
     const response = await apiClient.post<ResponsibilityDetailDto>(
-      '/resps/responsibility-details',
+      '/resps/responsibilities/responsibility-details',
       request
     );
     return response.data;
@@ -442,14 +431,14 @@ export const createResponsibilityDetail = async (
 
 /**
  * 책무ID로 책무세부 목록 조회 API
- * GET /resps/responsibility-details/responsibility/{responsibilityId}
+ * GET /resps/responsibilities/responsibility-details/responsibility/{responsibilityId}
  */
 export const getResponsibilityDetailsByResponsibilityId = async (
   responsibilityId: number
 ): Promise<ResponsibilityDetailDto[]> => {
   try {
     const response = await apiClient.get<ResponsibilityDetailDto[]>(
-      `/resps/responsibility-details/responsibility/${responsibilityId}`
+      `/resps/responsibilities/responsibility-details/responsibility/${responsibilityId}`
     );
     return response.data;
   } catch (error) {
@@ -460,17 +449,67 @@ export const getResponsibilityDetailsByResponsibilityId = async (
 
 /**
  * 책무세부 삭제 API
- * DELETE /resps/responsibility-details/{responsibilityDetailId}
+ * DELETE /resps/responsibilities/responsibility-details/{responsibilityDetailId}
  */
 export const deleteResponsibilityDetail = async (
   responsibilityDetailId: number
 ): Promise<void> => {
   try {
     await apiClient.delete(
-      `/resps/responsibility-details/${responsibilityDetailId}`
+      `/resps/responsibilities/responsibility-details/${responsibilityDetailId}`
     );
   } catch (error) {
     console.error('[responsibilityApi] 책무세부 삭제 실패:', error);
     throw new Error('책무세부 삭제에 실패했습니다.');
+  }
+};
+
+// ===============================
+// 엑셀 업로드 API
+// ===============================
+
+/**
+ * 엑셀 업로드 응답 DTO
+ */
+export interface ExcelUploadResponse {
+  successCount: number;    // 성공 건수
+  failCount: number;        // 실패 건수
+  totalCount: number;       // 전체 건수
+  errors?: string[];        // 에러 메시지 목록
+}
+
+/**
+ * 책무 엑셀 업로드 API
+ * POST /resps/responsibilities/excel/upload
+ *
+ * 엑셀 양식:
+ * - 원장차수 (ledgerOrderId)
+ * - 직책코드 (positionsCd)
+ * - 책무카테고리코드 (responsibilityCat)
+ * - 책무내용 (responsibilityInfo)
+ * - 책무관련근거 (responsibilityLegal)
+ * - 사용여부 (isActive)
+ */
+export const uploadResponsibilityExcel = async (
+  file: File
+): Promise<ExcelUploadResponse> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.post<ExcelUploadResponse>(
+      '/resps/responsibilities/excel/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('[responsibilityApi] 엑셀 업로드 실패:', error);
+    throw new Error('엑셀 업로드에 실패했습니다.');
   }
 };

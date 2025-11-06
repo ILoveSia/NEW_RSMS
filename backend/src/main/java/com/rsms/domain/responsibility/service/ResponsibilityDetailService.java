@@ -24,9 +24,52 @@ public class ResponsibilityDetailService {
 
     private final ResponsibilityDetailRepository responsibilityDetailRepository;
 
+    // ===============================
+    // 코드 자동 생성 로직
+    // ===============================
+
+    /**
+     * 책무세부코드 자동 생성
+     * - 코드 생성 규칙: 책무코드 뒷 9자리 + "D" + 순번(4자리)
+     * - 예시: "RM0001D0001" = "RM0001"(책무코드 suffix) + "D" + "0001"(순번)
+     *
+     * @param responsibilityCd 책무코드 (예: "20250001RM0001")
+     * @return 생성된 책무세부코드 (예: "RM0001D0001")
+     */
+    private String generateDetailCode(String responsibilityCd) {
+        log.debug("[ResponsibilityDetailService] 책무세부코드 생성 시작 - responsibilityCd: {}", responsibilityCd);
+
+        // 1. 책무코드에서 suffix 추출 (뒷 9자리)
+        // 예: "20250001RM0001" → "RM0001" (9자리가 아닐 수도 있으므로 실제 코드 길이 확인)
+        String suffix = responsibilityCd.length() >= 9
+            ? responsibilityCd.substring(responsibilityCd.length() - 9)
+            : responsibilityCd;
+
+        // 2. prefix 길이 계산 (suffix + "D" = prefixLength)
+        int prefixLength = suffix.length() + 1;  // "RM0001D"의 길이 = 7
+
+        // 3. 최대 순번 조회
+        Integer maxSeq = responsibilityDetailRepository.findMaxSequenceByResponsibilityCd(
+            responsibilityCd, prefixLength);
+
+        // 4. 다음 순번 계산
+        int nextSeq = (maxSeq != null ? maxSeq : 0) + 1;
+
+        // 5. 4자리 순번으로 포맷팅
+        String formattedSeq = String.format("%04d", nextSeq);
+
+        // 6. 코드 조합: suffix + "D" + 순번
+        String code = suffix + "D" + formattedSeq;
+
+        log.debug("[ResponsibilityDetailService] 책무세부코드 생성 완료 - responsibilityCd: {}, suffix: {}, seq: {} -> code: {}",
+                  responsibilityCd, suffix, nextSeq, code);
+
+        return code;
+    }
+
     /**
      * 책무세부 생성
-     * - 책무에 대한 세부내용을 개별 저장
+     * - 책무세부코드는 자동 생성됨
      *
      * @param request 책무세부 생성 요청 DTO
      * @param username 생성자 사용자명
@@ -34,12 +77,16 @@ public class ResponsibilityDetailService {
      */
     @Transactional
     public ResponsibilityDetailDto createDetail(CreateResponsibilityDetailRequest request, String username) {
-        log.debug("[ResponsibilityDetailService] 책무세부 생성 요청 - responsibilityId: {}, username: {}",
-            request.getResponsibilityId(), username);
+        log.debug("[ResponsibilityDetailService] 책무세부 생성 요청 - responsibilityCd: {}, username: {}",
+            request.getResponsibilityCd(), username);
+
+        // 책무세부코드 자동 생성
+        String generatedCode = generateDetailCode(request.getResponsibilityCd());
 
         // 책무세부 엔티티 생성
         ResponsibilityDetail detail = ResponsibilityDetail.builder()
-            .responsibilityId(request.getResponsibilityId())
+            .responsibilityDetailCd(generatedCode)  // 자동 생성된 코드 사용
+            .responsibilityCd(request.getResponsibilityCd())
             .responsibilityDetailInfo(request.getResponsibilityDetailInfo())
             .isActive(request.getIsActive() != null ? request.getIsActive() : "Y")
             .createdBy(username)
@@ -48,22 +95,22 @@ public class ResponsibilityDetailService {
 
         // 저장
         ResponsibilityDetail saved = responsibilityDetailRepository.save(detail);
-        log.info("[ResponsibilityDetailService] 책무세부 생성 완료 - responsibilityDetailId: {}", saved.getResponsibilityDetailId());
+        log.info("[ResponsibilityDetailService] 책무세부 생성 완료 - responsibilityDetailCd: {}", saved.getResponsibilityDetailCd());
 
         // DTO 변환 후 반환
         return convertToDto(saved);
     }
 
     /**
-     * 책무ID로 책무세부 목록 조회
+     * 책무코드로 책무세부 목록 조회
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드
      * @return 책무세부 DTO 리스트
      */
-    public List<ResponsibilityDetailDto> findByResponsibilityId(Long responsibilityId) {
-        log.debug("[ResponsibilityDetailService] 책무세부 조회 - responsibilityId: {}", responsibilityId);
+    public List<ResponsibilityDetailDto> findByResponsibilityCd(String responsibilityCd) {
+        log.debug("[ResponsibilityDetailService] 책무세부 조회 - responsibilityCd: {}", responsibilityCd);
 
-        List<ResponsibilityDetail> details = responsibilityDetailRepository.findByResponsibilityId(responsibilityId);
+        List<ResponsibilityDetail> details = responsibilityDetailRepository.findByResponsibilityCd(responsibilityCd);
 
         return details.stream()
             .map(this::convertToDto)
@@ -73,31 +120,31 @@ public class ResponsibilityDetailService {
     /**
      * 책무세부 삭제
      *
-     * @param responsibilityDetailId 책무세부ID
+     * @param responsibilityDetailCd 책무세부코드
      */
     @Transactional
-    public void deleteDetail(Long responsibilityDetailId) {
-        log.debug("[ResponsibilityDetailService] 책무세부 삭제 요청 - responsibilityDetailId: {}", responsibilityDetailId);
+    public void deleteDetail(String responsibilityDetailCd) {
+        log.debug("[ResponsibilityDetailService] 책무세부 삭제 요청 - responsibilityDetailCd: {}", responsibilityDetailCd);
 
-        if (!responsibilityDetailRepository.existsById(responsibilityDetailId)) {
-            throw new IllegalArgumentException("책무세부를 찾을 수 없습니다. ID: " + responsibilityDetailId);
+        if (!responsibilityDetailRepository.existsById(responsibilityDetailCd)) {
+            throw new IllegalArgumentException("책무세부를 찾을 수 없습니다. CODE: " + responsibilityDetailCd);
         }
 
-        responsibilityDetailRepository.deleteById(responsibilityDetailId);
-        log.info("[ResponsibilityDetailService] 책무세부 삭제 완료 - responsibilityDetailId: {}", responsibilityDetailId);
+        responsibilityDetailRepository.deleteById(responsibilityDetailCd);
+        log.info("[ResponsibilityDetailService] 책무세부 삭제 완료 - responsibilityDetailCd: {}", responsibilityDetailCd);
     }
 
     /**
-     * 책무ID로 모든 책무세부 삭제
+     * 책무코드로 모든 책무세부 삭제
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드
      */
     @Transactional
-    public void deleteByResponsibilityId(Long responsibilityId) {
-        log.debug("[ResponsibilityDetailService] 책무의 모든 세부 삭제 - responsibilityId: {}", responsibilityId);
+    public void deleteByResponsibilityCd(String responsibilityCd) {
+        log.debug("[ResponsibilityDetailService] 책무의 모든 세부 삭제 - responsibilityCd: {}", responsibilityCd);
 
-        responsibilityDetailRepository.deleteByResponsibilityId(responsibilityId);
-        log.info("[ResponsibilityDetailService] 책무의 모든 세부 삭제 완료 - responsibilityId: {}", responsibilityId);
+        responsibilityDetailRepository.deleteByResponsibilityCd(responsibilityCd);
+        log.info("[ResponsibilityDetailService] 책무의 모든 세부 삭제 완료 - responsibilityCd: {}", responsibilityCd);
     }
 
     /**
@@ -108,8 +155,8 @@ public class ResponsibilityDetailService {
      */
     private ResponsibilityDetailDto convertToDto(ResponsibilityDetail detail) {
         return ResponsibilityDetailDto.builder()
-            .responsibilityDetailId(detail.getResponsibilityDetailId())
-            .responsibilityId(detail.getResponsibilityId())
+            .responsibilityDetailCd(detail.getResponsibilityDetailCd())
+            .responsibilityCd(detail.getResponsibilityCd())
             .responsibilityDetailInfo(detail.getResponsibilityDetailInfo())
             .isActive(detail.getIsActive())
             .createdAt(detail.getCreatedAt())

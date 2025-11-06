@@ -295,55 +295,23 @@ public class CommonCodeService {
             .orElseThrow(() -> new IllegalArgumentException(
                 String.format("상세 코드를 찾을 수 없습니다: %s-%s", groupCode, detailCode)));
 
-        // detailCode 변경 처리 (복합키의 일부 변경)
-        if (request.getDetailCode() != null && !request.getDetailCode().equals(detailCode)) {
-            log.info("detailCode 변경 감지: {} -> {}", detailCode, request.getDetailCode());
+        // detailCode는 PK의 일부이므로 변경 불가 - 기존 엔티티 업데이트만 수행
+        codeDetail.update(
+            request.getDetailName(),
+            request.getDescription(),
+            request.getSortOrder(),
+            request.getExtAttr1(),
+            request.getExtAttr2(),
+            request.getExtAttr3()
+        );
 
-            // 기존 데이터 복사하여 새 엔티티 생성
-            CommonCodeDetail newCodeDetail = CommonCodeDetail.builder()
-                .groupCode(groupCode)
-                .detailCode(request.getDetailCode())
-                .detailName(request.getDetailName())
-                .description(request.getDescription())
-                .parentCode(codeDetail.getParentCode())
-                .levelDepth(codeDetail.getLevelDepth())
-                .sortOrder(request.getSortOrder())
-                .extAttr1(request.getExtAttr1())
-                .extAttr2(request.getExtAttr2())
-                .extAttr3(request.getExtAttr3())
-                .extraData(codeDetail.getExtraData())
-                .validFrom(request.getValidFrom())
-                .validUntil(request.getValidUntil())
-                .isActive(request.getIsActive())
-                .createdBy(codeDetail.getCreatedBy())
-                .createdAt(codeDetail.getCreatedAt())
-                .updatedBy(username)
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-            // 기존 행 삭제, 새 행 생성
-            codeDetailRepository.delete(codeDetail);
-            codeDetailRepository.flush(); // 즉시 DB에 반영
-            codeDetail = codeDetailRepository.save(newCodeDetail);
-        } else {
-            // detailCode 변경 없음 - 기존 방식으로 업데이트
-            codeDetail.update(
-                request.getDetailName(),
-                request.getDescription(),
-                request.getSortOrder(),
-                request.getExtAttr1(),
-                request.getExtAttr2(),
-                request.getExtAttr3()
-            );
-
-            if (request.getValidFrom() != null || request.getValidUntil() != null) {
-                codeDetail.setValidPeriod(request.getValidFrom(), request.getValidUntil());
-            }
-
-            codeDetail.setIsActive(request.getIsActive());
-            codeDetail.setUpdatedBy(username);
-            codeDetail.setUpdatedAt(LocalDateTime.now());
+        if (request.getValidFrom() != null || request.getValidUntil() != null) {
+            codeDetail.setValidPeriod(request.getValidFrom(), request.getValidUntil());
         }
+
+        codeDetail.setIsActive(request.getIsActive());
+        codeDetail.setUpdatedBy(username);
+        codeDetail.setUpdatedAt(LocalDateTime.now());
 
         return CommonCodeDetailDto.from(codeDetail);
     }

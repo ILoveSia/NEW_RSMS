@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 책무 Repository
@@ -15,9 +16,10 @@ import java.util.Map;
  * @description 책무 데이터 접근 인터페이스
  * @author Claude AI
  * @since 2025-09-24
+ * @updated 2025-01-05 - PK 타입 변경 (Long → String), 코드 생성용 쿼리 메서드 추가
  */
 @Repository
-public interface ResponsibilityRepository extends JpaRepository<Responsibility, Long> {
+public interface ResponsibilityRepository extends JpaRepository<Responsibility, String> {
 
     /**
      * 원장차수ID와 직책ID로 책무 목록 조회
@@ -39,10 +41,47 @@ public interface ResponsibilityRepository extends JpaRepository<Responsibility, 
      */
     void deleteByLedgerOrderIdAndPositionsId(String ledgerOrderId, Long positionsId);
 
+    // ===============================
+    // 코드 생성용 쿼리 메서드
+    // ===============================
+
     /**
-     * 4개 테이블 조인 조회 (responsibilities, positions, responsibility_details, management_obligations)
-     * - responsibilities를 마스터로 잡고 positions, 하위 테이블 LEFT JOIN
-     * - 1:N 관계로 인해 책무, 책무세부가 중복될 수 있음 (정상)
+     * 특정 원장차수 + 책무카테고리의 최대 순번 조회 (코드 생성용)
+     *
+     * @param ledgerOrderId 원장차수ID (8자리)
+     * @param responsibilityCat 책무카테고리 (예: RM, IC, CP)
+     * @return 최대 순번 (없으면 0)
+     *
+     * 사용 예시:
+     * - ledgerOrderId = "20250001", responsibilityCat = "RM"
+     * - 기존 코드: "20250001RM0001", "20250001RM0002"
+     * - 반환값: 2
+     * - 다음 코드: "20250001RM0003"
+     */
+    @Query("""
+        SELECT COALESCE(MAX(CAST(SUBSTRING(r.responsibilityCd, 9, 4) AS integer)), 0)
+        FROM Responsibility r
+        WHERE r.ledgerOrderId = :ledgerOrderId
+          AND r.responsibilityCat = :responsibilityCat
+        """)
+    Integer findMaxSequenceByLedgerOrderIdAndCategory(
+        @Param("ledgerOrderId") String ledgerOrderId,
+        @Param("responsibilityCat") String responsibilityCat
+    );
+
+    /**
+     * 책무코드 존재 여부 확인
+     */
+    boolean existsByResponsibilityCd(String responsibilityCd);
+
+    // ===============================
+    // 조인 쿼리
+    // ===============================
+
+    /**
+     * 2개 테이블 조인 조회 (responsibilities, positions)
+     * - responsibilities를 마스터로 잡고 positions LEFT JOIN
+     * - 책무와 직책 정보만 조회 (책무세부, 관리의무 제외)
      *
      * @param ledgerOrderId 원장차수ID (선택적)
      * @param responsibilityInfo 책무정보 (선택적, LIKE 검색)
@@ -51,11 +90,10 @@ public interface ResponsibilityRepository extends JpaRepository<Responsibility, 
      */
     @Query(value = """
         SELECT
-            r.responsibility_id,
+            r.responsibility_cd,
             r.ledger_order_id,
             r.positions_id,
             r.responsibility_cat,
-            r.responsibility_cd,
             r.responsibility_info,
             r.responsibility_legal,
             r.expiration_date,
@@ -68,26 +106,14 @@ public interface ResponsibilityRepository extends JpaRepository<Responsibility, 
             p.positions_cd,
             p.positions_name,
             p.hq_code,
-            p.hq_name,
-            rd.responsibility_detail_id,
-            rd.responsibility_detail_info,
-            rd.is_active as detail_is_active,
-            mo.management_obligation_id,
-            mo.obligation_major_cat_cd,
-            mo.obligation_middle_cat_cd,
-            mo.obligation_cd,
-            mo.obligation_info,
-            mo.org_code,
-            mo.is_active as obligation_is_active
+            p.hq_name
         FROM rsms.responsibilities r
         LEFT JOIN rsms.positions p ON r.positions_id = p.positions_id
-        LEFT JOIN rsms.responsibility_details rd ON r.responsibility_id = rd.responsibility_id
-        LEFT JOIN rsms.management_obligations mo ON rd.responsibility_detail_id = mo.responsibility_detail_id
         WHERE 1=1
             AND (:ledgerOrderId IS NULL OR r.ledger_order_id = :ledgerOrderId)
             AND (:responsibilityInfo IS NULL OR r.responsibility_info LIKE CONCAT('%', :responsibilityInfo, '%'))
             AND (:responsibilityCd IS NULL OR r.responsibility_cd = :responsibilityCd)
-        ORDER BY r.responsibility_id, rd.responsibility_detail_id, mo.management_obligation_id
+        ORDER BY r.responsibility_cd
         """, nativeQuery = true)
     List<Map<String, Object>> findAllResponsibilitiesWithJoin(
         @Param("ledgerOrderId") String ledgerOrderId,

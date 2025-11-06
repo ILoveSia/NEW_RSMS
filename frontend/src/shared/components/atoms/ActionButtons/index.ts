@@ -8,7 +8,9 @@ export {
   SaveButton,
   CancelButton,
   RefreshButton,
-  ViewButton
+  ViewButton,
+  ExcelTemplateDownloadButton,
+  ExcelUploadButton
 } from './ActionButtons';
 
 export type {
@@ -20,5 +22,7 @@ export type {
   SaveButtonProps,
   CancelButtonProps,
   RefreshButtonProps,
-  ViewButtonProps
+  ViewButtonProps,
+  ExcelTemplateDownloadButtonProps,
+  ExcelUploadButtonProps
 } from './ActionButtons';

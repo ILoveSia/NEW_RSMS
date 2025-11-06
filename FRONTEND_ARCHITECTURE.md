@@ -479,7 +479,7 @@ export const Default: Story = {
 ### 환경별 설정
 ```typescript
 const API_BASE_URL = {
-  development: 'http://localhost:8080',
+  development: 'http://localhost:8090',
   staging: 'https://staging-api.rsms.com',
   production: 'https://api.rsms.com',
 }[import.meta.env.MODE];

@@ -86,7 +86,7 @@ public class PositionResponsibilityDataDto {
     @AllArgsConstructor
     @Builder
     public static class ResponsibilityInfo {
-        private Long responsibilityId;          // 책무ID
+        private String responsibilityId;        // 책무코드 (PK, ID → Code로 변경)
         private String responsibilityCat;       // 책무카테고리
         private String responsibilityCd;        // 책무코드
         private String responsibilityInfo;      // 책무내용
@@ -102,8 +102,8 @@ public class PositionResponsibilityDataDto {
     @AllArgsConstructor
     @Builder
     public static class ManagementObligationInfo {
-        private Long managementObligationId;          // 관리의무ID
-        private Long responsibilityId;                // 책무ID (연관관계 표시용)
+        private String managementObligationId;        // 관리의무코드 (PK, ID → Code로 변경)
+        private String responsibilityId;              // 책무세부코드 (연관관계 표시용, ID → Code로 변경)
         private String obligationMajorCatCd;          // 관리의무 대분류
         private String obligationMiddleCatCd;         // 관리의무 중분류
         private String obligationCd;                  // 관리의무코드

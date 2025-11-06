@@ -51,12 +51,12 @@ sudo -u postgres psql < database/scripts/init_database.sql
 
 ### 2. Backend 설정
 - application.yml에서 데이터베이스 접속 정보 확인
-- 기본 포트: 8080
+- 기본 포트: 8090
 - Context Path: /api
 
 ### 3. Frontend 설정
-- 기본 포트: 5173
-- API Proxy: http://localhost:8080
+- 기본 포트: 4000
+- API Proxy: http://localhost:8090
 
 ## 실행 방법
 
@@ -81,8 +81,8 @@ npm run dev
 
 ## 접속 정보
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8080/api
+- Frontend: http://localhost:4000
+- Backend API: http://localhost:8090/api
 - PostgreSQL: localhost:5432/rsms_db
 
 ## 주의 사항

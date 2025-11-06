@@ -1,171 +1,100 @@
-import React from 'react';
-import type { ColDef } from 'ag-grid-community';
-import type { Responsibility } from '../../types/responsibility.types';
-
 /**
- * 책무 컬럼 링크 렌더러 (상세 모달 열기용)
+ * 책무관리 Grid 컬럼 정의
+ * - AG-Grid 컬럼 설정
+ * - 책무 정보만 표시 (세부/의무는 별도 페이지)
+ *
+ * @author Claude AI
+ * @since 2025-11-05
  */
-const ResponsibilityNameRenderer = (params: any) => {
-  const handleClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    if (params.onCellClicked) {
-      params.onCellClicked(params.data);
-    }
-  };
 
-  return (
-    <a
-      href="#"
-      onClick={handleClick}
-      style={{
-        color: '#1976d2',
-        textDecoration: 'none',
-        fontWeight: '500'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.textDecoration = 'underline';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.textDecoration = 'none';
-      }}
-    >
-      {params.value}
-    </a>
-  );
-};
+import { ColDef } from 'ag-grid-community';
+import type { ResponsibilityGridRow } from '../../types/responsibility.types';
 
 /**
- * 책무관리 AG-Grid 컬럼 정의 생성 함수
- * @param onResponsibilityClick 책무 클릭 핸들러
+ * 책무관리 Grid 컬럼 생성
+ * - 책무세부, 관리의무 컬럼 제거 (각각 별도 페이지로 분리)
  */
 export const createResponsibilityColumns = (
-  onResponsibilityClick?: (data: Responsibility) => void
-): ColDef<Responsibility>[] => [
+  onDetailClick?: (data: ResponsibilityGridRow) => void
+): ColDef<ResponsibilityGridRow>[] => [
   {
     headerName: '순번',
     field: '순번',
     width: 80,
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center',
-    sortable: true,
-    filter: false,
-    valueFormatter: (params) => {
-      if (params.value !== undefined && params.value !== null) {
-        return String(params.value);
-      }
-      return '';
-    }
+    cellStyle: { textAlign: 'center' },
   },
   {
-    headerName: '직책',
-    field: '직책',
+    headerName: '책무코드',
+    field: '책무코드',
     width: 150,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false,
-    cellStyle: { fontWeight: '500' }
-  },
-  {
-    headerName: '책무',
-    field: '책무',
-    width: 250,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false,
-    cellRenderer: ResponsibilityNameRenderer,
-    cellRendererParams: {
-      onCellClicked: onResponsibilityClick
-    },
-    cellStyle: { fontWeight: '500' },
-    tooltipField: '책무'
-  },
-  {
-    headerName: '책무세부내용',
-    field: '책무세부내용',
-    width: 300,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false,
-    wrapText: false,
-    autoHeight: false,
     cellStyle: {
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden'
+      textAlign: 'center',
+      cursor: 'pointer',
+      color: '#1976d2',
+      fontWeight: 500
     },
-    tooltipField: '책무세부내용'
+    onCellClicked: (params) => {
+      if (onDetailClick && params.data) {
+        onDetailClick(params.data);
+      }
+    },
+    cellClass: 'responsibility-clickable-cell'
   },
   {
-    headerName: '관리의무',
-    field: '관리의무',
-    width: 180,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false,
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center'
-  },
-  {
-    headerName: '부점명',
-    field: '부점명',
-    width: 150,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false
-  },
-  {
-    headerName: '등록일자',
-    field: '등록일자',
+    headerName: '책무이행차수',
+    field: '책무이행차수',
     width: 120,
-    sortable: true,
-    filter: 'agDateColumnFilter',
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center',
-    valueFormatter: (params) => {
-      if (!params.value) return '';
-      return params.value;
-    }
+    cellStyle: { textAlign: 'center' }
   },
   {
-    headerName: '등록자',
-    field: '등록자',
-    width: 100,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    floatingFilter: false,
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center'
+    headerName: '직책명',
+    field: '직책명',
+    width: 150,
+    cellStyle: { textAlign: 'center' }
   },
   {
-    headerName: '상태',
-    field: '상태',
-    width: 100,
-    sortable: true,
-    filter: 'agSetColumnFilter',
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center'
+    headerName: '책무카테고리',
+    field: '책무카테고리',
+    width: 150,
+    cellStyle: { textAlign: 'center' }
+  },
+  {
+    headerName: '책무내용',
+    field: '책무내용',
+    width: 300,
+    flex: 1,
+    cellStyle: { textAlign: 'left', paddingLeft: '12px' },
+    tooltipField: '책무내용'
+  },
+  {
+    headerName: '책무관련근거',
+    field: '책무관련근거',
+    width: 250,
+    cellStyle: { textAlign: 'left', paddingLeft: '12px' },
+    tooltipField: '책무관련근거'
   },
   {
     headerName: '사용여부',
     field: '사용여부',
     width: 100,
-    sortable: true,
-    filter: 'agSetColumnFilter',
-    headerClass: 'ag-header-cell-center',
-    cellClass: 'ag-cell-center',
+    cellStyle: { textAlign: 'center' }
+  },
+  {
+    headerName: '등록일자',
+    field: '등록일자',
+    width: 120,
     valueFormatter: (params) => {
-      return params.value ? '사용' : '미사용';
-    }
+      const value = params.value;
+      if (!value) return '';
+      // ISO 형식(YYYY-MM-DDTHH:mm:ss) 또는 YYYY-MM-DD 형식 모두 처리
+      return value.split('T')[0];
+    },
+    cellStyle: { textAlign: 'center' }
+  },
+  {
+    headerName: '등록자',
+    field: '등록자',
+    width: 120,
+    cellStyle: { textAlign: 'center' }
   }
 ];
-
-/**
- * 기본 컬럼 설정
- */
-export const defaultColDef: ColDef = {
-  sortable: true,
-  filter: true,
-  resizable: true,
-  editable: false,
-  suppressMovable: false
-};

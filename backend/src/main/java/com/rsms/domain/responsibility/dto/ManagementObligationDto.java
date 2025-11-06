@@ -6,6 +6,10 @@ import java.time.LocalDateTime;
 /**
  * 관리의무 응답 DTO
  * - 관리의무 조회 시 반환되는 데이터 구조
+ *
+ * @author Claude AI
+ * @since 2025-09-24
+ * @updated 2025-01-05 - PK/FK 타입 변경 (Long → String)
  */
 @Getter
 @Setter
@@ -14,14 +18,17 @@ import java.time.LocalDateTime;
 @Builder
 public class ManagementObligationDto {
     /**
-     * 관리의무ID (PK)
+     * 관리의무코드 (PK, 업무 코드)
+     * - 코드 생성 규칙: 책무세부코드 + "MO" + 순번(4자리)
+     * - 예시: "RM0001D0001MO0001"
      */
-    private Long managementObligationId;
+    private String obligationCd;
 
     /**
-     * 책무세부ID (FK)
+     * 책무세부코드 (FK)
+     * - 예시: "RM0001D0001"
      */
-    private Long responsibilityDetailId;
+    private String responsibilityDetailCd;
 
     /**
      * 관리의무 대분류 구분코드
@@ -42,11 +49,6 @@ public class ManagementObligationDto {
      * 관리의무 중분류 구분명
      */
     private String obligationMiddleCatName;
-
-    /**
-     * 관리의무코드
-     */
-    private String obligationCd;
 
     /**
      * 관리의무 내용

@@ -22,6 +22,8 @@ import type {
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
 // Domain Components
@@ -323,6 +325,28 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
     };
   }, [pagination.total, deliberatives]);
 
+  // BasePageHeader용 통계 데이터
+  const headerStatistics = useMemo(() => [
+    {
+      icon: <TrendingUpIcon />,
+      value: statistics.total,
+      label: '총 회의체',
+      color: 'primary' as const
+    },
+    {
+      icon: <GroupIcon />,
+      value: statistics.activeCount,
+      label: '활성 회의체',
+      color: 'success' as const
+    },
+    {
+      icon: <AnalyticsIcon />,
+      value: statistics.monthlyCount,
+      label: '월별 회의체',
+      color: 'default' as const
+    }
+  ], [statistics]);
+
   // Filtered deliberatives for display (성능 최적화)
   const displayDeliberatives = useMemo(() => {
     return deliberatives; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
@@ -494,56 +518,14 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <DashboardIcon className={styles.headerIcon} />
-            <div>
-              <h1 className={styles.pageTitle}>
-                {t('deliberative.management.title', '회의체관리 시스템')}
-              </h1>
-              <p className={styles.pageDescription}>
-                {t('deliberative.management.description', '금융감독원 제출 대상 회의체 정보를 체계적으로 관리합니다')}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.headerStats}>
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <TrendingUpIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.total}</div>
-                <div className={styles.statLabel}>총 회의체</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <GroupIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>
-                  {statistics.activeCount}
-                </div>
-                <div className={styles.statLabel}>활성 회의체</div>
-              </div>
-            </div>
-
-            <div className={styles.statCard}>
-              <div className={styles.statIcon}>
-                <AnalyticsIcon />
-              </div>
-              <div className={styles.statContent}>
-                <div className={styles.statNumber}>{statistics.monthlyCount}</div>
-                <div className={styles.statLabel}>월별 회의체</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 🏗️ 공통 페이지 헤더 */}
+      <BasePageHeader
+        icon={<DashboardIcon />}
+        title={t('deliberative.management.title', '회의체관리 시스템')}
+        description={t('deliberative.management.description', '금융감독원 제출 대상 회의체 정보를 체계적으로 관리합니다')}
+        statistics={headerStatistics}
+        i18nNamespace="resps"
+      />
 
       {/* 🎨 메인 컨텐츠 영역 */}
       <div className={styles.content}>
@@ -587,8 +569,13 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
         />
       </div>
 
-      {/* 회의체 등록/상세 모달 */}
-      <React.Suspense fallback={<LoadingSpinner />}>
+      {/* 회의체 등록/상세 모달 - BaseModalWrapper 적용 */}
+      <BaseModalWrapper
+        isOpen={modalState.addModal || modalState.detailModal}
+        onClose={handleModalClose}
+        ariaLabel="회의체 관리 모달"
+        fallbackComponent={<LoadingSpinner text="회의체 모달을 불러오는 중..." />}
+      >
         <DeliberativeFormModal
           open={modalState.addModal || modalState.detailModal}
           mode={modalState.addModal ? 'create' : 'detail'}
@@ -598,7 +585,7 @@ const DeliberativeMgmt: React.FC<DeliberativeMgmtProps> = ({ className }) => {
           onUpdate={handleDeliberativeUpdate}
           loading={loading}
         />
-      </React.Suspense>
+      </BaseModalWrapper>
     </div>
   );
 };

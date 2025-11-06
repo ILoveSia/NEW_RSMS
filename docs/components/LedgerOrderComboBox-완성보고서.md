@@ -217,7 +217,7 @@ cd backend
 ./gradlew bootRun
 
 # API 테스트
-curl http://localhost:8080/api/ledger-orders/combo
+curl http://localhost:8090/api/ledger-orders/combo
 ```
 
 ### 2. 프론트엔드 UI 테스트

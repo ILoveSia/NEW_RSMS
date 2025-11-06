@@ -36,8 +36,8 @@ public class ResponsibilityDetailController {
     public ResponseEntity<ResponsibilityDetailDto> createDetail(
             @RequestBody CreateResponsibilityDetailRequest request,
             Principal principal) {
-        log.info("POST /api/resps/responsibility-details - 책무세부 생성: responsibilityId={}",
-            request.getResponsibilityId());
+        log.info("POST /api/resps/responsibility-details - 책무세부 생성: responsibilityCd={}",
+            request.getResponsibilityCd());
 
         String username = principal != null ? principal.getName() : "system";
         ResponsibilityDetailDto created = responsibilityDetailService.createDetail(request, username);
@@ -46,50 +46,50 @@ public class ResponsibilityDetailController {
     }
 
     /**
-     * 책무ID로 책무세부 목록 조회 API
-     * GET /api/resps/responsibility-details/responsibility/{responsibilityId}
+     * 책무코드로 책무세부 목록 조회 API
+     * GET /api/resps/responsibility-details/responsibility/{responsibilityCd}
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드
      * @return 책무세부 DTO 리스트
      */
-    @GetMapping("/responsibility/{responsibilityId}")
-    public ResponseEntity<List<ResponsibilityDetailDto>> getDetailsByResponsibilityId(
-            @PathVariable Long responsibilityId) {
-        log.info("GET /api/resps/responsibility-details/responsibility/{} - 책무세부 목록 조회", responsibilityId);
+    @GetMapping("/responsibility/{responsibilityCd}")
+    public ResponseEntity<List<ResponsibilityDetailDto>> getDetailsByResponsibilityCd(
+            @PathVariable String responsibilityCd) {
+        log.info("GET /api/resps/responsibility-details/responsibility/{} - 책무세부 목록 조회", responsibilityCd);
 
-        List<ResponsibilityDetailDto> details = responsibilityDetailService.findByResponsibilityId(responsibilityId);
+        List<ResponsibilityDetailDto> details = responsibilityDetailService.findByResponsibilityCd(responsibilityCd);
 
         return ResponseEntity.ok(details);
     }
 
     /**
      * 책무세부 삭제 API
-     * DELETE /api/resps/responsibility-details/{responsibilityDetailId}
+     * DELETE /api/resps/responsibility-details/{responsibilityDetailCd}
      *
-     * @param responsibilityDetailId 책무세부ID
+     * @param responsibilityDetailCd 책무세부코드
      * @return 성공 메시지
      */
-    @DeleteMapping("/{responsibilityDetailId}")
-    public ResponseEntity<Void> deleteDetail(@PathVariable Long responsibilityDetailId) {
-        log.info("DELETE /api/resps/responsibility-details/{} - 책무세부 삭제", responsibilityDetailId);
+    @DeleteMapping("/{responsibilityDetailCd}")
+    public ResponseEntity<Void> deleteDetail(@PathVariable String responsibilityDetailCd) {
+        log.info("DELETE /api/resps/responsibility-details/{} - 책무세부 삭제", responsibilityDetailCd);
 
-        responsibilityDetailService.deleteDetail(responsibilityDetailId);
+        responsibilityDetailService.deleteDetail(responsibilityDetailCd);
 
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * 책무ID로 모든 책무세부 삭제 API
-     * DELETE /api/resps/responsibility-details/responsibility/{responsibilityId}
+     * 책무코드로 모든 책무세부 삭제 API
+     * DELETE /api/resps/responsibility-details/responsibility/{responsibilityCd}
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드
      * @return 성공 메시지
      */
-    @DeleteMapping("/responsibility/{responsibilityId}")
-    public ResponseEntity<Void> deleteDetailsByResponsibilityId(@PathVariable Long responsibilityId) {
-        log.info("DELETE /api/resps/responsibility-details/responsibility/{} - 책무의 모든 세부 삭제", responsibilityId);
+    @DeleteMapping("/responsibility/{responsibilityCd}")
+    public ResponseEntity<Void> deleteDetailsByResponsibilityCd(@PathVariable String responsibilityCd) {
+        log.info("DELETE /api/resps/responsibility-details/responsibility/{} - 책무의 모든 세부 삭제", responsibilityCd);
 
-        responsibilityDetailService.deleteByResponsibilityId(responsibilityId);
+        responsibilityDetailService.deleteByResponsibilityCd(responsibilityCd);
 
         return ResponseEntity.noContent().build();
     }

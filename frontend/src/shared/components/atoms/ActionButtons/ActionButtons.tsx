@@ -2,11 +2,13 @@ import { Button } from '@/shared/components/atoms/Button';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import EditIcon from '@mui/icons-material/Edit';
 import ExcelIcon from '@mui/icons-material/FileDownload';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ViewIcon from '@mui/icons-material/Visibility';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +60,14 @@ export interface RefreshButtonProps extends BaseButtonProps {
 }
 
 export interface ViewButtonProps extends BaseButtonProps {
+  label?: string;
+}
+
+export interface ExcelTemplateDownloadButtonProps extends BaseButtonProps {
+  label?: string;
+}
+
+export interface ExcelUploadButtonProps extends BaseButtonProps {
   label?: string;
 }
 
@@ -355,6 +365,68 @@ export const ViewButton: React.FC<ViewButtonProps> = ({
   );
 };
 
+// 📥 엑셀 업로드 양식 다운로드 버튼
+export const ExcelTemplateDownloadButton: React.FC<ExcelTemplateDownloadButtonProps> = ({
+  onClick,
+  disabled = false,
+  loading = false,
+  label,
+  size = 'small',
+  variant = 'contained',
+  className,
+  fullWidth = false,
+  'data-testid': dataTestId = 'excel-template-download-button'
+}) => {
+  const { t } = useTranslation('common');
+
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      startIcon={<DownloadForOfflineIcon />}
+      onClick={onClick}
+      disabled={disabled || loading}
+      loading={loading}
+      className={className}
+      fullWidth={fullWidth}
+      data-testid={dataTestId}
+    >
+      {label || t('excelTemplateDownload', '엑셀업로드양식다운로드')}
+    </Button>
+  );
+};
+
+// 📤 엑셀 업로드 등록 버튼
+export const ExcelUploadButton: React.FC<ExcelUploadButtonProps> = ({
+  onClick,
+  disabled = false,
+  loading = false,
+  label,
+  size = 'small',
+  variant = 'contained',
+  className,
+  fullWidth = false,
+  'data-testid': dataTestId = 'excel-upload-button'
+}) => {
+  const { t } = useTranslation('common');
+
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      startIcon={<UploadFileIcon />}
+      onClick={onClick}
+      disabled={disabled || loading}
+      loading={loading}
+      className={className}
+      fullWidth={fullWidth}
+      data-testid={dataTestId}
+    >
+      {label || t('excelUpload', '엑셀업로드등록')}
+    </Button>
+  );
+};
+
 // 전체 내보내기를 위한 객체
 export const ActionButtons = {
   Search: SearchButton,
@@ -365,5 +437,7 @@ export const ActionButtons = {
   Save: SaveButton,
   Cancel: CancelButton,
   Refresh: RefreshButton,
-  View: ViewButton
+  View: ViewButton,
+  ExcelTemplateDownload: ExcelTemplateDownloadButton,
+  ExcelUpload: ExcelUploadButton
 };

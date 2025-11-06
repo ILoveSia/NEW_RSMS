@@ -28,14 +28,14 @@ public class ResponsibilityController {
     private final ResponsibilityService responsibilityService;
 
     /**
-     * 4개 테이블 조인 책무 목록 조회
+     * 2개 테이블 조인 책무 목록 조회
      * - GET /api/resps/responsibilities/list-with-join
-     * - responsibilities(마스터), positions, responsibility_details, management_obligations 조인
+     * - responsibilities(마스터), positions 조인
      *
      * @param ledgerOrderId 원장차수ID (선택적)
      * @param responsibilityInfo 책무정보 (선택적, LIKE 검색)
      * @param responsibilityCd 책무코드 (선택적)
-     * @return 4테이블 조인된 책무 목록
+     * @return 2테이블 조인된 책무 목록
      */
     @GetMapping("/list-with-join")
     public ResponseEntity<List<ResponsibilityListDto>> getAllResponsibilitiesWithJoin(
@@ -69,15 +69,15 @@ public class ResponsibilityController {
 
     /**
      * 책무 단건 조회
-     * - GET /api/resps/responsibilities/{responsibilityId}
+     * - GET /api/resps/responsibilities/{responsibilityCd}
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드 (예: "20250001RM0001")
      * @return 책무 상세 정보
      */
-    @GetMapping("/{responsibilityId}")
-    public ResponseEntity<ResponsibilityDto> getResponsibility(@PathVariable Long responsibilityId) {
-        log.info("GET /api/resps/responsibilities/{} - 책무 단건 조회", responsibilityId);
-        ResponsibilityDto responsibility = responsibilityService.getResponsibility(responsibilityId);
+    @GetMapping("/{responsibilityCd}")
+    public ResponseEntity<ResponsibilityDto> getResponsibility(@PathVariable String responsibilityCd) {
+        log.info("GET /api/resps/responsibilities/{} - 책무 단건 조회", responsibilityCd);
+        ResponsibilityDto responsibility = responsibilityService.getResponsibility(responsibilityCd);
         return ResponseEntity.ok(responsibility);
     }
 
@@ -101,35 +101,35 @@ public class ResponsibilityController {
 
     /**
      * 책무 수정
-     * - PUT /api/resps/responsibilities/{responsibilityId}
+     * - PUT /api/resps/responsibilities/{responsibilityCd}
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드 (예: "20250001RM0001")
      * @param request 책무 수정 요청
      * @param principal 현재 로그인 사용자
      * @return 수정된 책무
      */
-    @PutMapping("/{responsibilityId}")
+    @PutMapping("/{responsibilityCd}")
     public ResponseEntity<ResponsibilityDto> updateResponsibility(
-            @PathVariable Long responsibilityId,
+            @PathVariable String responsibilityCd,
             @RequestBody UpdateResponsibilityRequest request,
             Principal principal) {
-        log.info("PUT /api/resps/responsibilities/{} - 책무 수정: {}", responsibilityId, request);
+        log.info("PUT /api/resps/responsibilities/{} - 책무 수정: {}", responsibilityCd, request);
         String username = principal != null ? principal.getName() : "system";
-        ResponsibilityDto updated = responsibilityService.updateResponsibility(responsibilityId, request, username);
+        ResponsibilityDto updated = responsibilityService.updateResponsibility(responsibilityCd, request, username);
         return ResponseEntity.ok(updated);
     }
 
     /**
      * 책무 삭제
-     * - DELETE /api/resps/responsibilities/{responsibilityId}
+     * - DELETE /api/resps/responsibilities/{responsibilityCd}
      *
-     * @param responsibilityId 책무ID
+     * @param responsibilityCd 책무코드 (예: "20250001RM0001")
      * @return 삭제 성공 응답
      */
-    @DeleteMapping("/{responsibilityId}")
-    public ResponseEntity<Void> deleteResponsibility(@PathVariable Long responsibilityId) {
-        log.info("DELETE /api/resps/responsibilities/{} - 책무 삭제", responsibilityId);
-        responsibilityService.deleteResponsibility(responsibilityId);
+    @DeleteMapping("/{responsibilityCd}")
+    public ResponseEntity<Void> deleteResponsibility(@PathVariable String responsibilityCd) {
+        log.info("DELETE /api/resps/responsibilities/{} - 책무 삭제", responsibilityCd);
+        responsibilityService.deleteResponsibility(responsibilityCd);
         return ResponseEntity.noContent().build();
     }
 

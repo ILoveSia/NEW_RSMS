@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
  * @description 책무세부에 대한 관리의무 정보를 관리하는 엔티티 (1:N 관계)
  * @author Claude AI
  * @since 2025-09-24
+ * @updated 2025-01-05 - PK/FK를 자동증가에서 업무 코드로 변경
  */
 @Entity
 @Table(name = "management_obligations", schema = "rsms")
@@ -22,24 +23,25 @@ import java.time.LocalDateTime;
 public class ManagementObligation {
 
     /**
-     * 관리의무ID (자동 생성)
+     * 관리의무코드 (PK, 업무 코드)
+     * 코드 생성 규칙: 책무세부코드 + "MO" + 순번(4자리)
+     * 예시: "RM0001D0001MO0001"
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "management_obligation_id")
-    private Long managementObligationId;
+    @Column(name = "obligation_cd", length = 50, nullable = false)
+    private String obligationCd;
 
     /**
-     * 책무세부ID (FK)
+     * 책무세부코드 (FK)
      */
-    @Column(name = "responsibility_detail_id", nullable = false, insertable = false, updatable = false)
-    private Long responsibilityDetailId;
+    @Column(name = "responsibility_detail_cd", length = 30, nullable = false, insertable = false, updatable = false)
+    private String responsibilityDetailCd;
 
     /**
      * 책무세부 엔티티 (ManyToOne 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsibility_detail_id", nullable = false)
+    @JoinColumn(name = "responsibility_detail_cd", nullable = false)
     private ResponsibilityDetail responsibilityDetail;
 
     /**
@@ -53,12 +55,6 @@ public class ManagementObligation {
      */
     @Column(name = "obligation_middle_cat_cd", length = 20, nullable = false)
     private String obligationMiddleCatCd;
-
-    /**
-     * 관리의무코드
-     */
-    @Column(name = "obligation_cd", length = 20, nullable = false)
-    private String obligationCd;
 
     /**
      * 관리의무내용

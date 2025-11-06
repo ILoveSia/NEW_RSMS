@@ -61,7 +61,7 @@ export default defineConfig({
     proxy: {
       // API 프록시 설정 (백엔드 서버 연결 시 사용)
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8090',
         changeOrigin: true,
         secure: false
       }

@@ -95,7 +95,7 @@ https://api.example.com/v1/
 https://staging-api.example.com/v1/
 
 # Development
-http://localhost:8080/api/v1/
+http://localhost:8090/api/v1/
 ```
 
 ### 2. Resource Naming Guidelines
@@ -1791,7 +1791,7 @@ public class BreakingChange {
         )
     ),
     servers = {
-        @Server(url = "http://localhost:8080", description = "Development Server"),
+        @Server(url = "http://localhost:8090", description = "Development Server"),
         @Server(url = "https://staging-api.example.com", description = "Staging Server"),
         @Server(url = "https://api.example.com", description = "Production Server")
     },

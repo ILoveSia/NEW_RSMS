@@ -101,7 +101,7 @@ persist(
 ```typescript
 // authApi.ts, menuApi.ts, codeApi.ts 등
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://localhost:8090',
   withCredentials: true,  // 쿠키 자동 포함
   timeout: 10000,
 });
@@ -177,7 +177,7 @@ const MyComponent: React.FC = () => {
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https:;
     font-src 'self' data:;
-    connect-src 'self' http://localhost:8080;
+    connect-src 'self' http://localhost:8090;
   "
 >
 ```

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
  * @description 책무 정보를 전달하는 DTO
  * @author Claude AI
  * @since 2025-09-24
+ * @updated 2025-01-05 - PK 타입 변경 (Long → String)
  */
 @Getter
 @Setter
@@ -20,9 +21,11 @@ import java.time.LocalDateTime;
 public class ResponsibilityDto {
 
     /**
-     * 책무ID
+     * 책무코드 (PK, 업무 코드)
+     * - 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
+     * - 예시: "20250001RM0001"
      */
-    private Long responsibilityId;
+    private String responsibilityCd;
 
     /**
      * 원장차수ID
@@ -43,11 +46,6 @@ public class ResponsibilityDto {
      * 책무카테고리명
      */
     private String responsibilityCatName;
-
-    /**
-     * 책무코드
-     */
-    private String responsibilityCd;
 
     /**
      * 책무명

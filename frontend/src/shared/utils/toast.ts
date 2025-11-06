@@ -236,4 +236,5 @@ export const toastUtils = {
   promise: showPromiseToast,
 };
 
-export default toastUtils;
+// 원본 toast 객체를 default export로 제공 (react-toastify 호환성)
+export { toast as default } from 'react-toastify';

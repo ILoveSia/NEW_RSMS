@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
  * @description 책무에 대한 세부내용을 관리하는 엔티티 (1:N 관계)
  * @author Claude AI
  * @since 2025-09-24
+ * @updated 2025-01-05 - PK/FK를 자동증가에서 업무 코드로 변경
  */
 @Entity
 @Table(name = "responsibility_details", schema = "rsms")
@@ -22,24 +23,25 @@ import java.time.LocalDateTime;
 public class ResponsibilityDetail {
 
     /**
-     * 책무세부ID (자동 생성)
+     * 책무세부코드 (PK, 업무 코드)
+     * 코드 생성 규칙: 책무코드 뒷 9자리 + "D" + 순번(4자리)
+     * 예시: "RM0001D0001"
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "responsibility_detail_id")
-    private Long responsibilityDetailId;
+    @Column(name = "responsibility_detail_cd", length = 30, nullable = false)
+    private String responsibilityDetailCd;
 
     /**
-     * 책무ID (FK)
+     * 책무코드 (FK)
      */
-    @Column(name = "responsibility_id", nullable = false, insertable = false, updatable = false)
-    private Long responsibilityId;
+    @Column(name = "responsibility_cd", length = 20, nullable = false, insertable = false, updatable = false)
+    private String responsibilityCd;
 
     /**
      * 책무 엔티티 (ManyToOne 관계)
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsibility_id", nullable = false)
+    @JoinColumn(name = "responsibility_cd", nullable = false)
     private Responsibility responsibility;
 
     /**

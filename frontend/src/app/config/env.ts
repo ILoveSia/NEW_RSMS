@@ -87,7 +87,7 @@ export const env: AppConfig = {
   APP_ENVIRONMENT: getEnvVar('VITE_APP_ENVIRONMENT', 'development') as AppConfig['APP_ENVIRONMENT'],
   
   // API 설정
-  API_BASE_URL: getEnvVar('VITE_API_BASE_URL', 'http://localhost:8080/api'),
+  API_BASE_URL: getEnvVar('VITE_API_BASE_URL', 'http://localhost:8090/api'),
   API_TIMEOUT: getEnvNumber('VITE_API_TIMEOUT', 30000),
   
   // 인증 설정

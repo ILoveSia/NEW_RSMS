@@ -4,10 +4,16 @@
  */
 
 import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { Layout } from '@/shared/components/templates/Layout';
+import { useAuthStore } from '@/app/store/authStore';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
+import { Layout } from '@/shared/components/templates/Layout';
+import {
+  AdminGuard,
+  AuthGuard,
+  ManagerGuard
+} from './guards';
 // Lazy-loaded pages for better performance
 const LoginPage = React.lazy(() => import('@/domains/auth/pages/LoginPage/LoginPage').then(module => ({ default: module.LoginPage })));
 const ResponsibilityDocMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityDocMgmt'));
@@ -55,32 +61,26 @@ const MenuMgmt = React.lazy(() => import('@/domains/system/pages/MenuMgmt/MenuMg
 const RoleMgmt = React.lazy(() => import('@/domains/system/pages/RoleMgmt/RoleMgmt'));
 const UserMgmt = React.lazy(() => import('@/domains/system/pages/UserMgmt/UserMgmt'));
 const AccessLog = React.lazy(() => import('@/domains/system/pages/AccessLog/AccessLog'));
-import {
-  AuthGuard,
-  ManagerGuard,
-  AdminGuard
-} from './guards';
-import { useAuthStore } from '@/app/store/authStore';
 
 // 임시 페이지 컴포넌트들 (디자인 완료 후 실제 컴포넌트로 교체)
-const TemporaryPage: React.FC<{ title: string; description?: string }> = ({ 
-  title, 
-  description 
+const TemporaryPage: React.FC<{ title: string; description?: string }> = ({
+  title,
+  description
 }) => (
-  <div style={{ 
-    padding: '48px 24px', 
+  <div style={{
+    padding: '48px 24px',
     textAlign: 'center',
     maxWidth: '800px',
     margin: '0 auto'
   }}>
-    <h1 style={{ 
-      fontSize: '2.5rem', 
+    <h1 style={{
+      fontSize: '2.5rem',
       marginBottom: '16px',
       color: '#1976d2'
     }}>
       {title}
     </h1>
-    <p style={{ 
+    <p style={{
       fontSize: '1.1rem',
       color: '#666',
       lineHeight: '1.6'
@@ -124,22 +124,22 @@ const AppRouter: React.FC = () => {
 
         {/* 에러 페이지들 (Public) */}
         <Route path="/404" element={
-          <TemporaryPage 
-            title="404 - 페이지를 찾을 수 없습니다" 
+          <TemporaryPage
+            title="404 - 페이지를 찾을 수 없습니다"
             description="요청하신 페이지가 존재하지 않습니다."
           />
         } />
-        
+
         <Route path="/403" element={
-          <TemporaryPage 
-            title="403 - 접근 권한이 없습니다" 
+          <TemporaryPage
+            title="403 - 접근 권한이 없습니다"
             description="이 페이지에 접근할 권한이 없습니다."
           />
         } />
 
         <Route path="/500" element={
-          <TemporaryPage 
-            title="500 - 서버 오류" 
+          <TemporaryPage
+            title="500 - 서버 오류"
             description="서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
           />
         } />
@@ -160,7 +160,7 @@ const AppRouter: React.FC = () => {
 
         {/* 메인 애플리케이션 라우트 (레이아웃 포함) */}
         <Route path="/app" element={<Layout />}>
-          
+
           {/* 대시보드 (인증 필요) */}
           <Route path="dashboard/*" element={
             <AuthGuard>
@@ -419,32 +419,32 @@ const AppRouter: React.FC = () => {
             <AuthGuard>
               <Routes>
                 <Route index element={
-                  <TemporaryPage 
-                    title="리스크 관리" 
+                  <TemporaryPage
+                    title="리스크 관리"
                     description="리스크 등록, 평가, 모니터링, 대응 등의 핵심 리스크 관리 기능이 구현될 예정입니다."
                   />
                 } />
                 <Route path="create" element={
-                  <TemporaryPage 
-                    title="리스크 등록" 
+                  <TemporaryPage
+                    title="리스크 등록"
                     description="새로운 리스크를 등록하고 초기 평가를 수행하는 페이지입니다."
                   />
                 } />
                 <Route path="templates" element={
-                  <TemporaryPage 
-                    title="리스크 템플릿" 
+                  <TemporaryPage
+                    title="리스크 템플릿"
                     description="리스크 등록을 위한 템플릿을 관리하는 페이지입니다."
                   />
                 } />
                 <Route path="categories" element={
-                  <TemporaryPage 
-                    title="리스크 카테고리" 
+                  <TemporaryPage
+                    title="리스크 카테고리"
                     description="리스크 분류 및 카테고리를 관리하는 페이지입니다."
                   />
                 } />
                 <Route path=":id/*" element={
-                  <TemporaryPage 
-                    title="리스크 상세" 
+                  <TemporaryPage
+                    title="리스크 상세"
                     description="개별 리스크의 상세 정보, 평가, 대응 현황 등을 관리하는 페이지입니다."
                   />
                 } />
@@ -460,7 +460,7 @@ const AppRouter: React.FC = () => {
                 <Routes>
                   {/* 임원이행점검보고서 */}
                   <Route path="executive-report" element={<ExecutiveReport />} />
-                  <Route path="executivereport" element={<ExecutiveReport />} />
+                  <Route path="executive-report" element={<ExecutiveReport />} />
                   <Route path="executive-report/:id" element={
                     <TemporaryPage
                       title="임원이행점검보고서 상세"
@@ -537,17 +537,17 @@ const AppRouter: React.FC = () => {
               {/* 개인 설정 (인증 필요) */}
               <Route path="profile" element={
                 <AuthGuard>
-                  <TemporaryPage 
-                    title="프로필 설정" 
+                  <TemporaryPage
+                    title="프로필 설정"
                     description="개인 프로필 정보를 수정하는 페이지입니다."
                   />
                 </AuthGuard>
               } />
-              
+
               <Route path="preferences" element={
                 <AuthGuard>
-                  <TemporaryPage 
-                    title="환경 설정" 
+                  <TemporaryPage
+                    title="환경 설정"
                     description="언어, 테마, 알림 등 개인 환경 설정을 관리하는 페이지입니다."
                   />
                 </AuthGuard>
@@ -555,8 +555,8 @@ const AppRouter: React.FC = () => {
 
               <Route path="security" element={
                 <AuthGuard>
-                  <TemporaryPage 
-                    title="보안 설정" 
+                  <TemporaryPage
+                    title="보안 설정"
                     description="비밀번호 변경, 2단계 인증 등 보안 관련 설정을 관리하는 페이지입니다."
                   />
                 </AuthGuard>
@@ -568,19 +568,15 @@ const AppRouter: React.FC = () => {
                   <Suspense fallback={<LoadingSpinner text="시스템 설정 로딩 중..." />}>
                     <Routes>
                       {/* 코드관리 */}
-                      <Route path="code-mgmt" element={<CodeMgmt />} />
                       <Route path="codemgmt" element={<CodeMgmt />} />
 
                       {/* 메뉴관리 */}
-                      <Route path="menu-mgmt" element={<MenuMgmt />} />
                       <Route path="menumgmt" element={<MenuMgmt />} />
 
                       {/* 역활관리 */}
-                      <Route path="role-mgmt" element={<RoleMgmt />} />
                       <Route path="rolemgmt" element={<RoleMgmt />} />
 
                       {/* 사용자관리 */}
-                      <Route path="user-mgmt" element={<UserMgmt />} />
                       <Route path="usermgmt" element={<UserMgmt />} />
 
                       {/* 접근로그 */}
@@ -652,8 +648,8 @@ const AppRouter: React.FC = () => {
               {/* 리스크 설정 (매니저 이상) */}
               <Route path="risks/*" element={
                 <ManagerGuard>
-                  <TemporaryPage 
-                    title="리스크 설정" 
+                  <TemporaryPage
+                    title="리스크 설정"
                     description="리스크 카테고리, 템플릿, 워크플로우, 임계값 등을 설정하는 페이지입니다."
                   />
                 </ManagerGuard>
@@ -662,8 +658,8 @@ const AppRouter: React.FC = () => {
               {/* 설정 메인 페이지 */}
               <Route index element={
                 <AuthGuard>
-                  <TemporaryPage 
-                    title="설정" 
+                  <TemporaryPage
+                    title="설정"
                     description="시스템 설정 메뉴입니다. 개인 설정부터 시스템 관리까지 다양한 설정 옵션을 제공합니다."
                   />
                 </AuthGuard>

@@ -36,8 +36,8 @@ public class ManagementObligationController {
     public ResponseEntity<ManagementObligationDto> createObligation(
             @RequestBody CreateManagementObligationRequest request,
             Principal principal) {
-        log.info("POST /api/resps/management-obligations - 관리의무 생성: responsibilityDetailId={}, orgCode={}",
-            request.getResponsibilityDetailId(), request.getOrgCode());
+        log.info("POST /api/resps/management-obligations - 관리의무 생성: responsibilityDetailCd={}, orgCode={}",
+            request.getResponsibilityDetailCd(), request.getOrgCode());
 
         String username = principal != null ? principal.getName() : "system";
         ManagementObligationDto created = managementObligationService.createObligation(request, username);
@@ -46,50 +46,50 @@ public class ManagementObligationController {
     }
 
     /**
-     * 책무세부ID로 관리의무 목록 조회 API
-     * GET /api/resps/management-obligations/detail/{responsibilityDetailId}
+     * 책무세부코드로 관리의무 목록 조회 API
+     * GET /api/resps/management-obligations/detail/{responsibilityDetailCd}
      *
-     * @param responsibilityDetailId 책무세부ID
+     * @param responsibilityDetailCd 책무세부코드
      * @return 관리의무 DTO 리스트
      */
-    @GetMapping("/detail/{responsibilityDetailId}")
-    public ResponseEntity<List<ManagementObligationDto>> getObligationsByDetailId(
-            @PathVariable Long responsibilityDetailId) {
-        log.info("GET /api/resps/management-obligations/detail/{} - 관리의무 목록 조회", responsibilityDetailId);
+    @GetMapping("/detail/{responsibilityDetailCd}")
+    public ResponseEntity<List<ManagementObligationDto>> getObligationsByDetailCd(
+            @PathVariable String responsibilityDetailCd) {
+        log.info("GET /api/resps/management-obligations/detail/{} - 관리의무 목록 조회", responsibilityDetailCd);
 
-        List<ManagementObligationDto> obligations = managementObligationService.findByResponsibilityDetailId(responsibilityDetailId);
+        List<ManagementObligationDto> obligations = managementObligationService.findByResponsibilityDetailCd(responsibilityDetailCd);
 
         return ResponseEntity.ok(obligations);
     }
 
     /**
      * 관리의무 삭제 API
-     * DELETE /api/resps/management-obligations/{managementObligationId}
+     * DELETE /api/resps/management-obligations/{obligationCd}
      *
-     * @param managementObligationId 관리의무ID
+     * @param obligationCd 관리의무코드
      * @return 성공 메시지
      */
-    @DeleteMapping("/{managementObligationId}")
-    public ResponseEntity<Void> deleteObligation(@PathVariable Long managementObligationId) {
-        log.info("DELETE /api/resps/management-obligations/{} - 관리의무 삭제", managementObligationId);
+    @DeleteMapping("/{obligationCd}")
+    public ResponseEntity<Void> deleteObligation(@PathVariable String obligationCd) {
+        log.info("DELETE /api/resps/management-obligations/{} - 관리의무 삭제", obligationCd);
 
-        managementObligationService.deleteObligation(managementObligationId);
+        managementObligationService.deleteObligation(obligationCd);
 
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * 책무세부ID로 모든 관리의무 삭제 API
-     * DELETE /api/resps/management-obligations/detail/{responsibilityDetailId}
+     * 책무세부코드로 모든 관리의무 삭제 API
+     * DELETE /api/resps/management-obligations/detail/{responsibilityDetailCd}
      *
-     * @param responsibilityDetailId 책무세부ID
+     * @param responsibilityDetailCd 책무세부코드
      * @return 성공 메시지
      */
-    @DeleteMapping("/detail/{responsibilityDetailId}")
-    public ResponseEntity<Void> deleteObligationsByDetailId(@PathVariable Long responsibilityDetailId) {
-        log.info("DELETE /api/resps/management-obligations/detail/{} - 책무세부의 모든 관리의무 삭제", responsibilityDetailId);
+    @DeleteMapping("/detail/{responsibilityDetailCd}")
+    public ResponseEntity<Void> deleteObligationsByDetailCd(@PathVariable String responsibilityDetailCd) {
+        log.info("DELETE /api/resps/management-obligations/detail/{} - 책무세부의 모든 관리의무 삭제", responsibilityDetailCd);
 
-        managementObligationService.deleteByResponsibilityDetailId(responsibilityDetailId);
+        managementObligationService.deleteByResponsibilityDetailCd(responsibilityDetailCd);
 
         return ResponseEntity.noContent().build();
     }

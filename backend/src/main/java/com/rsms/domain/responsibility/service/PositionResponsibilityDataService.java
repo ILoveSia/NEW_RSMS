@@ -8,6 +8,7 @@ import com.rsms.domain.position.repository.PositionDetailRepository;
 import com.rsms.domain.position.repository.PositionRepository;
 import com.rsms.domain.responsibility.dto.PositionResponsibilityDataDto;
 import com.rsms.domain.responsibility.entity.RespStatementExec;
+import com.rsms.domain.responsibility.entity.ResponsibilityDetail;
 import com.rsms.domain.responsibility.repository.ManagementObligationRepository;
 import com.rsms.domain.responsibility.repository.RespStatementExecRepository;
 import com.rsms.domain.responsibility.repository.ResponsibilityDetailRepository;
@@ -142,14 +143,14 @@ public class PositionResponsibilityDataService {
                     // responsibility_details에서 첫 번째 세부내용 조회
                     // (책무당 여러 세부내용이 있을 수 있지만, UI에는 첫 번째만 표시)
                     String responsibilityDetailInfo = responsibilityDetailRepository
-                            .findByResponsibilityId(resp.getResponsibilityId())
+                            .findByResponsibilityCd(resp.getResponsibilityCd())  // ID → Code로 변경
                             .stream()
                             .findFirst()
                             .map(detail -> detail.getResponsibilityDetailInfo())
                             .orElse(null);
 
                     return PositionResponsibilityDataDto.ResponsibilityInfo.builder()
-                            .responsibilityId(resp.getResponsibilityId())
+                            .responsibilityId(resp.getResponsibilityCd())  // Code를 사용 (DTO 필드명은 그대로)
                             .responsibilityCat(resp.getResponsibilityCat())
                             .responsibilityCd(resp.getResponsibilityCd())
                             .responsibilityInfo(resp.getResponsibilityInfo())
@@ -165,21 +166,33 @@ public class PositionResponsibilityDataService {
      * - responsibilities → responsibility_details → management_obligations
      */
     private List<PositionResponsibilityDataDto.ManagementObligationInfo> getManagementObligations(Long positionId) {
-        // 1단계: 직책의 모든 책무ID 조회
-        List<Long> responsibilityIds = responsibilityRepository
+        // 1단계: 직책의 모든 책무코드 조회
+        List<String> responsibilityCodes = responsibilityRepository
                 .findByPositions_PositionsId(positionId).stream()
-                .map(resp -> resp.getResponsibilityId())
+                .map(resp -> resp.getResponsibilityCd())  // ID → Code로 변경
                 .collect(Collectors.toList());
 
-        if (responsibilityIds.isEmpty()) {
+        if (responsibilityCodes.isEmpty()) {
             return List.of();
         }
 
-        // 2단계: 책무ID들로 관리의무 전체 조회
-        return managementObligationRepository.findByResponsibilityIds(responsibilityIds).stream()
+        // 2단계: 책무코드들로 책무세부 조회 후, 각 세부에 대한 관리의무 조회
+        List<ResponsibilityDetail> details = responsibilityDetailRepository
+                .findByResponsibilityCdIn(responsibilityCodes);
+
+        if (details.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> detailCodes = details.stream()
+                .map(detail -> detail.getResponsibilityDetailCd())
+                .collect(Collectors.toList());
+
+        // 3단계: 책무세부코드들로 관리의무 전체 조회
+        return managementObligationRepository.findByResponsibilityDetailCdIn(detailCodes).stream()
                 .map(obligation -> PositionResponsibilityDataDto.ManagementObligationInfo.builder()
-                        .managementObligationId(obligation.getManagementObligationId())
-                        .responsibilityId(obligation.getResponsibilityDetail().getResponsibility().getResponsibilityId())
+                        .managementObligationId(obligation.getObligationCd())  // Code를 사용 (DTO 필드명은 그대로)
+                        .responsibilityId(obligation.getResponsibilityDetailCd())  // 세부코드 사용 (DTO 필드명은 그대로)
                         .obligationMajorCatCd(obligation.getObligationMajorCatCd())
                         .obligationMiddleCatCd(obligation.getObligationMiddleCatCd())
                         .obligationCd(obligation.getObligationCd())

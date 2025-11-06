@@ -111,13 +111,13 @@ chmod +x gradlew
 
 ```bash
 # 헬스체크
-curl http://localhost:8080/actuator/health
+curl http://localhost:8090/actuator/health
 
 # API 문서
-http://localhost:8080/swagger-ui.html
+http://localhost:8090/swagger-ui.html
 
 # API 문서 JSON
-http://localhost:8080/v3/api-docs
+http://localhost:8090/v3/api-docs
 ```
 
 ---
@@ -263,7 +263,7 @@ FROM openjdk:21-jdk-slim
 
 COPY build/libs/rsms-backend-*.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8090
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
@@ -317,13 +317,13 @@ sudo systemctl status postgresql
 sudo systemctl start postgresql
 ```
 
-**2. 포트 충돌 (8080)**
+**2. 포트 충돌 (8090)**
 ```bash
 # 포트 사용 중인 프로세스 확인
-lsof -ti:8080
+lsof -ti:8090
 
 # 프로세스 종료
-kill -9 $(lsof -ti:8080)
+kill -9 $(lsof -ti:8090)
 
 # 또는 다른 포트 사용
 ./gradlew bootRun --args='--server.port=8081'
@@ -346,7 +346,7 @@ kill -9 $(lsof -ti:8080)
 ### 문서
 - [백엔드 아키텍처 문서](../BACKEND_ARCHITECTURE.md)
 - [전체 개발 가이드](../DEVELOPMENT_GUIDE.md)
-- [API 문서](http://localhost:8080/swagger-ui.html) (실행 후 접속)
+- [API 문서](http://localhost:8090/swagger-ui.html) (실행 후 접속)
 
 ### 외부 링크
 - [Spring Boot 3.3.5 Reference](https://docs.spring.io/spring-boot/docs/3.3.5/reference/)
@@ -386,9 +386,9 @@ kill -9 $(lsof -ti:8080)
 - ✅ Domain-Driven Design 패키지 구조 완성
 
 **접속 URL**:
-- Health Check: http://localhost:8080/actuator/health
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- API Docs JSON: http://localhost:8080/v3/api-docs
+- Health Check: http://localhost:8090/actuator/health
+- Swagger UI: http://localhost:8090/swagger-ui.html
+- API Docs JSON: http://localhost:8090/v3/api-docs
 
 **현재 상태**: 개발 준비 완료, 프론트엔드 연동 대기 중
 

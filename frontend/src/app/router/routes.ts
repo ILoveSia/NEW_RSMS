@@ -4,7 +4,7 @@
  */
 
 // 라우트 권한 레벨 타입
-export type RoutePermission = 
+export type RoutePermission =
   | 'public'      // 누구나 접근 가능
   | 'auth'        // 로그인 사용자만 접근 가능
   | 'admin'       // 관리자만 접근 가능
@@ -34,7 +34,7 @@ export const routes = {
     reports: '/app/dashboard/reports',
     alerts: '/app/dashboard/alerts',
   },
-  
+
   // 사용자 관리 (manager)
   users: {
     list: '/app/users',
@@ -232,15 +232,15 @@ export const routes = {
       backup: '/app/settings/system/backup',
       integrations: '/app/settings/system/integrations',
       // 코드관리 (admin)
-      codeMgmt: '/app/settings/system/code-mgmt',
+      codeMgmt: '/app/settings/system/codemgmt',
       // 메뉴관리 (admin)
-      menuMgmt: '/app/settings/system/menu-mgmt',
+      menuMgmt: '/app/settings/system/menumgmt',
       // 역활관리 (admin)
-      roleMgmt: '/app/settings/system/role-mgmt',
+      roleMgmt: '/app/settings/system/rolemgmt',
       // 사용자관리 (admin)
-      userMgmt: '/app/settings/system/user-mgmt',
+      userMgmt: '/app/settings/system/usermgmt',
       // 접근로그 (admin)
-      accessLog: '/app/settings/system/access-log',
+      accessLog: '/app/settings/system/accesslog',
     },
 
     // 리스크 설정 (manager)
@@ -251,7 +251,7 @@ export const routes = {
       thresholds: '/app/settings/risks/thresholds',
     },
   },
-  
+
   // 에러 페이지 (public)
   errors: {
     notFound: '/404',
@@ -360,11 +360,11 @@ export const routePermissions: Record<string, RoutePermission> = {
 
   // Admin level routes
   '/app/settings/system/*': 'admin',
-  '/app/settings/system/code-mgmt': 'admin',
-  '/app/settings/system/menu-mgmt': 'admin',
-  '/app/settings/system/role-mgmt': 'admin',
-  '/app/settings/system/user-mgmt': 'admin',
-  '/app/settings/system/access-log': 'admin',
+  '/app/settings/system/codemgmt': 'admin',
+  '/app/settings/system/menumgmt': 'admin',
+  '/app/settings/system/rolemgmt': 'admin',
+  '/app/settings/system/usermgmt': 'admin',
+  '/app/settings/system/accesslog': 'admin',
 };
 
 // 라우트 메타데이터
@@ -461,27 +461,27 @@ export const routeMetadata: Record<string, RouteMetadata> = {
     permission: 'auth',
     breadcrumb: ['설정'],
   },
-  '/app/settings/system/code-mgmt': {
+  '/app/settings/system/codemgmt': {
     title: '코드관리',
     permission: 'admin',
     breadcrumb: ['설정', '시스템 설정', '코드관리'],
   },
-  '/app/settings/system/menu-mgmt': {
+  '/app/settings/system/menumgmt': {
     title: '메뉴관리',
     permission: 'admin',
     breadcrumb: ['설정', '시스템 설정', '메뉴관리'],
   },
-  '/app/settings/system/role-mgmt': {
+  '/app/settings/system/rolemgmt': {
     title: '역활관리',
     permission: 'admin',
     breadcrumb: ['설정', '시스템 설정', '역활관리'],
   },
-  '/app/settings/system/user-mgmt': {
+  '/app/settings/system/usermgmt': {
     title: '사용자관리',
     permission: 'admin',
     breadcrumb: ['설정', '시스템 설정', '사용자관리'],
   },
-  '/app/settings/system/access-log': {
+  '/app/settings/system/accesslog': {
     title: '접근로그',
     permission: 'admin',
     breadcrumb: ['설정', '시스템 설정', '접근로그'],

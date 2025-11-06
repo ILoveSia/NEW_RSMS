@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
  * @description 원장차수별 직책에 대한 책무 정보를 관리하는 엔티티
  * @author Claude AI
  * @since 2025-09-24
+ * @updated 2025-01-05 - PK를 자동증가에서 업무 코드로 변경
  */
 @Entity
 @Table(name = "responsibilities", schema = "rsms")
@@ -24,12 +25,13 @@ import java.time.LocalDateTime;
 public class Responsibility {
 
     /**
-     * 책무ID (자동 생성)
+     * 책무코드 (PK, 업무 코드)
+     * 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
+     * 예시: "20250001RM0001"
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "responsibility_id")
-    private Long responsibilityId;
+    @Column(name = "responsibility_cd", length = 20, nullable = false)
+    private String responsibilityCd;
 
     /**
      * 원장차수ID
@@ -52,15 +54,10 @@ public class Responsibility {
 
     /**
      * 책무카테고리 (RSBT_OBLG_CLCD)
+     * 예시: RM (리스크관리), IC (내부통제), CP (준법감시)
      */
     @Column(name = "responsibility_cat", length = 20, nullable = false)
     private String responsibilityCat;
-
-    /**
-     * 책무코드 (RSBT_OBLG_CD)
-     */
-    @Column(name = "responsibility_cd", length = 20, nullable = false)
-    private String responsibilityCd;
 
     /**
      * 책무정보 (책무 상세 설명)

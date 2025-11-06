@@ -7,7 +7,9 @@ import {
   SaveButton,
   CancelButton,
   RefreshButton,
-  ViewButton
+  ViewButton,
+  ExcelTemplateDownloadButton,
+  ExcelUploadButton
 } from '@/shared/components/atoms/ActionButtons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +18,7 @@ import styles from './BaseActionBar.module.scss';
 // 액션 버튼 타입 정의 (스마트 타입 지원)
 export interface ActionButton {
   key: string;
-  type?: 'search' | 'excel' | 'add' | 'edit' | 'delete' | 'save' | 'cancel' | 'refresh' | 'view' | 'custom';
+  type?: 'search' | 'excel' | 'add' | 'edit' | 'delete' | 'save' | 'cancel' | 'refresh' | 'view' | 'excelTemplateDownload' | 'excelUpload' | 'custom';
   label?: string;
   variant?: 'contained' | 'outlined' | 'text';
   color?: 'primary' | 'secondary' | 'error' | 'warning' | 'success';
@@ -113,6 +115,10 @@ const BaseActionBar: React.FC<BaseActionBarProps> = React.memo(({
         return <RefreshButton key={action.key} {...commonProps} />;
       case 'view':
         return <ViewButton key={action.key} {...commonProps} />;
+      case 'excelTemplateDownload':
+        return <ExcelTemplateDownloadButton key={action.key} {...commonProps} />;
+      case 'excelUpload':
+        return <ExcelUploadButton key={action.key} {...commonProps} />;
       default:
         // 기본 커스텀 버튼 (기존 방식 호환)
         return (
