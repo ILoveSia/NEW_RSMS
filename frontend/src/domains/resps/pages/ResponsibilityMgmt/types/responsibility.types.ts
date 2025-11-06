@@ -62,9 +62,8 @@ export interface UpdateResponsibilityRequest {
 export interface ResponsibilityGridRow {
   id: string;                        // responsibilityCd (PK)
   순번: number;
-  책무코드: string;                  // responsibilityCd
-  책무이행차수: string;              // ledgerOrderId
   직책명: string;                    // positions 테이블 조인
+  책무코드: string;                  // responsibilityCd
   책무카테고리: string;              // responsibilityCatName
   책무내용: string;                  // responsibilityInfo
   책무관련근거: string;              // responsibilityLegal

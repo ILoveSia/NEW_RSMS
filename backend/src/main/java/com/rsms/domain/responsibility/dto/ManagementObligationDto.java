@@ -31,6 +31,11 @@ public class ManagementObligationDto {
     private String responsibilityDetailCd;
 
     /**
+     * 책무세부내용
+     */
+    private String responsibilityDetailInfo;
+
+    /**
      * 관리의무 대분류 구분코드
      */
     private String obligationMajorCatCd;

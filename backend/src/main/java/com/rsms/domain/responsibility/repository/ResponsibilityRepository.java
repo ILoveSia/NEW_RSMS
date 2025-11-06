@@ -49,17 +49,19 @@ public interface ResponsibilityRepository extends JpaRepository<Responsibility, 
      * 특정 원장차수 + 책무카테고리의 최대 순번 조회 (코드 생성용)
      *
      * @param ledgerOrderId 원장차수ID (8자리)
-     * @param responsibilityCat 책무카테고리 (예: RM, IC, CP)
+     * @param responsibilityCat 책무카테고리 (1자리: M, I, C, B, R 등)
      * @return 최대 순번 (없으면 0)
      *
      * 사용 예시:
-     * - ledgerOrderId = "20250001", responsibilityCat = "RM"
-     * - 기존 코드: "20250001RM0001", "20250001RM0002"
+     * - ledgerOrderId = "20250001", responsibilityCat = "C"
+     * - 기존 코드: "20250001C0001", "20250001C0002"
+     * - 코드 형식: ledgerOrderId(8자리) + responsibilityCat(1자리) + 순번(4자리) = 13자리
+     * - SUBSTRING(responsibility_cd, 10, 4): 10번째부터 4자리 추출 (순번 부분)
      * - 반환값: 2
-     * - 다음 코드: "20250001RM0003"
+     * - 다음 코드: "20250001C0003"
      */
     @Query("""
-        SELECT COALESCE(MAX(CAST(SUBSTRING(r.responsibilityCd, 9, 4) AS integer)), 0)
+        SELECT COALESCE(MAX(CAST(SUBSTRING(r.responsibilityCd, 10, 4) AS integer)), 0)
         FROM Responsibility r
         WHERE r.ledgerOrderId = :ledgerOrderId
           AND r.responsibilityCat = :responsibilityCat

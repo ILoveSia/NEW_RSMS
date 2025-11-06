@@ -7,8 +7,8 @@
 -- =====================================================================================
 -- 변경사항:
 --   - PK: responsibility_detail_id (BIGSERIAL) → responsibility_detail_cd (VARCHAR, 업무 코드)
---   - 코드 생성 규칙: 책무코드 뒷 9자리 + "D" + 순번(4자리)
---   - 예시: "RM0001D0001" (RM0001책무 + D + 0001순번)
+--   - 코드 생성 규칙: 책무코드 + "D" + 순번(4자리)
+--   - 예시: "20250001M0001D0001" (20250001M0001책무 + D + 0001순번)
 --   - FK: responsibility_id (BIGINT) → responsibility_cd (VARCHAR)
 -- =====================================================================================
 
@@ -18,8 +18,8 @@ DROP TABLE IF EXISTS rsms.responsibility_details CASCADE;
 -- responsibility_details 테이블 생성
 CREATE TABLE rsms.responsibility_details (
   -- 기본키 (업무 코드)
-  -- 코드 생성 규칙: 책무코드 뒷 9자리 + "D" + 순번(4자리)
-  -- 예시: "RM0001D0001" = "RM0001"(책무코드 suffix) + "D" + "0001"(순번)
+  -- 코드 생성 규칙: 책무코드 + "D" + 순번(4자리)
+  -- 예시: "20250001M0001" = "RM0001"(책무코드 suffix) + "D" + "0001"(순번)
   responsibility_detail_cd VARCHAR(30) PRIMARY KEY,          -- 책무세부코드 (PK, 업무 코드)
 
   -- 외래키 (책무코드 참조)
@@ -62,7 +62,7 @@ CREATE INDEX idx_responsibility_details_resp_active ON rsms.responsibility_detai
 COMMENT ON TABLE rsms.responsibility_details IS '책무세부 정보를 관리하는 테이블 (1:N 관계, 코드 체계: 책무코드suffix+D+순번)';
 
 -- 컬럼 코멘트
-COMMENT ON COLUMN rsms.responsibility_details.responsibility_detail_cd IS '책무세부코드 (PK, 업무코드 - 형식: 책무코드 뒷 9자리 + D + 순번4자리, 예: RM0001D0001)';
+COMMENT ON COLUMN rsms.responsibility_details.responsibility_detail_cd IS '책무세부코드 (PK, 업무코드 - 형식: 책무코드 + D + 순번4자리, 예: 20250001M0001D0001)';
 COMMENT ON COLUMN rsms.responsibility_details.responsibility_cd IS '책무코드 (FK → responsibilities.responsibility_cd)';
 COMMENT ON COLUMN rsms.responsibility_details.responsibility_detail_info IS '책무세부내용';
 COMMENT ON COLUMN rsms.responsibility_details.is_active IS '사용여부 (Y: 사용, N: 미사용)';
@@ -114,23 +114,6 @@ INSERT INTO rsms.responsibility_details (
 -- =====================================================================================
 -- Backend에서 코드를 자동 생성하는 로직:
 --
--- 1. 부모 책무코드에서 suffix 추출:
---    String respSuffix = responsibilityCode.substring(8); // "20250001RM0001" → "RM0001"
---
--- 2. 최대 순번 조회 쿼리:
---    SELECT MAX(SUBSTRING(responsibility_detail_cd, LENGTH(respSuffix) + 2, 4)::INTEGER)
---    FROM rsms.responsibility_details
---    WHERE responsibility_cd = '20250001RM0001';
---
--- 3. 코드 생성 로직:
---    String nextSeq = String.format("%04d", maxSeq + 1);
---    String code = respSuffix + "D" + nextSeq;
---    // 예: "RM0001" + "D" + "0001" = "RM0001D0001"
---
--- 4. 코드 형식 검증:
---    - 길이: 10-30자
---    - 패턴: 책무코드suffix (2-20자) + "D" + 순번(4자리)
---    - 예: "RM0001D0001", "RISK_MGT0001D0001"
 -- =====================================================================================
 
 -- =====================================================================================

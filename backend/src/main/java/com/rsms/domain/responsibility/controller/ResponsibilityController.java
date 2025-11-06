@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -174,5 +175,35 @@ public class ResponsibilityController {
         String username = principal != null ? principal.getName() : "system";
         ResponsibilityDto created = responsibilityService.createResponsibilityWithDetails(request, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    /**
+     * 책무 엑셀 업로드
+     * - POST /api/resps/responsibilities/excel/upload
+     * - 엑셀 파일을 받아서 책무 데이터 일괄 등록
+     *
+     * 엑셀 양식:
+     * - 원장차수 (ledgerOrderId)
+     * - 직책코드 (positionsCd)
+     * - 책무카테고리코드 (responsibilityCat)
+     * - 책무내용 (responsibilityInfo)
+     * - 책무관련근거 (responsibilityLegal)
+     * - 사용여부 (isActive)
+     *
+     * @param file 업로드할 엑셀 파일
+     * @param principal 현재 로그인 사용자
+     * @return 업로드 결과 (성공/실패 건수, 에러 메시지)
+     */
+    @PostMapping("/excel/upload")
+    public ResponseEntity<ExcelUploadResponse> uploadExcel(
+            @RequestParam("file") MultipartFile file,
+            Principal principal) {
+        log.info("POST /api/resps/responsibilities/excel/upload - 파일명: {}, 크기: {} bytes",
+                file.getOriginalFilename(), file.getSize());
+
+        String username = principal != null ? principal.getName() : "system";
+        ExcelUploadResponse response = responsibilityService.uploadExcel(file, username);
+
+        return ResponseEntity.ok(response);
     }
 }

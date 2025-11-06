@@ -1,22 +1,32 @@
 /**
  * 책무 엑셀 업로드 모달
- * - 엑셀 파일 선택 및 업로드
+ * - 엑셀 파일 선택 및 미리보기
  * - 드래그 앤 드롭 지원
- * - 파일 검증 및 업로드 결과 표시
+ * - AG-Grid 미리보기
+ * - 업로드 등록 버튼으로 서버 저장
  *
  * @author Claude AI
- * @since 2025-11-05
+ * @since 2025-11-06
  */
 
-import React, { useCallback, useState } from 'react';
+import { Button } from '@/shared/components/atoms/Button';
+import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Box,
-  Typography,
+  CheckCircle as CheckIcon,
+  CloudUpload as CloudUploadIcon,
+  Error as ErrorIcon,
+  InsertDriveFile as FileIcon,
+  Visibility as VisibilityIcon,
+  Warning as WarningIcon
+} from '@mui/icons-material';
+import {
   Alert,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
   LinearProgress,
   List,
   ListItem,
@@ -28,16 +38,21 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Typography
 } from '@mui/material';
-import {
-  CloudUpload as CloudUploadIcon,
-  InsertDriveFile as FileIcon,
-  CheckCircle as CheckIcon,
-  Error as ErrorIcon,
-  Warning as WarningIcon
-} from '@mui/icons-material';
-import { Button } from '@/shared/components/atoms/Button';
+import type { ColDef } from 'ag-grid-community';
+import React, { useCallback, useState } from 'react';
+import * as XLSX from 'xlsx';
+
+interface ResponsibilityExcelData {
+  원장차수: string;
+  직책코드: string;
+  책무카테고리코드: string;
+  책무내용: string;
+  책무관련근거: string;
+  사용여부: string;
+}
 
 interface ResponsibilityExcelUploadModalProps {
   open: boolean;
@@ -55,12 +70,31 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previewData, setPreviewData] = useState<ResponsibilityExcelData[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [parsing, setParsing] = useState(false); // 파싱 중 상태
   const [uploadResult, setUploadResult] = useState<{
     successCount: number;
     failCount: number;
     totalCount: number;
     errors?: string[];
   } | null>(null);
+
+  /**
+   * 미리보기 Grid 컬럼 정의
+   * - 원장차수: 8자리 (예: 20250001) → 100px
+   * - 직책코드: 4자리 (예: R005) → 90px
+   * - 책무카테고리코드: 1자리 (M, I, C) → 80px
+   * - 사용여부: 1자리 (Y, N) → 80px
+   */
+  const previewColumns: ColDef<ResponsibilityExcelData>[] = [
+    { headerName: '원장차수', field: '원장차수', width: 100, sortable: true },
+    { headerName: '직책코드', field: '직책코드', width: 90, sortable: true },
+    { headerName: '책무카테고리코드', field: '책무카테고리코드', width: 80, sortable: true, headerClass: 'ag-header-cell-center' },
+    { headerName: '책무내용', field: '책무내용', flex: 1, sortable: true, minWidth: 200 },
+    { headerName: '책무관련근거', field: '책무관련근거', flex: 1, sortable: true, minWidth: 200 },
+    { headerName: '사용여부', field: '사용여부', width: 80, sortable: true, headerClass: 'ag-header-cell-center' }
+  ];
 
   /**
    * 파일 검증
@@ -90,18 +124,127 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
   }, []);
 
   /**
-   * 파일 선택 핸들러
+   * 엑셀 파일 파싱 및 미리보기 데이터 생성
+   * - xlsx 라이브러리를 사용하여 실제 엑셀 파일 파싱
+   * - 컬럼명 검증 및 데이터 변환
    */
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      if (validateFile(file)) {
-        setSelectedFile(file);
-        setUploadResult(null); // 이전 결과 초기화
-      }
+  const parseExcelFile = useCallback(async (file: File): Promise<ResponsibilityExcelData[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          if (!data) {
+            throw new Error('파일을 읽을 수 없습니다.');
+          }
+
+          // 엑셀 파일 파싱
+          const workbook = XLSX.read(data, { type: 'binary' });
+
+          // 첫 번째 시트 가져오기
+          const sheetName = workbook.SheetNames[0];
+          if (!sheetName) {
+            throw new Error('엑셀 시트를 찾을 수 없습니다.');
+          }
+
+          const worksheet = workbook.Sheets[sheetName];
+
+          // 시트 데이터를 JSON으로 변환 (헤더 포함)
+          const jsonData = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet, {
+            header: 1,  // 첫 번째 행을 헤더로 사용
+            defval: ''  // 빈 셀은 빈 문자열로 처리
+          });
+
+          if (jsonData.length < 2) {
+            throw new Error('엑셀 파일에 데이터가 없습니다. (최소 헤더 + 1행 필요)');
+          }
+
+          // 헤더 추출 및 검증
+          const headers = jsonData[0] as string[];
+          const requiredColumns = ['원장차수', '직책코드', '책무카테고리코드', '책무내용', '책무관련근거', '사용여부'];
+
+          // 헤더 검증
+          const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+          if (missingColumns.length > 0) {
+            throw new Error(`필수 컬럼이 누락되었습니다: ${missingColumns.join(', ')}`);
+          }
+
+          // 데이터 행 변환 (헤더 제외)
+          const dataRows = jsonData.slice(1);
+          const parsedData: ResponsibilityExcelData[] = dataRows
+            .filter((row: any) => {
+              // 빈 행 제외 (모든 셀이 비어있는 경우)
+              return row && Object.values(row).some((cell: any) => cell !== '' && cell !== null && cell !== undefined);
+            })
+            .map((row: any, index: number) => {
+              const rowData: any = {};
+              requiredColumns.forEach((col, colIndex) => {
+                const value = row[colIndex];
+                rowData[col] = value !== null && value !== undefined ? String(value).trim() : '';
+              });
+
+              // 필수 필드 검증
+              if (!rowData['원장차수'] || !rowData['직책코드'] || !rowData['책무내용']) {
+                throw new Error(`${index + 2}행: 원장차수, 직책코드, 책무내용은 필수입니다.`);
+              }
+
+              // 사용여부 검증
+              if (rowData['사용여부'] && !['Y', 'N'].includes(rowData['사용여부'])) {
+                throw new Error(`${index + 2}행: 사용여부는 Y 또는 N만 가능합니다.`);
+              }
+
+              return rowData as ResponsibilityExcelData;
+            });
+
+          if (parsedData.length === 0) {
+            throw new Error('유효한 데이터가 없습니다.');
+          }
+
+          resolve(parsedData);
+        } catch (err) {
+          console.error('엑셀 파싱 오류:', err);
+          reject(err instanceof Error ? err : new Error('엑셀 파일 파싱에 실패했습니다.'));
+        }
+      };
+
+      reader.onerror = () => {
+        reject(new Error('파일 읽기에 실패했습니다.'));
+      };
+
+      reader.readAsBinaryString(file);
+    });
+  }, []);
+
+  /**
+   * 파일 선택 핸들러
+   * - 파일 검증 후 엑셀 파싱하여 미리보기 표시
+   */
+  const handleFileSelect = useCallback(async (file: File) => {
+    if (!validateFile(file)) {
+      return;
     }
-  }, [validateFile]);
+
+    setSelectedFile(file);
+    setUploadResult(null); // 이전 결과 초기화
+    setError(null);
+    setShowPreview(false);
+    setPreviewData([]);
+    setParsing(true);
+
+    try {
+      // 엑셀 파일 파싱
+      const parsedData = await parseExcelFile(file);
+      setPreviewData(parsedData);
+      setShowPreview(true);
+    } catch (err) {
+      console.error('엑셀 파일 파싱 실패:', err);
+      setError(err instanceof Error ? err.message : '엑셀 파일 파싱에 실패했습니다.');
+      setSelectedFile(null);
+    } finally {
+      setParsing(false);
+    }
+  }, [validateFile, parseExcelFile]);
 
   /**
    * 드래그 앤 드롭 핸들러
@@ -123,13 +266,9 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
 
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      if (validateFile(file)) {
-        setSelectedFile(file);
-        setUploadResult(null); // 이전 결과 초기화
-      }
+      handleFileSelect(files[0]);
     }
-  }, [validateFile]);
+  }, [handleFileSelect]);
 
   /**
    * 파일 선택 버튼 클릭
@@ -141,18 +280,14 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
     input.onchange = (e) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
-        const file = target.files[0];
-        if (validateFile(file)) {
-          setSelectedFile(file);
-          setUploadResult(null); // 이전 결과 초기화
-        }
+        handleFileSelect(target.files[0]);
       }
     };
     input.click();
-  }, [validateFile]);
+  }, [handleFileSelect]);
 
   /**
-   * 업로드 제출
+   * 업로드 등록 (서버로 데이터 저장)
    */
   const handleSubmit = useCallback(async () => {
     if (!selectedFile) return;
@@ -160,12 +295,13 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
     try {
       const result = await onUpload(selectedFile);
       setUploadResult(result);
+      setShowPreview(false); // 미리보기 숨기기
 
-      // 완전 성공 시에만 파일 초기화 및 모달 닫기
+      // 완전 성공 시에만 파일 초기화
       if (result.failCount === 0) {
         setSelectedFile(null);
         setError(null);
-        // 모달은 자동으로 닫히지 않음 (사용자가 결과 확인 후 닫기)
+        setPreviewData([]);
       }
     } catch (err) {
       console.error('엑셀 업로드 실패:', err);
@@ -177,12 +313,15 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
    * 모달 닫기
    */
   const handleClose = useCallback(() => {
-    if (loading) return; // 업로드 중에는 닫기 불가
+    if (loading || parsing) return; // 업로드 중이거나 파싱 중에는 닫기 불가
     setSelectedFile(null);
     setError(null);
+    setPreviewData([]);
+    setShowPreview(false);
+    setParsing(false);
     setUploadResult(null);
     onClose();
-  }, [loading, onClose]);
+  }, [loading, parsing, onClose]);
 
   /**
    * 파일 크기 포맷팅
@@ -199,12 +338,13 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 1,
-          maxHeight: '90vh'
+          maxHeight: '90vh',
+          height: showPreview ? '85vh' : 'auto'
         }
       }}
     >
@@ -222,38 +362,48 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
       <DialogContent dividers sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {/* 엑셀 양식 안내 */}
-          <Alert severity="info" sx={{ mb: 1 }}>
+          <Alert severity="info" icon={false} sx={{ mb: 1 }}>
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
               📋 엑셀 양식 구조
             </Typography>
-            <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e0e0e0' }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>원장차수</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>직책코드</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>책무카테고리코드</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>책무내용</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>책무관련근거</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem' }}>사용여부</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>2025001</TableCell>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>R005</TableCell>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>M</TableCell>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>경영전략 업무와 관련된 책무</TableCell>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>책무관련근거는 은행법 1조 1항</TableCell>
-                    <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>Y</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <TableContainer
+                component={Paper}
+                elevation={0}
+                sx={{
+                  border: '1px solid #e0e0e0',
+                  width: 'fit-content',
+                  minWidth: '100%'
+                }}
+              >
+                <Table size="small" sx={{ tableLayout: 'fixed', width: 'auto', borderCollapse: 'collapse' }}>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '100px', padding: '8px', border: '1px solid #e0e0e0' }}>원장차수</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '90px', padding: '8px', border: '1px solid #e0e0e0' }}>직책코드</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '140px', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0', whiteSpace: 'nowrap' }}>책무카테고리코드</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '400px', padding: '8px', border: '1px solid #e0e0e0' }}>책무내용</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '400px', padding: '8px', border: '1px solid #e0e0e0' }}>책무관련근거</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '80px', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0' }}>사용여부</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>20250001</TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>R005</TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0', whiteSpace: 'nowrap' }}>M</TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>경영전략 업무와 관련된 책무</TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>책무관련근거는 은행법 1조 1항</TableCell>
+                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0' }}>Y</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
           </Alert>
 
           {/* 파일 업로드 영역 */}
-          {!uploadResult && (
+          {!showPreview && !uploadResult && (
             <Paper
               elevation={0}
               onDragEnter={handleDrag}
@@ -292,7 +442,7 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
           )}
 
           {/* 선택된 파일 정보 */}
-          {selectedFile && !uploadResult && (
+          {selectedFile && showPreview && (
             <Paper
               elevation={0}
               sx={{
@@ -301,9 +451,19 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
                 p: 2
               }}
             >
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                선택된 파일
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                  <VisibilityIcon sx={{ fontSize: '1rem', verticalAlign: 'middle', mr: 0.5 }} />
+                  선택된 파일
+                </Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleFileButtonClick}
+                >
+                  파일 다시 선택
+                </Button>
+              </Box>
               <List disablePadding>
                 <ListItem disablePadding sx={{ gap: 1 }}>
                   <ListItemIcon sx={{ minWidth: 'auto' }}>
@@ -326,6 +486,34 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
             </Paper>
           )}
 
+          {/* 미리보기 Grid */}
+          {showPreview && previewData.length > 0 && (
+            <>
+              <Divider sx={{ my: 1 }} />
+              <Box>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  📊 데이터 미리보기 (총 {previewData.length}건)
+                </Typography>
+                <Box sx={{ height: 300, width: '100%' }}>
+                  <BaseDataGrid
+                    data={previewData}
+                    columns={previewColumns}
+                    loading={false}
+                    theme="alpine"
+                    height="300px"
+                    pagination={false}
+                    rowSelection="single"
+                  />
+                </Box>
+                <Alert severity="info" icon={<WarningIcon />} sx={{ mt: 2 }}>
+                  <Typography variant="caption">
+                    위 데이터는 미리보기입니다. "업로드 등록" 버튼을 클릭하면 실제로 서버에 저장됩니다.
+                  </Typography>
+                </Alert>
+              </Box>
+            </>
+          )}
+
           {/* 업로드 결과 */}
           {uploadResult && (
             <Paper
@@ -337,11 +525,11 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
               }}
             >
               <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                업로드 결과
+                ✅ 업로드 완료
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                 <Alert
-                  severity="success"
+                  severity="info"
                   icon={<CheckIcon />}
                   sx={{ flex: 1 }}
                 >
@@ -396,7 +584,7 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
           )}
 
           {/* 로딩 바 */}
-          {loading && (
+          {(loading || parsing) && (
             <Box sx={{ width: '100%' }}>
               <LinearProgress />
               <Typography
@@ -404,7 +592,7 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
                 color="text.secondary"
                 sx={{ display: 'block', textAlign: 'center', mt: 1 }}
               >
-                업로드 중...
+                {parsing ? '엑셀 파일 파싱 중...' : '서버에 업로드 중...'}
               </Typography>
             </Box>
           )}
@@ -430,17 +618,18 @@ const ResponsibilityExcelUploadModal: React.FC<ResponsibilityExcelUploadModalPro
         <Button
           variant="outlined"
           onClick={handleClose}
-          disabled={loading}
+          disabled={loading || parsing}
         >
           {uploadResult ? '닫기' : '취소'}
         </Button>
-        {!uploadResult && (
+        {showPreview && !uploadResult && (
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!selectedFile || loading}
+            disabled={!selectedFile || loading || parsing}
+            startIcon={loading ? undefined : <CloudUploadIcon />}
           >
-            {loading ? '업로드 중...' : '업로드 등록'}
+            {loading ? '업로드 중...' : '업로드 등록 (서버 저장)'}
           </Button>
         )}
       </DialogActions>

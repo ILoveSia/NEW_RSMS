@@ -285,6 +285,7 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
         // Position 타입으로 변환 (positions 기준, orgNames 배열 사용)
         const positions: Position[] = filteredData.map(dto => ({
           id: dto.positionsId.toString(),
+          positionsCd: dto.positionsCd,                 // 직책코드
           positionName: dto.positionsName,
           headquarters: dto.hqName,
           hqName: dto.hqName,                           // 본부명
@@ -517,10 +518,12 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           const positions: Position[] = data.map(dto => {
             return {
               id: dto.positionsId.toString(),
+              positionsCd: dto.positionsCd,                 // 직책코드
               positionName: dto.positionsName,
               headquarters: dto.hqName,
               hqName: dto.hqName,
-              orgName: dto.orgName || '-',
+              orgName: dto.orgNames?.[0] || dto.orgName || '-',  // 부점명 (첫번째 값)
+              orgNames: dto.orgNames || [],                      // 부점명 배열
               registrationDate: dto.createdAt.split('T')[0],
               registrar: dto.createdBy,
               registrarPosition: '-',

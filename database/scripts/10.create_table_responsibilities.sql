@@ -8,7 +8,7 @@
 -- 변경사항:
 --   - PK: responsibility_id (BIGSERIAL) → responsibility_cd (VARCHAR, 업무 코드)
 --   - 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
---   - 예시: "20250001RM0001" (20250001원장차수 + RM카테고리 + 0001순번)
+--   - 예시: "20250001M0001" (20250001원장차수 + M카테고리 + 0001순번)
 --   - 기존 responsibility_cd 컬럼 삭제 (PK로 대체되어 중복 제거)
 -- =====================================================================================
 
@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS rsms.responsibilities CASCADE;
 CREATE TABLE rsms.responsibilities (
   -- 기본키 (업무 코드)
   -- 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
-  -- 예시: "20250001RM0001" = "20250001"(원장차수) + "RM"(리스크관리) + "0001"(순번)
+  -- 예시: "20250001RM0001" = "20250001"(원장차수) + "M"(리스크관리) + "0001"(순번)
   responsibility_cd VARCHAR(20) PRIMARY KEY,              -- 책무코드 (PK, 업무 코드)
 
   -- 외래키
@@ -89,10 +89,10 @@ CREATE INDEX idx_responsibilities_ledger_cat ON rsms.responsibilities(ledger_ord
 COMMENT ON TABLE rsms.responsibilities IS '책무 정보를 관리하는 테이블 (코드 체계: 원장차수+카테고리+순번)';
 
 -- 컬럼 코멘트
-COMMENT ON COLUMN rsms.responsibilities.responsibility_cd IS '책무코드 (PK, 업무코드 - 형식: ledger_order_id + responsibility_cat + 순번4자리, 예: 20250001RM0001)';
+COMMENT ON COLUMN rsms.responsibilities.responsibility_cd IS '책무코드 (PK, 업무코드 - 형식: ledger_order_id + responsibility_cat + 순번4자리, 예: 20250001M0001)';
 COMMENT ON COLUMN rsms.responsibilities.ledger_order_id IS '원장차수ID (FK → ledger_order)';
 COMMENT ON COLUMN rsms.responsibilities.positions_id IS '직책ID (FK → positions)';
-COMMENT ON COLUMN rsms.responsibilities.responsibility_cat IS '책무카테고리 (common_code_details의 RSBT_OBLG_CLCD 그룹 참조, 예: RM, IC, CP)';
+COMMENT ON COLUMN rsms.responsibilities.responsibility_cat IS '책무카테고리 (common_code_details의 RSBT_OBLG_CLCD 그룹 참조, 예: R, C, M, B)';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_info IS '책무내용';
 COMMENT ON COLUMN rsms.responsibilities.responsibility_legal IS '책무관련근거 (직접입력)';
 COMMENT ON COLUMN rsms.responsibilities.expiration_date IS '만료일 (기본값: 9999-12-31)';

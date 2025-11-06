@@ -31,6 +31,11 @@ public class ResponsibilityDetailDto {
     private String responsibilityCd;
 
     /**
+     * 책무내용
+     */
+    private String responsibilityInfo;
+
+    /**
      * 책무세부내용
      */
     private String responsibilityDetailInfo;

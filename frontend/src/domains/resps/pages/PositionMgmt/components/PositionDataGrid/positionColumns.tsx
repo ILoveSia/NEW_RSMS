@@ -48,6 +48,13 @@ export const positionColumns: ColDef<Position>[] = [
     width: 80,
   },
   {
+    headerName: '직책코드',
+    field: 'positionsCd',
+    sortable: true,
+    filter: true,
+    width: 120,
+  },
+  {
     headerName: '직책',
     field: 'positionName',
     sortable: true,
@@ -71,6 +78,8 @@ export const positionColumns: ColDef<Position>[] = [
     sortable: true,
     filter: true,
     width: 200,
+    wrapText: false,       // 텍스트 줄바꿈 방지
+    autoHeight: false,     // 자동 높이 조절 방지
     valueGetter: (params) => {
       const orgNames = params.data?.orgNames;
 

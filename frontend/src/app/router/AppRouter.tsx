@@ -27,6 +27,8 @@ const DeptOpManualsMgmt = React.lazy(() => import('@/domains/resps/pages/DeptOpM
 const CeoMgmtDutySearch = React.lazy(() => import('@/domains/resps/pages/CeoMgmtDutySearch/CeoMgmtDutySearch'));
 const RoleHistory = React.lazy(() => import('@/domains/resps/pages/RoleHistory/RoleHistory'));
 const ResponsibilityMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityMgmt/ResponsibilityMgmt'));
+const ResponsibilityDetailMgmt = React.lazy(() => import('@/domains/resps/pages/ResponsibilityDetailMgmt/ResponsibilityDetailMgmt'));
+const ManagementObligationMgmt = React.lazy(() => import('@/domains/resps/pages/ManagementObligationMgmt/ManagementObligationMgmt'));
 const HomeDashboard = React.lazy(() => import('@/domains/dashboard/pages/HomeDashboard/HomeDashboard'));
 
 // Activities (책무구조도 관리 활동) 도메인
@@ -295,6 +297,12 @@ const AppRouter: React.FC = () => {
                       description="기존 책무 정보를 수정하는 페이지입니다."
                     />
                   } />
+
+                  {/* 책무상세관리 */}
+                  <Route path="responsibilitydetailmgmt" element={<ResponsibilityDetailMgmt />} />
+
+                  {/* 관리의무관리 */}
+                  <Route path="mgmtobligation" element={<ManagementObligationMgmt />} />
 
                   {/* 기존 URL 호환성 - 책무관리 */}
                   <Route path="responsibilities" element={<Navigate to="/app/resps/responsibilitymgmt" replace />} />

@@ -17,6 +17,43 @@ import type {
 const BASE_URL = '/resps/responsibility-details';
 
 /**
+ * 전체 책무세부 목록 조회
+ * GET /api/resps/responsibility-details
+ *
+ * @returns 전체 책무세부 DTO 배열
+ */
+export const getAllResponsibilityDetails = async (): Promise<ResponsibilityDetailDto[]> => {
+  try {
+    const response = await apiClient.get<ResponsibilityDetailDto[]>(BASE_URL);
+    return response.data;
+  } catch (error) {
+    console.error('[responsibilityDetailApi] 전체 책무세부 목록 조회 실패:', error);
+    throw new Error('전체 책무세부 목록 조회에 실패했습니다.');
+  }
+};
+
+/**
+ * 책무세부 단건 조회
+ * GET /api/resps/responsibility-details/{responsibilityDetailCd}
+ *
+ * @param responsibilityDetailCd 책무세부코드
+ * @returns 책무세부 DTO
+ */
+export const getResponsibilityDetail = async (
+  responsibilityDetailCd: string
+): Promise<ResponsibilityDetailDto> => {
+  try {
+    const response = await apiClient.get<ResponsibilityDetailDto>(
+      `${BASE_URL}/${responsibilityDetailCd}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('[responsibilityDetailApi] 책무세부 단건 조회 실패:', error);
+    throw new Error('책무세부 조회에 실패했습니다.');
+  }
+};
+
+/**
  * 책무코드로 책무세부 목록 조회
  * GET /api/resps/responsibility-details/responsibility/{responsibilityCd}
  *
@@ -61,6 +98,30 @@ export const createResponsibilityDetail = async (
 };
 
 /**
+ * 책무세부 수정
+ * PUT /api/resps/responsibility-details/{responsibilityDetailCd}
+ *
+ * @param responsibilityDetailCd 책무세부코드
+ * @param request 책무세부 수정 요청
+ * @returns 수정된 책무세부 DTO
+ */
+export const updateResponsibilityDetail = async (
+  responsibilityDetailCd: string,
+  request: UpdateResponsibilityDetailRequest
+): Promise<ResponsibilityDetailDto> => {
+  try {
+    const response = await apiClient.put<ResponsibilityDetailDto>(
+      `${BASE_URL}/${responsibilityDetailCd}`,
+      request
+    );
+    return response.data;
+  } catch (error) {
+    console.error('[responsibilityDetailApi] 책무세부 수정 실패:', error);
+    throw new Error('책무세부 수정에 실패했습니다.');
+  }
+};
+
+/**
  * 책무세부 삭제
  * DELETE /api/resps/responsibility-details/{responsibilityDetailCd}
  *
@@ -91,5 +152,29 @@ export const deleteResponsibilityDetailsByResponsibilityCd = async (
   } catch (error) {
     console.error('[responsibilityDetailApi] 책무의 모든 세부 삭제 실패:', error);
     throw new Error('책무의 모든 세부 삭제에 실패했습니다.');
+  }
+};
+
+/**
+ * 책무세부 일괄 생성 (엑셀 업로드용)
+ * POST /api/resps/responsibility-details/bulk
+ * - 여러 책무세부를 한번에 생성
+ * - 책무세부코드는 서버에서 자동 생성됨
+ *
+ * @param requests 책무세부 생성 요청 배열
+ * @returns 생성된 책무세부 DTO 배열
+ */
+export const bulkCreateResponsibilityDetails = async (
+  requests: CreateResponsibilityDetailRequest[]
+): Promise<ResponsibilityDetailDto[]> => {
+  try {
+    const response = await apiClient.post<ResponsibilityDetailDto[]>(
+      `${BASE_URL}/bulk`,
+      requests
+    );
+    return response.data;
+  } catch (error) {
+    console.error('[responsibilityDetailApi] 책무세부 일괄 생성 실패:', error);
+    throw new Error('책무세부 일괄 생성에 실패했습니다.');
   }
 };

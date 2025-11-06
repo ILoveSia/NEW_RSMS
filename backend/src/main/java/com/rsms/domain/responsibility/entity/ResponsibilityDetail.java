@@ -24,25 +24,28 @@ public class ResponsibilityDetail {
 
     /**
      * 책무세부코드 (PK, 업무 코드)
-     * 코드 생성 규칙: 책무코드 뒷 9자리 + "D" + 순번(4자리)
-     * 예시: "RM0001D0001"
+     * 코드 생성 규칙: 책무코드 전체 + "D" + 순번(4자리)
+     * 예시: "20250001M0001D0001"
      */
     @Id
     @Column(name = "responsibility_detail_cd", length = 30, nullable = false)
     private String responsibilityDetailCd;
 
     /**
-     * 책무코드 (FK)
-     */
-    @Column(name = "responsibility_cd", length = 20, nullable = false, insertable = false, updatable = false)
-    private String responsibilityCd;
-
-    /**
      * 책무 엔티티 (ManyToOne 관계)
+     * - responsibility_cd 컬럼을 FK로 사용
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsibility_cd", nullable = false)
     private Responsibility responsibility;
+
+    /**
+     * 책무코드 조회 (convenience method)
+     * - responsibility 객체에서 코드를 가져옴
+     * - 엑셀 업로드 등에서 직접 코드 설정이 필요한 경우를 위한 임시 필드
+     */
+    @Transient
+    private String tempResponsibilityCd;
 
     /**
      * 책무세부내용
@@ -103,6 +106,26 @@ public class ResponsibilityDetail {
      */
     public boolean isActiveStatus() {
         return "Y".equals(this.isActive);
+    }
+
+    /**
+     * 책무코드 조회 (getter)
+     * - responsibility 객체가 있으면 해당 코드 반환
+     * - 없으면 임시 필드 값 반환
+     */
+    public String getResponsibilityCd() {
+        if (responsibility != null) {
+            return responsibility.getResponsibilityCd();
+        }
+        return tempResponsibilityCd;
+    }
+
+    /**
+     * 책무코드 설정 (setter)
+     * - 임시 필드에 저장 (Service에서 responsibility 객체 설정 시 사용)
+     */
+    public void setResponsibilityCd(String responsibilityCd) {
+        this.tempResponsibilityCd = responsibilityCd;
     }
 
     @PrePersist

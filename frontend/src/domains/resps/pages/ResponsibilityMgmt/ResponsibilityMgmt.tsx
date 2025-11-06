@@ -54,7 +54,7 @@ import useFilters from '@/shared/hooks/useFilters';
 import usePagination from '@/shared/hooks/usePagination';
 
 // Responsibility specific components
-import { createResponsibilityColumns } from './components/ResponsibilityDataGrid/responsibilityColumns';
+import { createResponsibilityColumns, isLastRowInGroup } from './components/ResponsibilityDataGrid/responsibilityColumns';
 
 // Lazy-loaded components for performance optimization
 const ResponsibilityFormModal = React.lazy(() =>
@@ -448,8 +448,16 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
   ], [statistics]);
 
   // Filtered responsibilities for display (성능 최적화)
+  // 직책명으로 정렬하여 같은 직책명이 연속되도록 함 (그룹 구분선을 위해 필수)
   const displayResponsibilities = useMemo(() => {
-    return responsibilities; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
+    return [...responsibilities].sort((a, b) => {
+      // 직책명으로 1차 정렬
+      const positionCompare = a.직책명.localeCompare(b.직책명, 'ko-KR');
+      if (positionCompare !== 0) return positionCompare;
+
+      // 같은 직책명일 경우 책무코드로 2차 정렬
+      return a.책무코드.localeCompare(b.책무코드, 'ko-KR');
+    });
   }, [responsibilities]);
 
   // BaseSearchFilter용 필드 정의
@@ -567,17 +575,15 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
           const gridData: ResponsibilityGridRow[] = data.map((dto, index) => ({
             id: dto.responsibilityCd,
             순번: index + 1,
-            책무코드: dto.responsibilityCd,
-            책무이행차수: dto.ledgerOrderId,
             직책명: dto.positionsName || '',
+            책무코드: dto.responsibilityCd,
             책무카테고리: dto.responsibilityCatName || dto.responsibilityCat,
             책무내용: dto.responsibilityInfo,
             책무관련근거: dto.responsibilityLegal,
-            만료일: dto.expirationDate || '',
-            상태: dto.responsibilityStatus || (dto.isActive === 'Y' ? '정상' : '비활성'),
-            사용여부: dto.isActive === 'Y',
+            사용여부: dto.isActive === 'Y' ? '사용' : '미사용',
             등록일자: dto.createdAt ? dto.createdAt.split('T')[0] : '',
-            등록자: dto.createdBy || ''
+            등록자: dto.createdBy || '',
+            _rawData: dto
           }));
 
           setResponsibilities(gridData);

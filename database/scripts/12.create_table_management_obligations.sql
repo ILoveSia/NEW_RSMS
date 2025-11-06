@@ -7,8 +7,8 @@
 -- =====================================================================================
 -- 변경사항:
 --   - PK: management_obligation_id (BIGSERIAL) → obligation_cd (VARCHAR, 업무 코드)
---   - 코드 생성 규칙: 책무세부코드 + "MO" + 순번(4자리)
---   - 예시: "RM0001D0001MO0001" (RM0001D0001책무세부 + MO + 0001순번)
+--   - 코드 생성 규칙: 책무세부코드 + "O" + 순번(4자리)
+--   - 예시: "20250001M0002D0001O0001" (20250001M0002D0001책무세부 + M + 0001순번)
 --   - FK: responsibility_detail_id (BIGINT) → responsibility_detail_cd (VARCHAR)
 -- =====================================================================================
 
@@ -18,8 +18,8 @@ DROP TABLE IF EXISTS rsms.management_obligations CASCADE;
 -- management_obligations 테이블 생성
 CREATE TABLE rsms.management_obligations (
   -- 기본키 (업무 코드)
-  -- 코드 생성 규칙: 책무세부코드 + "MO" + 순번(4자리)
-  -- 예시: "RM0001D0001MO0001" = "RM0001D0001"(책무세부코드) + "MO" + "0001"(순번)
+  -- 코드 생성 규칙: 책무세부코드 + "O" + 순번(4자리)
+  -- 예시: "20250001M0002D0001O0001" = "20250001M0002D0001"(책무세부코드) + "O" + "0001"(순번)
   obligation_cd VARCHAR(50) PRIMARY KEY,                     -- 관리의무코드 (PK, 업무 코드)
 
   -- 외래키 (책무세부코드 참조)
@@ -85,7 +85,7 @@ CREATE INDEX idx_mgmt_obligations_org_active ON rsms.management_obligations(org_
 COMMENT ON TABLE rsms.management_obligations IS '책무세부에 대한 관리의무 정보를 관리하는 테이블 (1:N 관계, 코드 체계: 책무세부코드+MO+순번)';
 
 -- 컬럼 코멘트
-COMMENT ON COLUMN rsms.management_obligations.obligation_cd IS '관리의무코드 (PK, 업무코드 - 형식: 책무세부코드 + MO + 순번4자리, 예: RM0001D0001MO0001)';
+COMMENT ON COLUMN rsms.management_obligations.obligation_cd IS '관리의무코드 (PK, 업무코드 - 형식: 책무세부코드 + O + 순번4자리, 예: 20250001M0002D0001O0001)';
 COMMENT ON COLUMN rsms.management_obligations.responsibility_detail_cd IS '책무세부코드 (FK → responsibility_details.responsibility_detail_cd)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_major_cat_cd IS '관리의무 대분류 구분코드 (common_code_details 참조)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_middle_cat_cd IS '관리의무 중분류 구분코드 (common_code_details 참조)';
@@ -179,23 +179,6 @@ INSERT INTO rsms.management_obligations (
 -- =====================================================================================
 -- Backend에서 코드를 자동 생성하는 로직:
 --
--- 1. 부모 책무세부코드 사용:
---    String detailCode = "RM0001D0001";
---
--- 2. 최대 순번 조회 쿼리:
---    SELECT MAX(SUBSTRING(obligation_cd, LENGTH(detailCode) + 3, 4)::INTEGER)
---    FROM rsms.management_obligations
---    WHERE responsibility_detail_cd = 'RM0001D0001';
---
--- 3. 코드 생성 로직:
---    String nextSeq = String.format("%04d", maxSeq + 1);
---    String code = detailCode + "MO" + nextSeq;
---    // 예: "RM0001D0001" + "MO" + "0001" = "RM0001D0001MO0001"
---
--- 4. 코드 형식 검증:
---    - 길이: 16-50자
---    - 패턴: 책무세부코드 (10-30자) + "MO" + 순번(4자리)
---    - 예: "RM0001D0001MO0001", "RISK_MGT0001D0001MO0001"
 -- =====================================================================================
 
 -- =====================================================================================

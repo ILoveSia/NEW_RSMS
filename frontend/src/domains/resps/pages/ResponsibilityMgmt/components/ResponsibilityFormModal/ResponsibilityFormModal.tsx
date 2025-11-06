@@ -252,18 +252,18 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
 
       <DialogContent dividers sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* 원장차수 */}
+          {/* 원장차수 - 수정 모드일 때도 비활성화 */}
           <LedgerOrderComboBox
             value={formData.ledgerOrderId}
             onChange={(value) => handleChange('ledgerOrderId', value || '')}
             label="원장차수"
             required
-            disabled={isReadOnly}
+            disabled={isReadOnly || mode === 'detail'}
             size="small"
           />
 
-          {/* 직책 */}
-          <FormControl fullWidth size="small" required disabled={isReadOnly || isLoadingPositions}>
+          {/* 직책 - 수정 모드일 때도 비활성화 */}
+          <FormControl fullWidth size="small" required disabled={isReadOnly || isLoadingPositions || mode === 'detail'}>
             <InputLabel>직책</InputLabel>
             <Select
               value={formData.positionsId || ''}
@@ -282,8 +282,8 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
             </Select>
           </FormControl>
 
-          {/* 책무카테고리 */}
-          <FormControl fullWidth size="small" required disabled={isReadOnly}>
+          {/* 책무카테고리 - 수정 모드일 때도 비활성화 */}
+          <FormControl fullWidth size="small" required disabled={isReadOnly || mode === 'detail'}>
             <InputLabel>책무카테고리</InputLabel>
             <Select
               value={formData.responsibilityCat}

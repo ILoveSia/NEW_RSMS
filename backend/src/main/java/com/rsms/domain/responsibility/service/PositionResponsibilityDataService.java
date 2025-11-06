@@ -143,7 +143,7 @@ public class PositionResponsibilityDataService {
                     // responsibility_details에서 첫 번째 세부내용 조회
                     // (책무당 여러 세부내용이 있을 수 있지만, UI에는 첫 번째만 표시)
                     String responsibilityDetailInfo = responsibilityDetailRepository
-                            .findByResponsibilityCd(resp.getResponsibilityCd())  // ID → Code로 변경
+                            .findByResponsibility_ResponsibilityCd(resp.getResponsibilityCd())  // ID → Code로 변경
                             .stream()
                             .findFirst()
                             .map(detail -> detail.getResponsibilityDetailInfo())
@@ -178,7 +178,7 @@ public class PositionResponsibilityDataService {
 
         // 2단계: 책무코드들로 책무세부 조회 후, 각 세부에 대한 관리의무 조회
         List<ResponsibilityDetail> details = responsibilityDetailRepository
-                .findByResponsibilityCdIn(responsibilityCodes);
+                .findByResponsibility_ResponsibilityCdIn(responsibilityCodes);
 
         if (details.isEmpty()) {
             return List.of();

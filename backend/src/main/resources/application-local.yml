@@ -44,7 +44,7 @@ logging:
     root: INFO
     com.rsms: DEBUG
     org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
+    org.springframework.security: INFO  # DEBUG에서 INFO로 변경하여 로그 줄이기
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:

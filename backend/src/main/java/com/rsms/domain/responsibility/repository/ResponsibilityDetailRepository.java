@@ -21,18 +21,21 @@ public interface ResponsibilityDetailRepository extends JpaRepository<Responsibi
 
     /**
      * 책무코드로 책무 세부내용 목록 조회
+     * - responsibility.responsibilityCd를 통해 조회
      */
-    List<ResponsibilityDetail> findByResponsibilityCd(String responsibilityCd);
+    List<ResponsibilityDetail> findByResponsibility_ResponsibilityCd(String responsibilityCd);
 
     /**
      * 책무코드 목록으로 책무 세부내용 목록 조회 (IN 절)
+     * - responsibility.responsibilityCd를 통해 조회
      */
-    List<ResponsibilityDetail> findByResponsibilityCdIn(List<String> responsibilityCodes);
+    List<ResponsibilityDetail> findByResponsibility_ResponsibilityCdIn(List<String> responsibilityCodes);
 
     /**
      * 책무코드로 책무 세부내용 전체 삭제
+     * - responsibility.responsibilityCd를 통해 삭제
      */
-    void deleteByResponsibilityCd(String responsibilityCd);
+    void deleteByResponsibility_ResponsibilityCd(String responsibilityCd);
 
     // ===============================
     // 코드 생성용 쿼리 메서드
@@ -55,7 +58,7 @@ public interface ResponsibilityDetailRepository extends JpaRepository<Responsibi
     @Query("""
         SELECT COALESCE(MAX(CAST(SUBSTRING(rd.responsibilityDetailCd, :prefixLength + 1, 4) AS integer)), 0)
         FROM ResponsibilityDetail rd
-        WHERE rd.responsibilityCd = :responsibilityCd
+        WHERE rd.responsibility.responsibilityCd = :responsibilityCd
         """)
     Integer findMaxSequenceByResponsibilityCd(
         @Param("responsibilityCd") String responsibilityCd,

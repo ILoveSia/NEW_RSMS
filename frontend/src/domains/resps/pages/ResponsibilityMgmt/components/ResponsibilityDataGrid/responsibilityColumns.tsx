@@ -11,8 +11,34 @@ import { ColDef } from 'ag-grid-community';
 import type { ResponsibilityGridRow } from '../../types/responsibility.types';
 
 /**
+ * 같은 직책명 그룹의 마지막 행인지 확인
+ * - AG-Grid rowClassRules에서 사용
+ *
+ * @param params AG-Grid params
+ * @returns 마지막 행이면 true, 아니면 false
+ */
+export const isLastRowInGroup = (params: any): boolean => {
+  if (!params.data || !params.api) return false;
+
+  const currentRowIndex = params.node.rowIndex;
+  const currentGroupValue = params.data.직책명;
+
+  // 다음 행 가져오기
+  const nextRowNode = params.api.getDisplayedRowAtIndex(currentRowIndex + 1);
+
+  // 다음 행이 없으면 마지막 행
+  if (!nextRowNode || !nextRowNode.data) return true;
+
+  const nextGroupValue = nextRowNode.data.직책명;
+
+  // 다음 행의 직책명이 다르면 현재 그룹의 마지막 행
+  return currentGroupValue !== nextGroupValue;
+};
+
+/**
  * 책무관리 Grid 컬럼 생성
- * - 책무세부, 관리의무 컬럼 제거 (각각 별도 페이지로 분리)
+ * - 컬럼 순서: 순번, 직책명, 책무코드, 책무카테고리, 책무내용, 책무관련근거, 사용여부, 등록일자, 등록자
+ * - 책무이행차수 컬럼 삭제
  */
 export const createResponsibilityColumns = (
   onDetailClick?: (data: ResponsibilityGridRow) => void
@@ -22,6 +48,12 @@ export const createResponsibilityColumns = (
     field: '순번',
     width: 80,
     cellStyle: { textAlign: 'center' },
+  },
+  {
+    headerName: '직책명',
+    field: '직책명',
+    width: 150,
+    cellStyle: { textAlign: 'center' }
   },
   {
     headerName: '책무코드',
@@ -39,18 +71,6 @@ export const createResponsibilityColumns = (
       }
     },
     cellClass: 'responsibility-clickable-cell'
-  },
-  {
-    headerName: '책무이행차수',
-    field: '책무이행차수',
-    width: 120,
-    cellStyle: { textAlign: 'center' }
-  },
-  {
-    headerName: '직책명',
-    field: '직책명',
-    width: 150,
-    cellStyle: { textAlign: 'center' }
   },
   {
     headerName: '책무카테고리',

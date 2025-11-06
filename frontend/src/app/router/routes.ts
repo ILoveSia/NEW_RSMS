@@ -75,6 +75,17 @@ export const routes = {
     responsibilityCreate: '/app/resps/responsibilities/create',
     responsibilityEdit: '/app/resps/responsibilities/:id/edit',
 
+    // 책무상세관리
+    responsibilityDetails: '/app/resps/responsibility-details',
+    responsibilityDetailDetail: '/app/resps/responsibility-details/:id',
+    responsibilityDetailCreate: '/app/resps/responsibility-details/create',
+    responsibilityDetailEdit: '/app/resps/responsibility-details/:id/edit',
+
+    // 관리의무관리
+    managementObligations: '/app/resps/management-obligations',
+    managementObligationDetail: '/app/resps/management-obligations/:id',
+    managementObligationCreate: '/app/resps/management-obligations/create',
+    managementObligationEdit: '/app/resps/management-obligations/:id/edit',
 
     // 직책겸직관리
     positionDuals: '/app/resps/position-duals',

@@ -5,6 +5,7 @@
 // 직책 기본 정보
 export interface Position {
   id: string;
+  positionsCd: string;       // 직책코드
   positionName: string;      // 직책명
   headquarters: string;      // 본부구분
   hqName: string;            // 본부명

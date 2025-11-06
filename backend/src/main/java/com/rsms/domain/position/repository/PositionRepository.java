@@ -20,6 +20,15 @@ import java.util.List;
 public interface PositionRepository extends JpaRepository<Position, Long> {
 
     /**
+     * 직책코드로 조회
+     * - 완전 일치 검색
+     *
+     * @param positionsCd 직책코드
+     * @return 직책 Optional
+     */
+    java.util.Optional<Position> findByPositionsCd(String positionsCd);
+
+    /**
      * 직책명으로 조회
      * - 완전 일치 검색
      *
@@ -54,6 +63,17 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
      * @return 직책 리스트
      */
     List<Position> findByLedgerOrderId(String ledgerOrderId);
+
+    /**
+     * 원장차수ID와 직책코드로 조회
+     * - 특정 원장차수의 특정 직책 조회 (엑셀 업로드 시 사용)
+     * - 동일한 직책코드가 여러 원장차수에 존재할 수 있으므로 두 조건으로 조회
+     *
+     * @param ledgerOrderId 원장차수ID
+     * @param positionsCd 직책코드
+     * @return 직책 Optional
+     */
+    java.util.Optional<Position> findByLedgerOrderIdAndPositionsCd(String ledgerOrderId, String positionsCd);
 
     /**
      * 사용여부로 조회

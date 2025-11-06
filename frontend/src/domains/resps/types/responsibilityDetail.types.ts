@@ -18,6 +18,9 @@ export interface ResponsibilityDetailDto {
   /** 책무코드 (FK) - 예: "20250001RM0001" */
   responsibilityCd: string;
 
+  /** 책무내용 */
+  responsibilityInfo?: string;
+
   /** 책무세부내용 */
   responsibilityDetailInfo: string;
 
