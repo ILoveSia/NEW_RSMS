@@ -84,16 +84,6 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
   // ===== AG-Grid 컬럼 정의 =====
   const columnDefs = useMemo<ColDef<Employee>[]>(() => [
     {
-      headerName: '순번',
-      width: 80,
-      valueGetter: (params) => {
-        const index = employees.findIndex(e => e.id === params.data?.id);
-        return index >= 0 ? index + 1 : '';
-      },
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center'
-    },
-    {
       headerName: '직번',
       field: 'employeeId',
       width: 100,
@@ -130,28 +120,8 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
       filter: true,
       cellClass: 'ag-cell-center',
       headerClass: 'ag-header-center'
-    },
-    {
-      headerName: '상태',
-      field: 'status',
-      width: 80,
-      sortable: true,
-      filter: true,
-      cellRenderer: (params: any) => {
-        return params.value === 'ACTIVE' ? '재직' : '퇴직';
-      },
-      cellStyle: (params: any) => {
-        const color = params.value === 'ACTIVE' ? '#4caf50' : '#9e9e9e';
-        return {
-          color,
-          fontWeight: '500',
-          textAlign: 'center'
-        };
-      },
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center'
     }
-  ], [employees]);
+  ], []);
 
   // ===== Event Handlers =====
 
@@ -308,6 +278,7 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
               columns={columnDefs}
               rowSelection="single"
               onSelectionChange={handleSelectionChange}
+              onRowClick={(data) => setSelectedEmployee(data)}
               onRowDoubleClick={handleRowDoubleClick}
               height="350px"
               emptyMessage="조회된 직원이 없습니다."

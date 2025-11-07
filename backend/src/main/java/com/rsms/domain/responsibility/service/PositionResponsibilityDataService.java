@@ -84,6 +84,8 @@ public class PositionResponsibilityDataService {
                 .isConcurrent(isConcurrent)
                 .positionAssignedDate(respStmtExec != null ? respStmtExec.getPositionAssignedDate() : null)
                 .concurrentPosition(respStmtExec != null ? respStmtExec.getConcurrentPosition() : null)
+                .employeeNo(respStmtExec != null ? respStmtExec.getEmployeeNo() : null)
+                .employeeName(respStmtExec != null ? respStmtExec.getExecutiveName() : null)
                 .departments(departments)
                 .committees(committees)
                 .responsibilities(responsibilities)
@@ -135,28 +137,41 @@ public class PositionResponsibilityDataService {
 
     /**
      * 6. 책무목록 조회
-     * - responsibilities + responsibility_details (책무세부내용)
+     * - responsibilities + responsibility_details (책무세부내용 전부)
+     * - 책무 1개당 여러 세부내용이 있으면 세부내용마다 별도 행으로 표시
      */
     private List<PositionResponsibilityDataDto.ResponsibilityInfo> getResponsibilities(Long positionId) {
-        return responsibilityRepository.findByPositions_PositionsId(positionId).stream()
-                .map(resp -> {
-                    // responsibility_details에서 첫 번째 세부내용 조회
-                    // (책무당 여러 세부내용이 있을 수 있지만, UI에는 첫 번째만 표시)
-                    String responsibilityDetailInfo = responsibilityDetailRepository
-                            .findByResponsibility_ResponsibilityCd(resp.getResponsibilityCd())  // ID → Code로 변경
-                            .stream()
-                            .findFirst()
-                            .map(detail -> detail.getResponsibilityDetailInfo())
-                            .orElse(null);
+        // 1단계: 직책의 모든 책무 조회
+        List<com.rsms.domain.responsibility.entity.Responsibility> responsibilities =
+                responsibilityRepository.findByPositions_PositionsId(positionId);
 
-                    return PositionResponsibilityDataDto.ResponsibilityInfo.builder()
-                            .responsibilityId(resp.getResponsibilityCd())  // Code를 사용 (DTO 필드명은 그대로)
-                            .responsibilityCat(resp.getResponsibilityCat())
-                            .responsibilityCd(resp.getResponsibilityCd())
-                            .responsibilityInfo(resp.getResponsibilityInfo())
-                            .responsibilityDetailInfo(responsibilityDetailInfo)
-                            .responsibilityLegal(resp.getResponsibilityLegal())
-                            .build();
+        // 2단계: 각 책무에 대한 세부내용 전부 조회하여 평탄화(flatten)
+        return responsibilities.stream()
+                .flatMap(resp -> {
+                    // 책무에 대한 모든 세부내용 조회
+                    List<ResponsibilityDetail> details = responsibilityDetailRepository
+                            .findByResponsibility_ResponsibilityCd(resp.getResponsibilityCd());
+
+                    // 세부내용이 없으면 책무만 반환
+                    if (details.isEmpty()) {
+                        return List.of(PositionResponsibilityDataDto.ResponsibilityInfo.builder()
+                                .responsibilityCd(resp.getResponsibilityCd())
+                                .responsibilityCat(resp.getResponsibilityCat())
+                                .responsibilityInfo(resp.getResponsibilityInfo())
+                                .responsibilityDetailInfo(null)
+                                .responsibilityLegal(resp.getResponsibilityLegal())
+                                .build()).stream();
+                    }
+
+                    // 세부내용이 있으면 각 세부내용마다 별도 행으로 반환
+                    return details.stream()
+                            .map(detail -> PositionResponsibilityDataDto.ResponsibilityInfo.builder()
+                                    .responsibilityCd(resp.getResponsibilityCd())
+                                    .responsibilityCat(resp.getResponsibilityCat())
+                                    .responsibilityInfo(resp.getResponsibilityInfo())
+                                    .responsibilityDetailInfo(detail.getResponsibilityDetailInfo())
+                                    .responsibilityLegal(resp.getResponsibilityLegal())
+                                    .build());
                 })
                 .collect(Collectors.toList());
     }
@@ -191,11 +206,10 @@ public class PositionResponsibilityDataService {
         // 3단계: 책무세부코드들로 관리의무 전체 조회
         return managementObligationRepository.findByResponsibilityDetailCdIn(detailCodes).stream()
                 .map(obligation -> PositionResponsibilityDataDto.ManagementObligationInfo.builder()
-                        .managementObligationId(obligation.getObligationCd())  // Code를 사용 (DTO 필드명은 그대로)
-                        .responsibilityId(obligation.getResponsibilityDetailCd())  // 세부코드 사용 (DTO 필드명은 그대로)
+                        .obligationCd(obligation.getObligationCd())
+                        .responsibilityDetailCd(obligation.getResponsibilityDetailCd())
                         .obligationMajorCatCd(obligation.getObligationMajorCatCd())
                         .obligationMiddleCatCd(obligation.getObligationMiddleCatCd())
-                        .obligationCd(obligation.getObligationCd())
                         .obligationInfo(obligation.getObligationInfo())
                         .orgCode(obligation.getOrgCode())
                         .build())

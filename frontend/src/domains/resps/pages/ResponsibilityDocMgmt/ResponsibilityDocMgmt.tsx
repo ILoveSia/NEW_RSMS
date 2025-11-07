@@ -6,6 +6,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as responsibilityDocApi from '@/domains/resps/api/responsibilityDocApi';
 import styles from './ResponsibilityDocMgmt.module.scss';
 
 // Types
@@ -22,13 +23,14 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import LedgerOrderComboBox from '@/domains/resps/components/molecules/LedgerOrderComboBox/LedgerOrderComboBox';
 
 // ResponsibilityDoc specific components
 import { responsibilityDocColumns } from './components/ResponsibilityDocDataGrid/responsibilityDocColumns.tsx';
 
 // Lazy-loaded components for performance optimization
 const ResponsibilityDocFormModal = React.lazy(() =>
-  import('./components/ResponsibilityDocFormModal/index.tsx').then(module => ({ default: module.default }))
+  import('./components/ResponsibilityDocFormModal/ResponsibilityDocFormModal').then(module => ({ default: module.default }))
 );
 
 interface ResponsibilityDocMgmtProps {
@@ -51,6 +53,7 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   });
 
   const [filters, setFilters] = useState<ResponsibilityDocFilters>({
+    ledgerOrderId: '',
     positionName: '',
     status: '',
     isActive: '',
@@ -124,8 +127,12 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
     const loadingToastId = toast.loading(`${selectedDocs.length}개 책무기술서를 삭제 중입니다...`);
 
     try {
-      // TODO: 실제 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+      // 실제 삭제 API 호출
+      const deletePromises = selectedDocs.map(doc =>
+        responsibilityDocApi.deleteResponsibilityDoc(doc.id)
+      );
+
+      await Promise.all(deletePromises);
 
       // 상태 업데이트 (삭제된 항목 제거)
       setDocs(prev =>
@@ -138,10 +145,13 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       setSelectedDocs([]);
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedDocs.length}개 책무기술서가 삭제되었습니다.`);
+      toast.dismiss(loadingToastId);
+      toast.success(`${selectedDocs.length}개 책무기술서가 삭제되었습니다.`);
     } catch (error) {
       // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '책무기술서 삭제에 실패했습니다.');
+      toast.dismiss(loadingToastId);
+      const errorMessage = error instanceof Error ? error.message : '책무기술서 삭제에 실패했습니다.';
+      toast.error(errorMessage);
       console.error('책무기술서 삭제 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
@@ -161,27 +171,41 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   const handleDocSave = useCallback(async (formData: ResponsibilityDocFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 책무기술서 생성
-      // const response = await responsibilityDocApi.create(formData);
 
-      // 임시로 새 책무기술서 객체 생성
+      // 책무기술서 생성 요청 DTO 변환
+      const createRequest: responsibilityDocApi.CreateResponsibilityDocRequest = {
+        ledgerOrderId: formData.ledgerOrderId,
+        positionId: formData.positionId,
+        arbitraryPosition: formData.arbitraryPosition,
+        mainCommittees: formData.mainCommittees,
+        responsibilityOverview: formData.responsibilityOverview,
+        responsibilityBackground: formData.responsibilityBackground,
+        responsibilityBackgroundDate: formData.responsibilityBackgroundDate,
+        responsibilities: formData.responsibilities,
+        managementDuties: formData.managementDuties
+      };
+
+      // 실제 API 호출
+      const response = await responsibilityDocApi.createResponsibilityDoc(createRequest);
+
+      // 응답 데이터로 새 책무기술서 객체 생성
       const newDoc: ResponsibilityDoc = {
-        id: Date.now().toString(),
+        id: response.id,
         seq: docs.length + 1,
-        positionName: formData.arbitraryPosition.positionName,
-        requestDate: new Date().toISOString().split('T')[0],
-        requestor: '현재사용자',
-        requestorPosition: '관리자',
+        positionName: response.positionName,
+        requestDate: response.createdAt.split('T')[0],
+        requestor: response.createdBy,
+        requestorPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
         isChanged: false,
-        isActive: true,
-        status: 'draft',
-        approvalStatus: 'pending',
-        registrationDate: new Date().toISOString().split('T')[0],
-        registrar: '현재사용자',
-        registrarPosition: '관리자',
-        modificationDate: new Date().toISOString().split('T')[0],
-        modifier: '현재사용자',
-        modifierPosition: '관리자'
+        isActive: response.isActive,
+        status: response.status,
+        approvalStatus: response.approvalStatus,
+        registrationDate: response.createdAt.split('T')[0],
+        registrar: response.createdBy,
+        registrarPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
+        modificationDate: response.updatedAt.split('T')[0],
+        modifier: response.updatedBy,
+        modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
       };
 
       setDocs(prev => [newDoc, ...prev]);
@@ -190,7 +214,8 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       toast.success('책무기술서가 성공적으로 생성되었습니다.');
     } catch (error) {
       console.error('책무기술서 생성 실패:', error);
-      toast.error('책무기술서 생성에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '책무기술서 생성에 실패했습니다.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -199,20 +224,37 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   const handleDocUpdate = useCallback(async (id: string, formData: ResponsibilityDocFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 책무기술서 수정
-      // const response = await responsibilityDocApi.update(id, formData);
 
-      // 임시로 기존 책무기술서 업데이트
+      // 책무기술서 수정 요청 DTO 변환
+      const updateRequest: responsibilityDocApi.UpdateResponsibilityDocRequest = {
+        ledgerOrderId: formData.ledgerOrderId,
+        positionId: formData.positionId,
+        arbitraryPosition: formData.arbitraryPosition,
+        mainCommittees: formData.mainCommittees,
+        responsibilityOverview: formData.responsibilityOverview,
+        responsibilityBackground: formData.responsibilityBackground,
+        responsibilityBackgroundDate: formData.responsibilityBackgroundDate,
+        responsibilities: formData.responsibilities,
+        managementDuties: formData.managementDuties
+      };
+
+      // 실제 API 호출
+      const response = await responsibilityDocApi.updateResponsibilityDoc(id, updateRequest);
+
+      // 응답 데이터로 기존 책무기술서 업데이트
       setDocs(prev =>
         prev.map(doc =>
           doc.id === id
             ? {
                 ...doc,
-                positionName: formData.arbitraryPosition.positionName,
+                positionName: response.positionName,
                 isChanged: true,
-                modificationDate: new Date().toISOString().split('T')[0],
-                modifier: '현재사용자',
-                modifierPosition: '관리자'
+                isActive: response.isActive,
+                status: response.status,
+                approvalStatus: response.approvalStatus,
+                modificationDate: response.updatedAt.split('T')[0],
+                modifier: response.updatedBy,
+                modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
               }
             : doc
         )
@@ -222,7 +264,8 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       toast.success('책무기술서가 성공적으로 수정되었습니다.');
     } catch (error) {
       console.error('책무기술서 수정 실패:', error);
-      toast.error('책무기술서 수정에 실패했습니다.');
+      const errorMessage = error instanceof Error ? error.message : '책무기술서 수정에 실패했습니다.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -264,6 +307,7 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
       positionName: '',
       status: '',
       isActive: '',
@@ -274,13 +318,9 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   }, []);
 
   // Grid Event Handlers
-  const handleRowClick = useCallback((doc: ResponsibilityDoc) => {
-    console.log('행 클릭:', doc);
-  }, []);
-
-  const handleRowDoubleClick = useCallback((doc: ResponsibilityDoc) => {
-    handleDocDetail(doc);
-  }, [handleDocDetail]);
+  // 📝 주의: 행 전체 클릭 이벤트는 제거하고, "직책" 컬럼만 클릭 가능하도록 변경
+  // handleRowClick, handleRowDoubleClick 함수는 더 이상 사용하지 않음
+  // 대신 responsibilityDocColumns.tsx의 PositionNameRenderer에서 직책 컬럼 클릭 처리
 
   const handleSelectionChange = useCallback((selected: ResponsibilityDoc[]) => {
     setSelectedDocs(selected);
@@ -316,35 +356,24 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '원장차수',
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId}
+          onChange={(value) => setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }))}
+          size="small"
+        />
+      ),
+      gridSize: { xs: 12, sm: 6, md: 3 }
+    },
+    {
       key: 'positionName',
       type: 'text',
       label: '직책명',
       placeholder: '직책명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'status',
-      type: 'select',
-      label: '상태',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'draft', label: '초안' },
-        { value: 'pending', label: '검토중' },
-        { value: 'approved', label: '승인' },
-        { value: 'rejected', label: '반려' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'isActive',
-      type: 'select',
-      label: '사용여부',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'Y', label: '사용' },
-        { value: 'N', label: '미사용' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
       key: 'approvalStatus',
@@ -358,7 +387,7 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
     }
-  ], []);
+  ], [filters.ledgerOrderId]);
 
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
@@ -454,75 +483,57 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
     }
   }, []);
 
-  // Mock data loading
+  // 초기 데이터 로딩 (실제 API 호출)
   React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockDocs: ResponsibilityDoc[] = [
-      {
-        id: '1',
-        seq: 1,
-        positionName: '리스크관리본부장',
-        requestDate: '2025-08-21',
-        requestor: '관리자',
-        requestorPosition: '000000',
-        isChanged: false,
-        isActive: true,
-        status: 'draft',
-        approvalStatus: 'pending',
-        registrationDate: '2025-08-21',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-08-21',
-        modifier: '관리자',
-        modifierPosition: '시스템관리자'
-      },
-      {
-        id: '2',
-        seq: 2,
-        positionName: '감사본부장',
-        requestDate: '2025-08-18',
-        requestor: '000001',
-        requestorPosition: 'FIT 1',
-        approvalDate: '2025-08-18',
-        approver: '000002',
-        approverPosition: 'FIT 2',
-        isChanged: true,
-        isActive: true,
-        status: 'approved',
-        approvalStatus: 'approved',
-        registrationDate: '2025-08-18',
-        registrar: '관리자',
-        registrarPosition: '시스템관리자',
-        modificationDate: '2025-08-18',
-        modifier: '관리자',
-        modifierPosition: '시스템관리자'
-      },
-      {
-        id: '3',
-        seq: 3,
-        positionName: '오토금융본부장',
-        requestDate: '2025-08-15',
-        requestor: '김철수',
-        requestorPosition: '팀장',
-        isChanged: false,
-        isActive: true,
-        status: 'pending',
-        approvalStatus: 'pending',
-        registrationDate: '2025-08-15',
-        registrar: '김철수',
-        registrarPosition: '팀장',
-        modificationDate: '2025-08-15',
-        modifier: '김철수',
-        modifierPosition: '팀장'
-      }
-    ];
+    const fetchInitialData = async () => {
+      try {
+        setLoading(true);
 
-    setDocs(mockDocs);
-    setPagination(prev => ({
-      ...prev,
-      total: mockDocs.length,
-      totalPages: Math.ceil(mockDocs.length / prev.size)
-    }));
+        // 실제 API 호출 (페이징 응답 받음)
+        const response = await responsibilityDocApi.getResponsibilityDocs({
+          page: 0,
+          size: 20
+        });
+
+        // 응답 데이터를 ResponsibilityDoc 형식으로 변환
+        const convertedDocs: ResponsibilityDoc[] = response.content.map((item, index) => ({
+          id: item.id,
+          seq: index + 1,
+          positionName: item.positionName,
+          requestDate: item.createdAt.split('T')[0],
+          requestor: item.createdBy,
+          requestorPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
+          approvalDate: item.updatedAt?.split('T')[0],
+          approver: item.updatedBy,
+          approverPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
+          isChanged: false,
+          isActive: item.isActive,
+          status: item.status as 'draft' | 'pending' | 'approved' | 'rejected',
+          approvalStatus: item.approvalStatus as 'draft' | 'pending' | 'approved' | 'rejected',
+          registrationDate: item.createdAt.split('T')[0],
+          registrar: item.createdBy,
+          registrarPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
+          modificationDate: item.updatedAt.split('T')[0],
+          modifier: item.updatedBy,
+          modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
+        }));
+
+        setDocs(convertedDocs);
+        setPagination(prev => ({
+          ...prev,
+          total: response.totalElements,
+          totalPages: response.totalPages,
+          page: response.page + 1 // 백엔드는 0부터, 프론트는 1부터 시작
+        }));
+      } catch (error) {
+        console.error('책무기술서 목록 조회 실패:', error);
+        toast.error('책무기술서 목록을 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, []);
 
   return (
@@ -609,8 +620,6 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
           columns={responsibilityDocColumns}
           loading={loading}
           theme="alpine"
-          onRowClick={(data) => handleRowClick(data)}
-          onRowDoubleClick={(data) => handleRowDoubleClick(data)}
           onSelectionChange={handleSelectionChange}
           height="calc(100vh - 370px)"
           pagination={true}
@@ -618,6 +627,9 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          context={{
+            onPositionClick: handleDocDetail // 직책 컬럼 클릭 시 상세 모달 열기
+          }}
         />
       </div>
 

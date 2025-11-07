@@ -8,10 +8,14 @@
 export interface Position {
   positionId: number;              // 직책ID
   positionName: string;            // 직책명
+  positionsCd?: string;            // 직책코드
+  ledgerOrderId?: string;          // 원장차수ID
+  hqCode?: string;                 // 본부코드
   hqName?: string;                 // 본부명
   isConcurrent?: string;           // 겸직여부 (Y/N)
   concurrentDetails?: string;      // 겸직사항
   currentPositionDate?: string;    // 현직책부여일
+  employeeName?: string;           // 직원명
   departmentName?: string;         // 소관부점
   committeeNames?: string;         // 주관회의체
   isActive?: string;               // 활성화 여부
@@ -26,9 +30,11 @@ export interface Position {
  */
 export interface PositionSearchFilter {
   positionName?: string;           // 직책명
+  hqCode?: string;                 // 본부코드
   hqName?: string;                 // 본부명
   isConcurrent?: string;           // 겸직여부
   isActive?: string;               // 활성화 여부
+  ledgerOrderId?: string;          // 원장차수ID
 }
 
 /**

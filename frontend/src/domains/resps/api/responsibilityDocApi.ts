@@ -20,37 +20,46 @@ export interface CommitteeInfo {
 }
 
 /**
- * 책무 정보
+ * 책무 정보 (V007 마이그레이션 반영)
  */
 export interface ResponsibilityInfo {
-  responsibilityId: number;       // 책무ID
+  responsibilityCd: string;       // 책무코드 (PK, 업무코드 - 예: "20250001RM0001")
   responsibilityCat: string;      // 책무카테고리
-  responsibilityCd: string;       // 책무코드
   responsibilityInfo: string;     // 책무내용
   responsibilityDetailInfo: string | null; // 책무세부내용 (responsibility_details 테이블)
   responsibilityLegal: string;    // 책무관련근거
 }
 
 /**
- * 관리의무 정보
+ * 책무세부 정보 (V007 마이그레이션 반영)
  */
-export interface ManagementObligationInfo {
-  managementObligationId: number;       // 관리의무ID
-  responsibilityId: number;             // 책무ID (연관관계)
-  obligationMajorCatCd: string;         // 관리의무 대분류
-  obligationMiddleCatCd: string;        // 관리의무 중분류
-  obligationCd: string;                 // 관리의무코드
-  obligationInfo: string;               // 관리의무내용
-  orgCode: string;                      // 조직코드
+export interface ResponsibilityDetailInfo {
+  responsibilityDetailCd: string; // 책무세부코드 (PK, 업무코드 - 예: "RM0001D0001")
+  responsibilityCd: string;       // 책무코드 (FK)
+  responsibilityDetailInfo: string; // 책무세부내용
 }
 
 /**
- * 직책 책무기술서 데이터 (7개 필드)
+ * 관리의무 정보 (V007 마이그레이션 반영)
+ */
+export interface ManagementObligationInfo {
+  obligationCd: string;             // 관리의무코드 (PK, 업무코드 - 예: "RM0001D0001MO0001")
+  responsibilityDetailCd: string;   // 책무세부코드 (FK)
+  obligationMajorCatCd: string;     // 관리의무 대분류
+  obligationMiddleCatCd: string;    // 관리의무 중분류
+  obligationInfo: string;           // 관리의무내용
+  orgCode: string;                  // 조직코드
+}
+
+/**
+ * 직책 책무기술서 데이터 (9개 필드)
  */
 export interface PositionResponsibilityData {
   isConcurrent: string;                              // 1. 겸직여부 (Y/N)
   positionAssignedDate: string | null;               // 2. 현 직책 부여일
   concurrentPosition: string | null;                 // 3. 겸직사항
+  employeeNo: string | null;                         // 3-1. 직원번호 (사번)
+  employeeName: string | null;                       // 3-2. 직원명
   departments: string;                               // 4. 소관부점 (콤마 구분, 한줄)
   committees: CommitteeInfo[];                       // 5. 주관회의체 목록
   responsibilities: ResponsibilityInfo[];            // 6. 책무목록
@@ -68,7 +77,177 @@ export const getPositionResponsibilityData = async (
   positionId: number
 ): Promise<PositionResponsibilityData> => {
   const response = await apiClient.get<PositionResponsibilityData>(
-    `/api/responsibility-docs/position/${positionId}/data`
+    `/responsibility-docs/position/${positionId}/data`
   );
   return response.data;
+};
+
+/**
+ * 책무기술서 생성 요청 DTO
+ */
+export interface CreateResponsibilityDocRequest {
+  ledgerOrderId: string;              // 원장차수ID
+  positionId: number;                 // 직책ID
+  arbitraryPosition: {
+    positionName: string;             // 임의직책명
+    positionTitle: string;            // 직책타이틀
+    isDual: boolean;                  // 겸직여부
+    employeeName: string;             // 직원명
+    employeeNo?: string;              // 직원번호
+    userId?: string;                  // 사용자ID (로그인자ID)
+    currentPositionDate: string;      // 현 직책 부여일
+    dualPositionDetails?: string;     // 겸직사항
+    responsibleDepts: string;         // 소관부점
+  };
+  mainCommittees: Array<{
+    committeeName: string;            // 회의체명
+    chairperson: string;              // 위원장
+    frequency: string;                // 개최주기
+    mainAgenda: string;               // 주요안건
+  }>;
+  responsibilityOverview: string;     // 책무개요
+  responsibilityBackground?: string;  // 책무배경
+  responsibilityBackgroundDate: string; // 책무배분일
+  responsibilities: Array<{
+    seq: number;                      // 순번
+    responsibility: string;           // 책무
+    responsibilityDetail: string;     // 책무세부
+    relatedBasis: string;             // 관련근거
+  }>;
+  managementDuties: Array<{
+    seq: number;                      // 순번
+    managementDuty: string;           // 관리의무
+    managementDutyDetail: string;     // 관리의무세부
+    relatedBasis: string;             // 관련근거
+  }>;
+}
+
+/**
+ * 책무기술서 수정 요청 DTO
+ */
+export interface UpdateResponsibilityDocRequest extends CreateResponsibilityDocRequest {}
+
+/**
+ * 책무기술서 응답 DTO
+ */
+export interface ResponsibilityDocResponse {
+  id: string;
+  ledgerOrderId: string;
+  positionId: number;
+  positionName: string;
+  status: string;
+  approvalStatus: string;
+  isActive: boolean;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+/**
+ * 책무기술서 생성
+ *
+ * @param data 책무기술서 생성 데이터
+ * @returns 생성된 책무기술서 정보
+ */
+export const createResponsibilityDoc = async (
+  data: CreateResponsibilityDocRequest
+): Promise<ResponsibilityDocResponse> => {
+  try {
+    const response = await apiClient.post<ResponsibilityDocResponse>(
+      '/responsibility-docs',
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error('책무기술서 생성 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 책무기술서 수정
+ *
+ * @param id 책무기술서 ID
+ * @param data 책무기술서 수정 데이터
+ * @returns 수정된 책무기술서 정보
+ */
+export const updateResponsibilityDoc = async (
+  id: string,
+  data: UpdateResponsibilityDocRequest
+): Promise<ResponsibilityDocResponse> => {
+  try {
+    const response = await apiClient.put<ResponsibilityDocResponse>(
+      `/responsibility-docs/${id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error('책무기술서 수정 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 책무기술서 삭제
+ *
+ * @param id 책무기술서 ID
+ */
+export const deleteResponsibilityDoc = async (id: string): Promise<void> => {
+  try {
+    await apiClient.delete(`/responsibility-docs/${id}`);
+  } catch (error) {
+    console.error('책무기술서 삭제 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 책무기술서 목록 조회
+ *
+ * @param params 조회 파라미터
+ * @returns 책무기술서 목록
+ */
+export const getResponsibilityDocs = async (params?: {
+  ledgerOrderId?: string;
+  positionName?: string;
+  status?: string;
+  isActive?: boolean;
+  approvalStatus?: string;
+  page?: number;
+  size?: number;
+}): Promise<{
+  content: ResponsibilityDocResponse[];
+  totalElements: number;
+  totalPages: number;
+  page: number;
+  size: number;
+}> => {
+  try {
+    const response = await apiClient.get('/responsibility-docs', { params });
+    return response.data;
+  } catch (error) {
+    console.error('책무기술서 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 책무기술서 상세 조회
+ *
+ * @param id 책무기술서 ID
+ * @returns 책무기술서 상세 정보
+ */
+export const getResponsibilityDocById = async (
+  id: string
+): Promise<ResponsibilityDocResponse> => {
+  try {
+    const response = await apiClient.get<ResponsibilityDocResponse>(
+      `/responsibility-docs/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('책무기술서 상세 조회 실패:', error);
+    throw error;
+  }
 };

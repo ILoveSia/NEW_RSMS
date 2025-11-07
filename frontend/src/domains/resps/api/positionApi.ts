@@ -136,6 +136,41 @@ export const getPositionsByLedgerOrderId = async (ledgerOrderId: string): Promis
 };
 
 /**
+ * 직책 검색 요청 DTO
+ */
+export interface PositionSearchRequest {
+  keyword?: string;       // 검색 키워드 (직책명)
+  hqCode?: string;        // 본부코드
+  isActive?: string;      // 사용여부 (Y/N)
+  ledgerOrderId?: string; // 원장차수ID
+}
+
+/**
+ * 직책 검색
+ * - GET /positions/search
+ * - 키워드, 본부코드, 사용여부, 원장차수로 검색
+ *
+ * @param searchRequest 검색 조건
+ * @returns Promise<PositionDto[]> 검색 결과 리스트
+ */
+export const searchPositions = async (searchRequest: PositionSearchRequest): Promise<PositionDto[]> => {
+  try {
+    // 빈 문자열 필터링
+    const cleanedParams = Object.fromEntries(
+      Object.entries(searchRequest).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+    );
+
+    const response = await apiClient.get<PositionDto[]>('/positions/search', {
+      params: cleanedParams
+    });
+    return response.data;
+  } catch (error) {
+    console.error('직책 검색 실패:', error);
+    throw new Error('직책 검색에 실패했습니다.');
+  }
+};
+
+/**
  * 직책 단건 조회
  */
 export const getPosition = async (positionsId: number): Promise<PositionDto> => {

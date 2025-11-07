@@ -40,6 +40,18 @@ public class PositionResponsibilityDataDto {
     private String concurrentPosition;
 
     /**
+     * 3-1. 직원번호 (사번)
+     * - resp_statement_execs.employee_no
+     */
+    private String employeeNo;
+
+    /**
+     * 3-2. 직원명
+     * - resp_statement_execs.executive_name
+     */
+    private String employeeName;
+
+    /**
      * 4. 소관부점 (전부 한줄로 표시, 콤마 구분)
      * - positions_details ⟷ organizations 조인
      */
@@ -79,34 +91,32 @@ public class PositionResponsibilityDataDto {
     }
 
     /**
-     * 책무 정보
+     * 책무 정보 (V007 마이그레이션 반영)
      */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class ResponsibilityInfo {
-        private String responsibilityId;        // 책무코드 (PK, ID → Code로 변경)
+        private String responsibilityCd;        // 책무코드 (PK, 업무코드 - 예: "20250001RM0001")
         private String responsibilityCat;       // 책무카테고리
-        private String responsibilityCd;        // 책무코드
         private String responsibilityInfo;      // 책무내용
         private String responsibilityDetailInfo; // 책무세부내용 (responsibility_details 테이블)
         private String responsibilityLegal;     // 책무관련근거
     }
 
     /**
-     * 관리의무 정보
+     * 관리의무 정보 (V007 마이그레이션 반영)
      */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class ManagementObligationInfo {
-        private String managementObligationId;        // 관리의무코드 (PK, ID → Code로 변경)
-        private String responsibilityId;              // 책무세부코드 (연관관계 표시용, ID → Code로 변경)
+        private String obligationCd;                  // 관리의무코드 (PK, 업무코드 - 예: "RM0001D0001MO0001")
+        private String responsibilityDetailCd;        // 책무세부코드 (FK)
         private String obligationMajorCatCd;          // 관리의무 대분류
         private String obligationMiddleCatCd;         // 관리의무 중분류
-        private String obligationCd;                  // 관리의무코드
         private String obligationInfo;                // 관리의무내용
         private String orgCode;                       // 조직코드
     }

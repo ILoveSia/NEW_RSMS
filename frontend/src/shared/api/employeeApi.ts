@@ -16,7 +16,12 @@ import { Employee, EmployeeSearchFilter } from '@/shared/types/employee';
  */
 export const searchEmployees = async (filter: EmployeeSearchFilter): Promise<Employee[]> => {
   try {
-    const response = await apiClient.post<Employee[]>('/employees/search', filter);
+    // 빈 문자열 필드 제거 (Backend LIKE 검색에서 빈 문자열은 전체 조회로 처리됨)
+    const cleanedFilter = Object.fromEntries(
+      Object.entries(filter).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+    );
+
+    const response = await apiClient.post<Employee[]>('/employees/search', cleanedFilter);
     return response.data;
   } catch (error) {
     console.error('직원 검색 실패:', error);

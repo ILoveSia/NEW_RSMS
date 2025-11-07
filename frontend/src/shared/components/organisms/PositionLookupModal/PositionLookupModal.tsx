@@ -291,6 +291,7 @@ const PositionLookupModal: React.FC<PositionLookupModalProps> = ({
               columns={columnDefs}
               rowSelection={singleSelection ? 'single' : 'multiple'}
               onSelectionChange={handleSelectionChange}
+              onRowClick={(data) => setSelectedPosition(data)}
               onRowDoubleClick={handleRowDoubleClick}
               height="350px"
               emptyMessage="조회된 직책이 없습니다."

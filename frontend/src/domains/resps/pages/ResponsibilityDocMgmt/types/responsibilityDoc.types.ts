@@ -16,7 +16,7 @@ export interface ResponsibilityDoc {
   isChanged: boolean;
   isActive: boolean;
   status: 'draft' | 'pending' | 'approved' | 'rejected';
-  approvalStatus: 'pending' | 'approved' | 'rejected';
+  approvalStatus: 'draft' | 'pending' | 'approved' | 'rejected';
   registrationDate: string;
   registrar: string;
   registrarPosition: string;
@@ -31,6 +31,8 @@ export interface ArbitraryPositionInfo {
   positionTitle: string;
   isDual: boolean;
   employeeName: string;
+  employeeNo?: string;          // 직원번호
+  userId?: string;              // 사용자ID (로그인자ID)
   currentPositionDate: string;
   dualPositionDetails?: string;
   responsibleDepts: string;
@@ -65,6 +67,8 @@ export interface ManagementDutyInfo {
 
 // 폼 데이터 인터페이스
 export interface ResponsibilityDocFormData {
+  ledgerOrderId: string;        // 원장차수ID (필수)
+  positionId: number;           // 직책ID (필수)
   arbitraryPosition: ArbitraryPositionInfo;
   mainCommittees: MainCommitteeInfo[];
   responsibilityOverview: string;
@@ -76,6 +80,7 @@ export interface ResponsibilityDocFormData {
 
 // 필터 인터페이스
 export interface ResponsibilityDocFilters {
+  ledgerOrderId: string;
   positionName: string;
   status: string;
   isActive: string;

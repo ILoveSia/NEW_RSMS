@@ -4,9 +4,9 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import type { ColDef } from 'ag-grid-community';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ColDef } from 'ag-grid-community';
 import styles from './ImplMonitoring.module.scss';
 
 // Types
@@ -715,7 +715,7 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
               <CalendarTodayIcon className={styles.headerIcon} />
               <div>
                 <h1 className={styles.pageTitle}>
-                  {t('implMonitoring.management.title', '이행점검 관리')}
+                  {t('implMonitoring.management.title', '이행점검계획')}
                 </h1>
                 <p className={styles.pageDescription}>
                   {t('implMonitoring.management.description', '이행점검 현황 및 진행 상황을 체계적으로 관리합니다')}
