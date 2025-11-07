@@ -28,6 +28,35 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 
 /**
+ * 관리의무 대분류 코드 목록
+ */
+const OBLIGATION_MAJOR_CATEGORIES = [
+  { code: '00', name: '공통' },
+  { code: '01', name: '경영기획' },
+  { code: '02', name: '리스크관리' },
+  { code: '03', name: '고유' },
+  { code: '04', name: '내부감사' },
+  { code: '05', name: '인사' },
+  { code: '06', name: 'IT' },
+  { code: '07', name: '재무' },
+  { code: '08', name: '기타' }
+];
+
+/**
+ * 관리의무 중분류 코드 목록
+ */
+const OBLIGATION_MIDDLE_CATEGORIES = [
+  { code: '01', name: '(공통1) 내부통제기준등이 적정하게 마련되고, 효과적으로 집행·운영되고 있는지 여부에 대한 점검' },
+  { code: '02', name: '(공통2) 임직원이 준수하여야 할 윤리기준 마련 및 교육' },
+  { code: '03', name: '(공통3) 준법감시인이 확인한 사항과 지적사항 및 조치결과를 이사회에 보고' },
+  { code: '04', name: '(경영기획1) 경영목표 및 계획 수립' },
+  { code: '05', name: '(경영기획2) 예산 편성 및 집행' },
+  { code: '06', name: '(리스크관리1) 리스크 식별 및 평가' },
+  { code: '07', name: '(리스크관리2) 리스크 관리 및 통제' },
+  { code: '08', name: '기타' }
+];
+
+/**
  * 관리의무 Form 데이터
  */
 export interface ManagementObligationFormData {
@@ -207,12 +236,13 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 1,
-          minHeight: '500px'
+          minHeight: '500px',
+          width: '600px'
         }
       }}
       aria-labelledby="management-obligation-modal-title"
@@ -260,28 +290,42 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
           />
 
           {/* 관리의무 대분류 */}
-          <TextField
-            label="관리의무 대분류 구분코드"
-            value={formData.obligationMajorCatCd}
-            onChange={(e) => handleChange('obligationMajorCatCd', e.target.value)}
-            disabled={isReadOnly}
-            required
-            fullWidth
-            size="small"
-            placeholder="대분류 구분코드를 입력하세요"
-          />
+          <FormControl fullWidth size="small" required disabled={isReadOnly}>
+            <InputLabel>관리의무 대분류 구분코드</InputLabel>
+            <Select
+              value={formData.obligationMajorCatCd}
+              onChange={(e) => handleChange('obligationMajorCatCd', e.target.value)}
+              label="관리의무 대분류 구분코드"
+            >
+              <MenuItem value="">
+                <em>선택하세요</em>
+              </MenuItem>
+              {OBLIGATION_MAJOR_CATEGORIES.map((category) => (
+                <MenuItem key={category.code} value={category.code}>
+                  {category.name}({category.code})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* 관리의무 중분류 */}
-          <TextField
-            label="관리의무 중분류 구분코드"
-            value={formData.obligationMiddleCatCd}
-            onChange={(e) => handleChange('obligationMiddleCatCd', e.target.value)}
-            disabled={isReadOnly}
-            required
-            fullWidth
-            size="small"
-            placeholder="중분류 구분코드를 입력하세요"
-          />
+          <FormControl fullWidth size="small" required disabled={isReadOnly}>
+            <InputLabel>관리의무 중분류 구분코드</InputLabel>
+            <Select
+              value={formData.obligationMiddleCatCd}
+              onChange={(e) => handleChange('obligationMiddleCatCd', e.target.value)}
+              label="관리의무 중분류 구분코드"
+            >
+              <MenuItem value="">
+                <em>선택하세요</em>
+              </MenuItem>
+              {OBLIGATION_MIDDLE_CATEGORIES.map((category) => (
+                <MenuItem key={category.code} value={category.code}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* 관리의무 내용 */}
           <TextField

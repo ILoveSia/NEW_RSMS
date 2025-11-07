@@ -32,8 +32,8 @@ import {
 // Types
 import type {
   ManagementObligationGridRow
-} from './components/ManagementObligationDataGrid';
-import type { ManagementObligationFormData } from './components/ManagementObligationFormModal';
+} from './components/ManagementObligationDataGrid/managementObligationColumns';
+import type { ManagementObligationFormData } from './components/ManagementObligationFormModal/ManagementObligationFormModal';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -49,11 +49,11 @@ import useFilters from '@/shared/hooks/useFilters';
 import usePagination from '@/shared/hooks/usePagination';
 
 // ManagementObligation specific components
-import { convertToGridRow, createManagementObligationColumns, isLastRowInGroup } from './components/ManagementObligationDataGrid';
+import { convertToGridRow, createManagementObligationColumns, isLastRowInGroup } from './components/ManagementObligationDataGrid/managementObligationColumns';
 
 // Lazy-loaded components for performance optimization
 const ManagementObligationFormModal = React.lazy(() =>
-  import('./components/ManagementObligationFormModal').then(module => ({ default: module.ManagementObligationFormModal }))
+  import('./components/ManagementObligationFormModal/ManagementObligationFormModal').then(module => ({ default: module.default }))
 );
 
 const ManagementObligationExcelUploadModal = React.lazy(() =>
@@ -369,11 +369,24 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
         const data = await getManagementObligation(managementObligation.관리의무코드);
         console.log('🔍 상세조회 API Response:', data);
 
-        setModalState(prev => ({
-          ...prev,
-          detailModal: true,
-          selectedManagementObligation: managementObligation
-        }));
+        // Grid row 데이터에 API 응답 데이터를 _original로 저장
+        const updatedRow = {
+          ...managementObligation,
+          _original: data
+        };
+
+        console.log('🔍 상세 모달 상태 업데이트 전 - updatedRow:', updatedRow);
+
+        setModalState(prev => {
+          console.log('🔍 이전 modalState:', prev);
+          const newState = {
+            ...prev,
+            detailModal: true,
+            selectedManagementObligation: updatedRow
+          };
+          console.log('🔍 새로운 modalState:', newState);
+          return newState;
+        });
       },
       {
         error: '관리의무 조회에 실패했습니다.'
@@ -605,6 +618,7 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
           loading={anyLoading}
           theme="alpine"
           onSelectionChange={handleSelectionChange}
+          onRowClick={handleManagementObligationDetail}
           height="calc(100vh - 370px)"
           pagination={true}
           pageSize={25}
@@ -618,9 +632,14 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
       </div>
 
       {/* 모달들 */}
+      {(() => {
+        console.log('🔍 모달 렌더링 체크 - modalState:', modalState);
+        return null;
+      })()}
+
       {modalState.addModal && (
         <React.Suspense fallback={<LoadingSpinner />}>
-          <BaseModalWrapper open={modalState.addModal} onClose={handleModalClose}>
+          <BaseModalWrapper isOpen={modalState.addModal} onClose={handleModalClose}>
             <ManagementObligationFormModal
               open={modalState.addModal}
               mode="create"
@@ -636,19 +655,22 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
       )}
 
       {modalState.detailModal && (
-        <React.Suspense fallback={<LoadingSpinner />}>
-          <BaseModalWrapper open={modalState.detailModal} onClose={handleModalClose}>
-            <ManagementObligationFormModal
-              open={modalState.detailModal}
-              mode="detail"
-              managementObligation={modalState.selectedManagementObligation}
-              onClose={handleModalClose}
-              onSave={handleManagementObligationSave}
-              onUpdate={handleManagementObligationUpdate}
-              loading={loadingStates.update}
-            />
-          </BaseModalWrapper>
-        </React.Suspense>
+        <>
+          {console.log('🔍 상세 모달 렌더링됨 - selectedManagementObligation:', modalState.selectedManagementObligation)}
+          <React.Suspense fallback={<LoadingSpinner />}>
+            <BaseModalWrapper isOpen={modalState.detailModal} onClose={handleModalClose}>
+              <ManagementObligationFormModal
+                open={modalState.detailModal}
+                mode="detail"
+                managementObligation={modalState.selectedManagementObligation}
+                onClose={handleModalClose}
+                onSave={handleManagementObligationSave}
+                onUpdate={handleManagementObligationUpdate}
+                loading={loadingStates.update}
+              />
+            </BaseModalWrapper>
+          </React.Suspense>
+        </>
       )}
 
       {/* 엑셀 업로드 모달 */}
