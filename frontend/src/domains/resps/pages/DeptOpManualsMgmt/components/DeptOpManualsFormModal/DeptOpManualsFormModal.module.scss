@@ -6,11 +6,11 @@
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
-// 🏗️ 모달 컨테이너
+// 🏗️ 모달 컨테이너 (너비 축소)
 .modal {
   :global(.MuiDialog-paper) {
-    max-width: 1200px;
-    width: 90vw;
+    max-width: 900px;  // 1200px → 900px 축소
+    width: 85vw;       // 90vw → 85vw 축소
     max-height: 90vh;
     border-radius: $border-radius-lg;
     display: flex;

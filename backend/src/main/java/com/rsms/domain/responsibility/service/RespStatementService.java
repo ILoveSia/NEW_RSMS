@@ -1,5 +1,8 @@
 package com.rsms.domain.responsibility.service;
 
+import com.rsms.domain.committee.entity.Committee;
+import com.rsms.domain.committee.entity.CommitteeDetail;
+import com.rsms.domain.committee.repository.CommitteeDetailRepository;
 import com.rsms.domain.ledger.entity.LedgerOrder;
 import com.rsms.domain.ledger.repository.LedgerOrderRepository;
 import com.rsms.domain.position.entity.Position;
@@ -17,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 책무기술서 서비스
@@ -34,6 +40,7 @@ public class RespStatementService {
     private final RespStatementExecRepository respStatementExecRepository;
     private final PositionRepository positionRepository;
     private final LedgerOrderRepository ledgerOrderRepository;
+    private final CommitteeDetailRepository committeeDetailRepository;
 
     /**
      * 책무기술서 생성
@@ -155,7 +162,41 @@ public class RespStatementService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "책무기술서를 찾을 수 없습니다. id: " + id));
 
-        return RespStatementResponse.fromEntity(entity);
+        // 기본 Response 생성
+        RespStatementResponse response = RespStatementResponse.fromEntity(entity);
+
+        // 주관회의체 목록 조회 및 설정
+        List<RespStatementResponse.MainCommitteeResponse> mainCommittees = getMainCommitteesByPositionId(entity.getPosition().getPositionsId());
+        response.setMainCommittees(mainCommittees);
+
+        log.info("[RespStatementService] 주관회의체 조회 완료 - 개수: {}", mainCommittees.size());
+
+        return response;
+    }
+
+    /**
+     * 직책ID로 주관회의체 목록 조회
+     *
+     * @param positionId 직책ID
+     * @return 주관회의체 목록
+     */
+    private List<RespStatementResponse.MainCommitteeResponse> getMainCommitteesByPositionId(Long positionId) {
+        // 해당 직책이 소속된 회의체 상세 정보 조회 (회의체 정보 JOIN FETCH)
+        List<CommitteeDetail> committeeDetails = committeeDetailRepository.findCommitteesByPositionId(positionId);
+
+        // 회의체 정보 변환
+        return committeeDetails.stream()
+                .map(detail -> {
+                    Committee committee = detail.getCommittee();
+                    return RespStatementResponse.MainCommitteeResponse.builder()
+                            .id(String.valueOf(committee.getCommitteesId()))
+                            .committeeName(committee.getCommitteesTitle())
+                            .chairperson(detail.getCommitteesType()) // 위원장/위원 구분
+                            .frequency(committee.getCommitteeFrequency())
+                            .mainAgenda(committee.getResolutionMatters())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     /**

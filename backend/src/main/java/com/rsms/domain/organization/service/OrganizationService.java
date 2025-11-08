@@ -76,4 +76,62 @@ public class OrganizationService {
             })
             .collect(Collectors.toList());
     }
+
+    /**
+     * 조직 검색 (본부명 포함)
+     * - 조직코드 또는 조직명으로 검색
+     * - 본부명을 포함하여 반환
+     * - snake_case를 camelCase로 변환
+     *
+     * @param searchKeyword 검색어 (조직코드 또는 조직명)
+     * @return 조직 목록 (camelCase, hqName 포함)
+     */
+    public List<Map<String, Object>> searchOrganizations(String searchKeyword) {
+        log.debug("조직 검색 - searchKeyword: {}", searchKeyword);
+
+        // 검색어가 null이거나 빈 문자열이면 전체 조회
+        List<Map<String, Object>> results;
+        if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
+            results = organizationRepository.findAllActiveWithHqName();
+        } else {
+            results = organizationRepository.searchOrganizations(searchKeyword);
+        }
+
+        // snake_case를 camelCase로 변환
+        return results.stream()
+            .map(row -> {
+                Map<String, Object> converted = new HashMap<>();
+                converted.put("orgCode", row.get("org_code"));
+                converted.put("hqCode", row.get("hq_code"));
+                converted.put("hqName", row.get("hq_name"));
+                converted.put("orgName", row.get("org_name"));
+                converted.put("orgType", row.get("org_type"));
+                converted.put("isActive", row.get("is_active"));
+                return converted;
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 조직코드별 관리의무 목록 조회
+     * - 사용중(is_active='Y')인 관리의무만 반환
+     * - snake_case를 camelCase로 변환
+     *
+     * @param orgCode 조직코드
+     * @return 관리의무 목록 (camelCase)
+     */
+    public List<Map<String, Object>> getManagementObligationsByOrgCode(String orgCode) {
+        log.debug("조직별 관리의무 조회 - orgCode: {}", orgCode);
+        List<Map<String, Object>> results = organizationRepository.findManagementObligationsByOrgCode(orgCode);
+
+        // snake_case를 camelCase로 변환
+        return results.stream()
+            .map(row -> {
+                Map<String, Object> converted = new HashMap<>();
+                converted.put("obligationCd", row.get("obligation_cd"));
+                converted.put("obligationInfo", row.get("obligation_info"));
+                return converted;
+            })
+            .collect(Collectors.toList());
+    }
 }

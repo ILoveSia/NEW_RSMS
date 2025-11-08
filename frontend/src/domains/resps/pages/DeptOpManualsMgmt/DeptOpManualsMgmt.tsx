@@ -18,7 +18,6 @@ import styles from './DeptOpManualsMgmt.module.scss';
 import type {
   DeptOpManual,
   DeptOpManualsFilters,
-  DeptOpManualsFormData,
   DeptOpManualsModalState,
   DeptOpManualsPagination,
   DeptOpManualsStatistics,
@@ -63,6 +62,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
 
   // 필터 및 페이지네이션
   const [filters, setFilters] = useState<DeptOpManualsFilters>({
+    ledgerOrder: '',
     managementObligation: '',
     irregularityName: '',
     managementActivityType: 'all',
@@ -92,14 +92,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       id: '1',
       seq: 1,
       managementObligation: '준법감시 업무와 관련된 책무 세부내용에 대한 관리의무',
-      irregularityName: '내부통제',
+      irregularityName: '경영전략부',
       managementActivityCode: 'M201300001',
       managementActivity: '준법감시 업무와 관련된 관리활동',
-      managementActivityName: '고유',
+      managementActivityName: '경영전략 수립의 적정성 점검',
       managementActivityDetail: '부서별 준법감시담당자 점검 보고',
       managementActivityType: 'compliance',
       riskAssessmentLevel: 'medium',
-      implementationManager: '준법감시부',
+      implementationManager: '경영전략 수립의 적정성 점검',
       implementationDepartment: '준법감시부',
       isActive: true,
       status: 'active',
@@ -116,14 +116,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       id: '2',
       seq: 2,
       managementObligation: '리스크관리 업무와 관련된 책무',
-      irregularityName: '운영리스크',
+      irregularityName: '준법지원부',
       managementActivityCode: 'M201300002',
       managementActivity: '리스크 식별 및 평가',
-      managementActivityName: '위험관리',
+      managementActivityName: '준법감시 업무와 관련된 관리활동',
       managementActivityDetail: '운영리스크 식별 및 평가 절차',
       managementActivityType: 'risk',
       riskAssessmentLevel: 'high',
-      implementationManager: '리스크관리부',
+      implementationManager: '준법감시 업무와 관련된 관리활동',
       implementationDepartment: '리스크관리부',
       isActive: true,
       status: 'active',
@@ -136,14 +136,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       id: '3',
       seq: 3,
       managementObligation: '내부감사 업무 관련 관리의무',
-      irregularityName: '감사품질',
+      irregularityName: '리스크관리부',
       managementActivityCode: 'M201300003',
       managementActivity: '내부감사 품질관리',
-      managementActivityName: '품질관리',
+      managementActivityName: '내부감사 품질관리',
       managementActivityDetail: '내부감사 품질 보증 및 개선',
       managementActivityType: 'internal_audit',
       riskAssessmentLevel: 'medium',
-      implementationManager: '내부감사부',
+      implementationManager: '내부감사 품질 보증 및 개선',
       implementationDepartment: '내부감사부',
       isActive: true,
       status: 'pending',
@@ -156,14 +156,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       id: '4',
       seq: 4,
       managementObligation: '재무관리 업무 관련 책무',
-      irregularityName: '재무보고',
+      irregularityName: '여신관리부',
       managementActivityCode: 'M201300004',
       managementActivity: '재무보고서 작성 및 검토',
-      managementActivityName: '재무보고',
+      managementActivityName: '재무보고서 작성 및 검토',
       managementActivityDetail: '월간/분기별 재무보고서 작성',
       managementActivityType: 'finance',
       riskAssessmentLevel: 'low',
-      implementationManager: '재무부',
+      implementationManager: '월간/분기별 재무보고서 작성',
       implementationDepartment: '재무부',
       isActive: false,
       status: 'inactive',
@@ -269,11 +269,17 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   // 🔍 검색 필드 정의
   const searchFields: FilterField[] = [
     {
-      key: 'managementObligation',
-      label: '분부명',
-      type: 'text',
-      placeholder: '관리의무를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2.5 }
+      key: 'ledgerOrder',
+      label: '책무이행차수',
+      type: 'select',
+      options: [
+        { value: 'all', label: '전체' },
+        { value: '2025-01', label: '2025년 1차' },
+        { value: '2025-02', label: '2025년 2차' },
+        { value: '2024-01', label: '2024년 1차' },
+        { value: '2024-02', label: '2024년 2차' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
       key: 'irregularityName',
@@ -298,13 +304,6 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
-      key: 'managementActivity',
-      label: '관리활동',
-      type: 'text',
-      placeholder: '관리활동을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
       key: 'riskAssessmentLevel',
       label: '위험평가등급',
       type: 'select',
@@ -316,7 +315,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         { value: 'low', label: '낮음' },
         { value: 'very_low', label: '매우낮음' }
       ],
-      gridSize: { xs: 12, sm: 6, md: 1.5 }
+      gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
       key: 'isActive',
@@ -334,13 +333,15 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   // 🎯 이벤트 핸들러
   const handleFiltersChange = useCallback((values: Partial<FilterValues>) => {
     const newFilters: DeptOpManualsFilters = {
-      managementObligation: values.managementObligation as string || '',
+      ledgerOrder: values.ledgerOrder as string || '',
+      managementObligation: '',
       irregularityName: values.irregularityName as string || '',
       managementActivityType: (values.managementActivityType as ManagementActivityType) || 'all',
-      managementActivity: values.managementActivity as string || '',
+      managementActivity: '',
       riskAssessmentLevel: (values.riskAssessmentLevel as RiskAssessmentLevel) || 'all',
       isActive: values.isActive === 'all' ? 'all' : Boolean(values.isActive),
-      implementationManager: values.implementationManager as string || ''
+      approvalStatus: 'all',
+      implementationManager: ''
     };
     setFilters(newFilters);
   }, []);
@@ -361,6 +362,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     const clearedFilters: DeptOpManualsFilters = {
+      ledgerOrder: '',
       managementObligation: '',
       irregularityName: '',
       managementActivityType: 'all',
@@ -445,25 +447,39 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     setModalState(prev => ({ ...prev, isOpen: false }));
   }, []);
 
-  const handleModalSubmit = useCallback(async (formData: DeptOpManualsFormData) => {
+  // 등록 핸들러
+  const handleSave = useCallback(async (formData: any) => {
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
-      if (modalState.mode === 'create') {
-        // 생성 로직
-        toast.success('관리활동이 등록되었습니다.');
-      } else {
-        // 수정 로직
-        toast.success('관리활동이 수정되었습니다.');
-      }
+      // 생성 로직
+      console.log('등록 데이터:', formData);
+      toast.success('관리활동이 등록되었습니다.');
       handleModalClose();
     } catch (error) {
-      console.error('Submit error:', error);
-      toast.error('저장 중 오류가 발생했습니다.');
+      console.error('Save error:', error);
+      toast.error('등록 중 오류가 발생했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, create: false }));
     }
-  }, [modalState.mode, handleModalClose]);
+  }, [handleModalClose]);
+
+  // 수정 핸들러
+  const handleUpdate = useCallback(async (id: string, formData: any) => {
+    setLoadingStates(prev => ({ ...prev, create: true }));
+
+    try {
+      // 수정 로직
+      console.log('수정 데이터:', id, formData);
+      toast.success('관리활동이 수정되었습니다.');
+      handleModalClose();
+    } catch (error) {
+      console.error('Update error:', error);
+      toast.error('수정 중 오류가 발생했습니다.');
+    } finally {
+      setLoadingStates(prev => ({ ...prev, create: false }));
+    }
+  }, [handleModalClose]);
 
   // 📊 통계 카드 정의
   const statsCards = [
@@ -622,10 +638,11 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         {modalState.isOpen && (
           <DeptOpManualsFormModal
             open={modalState.isOpen}
-            mode={modalState.mode}
-            deptOpManual={modalState.selectedItem}
+            mode={modalState.mode === 'view' ? 'detail' : modalState.mode}
+            manual={modalState.selectedItem || null}
             onClose={handleModalClose}
-            onSubmit={handleModalSubmit}
+            onSave={handleSave}
+            onUpdate={handleUpdate}
             loading={loadingStates.create}
           />
         )}

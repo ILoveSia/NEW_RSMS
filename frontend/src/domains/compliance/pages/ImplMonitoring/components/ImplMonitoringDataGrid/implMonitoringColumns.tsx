@@ -159,27 +159,6 @@ export const implMonitoringColumns: ColDef<PeriodSetting>[] = [
     }
   },
   {
-    field: 'registrantAuthority',
-    headerName: '등록자권한',
-    width: 120,
-    minWidth: 100,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      return params.value;
-    },
-    cellStyle: {
-      fontWeight: '500',
-      color: '#7b1fa2'
-    },
-    filterParams: {
-      filterOptions: ['contains', 'startsWith', 'endsWith'],
-      suppressAndOrCondition: true
-    }
-  },
-  {
     field: 'registrant',
     headerName: '등록자',
     width: 120,

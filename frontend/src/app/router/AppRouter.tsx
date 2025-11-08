@@ -39,7 +39,7 @@ const InternalControlRegister = React.lazy(() => import('@/domains/activities/pa
 const InternalControlMgmt = React.lazy(() => import('@/domains/activities/pages/InternalControlMgmt/InternalControlMgmt'));
 
 // Compliance (이행점검 관리) 도메인
-const ImplMonitoring = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoring'));
+const ImplMonitoring = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoring/ImplMonitoring'));
 const InspectorAssign = React.lazy(() => import('@/domains/compliance/pages/InspectorAssign'));
 const ImplMonitoringStatus = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoringStatus'));
 const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/RejectionMgmt'));

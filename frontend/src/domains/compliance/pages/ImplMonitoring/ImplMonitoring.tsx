@@ -24,6 +24,9 @@ import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/comp
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+
 // ImplMonitoring specific components
 // import { implMonitoringColumns } from './components/ImplMonitoringDataGrid/implMonitoringColumns';
 
@@ -54,6 +57,17 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       cellStyle: { fontWeight: '500' }
     },
     {
+      field: 'ledgerOrderId',
+      headerName: '책무이행차수',
+      width: 150,
+      minWidth: 120,
+      sortable: true,
+      filter: 'agTextColumnFilter',
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center',
+      cellStyle: { fontWeight: '500', color: '#9c27b0' }
+    },
+    {
       field: 'inspectionName',
       headerName: '점검명',
       width: 200,
@@ -67,6 +81,17 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
         return value && value.length > 30 ? `${value.substring(0, 30)}...` : value;
       },
       cellStyle: { fontWeight: '500', color: '#1976d2' }
+    },
+    {
+      field: 'inspectionType',
+      headerName: '점검유형',
+      width: 120,
+      minWidth: 100,
+      sortable: true,
+      filter: 'agTextColumnFilter',
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center',
+      cellStyle: { fontWeight: '500', color: '#00897b' }
     },
     {
       field: 'inspectionStartDate',
@@ -84,25 +109,7 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
         const endDate = data.inspectionEndDate.replace(/-/g, '.');
         return `${startDate} ~ ${endDate}`;
       },
-      cellStyle: { fontFamily: 'monospace', color: '#2e7d32', fontWeight: '500' }
-    },
-    {
-      field: 'activityStartDate',
-      headerName: '활동 대상 기간',
-      width: 200,
-      minWidth: 150,
-      sortable: false,
-      filter: false,
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellRenderer: (params: any) => {
-        const data = params.data;
-        if (!data || !data.activityStartDate || !data.activityEndDate) return '';
-        const startDate = data.activityStartDate.replace(/-/g, '.');
-        const endDate = data.activityEndDate.replace(/-/g, '.');
-        return `${startDate} ~ ${endDate}`;
-      },
-      cellStyle: { fontFamily: 'monospace', color: '#ed6c02', fontWeight: '500' }
+      cellStyle: { color: '#2e7d32', fontWeight: '500' }
     },
     {
       field: 'registrationDate',
@@ -118,18 +125,7 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
         if (!value) return '';
         return value.replace(/-/g, '.');
       },
-      cellStyle: { fontFamily: 'monospace', color: '#424242', fontWeight: '500' }
-    },
-    {
-      field: 'registrantAuthority',
-      headerName: '등록자권한',
-      width: 120,
-      minWidth: 100,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500', color: '#7b1fa2' }
+      cellStyle: { color: '#424242', fontWeight: '500' }
     },
     {
       field: 'registrant',
@@ -190,11 +186,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     delete: false,
   });
   const [filters, setFilters] = useState<PeriodSettingFilters>({
+    ledgerOrderId: '',
     searchPeriodStart: '',
-    searchPeriodEnd: '',
-    inspectionName: '',
-    status: '',
-    registrant: ''
+    searchPeriodEnd: ''
   });
 
   const [pagination, setPagination] = useState<PeriodSettingPagination>({
@@ -308,13 +302,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       const newPeriod: PeriodSetting = {
         id: Date.now().toString(),
         sequence: periods.length + 1,
+        ledgerOrderId: '20240001',
         inspectionName: formData.inspectionName,
+        inspectionType: '정기점검',
         inspectionStartDate: formData.inspectionStartDate,
         inspectionEndDate: formData.inspectionEndDate,
-        activityStartDate: formData.activityStartDate,
-        activityEndDate: formData.activityEndDate,
+        activityStartDate: '',
+        activityEndDate: '',
         registrationDate: new Date().toISOString().split('T')[0],
-        registrantAuthority: '관리자',
         registrant: '현재사용자',
         status: formData.status,
         statusText: formData.status === 'ACTIVE' ? '시행' : formData.status === 'INACTIVE' ? '중단' : '임시',
@@ -410,11 +405,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
       searchPeriodStart: '',
-      searchPeriodEnd: '',
-      inspectionName: '',
-      status: '',
-      registrant: ''
+      searchPeriodEnd: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
@@ -454,49 +447,40 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     return periods; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
   }, [periods]);
 
+  // 원장차수 변경 핸들러
+  const handleLedgerOrderChange = useCallback((value: string | null) => {
+    setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }));
+  }, []);
+
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={handleLedgerOrderChange}
+          label="책무이행차수"
+          placeholder="전체"
+        />
+      )
+    },
+    {
       key: 'searchPeriodStart',
-      type: 'text',
-      label: '항목기간 시작일',
-      placeholder: 'YYYY-MM-DD',
-      gridSize: { xs: 12, sm: 6, md: 2.5 }
-    },
-    {
-      key: 'searchPeriodEnd',
-      type: 'text',
-      label: '항목기간 종료일',
-      placeholder: 'YYYY-MM-DD',
-      gridSize: { xs: 12, sm: 6, md: 2.5 }
-    },
-    {
-      key: 'inspectionName',
-      type: 'text',
-      label: '점검명',
-      placeholder: '점검명을 입력하세요',
+      type: 'date',
+      label: '항목시작일',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'status',
-      type: 'select',
-      label: '상태',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'ACTIVE', label: '시행' },
-        { value: 'INACTIVE', label: '중단' },
-        { value: 'DRAFT', label: '임시' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'registrant',
-      type: 'text',
-      label: '등록자',
-      placeholder: '등록자를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      key: 'searchPeriodEnd',
+      type: 'date',
+      label: '항목종료일',
+      gridSize: { xs: 12, sm: 6, md: 3 }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleLedgerOrderChange]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -603,13 +587,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       {
         id: '1',
         sequence: 1,
-        inspectionName: '2024년 상반기 내부통제 점검',
-        inspectionStartDate: '2024-07-01',
-        inspectionEndDate: '2024-07-31',
+        ledgerOrderId: '20250001',
+        inspectionName: '2025년 상반기 내부통제 점검',
+        inspectionType: '정기점검',
+        inspectionStartDate: '2025-07-01',
+        inspectionEndDate: '2025-07-31',
         activityStartDate: '2024-01-01',
         activityEndDate: '2024-06-30',
         registrationDate: '2024-05-15',
-        registrantAuthority: '관리자',
         registrant: '김관리',
         status: 'ACTIVE',
         statusText: '시행',
@@ -622,13 +607,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       {
         id: '2',
         sequence: 2,
+        ledgerOrderId: '20240001',
         inspectionName: '2024년 상반기 리스크 관리 점검',
+        inspectionType: '특별점검',
         inspectionStartDate: '2024-08-01',
         inspectionEndDate: '2024-08-31',
         activityStartDate: '2024-02-01',
         activityEndDate: '2024-07-31',
         registrationDate: '2024-06-10',
-        registrantAuthority: '부서장',
         registrant: '이부장',
         status: 'ACTIVE',
         statusText: '시행',
@@ -641,13 +627,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       {
         id: '3',
         sequence: 3,
+        ledgerOrderId: '20240002',
         inspectionName: '2024년 하반기 컴플라이언스 점검',
+        inspectionType: '정기점검',
         inspectionStartDate: '2024-12-01',
         inspectionEndDate: '2024-12-31',
         activityStartDate: '2024-07-01',
         activityEndDate: '2024-11-30',
         registrationDate: '2024-08-20',
-        registrantAuthority: '팀장',
         registrant: '박팀장',
         status: 'DRAFT',
         statusText: '임시',
@@ -660,13 +647,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       {
         id: '4',
         sequence: 4,
+        ledgerOrderId: '20240002',
         inspectionName: '2024년 정보보안 점검',
+        inspectionType: '특별점검',
         inspectionStartDate: '2024-09-01',
         inspectionEndDate: '2024-09-30',
         activityStartDate: '2024-03-01',
         activityEndDate: '2024-08-31',
         registrationDate: '2024-07-05',
-        registrantAuthority: '관리자',
         registrant: '최관리',
         status: 'INACTIVE',
         statusText: '중단',
@@ -679,13 +667,14 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       {
         id: '5',
         sequence: 5,
+        ledgerOrderId: '20240002',
         inspectionName: '2024년 재무 감사',
+        inspectionType: '정기점검',
         inspectionStartDate: '2024-10-01',
         inspectionEndDate: '2024-10-31',
         activityStartDate: '2024-04-01',
         activityEndDate: '2024-09-30',
         registrationDate: '2024-08-01',
-        registrantAuthority: '감사팀',
         registrant: '정감사',
         status: 'ACTIVE',
         statusText: '시행',
@@ -817,5 +806,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     </React.Profiler>
   );
 };
+
+// ImplMonitoring 도메인 공개 API
+export { default as ImplMonitoring } from './ImplMonitoring';
+export * from './types/implMonitoring.types';
 
 export default ImplMonitoring;

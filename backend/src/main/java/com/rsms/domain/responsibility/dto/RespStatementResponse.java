@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 책무기술서 응답 DTO
  * - 클라이언트로 반환하는 데이터 구조
@@ -74,6 +76,41 @@ public class RespStatementResponse {
     private String updatedBy;
 
     /**
+     * 책무개요
+     */
+    private String responsibilityOverview;
+
+    /**
+     * 책무배경
+     */
+    private String responsibilityBackground;
+
+    /**
+     * 책무배분일
+     */
+    private String responsibilityBackgroundDate;
+
+    /**
+     * 주관회의체 목록
+     */
+    private List<MainCommitteeResponse> mainCommittees;
+
+    /**
+     * 주관회의체 응답 DTO
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MainCommitteeResponse {
+        private String id;              // ID
+        private String committeeName;   // 회의체명
+        private String chairperson;     // 위원장
+        private String frequency;       // 개최주기
+        private String mainAgenda;      // 주요안건
+    }
+
+    /**
      * Entity에서 Response DTO로 변환
      */
     public static RespStatementResponse fromEntity(
@@ -90,6 +127,10 @@ public class RespStatementResponse {
                 .createdBy(entity.getCreatedBy())
                 .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null)
                 .updatedBy(entity.getUpdatedBy())
+                .responsibilityOverview(entity.getResponsibilityOverview())
+                .responsibilityBackgroundDate(entity.getResponsibilityAssignedDate() != null
+                    ? entity.getResponsibilityAssignedDate().toString() : null)
+                // TODO: mainCommittees는 추후 추가 (별도 조회 필요)
                 .build();
     }
 }

@@ -190,6 +190,105 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     }
   }, [mode, open, reset]);
 
+  // 📋 상세조회 모드일 때 doc 데이터를 폼에 로드
+  useEffect(() => {
+    const loadDetailData = async () => {
+      if (open && mode === 'detail' && doc && doc.id) {
+        try {
+          console.log('📋 상세조회 API 호출 시작 - doc.id:', doc.id);
+
+          // 백엔드 상세조회 API 호출
+          const { getResponsibilityDocById, getPositionResponsibilityData } = await import('@/domains/resps/api/responsibilityDocApi');
+
+          // 1. 기본 정보 조회 (책무기술서 ID로)
+          const basicData = await getResponsibilityDocById(doc.id);
+          console.log('📋 기본 데이터 로드 성공:', basicData);
+
+          // 기본 정보 설정
+          setValue('positionName', basicData.positionName || '');
+
+          // 📋 책무개요 설정
+          if (basicData.responsibilityOverview) {
+            setValue('responsibilityOverview', basicData.responsibilityOverview);
+            console.log('📋 책무개요 설정:', basicData.responsibilityOverview);
+          }
+
+          // 📋 책무 분배일자 설정
+          if (basicData.responsibilityBackgroundDate) {
+            setValue('responsibilityDistributionDate', basicData.responsibilityBackgroundDate);
+            console.log('📋 책무 분배일자 설정:', basicData.responsibilityBackgroundDate);
+          }
+
+          // 📋 주관회의체 목록 설정
+          if (basicData.mainCommittees && basicData.mainCommittees.length > 0) {
+            const committeeData = basicData.mainCommittees.map((committee) => ({
+              id: committee.id,
+              committeeName: committee.committeeName,
+              chairperson: committee.chairperson,
+              frequency: committee.frequency,
+              mainAgenda: committee.mainAgenda
+            }));
+            setCommittees(committeeData);
+            console.log('📋 주관회의체 데이터 설정:', committeeData);
+          }
+
+          // 2. 상세 데이터 조회 (직책 ID로)
+          if (basicData.positionId) {
+            const detailData = await getPositionResponsibilityData(basicData.positionId);
+            console.log('📋 상세 데이터 로드 성공:', detailData);
+
+            // 겸직여부 (Y/N → boolean 변환)
+            setValue('isDual', detailData.isConcurrent === 'Y');
+
+            // 현 직책 부여일
+            setValue('currentPositionDate', detailData.positionAssignedDate || '');
+
+            // 겸직사항
+            setValue('dualPositionDetails', detailData.concurrentPosition || '');
+
+            // 직원명
+            setValue('employeeName', detailData.employeeName || '');
+
+            // 소관부점
+            setValue('responsibleDepts', detailData.departments || '');
+
+            // 책무 데이터 변환 및 설정
+            if (detailData.responsibilities && detailData.responsibilities.length > 0) {
+              const responsibilityData = detailData.responsibilities.map((resp, index) => ({
+                id: resp.responsibilityCd,
+                seq: index + 1,
+                responsibility: resp.responsibilityInfo,
+                responsibilityDetail: resp.responsibilityDetailInfo || '',
+                relatedBasis: resp.responsibilityLegal
+              }));
+              setResponsibilities(responsibilityData);
+              console.log('📋 책무 데이터 설정:', responsibilityData);
+            }
+
+            // 관리의무 데이터 변환 및 설정
+            if (detailData.managementObligations && detailData.managementObligations.length > 0) {
+              const obligationData = detailData.managementObligations.map((obligation, index) => ({
+                id: obligation.obligationCd,
+                seq: index + 1,
+                duty: obligation.obligationInfo
+              }));
+              setManagementDuties(obligationData);
+              console.log('📋 관리의무 데이터 설정:', obligationData);
+            }
+
+            toast.success('상세 데이터를 불러왔습니다.');
+          }
+
+        } catch (error) {
+          console.error('📋 상세 데이터 로드 실패:', error);
+          toast.error('상세 데이터를 불러오는데 실패했습니다.');
+        }
+      }
+    };
+
+    loadDetailData();
+  }, [open, mode, doc, setValue]);
+
   // 직책 선택 핸들러 - 직책 검색 모달 열기
   const handlePositionSelect = useCallback(() => {
     // 직책 선택 모달 열기

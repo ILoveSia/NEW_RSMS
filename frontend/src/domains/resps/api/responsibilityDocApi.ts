@@ -128,6 +128,17 @@ export interface CreateResponsibilityDocRequest {
 export interface UpdateResponsibilityDocRequest extends CreateResponsibilityDocRequest {}
 
 /**
+ * 주관회의체 응답 DTO
+ */
+export interface MainCommitteeResponse {
+  id: string;
+  committeeName: string;
+  chairperson: string;
+  frequency: string;
+  mainAgenda: string;
+}
+
+/**
  * 책무기술서 응답 DTO
  */
 export interface ResponsibilityDocResponse {
@@ -142,6 +153,10 @@ export interface ResponsibilityDocResponse {
   createdBy: string;
   updatedAt: string;
   updatedBy: string;
+  responsibilityOverview?: string;      // 책무개요
+  responsibilityBackground?: string;    // 책무배경
+  responsibilityBackgroundDate?: string; // 책무배분일
+  mainCommittees?: MainCommitteeResponse[]; // 주관회의체 목록
 }
 
 /**

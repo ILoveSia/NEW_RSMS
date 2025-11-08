@@ -121,6 +121,9 @@ export interface DeptOpManual {
  * 검색 필터 타입
  */
 export interface DeptOpManualsFilters {
+  /** 책무이행차수 */
+  ledgerOrder?: string;
+
   /** 분부명 (관리의무) */
   managementObligation?: string;
 

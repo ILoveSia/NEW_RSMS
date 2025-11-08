@@ -7,13 +7,14 @@
 export interface PeriodSetting {
   id: string;
   sequence: number;
+  ledgerOrderId: string;                     // 책무이행차수
   inspectionName: string;                    // 점검명
+  inspectionType: string;                    // 점검유형
   inspectionStartDate: string;               // 점검 수행기간 시작일
   inspectionEndDate: string;                 // 점검 수행기간 종료일
   activityStartDate: string;                 // 활동 대상 기간 시작일
   activityEndDate: string;                   // 활동 대상 기간 종료일
   registrationDate: string;                  // 등록일자
-  registrantAuthority: string;               // 등록자권한
   registrant: string;                        // 등록자
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';   // 상태 (시행/중단/임시)
   statusText: string;                        // 상태 텍스트
@@ -26,11 +27,9 @@ export interface PeriodSetting {
 
 // 검색 필터 타입
 export interface PeriodSettingFilters {
+  ledgerOrderId?: string;                    // 책무이행차수
   searchPeriodStart?: string;                // 항목기간 시작일
   searchPeriodEnd?: string;                  // 항목기간 종료일
-  inspectionName?: string;                   // 점검명 검색
-  status?: string;                           // 상태 필터
-  registrant?: string;                       // 등록자 필터
 }
 
 // 폼 데이터 타입 (등록/수정용)
@@ -38,8 +37,6 @@ export interface PeriodSettingFormData {
   inspectionName: string;                    // 점검명
   inspectionStartDate: string;               // 점검 수행기간 시작일
   inspectionEndDate: string;                 // 점검 수행기간 종료일
-  activityStartDate: string;                 // 활동 대상 기간 시작일
-  activityEndDate: string;                   // 활동 대상 기간 종료일
   description?: string;                      // 설명 (옵션)
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';   // 상태
 }
