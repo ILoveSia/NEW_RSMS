@@ -7,15 +7,13 @@
 export interface InspectorAssignment {
   id: string;
   sequence: number;                     // 순번
-  managementName: string;               // 관리명칭명 (점검 대상 관리명칭)
-  round: string;                        // 차시 (n회차)
-  internalExternal: 'INTERNAL' | 'EXTERNAL';  // 내부/외부 점검 주체 구분
-  category: string;                     // 구분 (세부 분류)
-  restrictionInfo?: string;             // 내부/외부 제한정보
-  modifier: string;                     // 수정자 (사용자ID-사용자명)
+  inspectionName: string;               // 점검명 (impl_inspection_plans.impl_inspection_name)
+  obligationInfo: string;               // 관리의무 (management_obligations.obligation_info)
+  activityName: string;                 // 관리활동명 (dept_manager_manuals.activity_name)
+  activityFrequencyCd: string;          // 관리활동수행주기 (dept_manager_manuals.activity_frequency_cd)
+  orgCode: string;                      // 부점 (dept_manager_manuals.org_code)
   inspector: Inspector | null;          // 지정된 점검자
   inspectionDate?: string;              // 점검일자 (초회/날짜 정보)
-  endYn: 'Y' | 'N';                    // 점검 완료 여부
   assignmentStatus: 'ASSIGNED' | 'UNASSIGNED' | 'COMPLETED';  // 점검자 지정상태
   createdAt: string;
   updatedAt: string;
@@ -46,6 +44,8 @@ export interface InspectionPeriod {
 
 // 검색 필터 타입
 export interface InspectorAssignFilters {
+  ledgerOrderId?: string;               // 책무이행차수
+  inspectionName?: string;              // 점검명
   periodId?: string;                    // 점검명 (기간) 선택
   assignmentStatus?: string;            // 점검자 지정상태 (전체/지정완료/미지정)
   boolCode?: string;                    // 부점코드

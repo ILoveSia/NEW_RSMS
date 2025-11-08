@@ -10,14 +10,12 @@ import styles from './ImplMonitoringStatus.module.scss';
 
 // Types
 import type {
-  InspectionExecution,
   ExecutionFilters,
   ExecutionModalState,
   ExecutionPagination,
-  PerformanceTargetFilter,
-  PerformanceTargetOption,
-  InspectionPeriod,
-  ExecutionStatistics
+  ExecutionStatistics,
+  InspectionExecution,
+  PerformanceTargetOption
 } from './types/implMonitoringStatus.types';
 
 // Shared Components
@@ -25,8 +23,11 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
-import { BranchLookupModal } from '@/shared/components/organisms/BranchLookupModal';
-import type { Branch } from '@/shared/components/organisms/BranchLookupModal/types/branchLookup.types';
+import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
+import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // ImplMonitoringStatus specific components
 import { executionColumns } from './components/ImplMonitoringDataGrid/implMonitoringColumns';
@@ -58,9 +59,9 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
   });
 
   const [filters, setFilters] = useState<ExecutionFilters>({
-    inspectionPeriodId: '2026_FIRST_HALF',
-    performanceTarget: 'ALL',
-    branchCode: '0000'
+    ledgerOrderId: '',
+    inspectionPeriodId: '',
+    branchCode: ''
   });
 
   const [pagination, setPagination] = useState<ExecutionPagination>({
@@ -75,24 +76,35 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     selectedExecution: null
   });
 
-  // 부점조회 팝업 상태
-  const [branchLookupOpen, setBranchLookupOpen] = useState<boolean>(false);
+  // 조직조회팝업 상태
+  const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<ExecutionFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
-  const handleBranchSelect = useCallback((selected: Branch | Branch[]) => {
-    const selectedBranch = Array.isArray(selected) ? selected[0] : selected;
-    if (selectedBranch) {
+  // 조직조회 팝업 핸들러
+  const handleOrganizationSearch = useCallback(() => {
+    setOrganizationSearchOpen(true);
+  }, []);
+
+  // 조직선택 완료 핸들러
+  const handleOrganizationSelect = useCallback((selected: Organization | Organization[]) => {
+    const selectedOrg = Array.isArray(selected) ? selected[0] : selected;
+    if (selectedOrg) {
       setFilters(prev => ({
         ...prev,
-        branchCode: selectedBranch.branchCode
+        branchCode: selectedOrg.orgCode
       }));
-      setBranchLookupOpen(false);
-      toast.success(`${selectedBranch.branchName}(${selectedBranch.branchCode})이 선택되었습니다.`);
+      setOrganizationSearchOpen(false);
+      toast.success(`${selectedOrg.orgName}(${selectedOrg.orgCode})이 선택되었습니다.`);
     }
+  }, []);
+
+  // 조직조회팝업 닫기 핸들러
+  const handleOrganizationSearchClose = useCallback(() => {
+    setOrganizationSearchOpen(false);
   }, []);
 
   const handleResultDetail = useCallback(async () => {
@@ -141,6 +153,26 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       setLoadingStates(prev => ({ ...prev, reject: false }));
     }
   }, []);
+
+  /**
+   * 점검결과 작성 핸들러
+   * - 선택된 점검 항목들의 점검결과를 작성
+   */
+  const handleWriteInspectionResult = useCallback(() => {
+    if (selectedExecutions.length === 0) {
+      toast.warning('점검결과를 작성할 항목을 선택해주세요.');
+      return;
+    }
+
+    if (selectedExecutions.length > 1) {
+      toast.warning('점검결과 작성은 한 번에 하나씩만 가능합니다.');
+      return;
+    }
+
+    // TODO: 점검결과 작성 모달 열기
+    const selectedExecution = selectedExecutions[0];
+    toast.info(`${selectedExecution.inspectionName} 점검결과 작성 기능은 준비 중입니다.`);
+  }, [selectedExecutions]);
 
   const handleCompleteExecution = useCallback(async () => {
     if (selectedExecutions.length === 0) {
@@ -250,12 +282,17 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
 
   const handleClearFilters = useCallback(() => {
     setFilters({
-      inspectionPeriodId: '2026_FIRST_HALF',
-      performanceTarget: 'ALL',
-      branchCode: '0000'
+      ledgerOrderId: '',
+      inspectionPeriodId: '',
+      branchCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+  }, []);
+
+  // 원장차수 변경 핸들러
+  const handleLedgerOrderChange = useCallback((value: string | null) => {
+    setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }));
   }, []);
 
   // Grid Event Handlers
@@ -296,35 +333,27 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     return executions; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
   }, [executions]);
 
-  // 점검 기간 옵션 (실제로는 API에서 가져와야 함)
-  const inspectionPeriodOptions = useMemo<{ value: string; label: string }[]>(() => [
-    { value: '2026_FIRST_HALF', label: '2026년1차년 이행점검 | 2026.07.31~2026.08.31' },
-    { value: '2025_SECOND_HALF', label: '2025년2차년 이행점검 | 2025.12.01~2025.12.31' },
-    { value: '2025_FIRST_HALF', label: '2025년1차년 이행점검 | 2025.07.01~2025.07.31' }
-  ], []);
-
-  // 이행점검 수행대상 옵션
-  const performanceTargetOptions = useMemo<PerformanceTargetOption[]>(() => [
-    { value: 'ALL', label: '전체' },
-    { value: 'IN_PROGRESS', label: '진행중' },
-    { value: 'COMPLETED', label: '완료' },
-    { value: 'NOT_STARTED', label: '미수행' }
-  ], []);
-
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'inspectionPeriodId',
-      type: 'select',
-      label: '점검명',
-      options: inspectionPeriodOptions,
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={handleLedgerOrderChange}
+          label="책무이행차수"
+          placeholder="전체"
+        />
+      )
     },
     {
-      key: 'performanceTarget',
-      type: 'select',
-      label: '이행점검 수행대상',
-      options: performanceTargetOptions.map(option => ({ value: option.value, label: option.label })),
+      key: 'inspectionPeriodId',
+      type: 'text',
+      label: '점검명',
+      placeholder: '점검명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -332,18 +361,28 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       type: 'text',
       label: '부점코드',
       placeholder: '부점코드를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 },
+      gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
-        onClick: () => setBranchLookupOpen(true),
-        tooltip: '부점 검색'
+        onClick: handleOrganizationSearch,
+        tooltip: '부점조회'
       }
     }
-  ], [inspectionPeriodOptions, performanceTargetOptions]);
+  ], [filters.ledgerOrderId, handleLedgerOrderChange, handleOrganizationSearch]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
+    {
+      key: 'writeResult',
+      type: 'custom',
+      label: '점검결과 작성',
+      variant: 'contained',
+      color: 'primary',
+      onClick: handleWriteInspectionResult,
+      disabled: selectedExecutions.length === 0,
+      confirmationRequired: false
+    },
     {
       key: 'complete',
       type: 'custom',
@@ -355,7 +394,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       loading: loadingStates.complete,
       confirmationRequired: true
     }
-  ], [handleCompleteExecution, selectedExecutions.length, loadingStates]);
+  ], [handleWriteInspectionResult, handleCompleteExecution, selectedExecutions.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -438,20 +477,50 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       {
         id: '1',
         sequenceNumber: 1,
-        managementActivityName: '역량 산업',
-        managementActivitySession: '2025년 1회차',
-        managementActivityDetail: '상세현황다.',
-        internalExternal: '외부',
-        classification: '교육수행내과',
-        internalExternalLimitInfo: '',
-        performer: '0000000-관최자',
-        performanceTarget: '앞균',
-        performanceResult: '작성',
-        inspector: '미신혁',
-        inspectionTarget: '점검자',
-        firstInspectionResult: '미김감',
-        secondInspectionResult: '',
+        inspectionName: '2025년 1분기 정기점검',
+        obligationInfo: '자금세탁방지 의무',
+        managementActivityName: '자금세탁방지 시스템 운영',
+        activityFrequencyCd: '분기별',
+        orgCode: '경영전략부',
+        inspectionMethod: '문서검토 + 실사',
+        inspector: '이신혁',
+        inspectionResult: '적합',
+        inspectionDetail: '모든 항목 정상 확인',
+        inspectionStatus: 'COMPLETED',
+        inspectionPeriodId: '2026_FIRST_HALF',
+        createdAt: '2024-09-21T10:00:00Z',
+        updatedAt: '2024-09-21T10:00:00Z'
+      },
+      {
+        id: '2',
+        sequenceNumber: 2,
+        inspectionName: '2025년 1분기 정기점검',
+        obligationInfo: '정보보호 관리 의무',
+        managementActivityName: '개인정보 보호 점검',
+        activityFrequencyCd: '월별',
+        orgCode: '준법지원부',
+        inspectionMethod: '시스템 점검',
+        inspector: '김철수',
+        inspectionResult: '보완필요',
+        inspectionDetail: '일부 항목 보완 필요',
         inspectionStatus: 'FIRST_INSPECTION',
+        inspectionPeriodId: '2026_FIRST_HALF',
+        createdAt: '2024-09-21T10:00:00Z',
+        updatedAt: '2024-09-21T10:00:00Z'
+      },
+      {
+        id: '3',
+        sequenceNumber: 3,
+        inspectionName: '2025년 상반기 특별점검',
+        obligationInfo: '리스크 관리 의무',
+        managementActivityName: '신용리스크 평가',
+        activityFrequencyCd: '반기별',
+        orgCode: '리스크관리부',
+        inspectionMethod: '데이터 분석',
+        inspector: '',
+        inspectionResult: '',
+        inspectionDetail: '',
+        inspectionStatus: 'NOT_STARTED',
         inspectionPeriodId: '2026_FIRST_HALF',
         createdAt: '2024-09-21T10:00:00Z',
         updatedAt: '2024-09-21T10:00:00Z'
@@ -476,7 +545,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
               <DashboardIcon className={styles.headerIcon} />
               <div>
                 <h1 className={styles.pageTitle}>
-                  점검수행 및 결재
+                  이행점검수행
                 </h1>
                 <p className={styles.pageDescription}>
                   이행점검의 점검수행 및 결재 프로세스를 관리합니다
@@ -541,7 +610,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
             onClear={handleClearFilters}
             loading={loading}
             searchLoading={loadingStates.search}
-            showClearButton={false}
+            showClearButton={true}
           />
 
           {/* 💎 공통 액션 바 */}
@@ -572,14 +641,13 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
           />
         </div>
 
-        {/* 부점조회 팝업 */}
-        <BranchLookupModal
-          open={branchLookupOpen}
-          onClose={() => setBranchLookupOpen(false)}
-          onSelect={handleBranchSelect}
-          title="부점 조회 팝업"
+        {/* 조직조회 팝업 */}
+        <OrganizationSearchModal
+          open={organizationSearchOpen}
+          onClose={handleOrganizationSearchClose}
+          onSelect={handleOrganizationSelect}
+          title="부점 조회"
           multiple={false}
-          initialFilters={{ branchCode: filters.branchCode }}
         />
 
         {/* 점검 상세 모달 */}

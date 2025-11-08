@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   TextField,
-  FormControl,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
   Typography,
   Box,
-  Divider,
   InputAdornment,
-  IconButton
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PersonIcon from '@mui/icons-material/Person';
-import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
+import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import {
   Inspector,
@@ -26,13 +23,13 @@ import {
   InspectorSelectionState
 } from '../../types/inspectorAssign.types';
 import { ColDef } from 'ag-grid-community';
-import styles from './InspectorSelectionModal.module.scss';
 
 interface InspectorSelectionModalProps {
   open: boolean;
   assignment: InspectorAssignment | null;
+  assignments: InspectorAssignment[];  // 선택된 여러 항목들
   onClose: () => void;
-  onSelect: (assignment: InspectorAssignment, inspector: Inspector, formData: InspectorAssignFormData) => void;
+  onSelect: (assignments: InspectorAssignment[], inspector: Inspector, formData: InspectorAssignFormData) => void;
   loading?: boolean;
 }
 
@@ -45,60 +42,56 @@ const schema = yup.object({
     .matches(/^\d{4}-\d{2}-\d{2}$/, '날짜 형식이 올바르지 않습니다 (YYYY-MM-DD)'),
 });
 
-// 점검자 목록 컬럼 정의
+// 점검자 목록 컬럼 정의 (EmployeeLookupModal 스타일 적용)
 const inspectorColumns: ColDef<Inspector>[] = [
-  {
-    headerName: '선택',
-    field: 'selected',
-    width: 60,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    checkboxSelection: true,
-    headerCheckboxSelection: false,
-    suppressMenu: true,
-    sortable: false,
-    filter: false
-  },
   {
     headerName: '이름',
     field: 'name',
     width: 100,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    cellStyle: { fontWeight: '600', color: '#1976d2' }
+    sortable: true,
+    filter: true,
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center'
   },
   {
     headerName: '부서',
     field: 'department',
-    width: 120,
-    cellClass: 'ag-cell-center',
+    flex: 1,
+    minWidth: 130,
+    sortable: true,
+    filter: true,
+    cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center'
   },
   {
     headerName: '직급',
     field: 'position',
     width: 100,
+    sortable: true,
+    filter: true,
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
   },
   {
     headerName: '전문영역',
     field: 'specialtyArea',
-    width: 120,
+    flex: 1,
+    minWidth: 120,
+    sortable: true,
+    filter: true,
     cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    cellStyle: { color: '#7b1fa2', fontWeight: '500' }
+    headerClass: 'ag-header-center'
   }
 ];
 
 const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
   open,
   assignment,
+  assignments,
   onClose,
   onSelect,
   loading = false
 }) => {
-  const { t } = useTranslation('compliance');
 
   // State for inspector selection
   const [selectionState, setSelectionState] = useState<InspectorSelectionState>({
@@ -109,13 +102,11 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     loading: false
   });
 
-  // Form setup
+  // Form setup (간단한 검증용)
   const {
-    control,
     handleSubmit,
-    reset,
-    formState: { errors, isValid }
-  } = useForm<InspectorAssignFormData>({
+    reset
+  } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
@@ -173,11 +164,9 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     }
   ], []);
 
-  // Filter inspectors based on type and search
+  // Filter inspectors based on search only (점검자 구분 제거)
   const filteredInspectors = useMemo(() => {
-    let filtered = mockInspectors.filter(inspector =>
-      inspector.type === selectionState.selectedType && inspector.isActive
-    );
+    let filtered = mockInspectors.filter(inspector => inspector.isActive);
 
     if (selectionState.searchKeyword.trim()) {
       const keyword = selectionState.searchKeyword.toLowerCase();
@@ -190,7 +179,7 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     }
 
     return filtered;
-  }, [mockInspectors, selectionState.selectedType, selectionState.searchKeyword]);
+  }, [mockInspectors, selectionState.searchKeyword]);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -199,22 +188,10 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
       setSelectionState(prev => ({
         ...prev,
         selectedInspector: null,
-        searchKeyword: '',
-        selectedType: assignment?.internalExternal || 'INTERNAL'
+        searchKeyword: ''
       }));
     }
   }, [open, assignment, reset]);
-
-  // Handle inspector type change
-  const handleTypeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const newType = event.target.value as 'INTERNAL' | 'EXTERNAL';
-    setSelectionState(prev => ({
-      ...prev,
-      selectedType: newType,
-      selectedInspector: null,
-      searchKeyword: ''
-    }));
-  }, []);
 
   // Handle search
   const handleSearch = useCallback(() => {
@@ -225,121 +202,98 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     }, 300);
   }, []);
 
-  // Handle inspector selection
-  const handleInspectorSelect = useCallback((selectedNodes: any[]) => {
-    const selectedInspector = selectedNodes.length > 0 ? selectedNodes[0].data : null;
+  // Handle inspector selection (행 선택 변경)
+  const handleInspectorSelect = useCallback((selectedRows: Inspector[]) => {
+    if (selectedRows.length > 0) {
+      setSelectionState(prev => ({
+        ...prev,
+        selectedInspector: selectedRows[0]
+      }));
+    } else {
+      setSelectionState(prev => ({
+        ...prev,
+        selectedInspector: null
+      }));
+    }
+  }, []);
+
+  // Handle row click (행 클릭)
+  const handleRowClick = useCallback((data: Inspector) => {
     setSelectionState(prev => ({
       ...prev,
-      selectedInspector
+      selectedInspector: data
     }));
   }, []);
 
+  // Handle row double click (행 더블클릭으로 빠른 선택)
+  const handleRowDoubleClick = useCallback((data: Inspector) => {
+    if (data && assignments && assignments.length > 0) {
+      const submitData: InspectorAssignFormData = {
+        inspectorId: data.id,
+        assignmentReason: '',
+        estimatedDate: ''
+      };
+      onSelect(assignments, data, submitData);
+    }
+  }, [assignments, onSelect]);
+
   // Handle form submission
-  const onSubmit = useCallback((formData: InspectorAssignFormData) => {
-    if (!assignment || !selectionState.selectedInspector) return;
+  const onSubmit = useCallback((formData: any) => {
+    if (!selectionState.selectedInspector) return;
+    if (!assignments || assignments.length === 0) return;
 
     const submitData: InspectorAssignFormData = {
       inspectorId: selectionState.selectedInspector.id,
-      assignmentReason: formData.assignmentReason,
-      estimatedDate: formData.estimatedDate
+      assignmentReason: formData.assignmentReason || '',
+      estimatedDate: formData.estimatedDate || ''
     };
 
-    onSelect(assignment, selectionState.selectedInspector, submitData);
-  }, [assignment, selectionState.selectedInspector, onSelect]);
+    onSelect(assignments, selectionState.selectedInspector, submitData);
+  }, [assignments, selectionState.selectedInspector, onSelect]);
 
-  // Modal actions
-  const actions: ModalAction[] = [
-    {
-      label: '취소',
-      variant: 'outlined',
-      onClick: onClose
-    },
-    {
-      label: '확인',
-      variant: 'contained',
-      onClick: handleSubmit(onSubmit),
-      disabled: !selectionState.selectedInspector || !isValid,
-      loading: loading
-    }
-  ];
-
-  const modalTitle = assignment?.inspector ? '점검자 변경' : '점검자 선택';
+  const modalTitle = `점검자 지정 (${assignments?.length || 0}건)`;
 
   return (
-    <BaseModal
+    <Dialog
       open={open}
-      title={modalTitle}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
-      actions={actions}
-      className={styles.modal}
+      PaperProps={{
+        sx: {
+          borderRadius: 1,
+          maxHeight: '80vh'
+        }
+      }}
     >
-      <div className={styles.modalContent}>
-        {/* 현재 선택된 점검 항목 정보 */}
-        {assignment && (
-          <Box className={styles.assignmentInfo}>
-            <Typography variant="h6" className={styles.sectionTitle}>
-              <PersonIcon className={styles.sectionIcon} />
-              점검 항목 정보
+      <DialogTitle
+        sx={{
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
+        }}
+      >
+        {modalTitle}
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {/* 선택된 항목 개수 표시 */}
+          {assignments && assignments.length > 0 && (
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: 'primary.main' }}>
+              선택된 항목: {assignments.length}건
             </Typography>
-            <Box className={styles.infoGrid}>
-              <Typography variant="body2">
-                <strong>관리명칭:</strong> {assignment.managementName}
-              </Typography>
-              <Typography variant="body2">
-                <strong>차시:</strong> {assignment.round}
-              </Typography>
-              <Typography variant="body2">
-                <strong>구분:</strong> {assignment.internalExternal === 'INTERNAL' ? '내부' : '외부'}
-              </Typography>
-              {assignment.inspector && (
-                <Typography variant="body2">
-                  <strong>현재 점검자:</strong> {assignment.inspector.name} ({assignment.inspector.department})
-                </Typography>
-              )}
-            </Box>
-          </Box>
-        )}
+          )}
 
-        <Divider className={styles.divider} />
-
-        {/* 점검자 구분 선택 */}
-        <Box className={styles.typeSelection}>
-          <Typography variant="h6" className={styles.sectionTitle}>
-            점검자 구분
-          </Typography>
-          <FormControl component="fieldset">
-            <RadioGroup
-              row
-              value={selectionState.selectedType}
-              onChange={handleTypeChange}
-            >
-              <FormControlLabel
-                value="INTERNAL"
-                control={<Radio />}
-                label="내부점검자"
-                disabled={assignment?.internalExternal === 'EXTERNAL'}
-              />
-              <FormControlLabel
-                value="EXTERNAL"
-                control={<Radio />}
-                label="외부점검자"
-                disabled={assignment?.internalExternal === 'INTERNAL'}
-              />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-
-        {/* 점검자 검색 */}
-        <Box className={styles.searchSection}>
+          {/* 점검자 검색 */}
           <TextField
             fullWidth
             size="small"
             placeholder="점검자 이름, 부서, 직급, 전문영역으로 검색"
             value={selectionState.searchKeyword}
             onChange={(e) => setSelectionState(prev => ({ ...prev, searchKeyword: e.target.value }))}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -350,96 +304,65 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
               )
             }}
           />
-        </Box>
 
-        {/* 점검자 목록 그리드 */}
-        <Box className={styles.gridSection}>
-          <Typography variant="h6" className={styles.sectionTitle}>
-            점검자 목록
-          </Typography>
-          <div className={styles.gridContainer}>
-            <BaseDataGrid
-              data={filteredInspectors}
-              columns={inspectorColumns}
-              loading={selectionState.loading}
-              rowSelection="single"
-              onSelectionChanged={handleInspectorSelect}
-              height="250px"
-              suppressPagination={true}
-              theme="rsms"
-            />
-          </div>
-        </Box>
-
-        <Divider className={styles.divider} />
-
-        {/* 지정 정보 입력 */}
-        <Box className={styles.formSection}>
-          <Typography variant="h6" className={styles.sectionTitle}>
-            지정 정보
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-            <div className={styles.formRow}>
-              <Controller
-                name="assignmentReason"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="지정 사유"
-                    placeholder="점검자 지정 사유를 입력하세요 (선택사항)"
-                    multiline
-                    rows={2}
-                    fullWidth
-                    error={!!errors.assignmentReason}
-                    helperText={errors.assignmentReason?.message}
-                    className={styles.formField}
-                  />
-                )}
-              />
-            </div>
-            <div className={styles.formRow}>
-              <Controller
-                name="estimatedDate"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="예상 점검일"
-                    placeholder="YYYY-MM-DD"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    error={!!errors.estimatedDate}
-                    helperText={errors.estimatedDate?.message}
-                    className={styles.formField}
-                  />
-                )}
-              />
-            </div>
-          </form>
-        </Box>
-
-        {/* 선택된 점검자 정보 표시 */}
-        {selectionState.selectedInspector && (
-          <Box className={styles.selectedInspectorInfo}>
-            <Typography variant="h6" className={styles.sectionTitle}>
-              선택된 점검자
+          {/* 점검자 목록 그리드 */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
+              점검자 목록 ({filteredInspectors.length}건)
             </Typography>
-            <Box className={styles.inspectorCard}>
-              <Typography variant="body1">
-                <strong>{selectionState.selectedInspector.name}</strong>
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {selectionState.selectedInspector.department} · {selectionState.selectedInspector.position}
-              </Typography>
-              <Typography variant="body2" color="primary">
-                전문영역: {selectionState.selectedInspector.specialtyArea}
-              </Typography>
+            <Box sx={{ width: '100%', height: '350px' }}>
+              <BaseDataGrid
+                data={filteredInspectors}
+                columns={inspectorColumns}
+                loading={selectionState.loading}
+                rowSelection="single"
+                selectedRows={selectionState.selectedInspector ? [selectionState.selectedInspector] : []}
+                onSelectionChange={handleInspectorSelect}
+                onRowClick={handleRowClick}
+                onRowDoubleClick={handleRowDoubleClick}
+                height="350px"
+                emptyMessage="조회된 점검자가 없습니다."
+                theme="alpine"
+                pagination={false}
+              />
             </Box>
           </Box>
-        )}
-      </div>
-    </BaseModal>
+
+          {/* 선택된 점검자 정보 표시 */}
+          {selectionState.selectedInspector && (
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
+                선택된 점검자
+              </Typography>
+              <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {selectionState.selectedInspector.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  {selectionState.selectedInspector.department} · {selectionState.selectedInspector.position}
+                </Typography>
+                <Typography variant="body2" color="primary" sx={{ fontSize: '0.875rem' }}>
+                  전문영역: {selectionState.selectedInspector.specialtyArea}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 1, gap: 1 }}>
+        <Button variant="outlined" onClick={onClose} disabled={loading}>
+          취소
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit(onSubmit)}
+          disabled={!selectionState.selectedInspector || loading}
+        >
+          {loading ? '저장 중...' : '저장'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

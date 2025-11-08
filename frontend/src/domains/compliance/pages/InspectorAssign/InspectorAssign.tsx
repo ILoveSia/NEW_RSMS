@@ -2,29 +2,33 @@
 import toast from '@/shared/utils/toast';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ScheduleIcon from '@mui/icons-material/Schedule';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import React, { useCallback, useMemo, useState } from 'react';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import type { ColDef } from 'ag-grid-community';
+import React, { useCallback, useMemo, useState } from 'react';
 import styles from './InspectorAssign.module.scss';
 
 // Types
 import type {
-  InspectorAssignment,
+  AssignmentStatistics,
   Inspector,
   InspectorAssignFilters,
   InspectorAssignFormData,
+  InspectorAssignment,
   InspectorAssignModalState,
-  InspectorAssignPagination,
-  AssignmentStatistics
+  InspectorAssignPagination
 } from './types/inspectorAssign.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import { BaseSearchFilter, type FilterField, type FilterValues, type EndAdornment } from '@/shared/components/organisms/BaseSearchFilter';
-import { BranchLookupModal, type Branch } from '@/shared/components/organisms/BranchLookupModal';
+import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
+import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // Lazy-loaded components for performance optimization
 const InspectorSelectionModal = React.lazy(() =>
@@ -41,27 +45,6 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
   // 점검자지정 컬럼 정의
   const inspectorColumns = useMemo<ColDef<InspectorAssignment>[]>(() => [
     {
-      field: 'assignmentStatus',
-      headerName: '상태',
-      width: 100,
-      minWidth: 80,
-      sortable: true,
-      filter: 'agSetColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellRenderer: (params: any) => {
-        const value = params.value;
-        let statusText = '';
-        switch (value) {
-          case 'ASSIGNED': statusText = '✓ 지정완료'; break;
-          case 'UNASSIGNED': statusText = '○ 미지정'; break;
-          case 'COMPLETED': statusText = '■ 점검완료'; break;
-          default: statusText = value || '';
-        }
-        return statusText;
-      }
-    },
-    {
       field: 'sequence',
       headerName: '순번',
       width: 80,
@@ -70,12 +53,11 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       sortable: true,
       filter: 'agNumberColumnFilter',
       cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500' }
+      headerClass: 'ag-header-center'
     },
     {
-      field: 'managementName',
-      headerName: '관리명칭명',
+      field: 'inspectionName',
+      headerName: '점검명',
       width: 200,
       minWidth: 150,
       sortable: true,
@@ -85,70 +67,55 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       cellRenderer: (params: any) => {
         const value = params.value;
         return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
-      },
-      cellStyle: { fontWeight: '500', color: '#1976d2' }
-    },
-    {
-      field: 'round',
-      headerName: '차시',
-      width: 100,
-      minWidth: 80,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500', color: '#ed6c02' }
-    },
-    {
-      field: 'internalExternal',
-      headerName: '내부/외부',
-      width: 120,
-      minWidth: 100,
-      sortable: true,
-      filter: 'agSetColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellRenderer: (params: any) => {
-        const value = params.value;
-        return value === 'INTERNAL' ? '내부' : '외부';
       }
     },
     {
-      field: 'category',
-      headerName: '구분',
-      width: 120,
-      minWidth: 100,
+      field: 'obligationInfo',
+      headerName: '관리의무',
+      width: 150,
+      minWidth: 120,
       sortable: true,
-      filter: 'agTextColumnFilter',
-      cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500', color: '#7b1fa2' }
-    },
-    {
-      field: 'restrictionInfo',
-      headerName: '내부/외부제한정보',
-      width: 180,
-      minWidth: 150,
-      sortable: false,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
       headerClass: 'ag-header-center',
       cellRenderer: (params: any) => {
         const value = params.value;
         return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
-      },
-      cellStyle: { color: '#666666', fontSize: '13px' }
+      }
     },
     {
-      field: 'modifier',
-      headerName: '수정자',
+      field: 'activityName',
+      headerName: '관리활동명',
+      width: 200,
+      minWidth: 150,
+      sortable: true,
+      filter: 'agTextColumnFilter',
+      cellClass: 'ag-cell-left',
+      headerClass: 'ag-header-center',
+      cellRenderer: (params: any) => {
+        const value = params.value;
+        return value && value.length > 25 ? `${value.substring(0, 25)}...` : (value || '');
+      }
+    },
+    {
+      field: 'activityFrequencyCd',
+      headerName: '관리활동수행주기',
       width: 150,
       minWidth: 120,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center',
-      cellStyle: { fontWeight: '500', color: '#1976d2' }
+      headerClass: 'ag-header-center'
+    },
+    {
+      field: 'orgCode',
+      headerName: '부점',
+      width: 120,
+      minWidth: 100,
+      sortable: true,
+      filter: 'agTextColumnFilter',
+      cellClass: 'ag-cell-center',
+      headerClass: 'ag-header-center'
     },
     {
       field: 'inspector',
@@ -186,12 +153,11 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
           return value.replace(/-/g, '.');
         }
         return value;
-      },
-      cellStyle: { fontFamily: 'monospace', color: '#424242', fontWeight: '500' }
+      }
     },
     {
-      field: 'endYn',
-      headerName: 'END YN',
+      field: 'assignmentStatus',
+      headerName: '상태',
       width: 100,
       minWidth: 80,
       sortable: true,
@@ -200,7 +166,14 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       headerClass: 'ag-header-center',
       cellRenderer: (params: any) => {
         const value = params.value;
-        return value === 'Y' ? '완료' : '진행중';
+        let statusText = '';
+        switch (value) {
+          case 'ASSIGNED': statusText = '✓ 지정완료'; break;
+          case 'UNASSIGNED': statusText = '미점검'; break;
+          case 'COMPLETED': statusText = '■ 점검완료'; break;
+          default: statusText = '미점검';
+        }
+        return statusText;
       }
     }
   ], []);
@@ -212,13 +185,12 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
 
   // 개별 로딩 상태
   const [loadingStates, setLoadingStates] = useState({
-    search: false,
-    excel: false,
-    save: false,
-    delete: false,
+    search: false
   });
 
   const [filters, setFilters] = useState<InspectorAssignFilters>({
+    ledgerOrderId: '',
+    inspectionName: '',
     periodId: '',
     assignmentStatus: '',
     boolCode: ''
@@ -238,32 +210,54 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     selectedInspector: null
   });
 
-  // 부점조회팝업 상태
-  const [branchLookupOpen, setBranchLookupOpen] = useState<boolean>(false);
+  // 조직조회팝업 상태
+  const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
   // Mock data for testing
   const mockAssignments: InspectorAssignment[] = useMemo(() => [
     {
       id: 'ASG_001',
       sequence: 1,
-      managementName: '영업 실적',
-      round: '1회차',
-      internalExternal: 'INTERNAL',
-      category: '교육수행내역',
-      restrictionInfo: '',
-      modifier: '0000000-관리자',
-      inspector: {
-        id: 'INSPECTOR_001',
-        name: '이신혁',
-        department: '기획팀',
-        position: '대리',
-        specialtyArea: '시스템',
-        type: 'INTERNAL',
-        isActive: true
-      },
-      inspectionDate: '초회',
-      endYn: 'N',
-      assignmentStatus: 'ASSIGNED',
+      inspectionName: '2025년 1분기 정기점검',
+      obligationInfo: '자금세탁방지 의무',
+      activityName: '자금세탁방지 시스템 운영',
+      activityFrequencyCd: '분기별',
+      orgCode: '경영전략부',
+      inspector: null,
+      inspectionDate: null,
+      assignmentStatus: 'UNASSIGNED',
+      createdAt: '2025-09-22',
+      updatedAt: '2025-09-22',
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    },
+    {
+      id: 'ASG_002',
+      sequence: 2,
+      inspectionName: '2025년 1분기 정기점검',
+      obligationInfo: '정보보호 관리 의무',
+      activityName: '개인정보 보호 점검',
+      activityFrequencyCd: '월별',
+      orgCode: '준법지원부',
+      inspector: null,
+      inspectionDate: null,
+      assignmentStatus: 'UNASSIGNED',
+      createdAt: '2025-09-22',
+      updatedAt: '2025-09-22',
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    },
+    {
+      id: 'ASG_003',
+      sequence: 3,
+      inspectionName: '2025년 상반기 특별점검',
+      obligationInfo: '리스크 관리 의무',
+      activityName: '신용리스크 평가',
+      activityFrequencyCd: '반기별',
+      orgCode: '리스크관리부',
+      inspector: null,
+      inspectionDate: null,
+      assignmentStatus: 'UNASSIGNED',
       createdAt: '2025-09-22',
       updatedAt: '2025-09-22',
       createdBy: 'admin',
@@ -282,7 +276,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     const total = assignments.length;
     const assigned = assignments.filter(a => a.assignmentStatus === 'ASSIGNED').length;
     const unassigned = assignments.filter(a => a.assignmentStatus === 'UNASSIGNED').length;
-    const completed = assignments.filter(a => a.endYn === 'Y').length;
+    const completed = assignments.filter(a => a.assignmentStatus === 'COMPLETED').length;
 
     return {
       total,
@@ -330,6 +324,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
+      inspectionName: '',
       periodId: '',
       assignmentStatus: '',
       boolCode: ''
@@ -338,27 +334,32 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
-  // 부점조회 팝업 핸들러
-  const handleBranchSearch = useCallback(() => {
-    setBranchLookupOpen(true);
+  // 원장차수 변경 핸들러
+  const handleLedgerOrderChange = useCallback((value: string | null) => {
+    setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }));
   }, []);
 
-  // 부점선택 완료 핸들러
-  const handleBranchSelect = useCallback((selected: Branch | Branch[]) => {
-    const selectedBranch = Array.isArray(selected) ? selected[0] : selected;
-    if (selectedBranch) {
+  // 조직조회 팝업 핸들러
+  const handleOrganizationSearch = useCallback(() => {
+    setOrganizationSearchOpen(true);
+  }, []);
+
+  // 조직선택 완료 핸들러
+  const handleOrganizationSelect = useCallback((selected: Organization | Organization[]) => {
+    const selectedOrg = Array.isArray(selected) ? selected[0] : selected;
+    if (selectedOrg) {
       setFilters(prev => ({
         ...prev,
-        boolCode: selectedBranch.branchCode
+        boolCode: selectedOrg.orgCode
       }));
-      setBranchLookupOpen(false);
-      toast.success(`${selectedBranch.branchName}(${selectedBranch.branchCode})이 선택되었습니다.`);
+      setOrganizationSearchOpen(false);
+      toast.success(`${selectedOrg.orgName}(${selectedOrg.orgCode})이 선택되었습니다.`);
     }
   }, []);
 
-  // 부점조회팝업 닫기 핸들러
-  const handleBranchLookupClose = useCallback(() => {
-    setBranchLookupOpen(false);
+  // 조직조회팝업 닫기 핸들러
+  const handleOrganizationSearchClose = useCallback(() => {
+    setOrganizationSearchOpen(false);
   }, []);
 
   const handleExcelDownload = useCallback(async () => {
@@ -462,12 +463,12 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
   }
 
   // Grid Event Handlers
-  const handleRowClick = useCallback((assignment: InspectorAssignment) => {
-    console.log('행 클릭:', assignment);
+  const handleRowClick = useCallback((_assignment: InspectorAssignment) => {
+    // 행 클릭 시 아무 동작 안함
   }, []);
 
-  const handleRowDoubleClick = useCallback((assignment: InspectorAssignment) => {
-    handleInspectorSelect(assignment);
+  const handleRowDoubleClick = useCallback((_assignment: InspectorAssignment) => {
+    // 행 더블클릭 시 아무 동작 안함
   }, []);
 
   const handleSelectionChange = useCallback((selected: InspectorAssignment[]) => {
@@ -494,7 +495,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
   }, []);
 
   const handleInspectorAssign = useCallback(async (
-    assignment: InspectorAssignment,
+    assignments: InspectorAssignment[],
     inspector: Inspector,
     _formData: InspectorAssignFormData
   ) => {
@@ -502,9 +503,10 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       // TODO: API 호출 구현
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // 로컬 상태 업데이트
+      // 로컬 상태 업데이트 - 선택된 모든 항목에 점검자 지정
+      const assignmentIds = assignments.map(a => a.id);
       setAssignments(prev => prev.map(item =>
-        item.id === assignment.id
+        assignmentIds.includes(item.id)
           ? {
               ...item,
               inspector,
@@ -514,7 +516,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
           : item
       ));
 
-      toast.success(`${inspector.name} 점검자가 지정되었습니다.`);
+      toast.success(`${assignments.length}건의 항목에 ${inspector.name} 점검자가 지정되었습니다.`);
+      setSelectedAssignments([]);  // 선택 초기화
       handleModalClose();
     } catch (error) {
       console.error('Assignment error:', error);
@@ -525,26 +528,25 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'periodId',
-      type: 'select',
-      label: '점검명',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'PERIOD_001', label: '2026년1차년 이행점검 | 2026.07.31~2026.08.31' },
-        { value: 'PERIOD_002', label: '2026년2차년 이행점검 | 2026.12.01~2026.12.31' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={handleLedgerOrderChange}
+          label="책무이행차수"
+          placeholder="전체"
+        />
+      )
     },
     {
-      key: 'assignmentStatus',
-      type: 'select',
-      label: '점검자 지정상태',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'ASSIGNED', label: '지정완료' },
-        { value: 'UNASSIGNED', label: '미지정' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      key: 'inspectionName',
+      type: 'text',
+      label: '점검명',
+      placeholder: '점검명을 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
       key: 'boolCode',
@@ -555,45 +557,39 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       endAdornment: {
         type: 'button',
         icon: 'Search',
-        onClick: handleBranchSearch,
+        onClick: handleOrganizationSearch,
         tooltip: '부점조회'
       }
     }
-  ], [handleBranchSearch]);
+  ], [filters.ledgerOrderId, handleLedgerOrderChange, handleOrganizationSearch]);
+
+  // 점검자지정 버튼 핸들러
+  const handleAssignInspector = useCallback(() => {
+    if (selectedAssignments.length === 0) {
+      toast.warning('점검자를 지정할 항목을 선택해주세요.');
+      return;
+    }
+
+    // 사원조회 모달 열기
+    setModalState(prev => ({
+      ...prev,
+      inspectorSelectModal: true,
+      selectedAssignment: null
+    }));
+  }, [selectedAssignments.length]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
     {
-      key: 'excel',
-      type: 'excel',
-      onClick: handleExcelDownload,
-      disabled: loadingStates.excel,
-      loading: loadingStates.excel
-    },
-    {
-      key: 'add',
-      type: 'add',
-      onClick: handleAddAssignment
-    },
-    {
-      key: 'delete',
-      type: 'delete',
-      onClick: handleDeleteAssignments,
-      disabled: selectedAssignments.length === 0 || loadingStates.delete,
-      loading: loadingStates.delete,
-      confirmationRequired: true
-    },
-    {
-      key: 'save',
-      label: '저장',
+      key: 'assign',
+      label: '점검자지정',
       variant: 'contained',
       color: 'primary',
-      startIcon: 'Save',
-      loading: loadingStates.save,
+      startIcon: 'PersonAdd',
       disabled: selectedAssignments.length === 0,
-      onClick: handleSave
+      onClick: handleAssignInspector
     }
-  ], [handleExcelDownload, handleAddAssignment, handleDeleteAssignments, handleSave, selectedAssignments.length, loadingStates]);
+  ], [handleAssignInspector, selectedAssignments.length]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -734,7 +730,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
             onClear={handleClearFilters}
             loading={loading}
             searchLoading={loadingStates.search}
-            showClearButton={false}
+            showClearButton={true}
           />
 
           {/* 💎 공통 액션 바 */}
@@ -773,17 +769,18 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
           <InspectorSelectionModal
             open={modalState.inspectorSelectModal}
             assignment={modalState.selectedAssignment}
+            assignments={selectedAssignments}
             onClose={handleModalClose}
             onSelect={handleInspectorAssign}
             loading={false}
           />
         </React.Suspense>
 
-        {/* 부점조회 팝업 */}
-        <BranchLookupModal
-          open={branchLookupOpen}
-          onClose={handleBranchLookupClose}
-          onSelect={handleBranchSelect}
+        {/* 조직조회 팝업 */}
+        <OrganizationSearchModal
+          open={organizationSearchOpen}
+          onClose={handleOrganizationSearchClose}
+          onSelect={handleOrganizationSelect}
           title="부점 조회"
           multiple={false}
         />

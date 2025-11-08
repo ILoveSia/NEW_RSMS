@@ -7,20 +7,16 @@
 export interface InspectionExecution {
   id: string;
   sequenceNumber: number;                    // 순번
+  inspectionName: string;                    // 점검명
+  obligationInfo: string;                    // 관리의무
   managementActivityName: string;            // 관리활동명
-  managementActivitySession: string;         // 관리활동차시
-  managementActivityDetail: string;          // 관리활동상세
-  internalExternal: string;                  // 내부/외제
-  classification: string;                    // 구분
-  internalExternalLimitInfo?: string;        // 내부/외제제한정보
-  performer: string;                         // 수행자
-  performanceTarget?: string;                // 수행대상
-  performanceResult?: string;                // 수행결과
+  activityFrequencyCd: string;               // 관리활동수행주기
+  orgCode: string;                           // 부점
+  inspectionMethod: string;                  // 이행점검방법
   inspector: string;                         // 점검자
-  inspectionTarget?: string;                 // 점검대상
-  firstInspectionResult?: string;            // 1차 점검결과
-  secondInspectionResult?: string;           // 2차 점검결과
-  inspectionStatus: InspectionStatus;        // 점검 상태
+  inspectionResult?: string;                 // 점검결과
+  inspectionDetail?: string;                 // 점검세부내용
+  inspectionStatus: InspectionStatus;        // 상태
   inspectionPeriodId: string;                // 점검 기간 ID
   createdAt: string;
   updatedAt: string;
@@ -60,9 +56,9 @@ export interface InspectionPeriod {
 
 // 검색 필터 타입
 export interface ExecutionFilters {
-  inspectionPeriodId: string;                // 점검명
-  performanceTarget: PerformanceTargetFilter; // 이행점검 수행대상
-  branchCode: string;                        // 부점코드
+  ledgerOrderId?: string;                    // 책무이행차수
+  inspectionPeriodId?: string;               // 점검명
+  branchCode?: string;                       // 부점코드
 }
 
 // 점검 의견 타입

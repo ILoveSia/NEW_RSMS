@@ -314,3 +314,285 @@
 2025-11-08 20:18:15.337 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
 2025-11-08 20:18:15.337 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
 2025-11-08 20:18:15.340 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 20:23:14.510 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:25:57.567 INFO  [http-nio-8090-exec-3] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:25:57.567 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:25:57.580 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 20:28:14.497 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:33:18.637 INFO  [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-08 20:33:18.638 INFO  [http-nio-8090-exec-8] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-08 20:33:18.644 DEBUG [http-nio-8090-exec-8] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-08 20:33:18.656 DEBUG [http-nio-8090-exec-8] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-08 20:33:19.070 INFO  [http-nio-8090-exec-8] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-08 20:33:19.081 INFO  [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=fc491a88-1dbe-4100-a01f-87f12d48ea7d
+2025-11-08 20:33:19.133 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 20:33:19.133 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 20:33:19.134 INFO  [http-nio-8090-exec-1] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-08 20:33:19.135 DEBUG [http-nio-8090-exec-1] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-08 20:33:19.149 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 20:33:19.149 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 20:33:19.156 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 20:33:19.156 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 20:33:28.183 INFO  [http-nio-8090-exec-3] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:33:28.183 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:33:28.185 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 20:38:19.851 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:39:21.263 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:39:21.263 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:39:21.272 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 20:43:19.276 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:48:19.272 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:53:19.854 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 20:56:25.597 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 20:56:25.598 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 20:56:25.602 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 20:56:25.611 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 20:56:25.611 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 20:56:25.637 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 20:56:25.639 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 20:56:25.640 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 20:56:25.644 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 20:56:25.644 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 20:56:26.849 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:56:26.850 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:56:26.854 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 20:59:07.777 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 20:59:07.779 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 20:59:07.786 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 20:59:07.787 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 20:59:07.808 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 20:59:07.830 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 20:59:07.864 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 20:59:07.865 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 20:59:07.884 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 20:59:07.885 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 20:59:08.785 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:59:08.785 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 20:59:08.789 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:01:58.081 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:01:58.082 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:01:58.086 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:01:58.093 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:01:58.098 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:01:58.151 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:01:58.158 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:01:58.153 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:01:58.173 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:01:58.174 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:01:59.215 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:01:59.216 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:01:59.222 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:03:01.392 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:03:01.393 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:03:01.395 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:03:01.402 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:03:01.402 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:03:01.433 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:03:01.439 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:03:01.439 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:03:01.445 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:03:01.446 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:03:02.270 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:03:02.270 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:03:02.273 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:09:11.688 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-08 21:09:11.689 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-08 21:09:11.694 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-08 21:09:11.708 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-08 21:09:12.092 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-08 21:09:12.114 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=92bfc68f-b22b-40e7-96eb-4d38645832bf
+2025-11-08 21:09:12.175 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 21:09:12.176 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 21:09:12.177 INFO  [http-nio-8090-exec-7] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-08 21:09:12.178 DEBUG [http-nio-8090-exec-7] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-08 21:09:12.178 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:09:12.193 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:09:12.199 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:09:12.200 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:09:17.114 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:09:17.115 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:09:17.119 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:14:12.488 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:19:12.850 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:22:28.211 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:22:28.213 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:22:28.214 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:22:28.232 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:22:28.233 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:22:28.266 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:22:28.271 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:22:28.272 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:22:28.280 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:22:28.280 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:22:29.633 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:22:29.634 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:22:29.638 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:27:28.062 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:32:28.062 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:37:28.890 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:38:01.672 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:38:01.672 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:38:01.678 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:42:14.985 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-08 21:42:14.987 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-08 21:42:14.994 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-08 21:42:15.013 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-08 21:42:15.570 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-08 21:42:15.597 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=f89cfe23-ee59-42c9-bc8d-d9be8afa59e0
+2025-11-08 21:42:15.681 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 21:42:15.683 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 21:42:15.688 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-08 21:42:15.689 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-08 21:42:15.692 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:42:15.714 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:42:15.722 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:42:15.723 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:42:20.722 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:42:20.723 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:42:20.727 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:45:18.064 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:45:18.064 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:45:18.066 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:45:18.072 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:45:18.076 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:45:18.077 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:45:18.078 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:45:18.078 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:45:18.092 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:45:18.092 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:45:20.430 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:45:20.431 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:45:20.440 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:46:01.578 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-08 21:46:01.578 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-08 21:46:01.608 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-08 21:46:01.609 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-08 21:46:01.767 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-08 21:46:01.767 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-08 21:46:08.324 INFO  [http-nio-8090-exec-10] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-08 21:46:08.325 INFO  [http-nio-8090-exec-10] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-08 21:46:08.339 INFO  [http-nio-8090-exec-10] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 2건
+2025-11-08 21:46:08.357 INFO  [http-nio-8090-exec-5] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-08 21:46:08.358 INFO  [http-nio-8090-exec-5] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-08 21:46:08.367 INFO  [http-nio-8090-exec-5] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 2건
+2025-11-08 21:46:15.197 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionController - GET /api/positions/search - keyword: null, hqCode: null, isActive: Y, ledgerOrderId: null
+2025-11-08 21:46:15.200 DEBUG [http-nio-8090-exec-6] c.r.d.p.service.PositionService - 직책 검색 - keyword: null, hqCode: null, isActive: Y, ledgerOrderId: null
+2025-11-08 21:46:19.959 INFO  [http-nio-8090-exec-2] c.r.i.a.employee.EmployeeController - 직원 검색 API 호출: com.rsms.domain.employee.dto.EmployeeSearchRequest@13da41c0
+2025-11-08 21:46:19.960 DEBUG [http-nio-8090-exec-2] c.r.d.e.service.EmployeeService - 직원 검색 시작: com.rsms.domain.employee.dto.EmployeeSearchRequest@13da41c0
+2025-11-08 21:46:20.077 DEBUG [http-nio-8090-exec-2] c.r.d.e.service.EmployeeService - 직원 검색 완료: 4 건
+2025-11-08 21:46:20.084 INFO  [http-nio-8090-exec-2] c.r.i.a.employee.EmployeeController - 직원 검색 완료: 4 건
+2025-11-08 21:50:14.517 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:50:14.518 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:50:14.520 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:50:14.524 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:50:14.525 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:50:14.558 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:50:14.558 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:50:14.559 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:50:14.569 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:50:14.569 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:50:17.345 INFO  [http-nio-8090-exec-7] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:50:17.346 DEBUG [http-nio-8090-exec-7] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:50:17.358 DEBUG [http-nio-8090-exec-7] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 21:55:14.371 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 21:57:21.519 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:57:21.568 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:57:21.569 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:57:21.649 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 21:57:21.710 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:57:21.716 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:57:21.850 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 21:57:21.861 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 21:57:21.876 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 21:57:21.877 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 21:57:23.337 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:57:23.339 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 21:57:23.346 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 22:03:49.076 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 22:03:49.081 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:03:49.082 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:03:49.087 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 22:03:49.138 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 22:06:04.124 INFO  [http-nio-8090-exec-7] c.r.d.o.c.OrganizationController - GET /api/organizations/search?keyword= - 조직 검색
+2025-11-08 22:06:04.125 DEBUG [http-nio-8090-exec-7] c.r.d.o.service.OrganizationService - 조직 검색 - searchKeyword: 
+2025-11-08 22:08:48.892 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:08:49.671 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:08:49.672 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:08:49.677 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 22:13:52.866 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-08 22:13:52.870 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-08 22:13:52.893 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-08 22:13:52.935 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-08 22:13:53.982 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-08 22:13:54.010 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=12cdb11d-0075-48fc-8ba1-a6a1f1893afe
+2025-11-08 22:13:54.145 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 22:13:54.146 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 22:13:54.167 INFO  [http-nio-8090-exec-6] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-08 22:13:54.170 DEBUG [http-nio-8090-exec-6] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-08 22:13:54.181 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 22:13:54.194 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 22:13:54.210 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 22:13:54.211 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 22:16:43.771 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:16:43.772 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:16:43.776 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 22:17:54.582 INFO  [http-nio-8090-exec-3] c.r.d.o.c.OrganizationController - GET /api/organizations/search?keyword= - 조직 검색
+2025-11-08 22:17:54.583 DEBUG [http-nio-8090-exec-3] c.r.d.o.service.OrganizationService - 조직 검색 - searchKeyword: 
+2025-11-08 22:18:54.536 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:21:53.047 INFO  [http-nio-8090-exec-10] c.r.d.o.c.OrganizationController - GET /api/organizations/search?keyword= - 조직 검색
+2025-11-08 22:21:53.048 DEBUG [http-nio-8090-exec-10] c.r.d.o.service.OrganizationService - 조직 검색 - searchKeyword: 
+2025-11-08 22:23:54.536 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:25:22.635 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 22:25:22.637 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 22:25:22.640 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 22:25:22.646 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 22:25:22.647 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 22:25:22.680 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 22:25:22.680 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 22:25:22.681 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 22:25:22.695 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 22:25:22.695 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 22:25:23.927 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:25:23.928 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:25:23.932 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 22:30:22.546 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:35:22.600 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:40:22.568 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 22:55:14.853 INFO  [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-08 22:55:14.855 INFO  [http-nio-8090-exec-7] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-08 22:55:14.863 DEBUG [http-nio-8090-exec-7] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-08 22:55:14.880 DEBUG [http-nio-8090-exec-7] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-08 22:55:15.208 INFO  [http-nio-8090-exec-7] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-08 22:55:15.218 INFO  [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=f36d25f7-d3da-474b-b064-3055e6b3b176
+2025-11-08 22:55:15.264 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 22:55:15.267 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-08 22:55:15.269 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 22:55:15.270 INFO  [http-nio-8090-exec-2] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-08 22:55:15.270 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 22:55:15.277 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 22:55:15.278 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 22:55:15.280 DEBUG [http-nio-8090-exec-2] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-08 22:55:17.453 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:55:17.453 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 22:55:17.456 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 23:00:15.393 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 23:00:36.953 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 23:00:36.954 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 23:00:36.956 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 23:00:36.958 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 23:00:36.958 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 23:00:36.982 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-08 23:00:36.983 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-08 23:00:36.989 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 31 개
+2025-11-08 23:00:36.989 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 7 개
+2025-11-08 23:00:36.992 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-08 23:00:37.891 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 23:00:37.891 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 23:00:37.894 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-08 23:05:37.861 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 23:10:37.855 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 23:15:37.864 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 23:20:37.794 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-08 23:20:43.010 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 23:20:43.012 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-08 23:20:43.018 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
