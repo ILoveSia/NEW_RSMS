@@ -1,26 +1,38 @@
+/**
+ * 이행점검 상세 모달 컴포넌트
+ * - 이행점검 대상의 관리활동 상세 정보 조회
+ * - 점검 수행 및 결과 작성
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  FormHelperText,
   Typography,
-  Box,
-  Divider,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Grid,
-  Paper
+  Grid
 } from '@mui/material';
-import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
-import { InspectionExecution, ManagementActivityDetail, InspectionPerformanceFormData, InspectionResult } from '../../types/implMonitoringStatus.types';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import { Button } from '@/shared/components/atoms/Button';
+import {
+  InspectionExecution,
+  ManagementActivityDetail,
+  InspectionInfo,
+  FinalInspectionInfo
+} from '../../types/implMonitoringStatus.types';
 import styles from './ImplMonitoringDetailModal.module.scss';
 
 interface ImplMonitoringDetailModalProps {
@@ -30,17 +42,34 @@ interface ImplMonitoringDetailModalProps {
   loading?: boolean;
 }
 
+/**
+ * 폼 데이터 타입
+ */
+interface FormData {
+  // 관리활동 정보
+  managementActivity: ManagementActivityDetail;
+  // 점검정보
+  inspectionInfo: InspectionInfo;
+  // 최종점검정보
+  finalInspectionInfo: FinalInspectionInfo;
+}
+
+/**
+ * 폼 검증 스키마
+ */
 const schema = yup.object({
-  managementActivityWritten: yup
-    .boolean()
-    .required('수행자의 관리활동 작성여부는 필수입니다'),
-  inspectionOpinion: yup
-    .string()
-    .required('점검 의견은 필수입니다')
-    .max(1000, '점검 의견은 1000자 이내로 입력해주세요'),
-  inspectionResult: yup
-    .string()
-    .required('점검 결과는 필수입니다')
+  inspectionInfo: yup.object({
+    inspectorId: yup.string(),
+    inspectionStatusCd: yup.string(),
+    inspectionResultContent: yup.string(),
+    inspectionDate: yup.string()
+  }),
+  finalInspectionInfo: yup.object({
+    finalInspectorId: yup.string(),
+    finalInspectionResultCd: yup.string(),
+    finalInspectionResultContent: yup.string(),
+    finalInspectionDate: yup.string()
+  })
 });
 
 const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
@@ -57,49 +86,52 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
     handleSubmit,
     reset,
     formState: { errors, isValid }
-  } = useForm<InspectionPerformanceFormData>({
+  } = useForm<FormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      managementActivityWritten: false,
-      inspectionOpinion: '',
-      inspectionResult: '',
-      attachments: []
+      inspectionInfo: {
+        inspectorId: '',
+        inspectionStatusCd: '01',
+        inspectionResultContent: '',
+        inspectionDate: ''
+      },
+      finalInspectionInfo: {
+        finalInspectorId: '',
+        finalInspectionResultCd: '01',
+        finalInspectionResultContent: '',
+        finalInspectionDate: ''
+      }
     }
   });
 
-  // 폼 초기화
+  /**
+   * 폼 초기화
+   */
   useEffect(() => {
     if (open && execution) {
-      // TODO: API 호출로 관리활동 상세 정보 로드
       loadManagementActivityDetail(execution.id);
-
-      reset({
-        managementActivityWritten: false,
-        inspectionOpinion: '',
-        inspectionResult: '',
-        attachments: []
-      });
     }
-  }, [open, execution, reset]);
+  }, [open, execution]);
 
-  // 관리활동 상세 정보 로드
+  /**
+   * 관리활동 상세 정보 로드
+   */
   const loadManagementActivityDetail = useCallback(async (executionId: string) => {
     try {
       // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 500)); // 시뮬레이션
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // 임시 데이터
       const mockActivityDetail: ManagementActivityDetail = {
-        activityCode: 'M000000001',
-        activityName: '역량 산업',
-        method1: '교육수행내과',
-        method2: '',
-        inspectionRelated: '이행점검 관련 정보',
-        internalExternalClassification: '근거1\n증빙자료1',
-        relatedRegulations: '관련 내규 정보',
-        keyGuide: '중점 가이드라인 내용',
-        keyPrinciple: '중점 원칙 내용'
+        responsibilityInfo: '고객정보보호 관리체계 구축',
+        responsibilityDetailInfo: '고객정보보호를 위한 관리체계 구축 및 운영',
+        obligationInfo: '자금세탁방지 의무',
+        activityTypeCd: '01',
+        activityName: '자금세탁방지 시스템 운영',
+        evidenceMaterial: '자금세탁방지 점검보고서, 시스템 운영 로그',
+        implCheckMethod: '문서검토 + 실사',
+        implCheckDetail: '자금세탁방지 시스템 운영 점검 및 관련 문서 검토'
       };
 
       setManagementActivity(mockActivityDetail);
@@ -108,355 +140,371 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
     }
   }, []);
 
-  // 폼 제출 처리
-  const onSubmit = useCallback(async (data: InspectionPerformanceFormData) => {
+  /**
+   * 폼 제출 처리
+   */
+  const onSubmit = useCallback(async (data: FormData) => {
     try {
       // TODO: 점검 수행 API 호출
       console.log('점검 수행 데이터:', data);
-
-      // 성공 후 모달 닫기
       onClose();
     } catch (error) {
       console.error('점검 수행 실패:', error);
     }
   }, [onClose]);
 
-  // BaseModal 액션 버튼 정의
-  const modalActions: ModalAction[] = [
-    {
-      key: 'cancel',
-      label: '닫기',
-      variant: 'outlined',
-      onClick: onClose,
-      disabled: loading
-    },
-    {
-      key: 'submit',
-      label: '저장',
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleSubmit(onSubmit),
-      disabled: !isValid || loading,
-      loading: loading
-    }
-  ];
-
-  if (!execution) {
+  if (!execution || !managementActivity) {
     return null;
   }
 
   return (
-    <BaseModal
+    <Dialog
       open={open}
       onClose={onClose}
-      title="이행점검 대상 상세"
-      size="xl"
-      actions={modalActions}
-      loading={loading}
-      className={styles.modal}
-      contentClassName={styles.modalContent}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 1,
+          maxHeight: '90vh',
+          width: '85%'
+        }
+      }}
     >
-      <div className={styles.container}>
-        <Grid container spacing={2}>
-          {/* 좌측: 관리활동 패널 */}
-          <Grid item xs={12} md={1}>
-            <div className={styles.leftPanel}>
-              <div className={styles.leftPanelHeader}>
-                <Typography className={styles.leftPanelTitle}>
-                  관리활동
-                </Typography>
-              </div>
-            </div>
-          </Grid>
+      <DialogTitle
+        sx={{
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
+        }}
+      >
+        이행점검 대상 상세
+      </DialogTitle>
 
-          {/* 중앙: 입력 필드들 */}
-          <Grid item xs={12} md={8}>
-            <div className={styles.centerPanel}>
-              {/* 관리위원수 수지 상세 */}
-              <div className={styles.headerSection}>
-                <Typography className={styles.headerLabel}>
-                  의 관리위원수 수지 상세
+      <DialogContent dividers sx={{ p: 3 }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Box className={styles.container}>
+          <Grid container spacing={3}>
+            {/* 왼쪽: 관리활동 영역 */}
+            <Grid item xs={12} md={6}>
+              <div className={styles.leftPanel}>
+                <Typography className={styles.sectionTitle}>
+                  관리활동 영역
                 </Typography>
-              </div>
 
-              {/* 활동코드 */}
-              <div className={styles.fieldRow}>
-                <Typography className={styles.fieldLabel}>
-                  활동코드 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  defaultValue="M000000001"
-                  className={styles.inputField}
-                />
-              </div>
+                {/* 책무명 + 책무세부내용 */}
+                <div className={styles.doubleFieldRow}>
+                  <div className={styles.halfField}>
+                    <Typography className={styles.fieldLabel}>책무명</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={managementActivity.responsibilityInfo}
+                      InputProps={{ readOnly: true }}
+                      className={styles.readOnlyField}
+                    />
+                  </div>
+                  <div className={styles.halfField}>
+                    <Typography className={styles.fieldLabel}>책무세부내용</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={managementActivity.responsibilityDetailInfo}
+                      InputProps={{ readOnly: true }}
+                      className={styles.readOnlyField}
+                    />
+                  </div>
+                </div>
 
-              {/* 방법1 */}
-              <div className={styles.fieldRow}>
-                <Typography className={styles.fieldLabel}>
-                  방법1 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  defaultValue="교육수행내과"
-                  className={styles.inputField}
-                />
-              </div>
-
-              {/* 관리활동명 */}
-              <div className={styles.fieldRow}>
-                <Typography className={styles.fieldLabel}>
-                  관리활동명 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  defaultValue="역량 산업"
-                  className={styles.inputField}
-                />
-              </div>
-
-              {/* 방법1 텍스트에리어 */}
-              <div className={styles.textAreaRow}>
-                <Typography className={styles.fieldLabel}>
-                  방법1
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={4}
-                  size="small"
-                  className={styles.textAreaField}
-                />
-              </div>
-
-              {/* 이행점검관련 */}
-              <div className={styles.fieldRow}>
-                <Typography className={styles.fieldLabel}>
-                  이행점검관련 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  className={styles.inputField}
-                />
-              </div>
-
-              {/* 내부통제장치 구분 + 관련 내규 */}
-              <div className={styles.doubleFieldRow}>
-                <div className={styles.halfField}>
-                  <Typography className={styles.fieldLabel}>
-                    내부통제장치 구분 •
-                  </Typography>
+                {/* 관리의무 */}
+                <div className={styles.fieldRow}>
+                  <Typography className={styles.fieldLabel}>관리의무</Typography>
                   <TextField
-                    variant="outlined"
+                    fullWidth
                     size="small"
-                    className={styles.inputField}
+                    variant="outlined"
+                    value={managementActivity.obligationInfo}
+                    InputProps={{ readOnly: true }}
+                    className={styles.readOnlyField}
                   />
                 </div>
-                <div className={styles.halfField}>
-                  <Typography className={styles.fieldLabel}>
-                    관련 내규 •
-                  </Typography>
+
+                {/* 관리활동구분코드 + 관리활동명 */}
+                <div className={styles.doubleFieldRow}>
+                  <div className={styles.halfField}>
+                    <Typography className={styles.fieldLabel}>관리활동구분코드</Typography>
+                    <FormControl fullWidth size="small">
+                      <Select
+                        value={managementActivity.activityTypeCd}
+                        disabled
+                      >
+                        <MenuItem value="01">고유</MenuItem>
+                        <MenuItem value="02">공통</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div className={styles.halfField}>
+                    <Typography className={styles.fieldLabel}>관리활동명</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={managementActivity.activityName}
+                      InputProps={{ readOnly: true }}
+                      className={styles.readOnlyField}
+                    />
+                  </div>
+                </div>
+
+                {/* 관리활동증빙자료 */}
+                <div className={styles.fieldRow}>
+                  <Typography className={styles.fieldLabel}>관리활동증빙자료</Typography>
                   <TextField
-                    variant="outlined"
+                    fullWidth
                     size="small"
-                    className={styles.inputField}
+                    variant="outlined"
+                    value={managementActivity.evidenceMaterial}
+                    InputProps={{ readOnly: true }}
+                    className={styles.readOnlyField}
                   />
                 </div>
-              </div>
 
-              {/* 관련 내규 텍스트에리어 */}
-              <div className={styles.textAreaRow}>
-                <Typography className={styles.fieldLabel}>
-                  관련 내규 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  size="small"
-                  defaultValue="근거1\n증빙자료1"
-                  className={styles.textAreaField}
-                />
-              </div>
+                {/* 이행점검방법 */}
+                <div className={styles.fieldRow}>
+                  <Typography className={styles.fieldLabel}>이행점검방법</Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    size="small"
+                    variant="outlined"
+                    value={managementActivity.implCheckMethod}
+                    InputProps={{ readOnly: true }}
+                    className={styles.readOnlyField}
+                  />
+                </div>
 
-              {/* 증빙 가이드 */}
-              <div className={styles.textAreaRow}>
-                <Typography className={styles.fieldLabel}>
-                  증빙 가이드 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  size="small"
-                  defaultValue="고객수행내과"
-                  className={styles.textAreaField}
-                />
-              </div>
+                {/* 이행점검세부내용 */}
+                <div className={styles.fieldRow}>
+                  <Typography className={styles.fieldLabel}>이행점검세부내용</Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    size="small"
+                    variant="outlined"
+                    value={managementActivity.implCheckDetail}
+                    InputProps={{ readOnly: true }}
+                    className={styles.readOnlyField}
+                  />
+                </div>
 
-              {/* 증빙 원천 */}
-              <div className={styles.textAreaRow}>
-                <Typography className={styles.fieldLabel}>
-                  증빙 원천 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={2}
-                  size="small"
-                  className={styles.textAreaField}
-                />
-              </div>
-
-              {/* 증빙 자료 */}
-              <div className={styles.textAreaRow}>
-                <Typography className={styles.fieldLabel}>
-                  증빙 자료 •
-                </Typography>
-                <div className={styles.attachmentList}>
-                  <div className={styles.attachmentItem}>
-                    <span className={styles.attachmentIcon}>📎</span>
-                    <span className={styles.attachmentName}>증빙서류_001.pdf</span>
-                    <span className={styles.attachmentSize}>(2.5MB)</span>
-                  </div>
-                  <div className={styles.attachmentItem}>
-                    <span className={styles.attachmentIcon}>📎</span>
-                    <span className={styles.attachmentName}>관련자료_002.xlsx</span>
-                    <span className={styles.attachmentSize}>(1.2MB)</span>
-                  </div>
-                  <div className={styles.attachmentItem}>
-                    <span className={styles.attachmentIcon}>📎</span>
-                    <span className={styles.attachmentName}>첨부파일_003.docx</span>
-                    <span className={styles.attachmentSize}>(890KB)</span>
+                {/* 증빙 자료 */}
+                <div className={styles.fieldRow}>
+                  <Typography className={styles.fieldLabel}>증빙 자료</Typography>
+                  <div className={styles.attachmentPlaceholder}>
+                    <Typography variant="body2" color="textSecondary">
+                      첨부파일 기능은 추후 구현 예정입니다.
+                    </Typography>
                   </div>
                 </div>
               </div>
-            </div>
+            </Grid>
+
+            {/* 오른쪽: 점검정보 영역 */}
+            <Grid item xs={12} md={6}>
+              <div className={styles.rightPanel}>
+                {/* 1. 점검정보 */}
+                <div className={styles.sectionBox}>
+                  <Typography className={styles.sectionTitle}>
+                    1. 점검정보
+                  </Typography>
+
+                  {/* 점검자 */}
+                  <div className={styles.fieldRow}>
+                    <Typography className={styles.fieldLabel}>점검자</Typography>
+                    <Controller
+                      name="inspectionInfo.inspectorId"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          size="small"
+                          variant="outlined"
+                          placeholder="점검자를 입력하세요"
+                        />
+                      )}
+                    />
+                  </div>
+
+                  {/* 점검결과 + 점검일자 */}
+                  <div className={styles.doubleFieldRow}>
+                    <div className={styles.halfField}>
+                      <Typography className={styles.fieldLabel}>점검결과</Typography>
+                      <Controller
+                        name="inspectionInfo.inspectionStatusCd"
+                        control={control}
+                        render={({ field }) => (
+                          <FormControl fullWidth size="small">
+                            <Select {...field}>
+                              <MenuItem value="01">미점검</MenuItem>
+                              <MenuItem value="02">적정</MenuItem>
+                              <MenuItem value="03">부적정</MenuItem>
+                            </Select>
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                    <div className={styles.halfField}>
+                      <Typography className={styles.fieldLabel}>점검일자</Typography>
+                      <Controller
+                        name="inspectionInfo.inspectionDate"
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            value={field.value ? dayjs(field.value) : null}
+                            onChange={(newValue: Dayjs | null) => {
+                              field.onChange(newValue ? newValue.format('YYYY-MM-DD') : '');
+                            }}
+                            slotProps={{
+                              textField: {
+                                fullWidth: true,
+                                size: 'small',
+                                variant: 'outlined'
+                              }
+                            }}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 점검결과내용 */}
+                  <div className={styles.fieldRow}>
+                    <Typography className={styles.fieldLabel}>점검결과내용</Typography>
+                    <Controller
+                      name="inspectionInfo.inspectionResultContent"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={3}
+                          size="small"
+                          variant="outlined"
+                          placeholder="점검결과내용을 입력하세요"
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* 2. 최종점검정보 */}
+                <div className={styles.sectionBox}>
+                  <Typography className={styles.sectionTitle}>
+                    2. 최종점검정보
+                  </Typography>
+
+                  {/* 최종점검자 + 최종점검결과 + 최종점검일자 */}
+                  <div className={styles.doubleFieldRow}>
+                    <div className={styles.halfField}>
+                      <Typography className={styles.fieldLabel}>최종점검자</Typography>
+                      <Controller
+                        name="finalInspectionInfo.finalInspectorId"
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            placeholder="최종점검자를 입력하세요"
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className={styles.halfField}>
+                      <Typography className={styles.fieldLabel}>최종점검결과</Typography>
+                      <Controller
+                        name="finalInspectionInfo.finalInspectionResultCd"
+                        control={control}
+                        render={({ field }) => (
+                          <FormControl fullWidth size="small">
+                            <Select {...field}>
+                              <MenuItem value="01">승인</MenuItem>
+                              <MenuItem value="02">반려</MenuItem>
+                            </Select>
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 최종점검일자 */}
+                  <div className={styles.fieldRow}>
+                    <Typography className={styles.fieldLabel}>최종점검일자</Typography>
+                    <Controller
+                      name="finalInspectionInfo.finalInspectionDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(newValue: Dayjs | null) => {
+                            field.onChange(newValue ? newValue.format('YYYY-MM-DD') : '');
+                          }}
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              size: 'small',
+                              variant: 'outlined'
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  {/* 최종점검결과내용 */}
+                  <div className={styles.fieldRow}>
+                    <Typography className={styles.fieldLabel}>최종점검결과내용</Typography>
+                    <Controller
+                      name="finalInspectionInfo.finalInspectionResultContent"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={4}
+                          size="small"
+                          variant="outlined"
+                          placeholder="최종점검결과내용을 입력하세요"
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Grid>
           </Grid>
+          </Box>
+        </LocalizationProvider>
+      </DialogContent>
 
-          {/* 우측: 점검 수행 폼들 */}
-          <Grid item xs={12} md={3}>
-            <div className={styles.rightPanel}>
-              {/* 관리활동 본격 작성 */}
-              <div className={styles.rightSection}>
-                <div className={styles.rightSectionHeader}>
-                  <Typography className={styles.rightSectionTitle}>
-                    • 관리활동 본격 작성(검사활동결과) •
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue="00000000-라..."
-                    className={styles.rightHeaderInput}
-                  />
-                </div>
-
-                <div className={styles.rightFieldRow}>
-                  <Typography className={styles.questionText}>
-                    • 수행자의 관리활동 작성여부 수행되었습니까?
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue="작성"
-                    className={styles.rightFieldInput}
-                  />
-                </div>
-
-                <Typography className={styles.fieldLabel}>
-                  점검 의견 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  size="small"
-                  className={styles.rightTextArea}
-                />
-              </div>
-
-              {/* 이행점검 결과 작성 */}
-              <div className={styles.rightSection}>
-                <div className={styles.rightSectionHeader}>
-                  <Typography className={styles.rightSectionTitle}>
-                    • 이행점검 결과 작성(검사활동결과) •
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    className={styles.rightHeaderInput}
-                  />
-                </div>
-
-                <div className={styles.rightFieldRow}>
-                  <Typography className={styles.questionText}>
-                    • 수행자의 관리활동 작성여부 수행되었습니까?
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue="작성"
-                    className={styles.rightFieldInput}
-                  />
-                </div>
-
-                <Typography className={styles.fieldLabel}>
-                  점검 의견 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  size="small"
-                  className={styles.rightTextArea}
-                />
-              </div>
-
-              {/* 이행점검 결과 확인 */}
-              <div className={styles.rightSection}>
-                <div className={styles.rightSectionHeader}>
-                  <Typography className={styles.rightSectionTitle}>
-                    • 이행점검 결과 확인(검사활동결과) •
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    className={styles.rightHeaderInput}
-                  />
-                </div>
-
-                <div className={styles.rightFieldRow}>
-                  <Typography className={styles.questionText}>
-                    • 점검자의 이행점검 작성여부 수행되었습니까?
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue="작성"
-                    className={styles.rightFieldInput}
-                  />
-                </div>
-
-                <Typography className={styles.fieldLabel}>
-                  최종 의견 •
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  multiline
-                  rows={4}
-                  size="small"
-                  className={styles.rightTextArea}
-                />
-              </div>
-            </div>
-          </Grid>
-        </Grid>
-      </div>
-    </BaseModal>
+      <DialogActions sx={{ p: 1.5, gap: 1 }}>
+        <Button variant="outlined" onClick={onClose} disabled={loading}>
+          닫기
+        </Button>
+        <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+          {loading ? '저장 중...' : '저장'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

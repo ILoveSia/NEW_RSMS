@@ -256,7 +256,7 @@ const BaseDataGrid = <TData = any,>({
   const onGridReady = useCallback((params: GridReadyEvent<TData>) => {
     setGridApi(params.api);
 
-    // 컬럼 자동 크기 조정
+    // 컬럼 자동 크기 조정 - 초기 로드 시에만 한 번 실행
     params.api.sizeColumnsToFit();
   }, []);
 

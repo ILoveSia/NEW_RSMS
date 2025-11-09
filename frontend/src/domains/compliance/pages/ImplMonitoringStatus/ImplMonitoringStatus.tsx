@@ -14,8 +14,7 @@ import type {
   ExecutionModalState,
   ExecutionPagination,
   ExecutionStatistics,
-  InspectionExecution,
-  PerformanceTargetOption
+  InspectionExecution
 } from './types/implMonitoringStatus.types';
 
 // Shared Components
@@ -169,9 +168,13 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       return;
     }
 
-    // TODO: 점검결과 작성 모달 열기
+    // 점검결과 작성 모달 열기
     const selectedExecution = selectedExecutions[0];
-    toast.info(`${selectedExecution.inspectionName} 점검결과 작성 기능은 준비 중입니다.`);
+    setModalState(prev => ({
+      ...prev,
+      detailModal: true,
+      selectedExecution: selectedExecution
+    }));
   }, [selectedExecutions]);
 
   const handleCompleteExecution = useCallback(async () => {
@@ -484,7 +487,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '경영전략부',
         inspectionMethod: '문서검토 + 실사',
         inspector: '이신혁',
-        inspectionResult: '적합',
+        inspectionResult: '적정',
         inspectionDetail: '모든 항목 정상 확인',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -501,7 +504,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원부',
         inspectionMethod: '시스템 점검',
         inspector: '김철수',
-        inspectionResult: '보완필요',
+        inspectionResult: '부적정',
         inspectionDetail: '일부 항목 보완 필요',
         inspectionStatus: 'FIRST_INSPECTION',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -518,7 +521,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '리스크관리부',
         inspectionMethod: '데이터 분석',
         inspector: '',
-        inspectionResult: '',
+        inspectionResult: '미점검',
         inspectionDetail: '',
         inspectionStatus: 'NOT_STARTED',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -626,7 +629,17 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
           {/* 🎯 공통 데이터 그리드 */}
           <BaseDataGrid
             data={displayExecutions}
-            columns={executionColumns}
+            columns={executionColumns.map(col => {
+              if (col.field === 'managementActivityName') {
+                return {
+                  ...col,
+                  cellRendererParams: {
+                    onCellClicked: handleExecutionDetail
+                  }
+                };
+              }
+              return col;
+            })}
             loading={loading}
             theme="alpine"
             onRowClick={(data) => handleRowClick(data)}

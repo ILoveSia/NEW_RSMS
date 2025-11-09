@@ -75,15 +75,45 @@ export interface InspectionOpinion {
 
 // 관리활동 상세 정보 타입
 export interface ManagementActivityDetail {
-  activityCode: string;                      // 활동코드
-  activityName: string;                      // 관리활동명
-  method1: string;                           // 방법1
-  method2?: string;                          // 방법2
-  inspectionRelated: string;                 // 이행점검관련
-  internalExternalClassification: string;    // 내부/외제차시 구분
-  relatedRegulations: string;                // 관련 내규
-  keyGuide: string;                          // 중점 가이드
-  keyPrinciple: string;                      // 중점 원칙
+  // 책무 정보
+  responsibilityInfo: string;                // 책무명 (responsibilities.responsibility_info)
+  responsibilityDetailInfo: string;          // 책무세부내용 (responsibility_details.responsibility_detail_info)
+
+  // 관리의무 정보
+  obligationInfo: string;                    // 관리의무 (management_obligations.obligation_info)
+
+  // 관리활동 정보
+  activityTypeCd: string;                    // 관리활동구분코드 (dept_manager_manuals.activity_type_cd)
+  activityName: string;                      // 관리활동명 (dept_manager_manuals.activity_name)
+  evidenceMaterial: string;                  // 관리활동증빙자료 (dept_manager_manuals.evidence_material)
+  implCheckMethod: string;                   // 이행점검방법 (dept_manager_manuals.impl_check_method)
+  implCheckDetail: string;                   // 이행점검세부내용 (dept_manager_manuals.impl_check_detail)
+}
+
+// 점검정보 타입
+export interface InspectionInfo {
+  inspectorId: string;                       // 점검자 (impl_inspection_items.inspector_id)
+  inspectionStatusCd: string;                // 점검결과 (impl_inspection_items.inspection_status_cd) (01:미점검, 02:적정, 03:부적정)
+  inspectionResultContent: string;           // 점검결과내용 (impl_inspection_items.inspection_result_content)
+  inspectionDate: string;                    // 점검일자 (impl_inspection_items.inspection_date)
+}
+
+// 개선이행정보 타입
+export interface ImprovementInfo {
+  improvementManagerId: string;              // 개선담당자 (impl_inspection_items.improvement_manager_id)
+  improvementStatusCd: string;               // 개선이행상태 (impl_inspection_items.improvement_status_cd) (01:개선미이행, 02:진행중, 03:완료)
+  improvementPlanContent: string;            // 개선계획내용 (impl_inspection_items.improvement_plan_content)
+  improvementPlanDate: string;               // 개선계획수립일자 (impl_inspection_items.improvement_plan_date)
+  improvementDetailContent: string;          // 개선이행세부내용 (impl_inspection_items.improvement_detail_content)
+  improvementCompletedDate: string;          // 개선완료일자 (impl_inspection_items.improvement_completed_date)
+}
+
+// 최종점검정보 타입
+export interface FinalInspectionInfo {
+  finalInspectorId: string;                  // 최종점검자 (impl_inspection_items.final_inspector_id)
+  finalInspectionResultCd: string;           // 최종점검결과 (impl_inspection_items.final_inspection_result_cd) (01:승인, 02:반려)
+  finalInspectionResultContent: string;      // 최종점검결과내용 (impl_inspection_items.final_inspection_result_content)
+  finalInspectionDate: string;               // 최종점검일자 (impl_inspection_items.final_inspection_date)
 }
 
 // 점검 수행 폼 데이터 타입

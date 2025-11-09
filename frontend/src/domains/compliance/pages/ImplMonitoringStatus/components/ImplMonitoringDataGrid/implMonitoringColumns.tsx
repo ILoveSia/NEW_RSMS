@@ -3,8 +3,39 @@
  * InspectorAssign와 동일한 스타일 적용
  */
 
+import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { InspectionExecution } from '../../types/implMonitoringStatus.types';
+
+// 관리활동명 링크 렌더러 (상세조회용)
+const ManagementActivityNameRenderer = ({ value, data, onCellClicked }: any) => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (onCellClicked) {
+      onCellClicked(data);
+    }
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={handleClick}
+      style={{
+        color: '#1976d2',
+        textDecoration: 'none',
+        fontWeight: '500'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {value && value.length > 25 ? `${value.substring(0, 25)}...` : (value || '')}
+    </a>
+  );
+};
 
 // AG-Grid 컬럼 정의
 export const executionColumns: ColDef<InspectionExecution>[] = [
@@ -56,10 +87,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      return value && value.length > 25 ? `${value.substring(0, 25)}...` : (value || '');
-    }
+    cellRenderer: ManagementActivityNameRenderer,
+    cellStyle: { fontWeight: '500' }
   },
   {
     field: 'activityFrequencyCd',
@@ -116,14 +145,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
           </span>
         );
       }
-      return (
-        <span style={{
-          color: '#1976d2',
-          fontWeight: 500
-        }}>
-          {value}
-        </span>
-      );
+      return value;
     }
   },
   {
@@ -159,8 +181,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspectionDetail',
     headerName: '점검세부내용',
-    width: 200,
-    minWidth: 150,
+    flex: 1,
+    minWidth: 200,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -174,8 +196,9 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspectionStatus',
     headerName: '상태',
-    width: 100,
-    minWidth: 80,
+    width: 120,
+    minWidth: 100,
+    maxWidth: 150,
     sortable: true,
     filter: 'agSetColumnFilter',
     cellClass: 'ag-cell-center',

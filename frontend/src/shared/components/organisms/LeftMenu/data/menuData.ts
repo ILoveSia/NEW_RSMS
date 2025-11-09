@@ -55,36 +55,12 @@ export const MENU_DATA: MenuItem[] = [
         path: '/app/resps/responsibilitydocmgmt',
         permission: 'auth'
       },
-      // {
-      //   id: 'boardhistorymgmt',
-      //   title: '이사회이력관리',
-      //   path: '/app/resps/boardhistorymgmt',
-      //   permission: 'manager'
-      // },
-      {
-        id: 'officerinfomgmt',
-        title: '임원정보관리',
-        path: '/app/resps/officerinfomgmt',
-        permission: 'manager'
-      },
       {
         id: 'deptopmanualsmgmt',
         title: '부서장업무메뉴얼관리',
         path: '/app/resps/deptopmanualsmgmt',
         permission: 'manager'
-      },
-      {
-        id: 'ceomgmtdutysearch',
-        title: '직책총괄관리의무조회',
-        path: '/app/resps/ceomgmtdutysearch',
-        permission: 'executive'
       }
-      // {
-      //   id: 'rolehistory',
-      //   title: '직책/책무 이력',
-      //   path: '/app/resps/rolehistory',
-      //   permission: 'manager'
-      // }
     ]
   },
   {
@@ -111,18 +87,6 @@ export const MENU_DATA: MenuItem[] = [
         path: '/app/activity/manual-inquiry',
         permission: 'auth'
       }
-      // {
-      //   id: 'internal-control-register',
-      //   title: '내부통제장치등록',
-      //   path: '/app/activity/internal-control-register',
-      //   permission: 'manager'
-      // },
-      // {
-      //   id: 'internal-control-management',
-      //   title: '내부통제장치관리',
-      //   path: '/app/activity/internal-control-management',
-      //   permission: 'manager'
-      // }
     ]
   },
   {
@@ -145,7 +109,7 @@ export const MENU_DATA: MenuItem[] = [
       },
       {
         id: 'impl-monitoring-status',
-        title: '이행점검현황',
+        title: '이행점검수행',
         path: '/app/compliance/impl-monitoring-status',
         permission: 'manager'
       },
@@ -190,9 +154,9 @@ export const MENU_DATA: MenuItem[] = [
     permission: 'manager',
     children: [
       {
-        id: 'activity-compliance-improvement',
-        title: '관리활동/이행점검 개선이행',
-        path: '/app/improvement/activity-compliance',
+        id: 'impl-monitoring-improvement',
+        title: '이행점검개선',
+        path: '/app/compliance/impl-monitoring-improvement',
         permission: 'manager'
       },
       {

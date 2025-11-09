@@ -45,6 +45,7 @@ CREATE TABLE rsms.dept_manager_manuals (
   impl_check_frequency_cd VARCHAR(20),                 -- 이행점검주기 (FLFL_ISPC_FRCD)
   is_conditional_check CHAR(1) DEFAULT 'N',            -- 조건부점검항목여부 (Y/N)
   impl_check_method VARCHAR(500),                      -- 이행점검방법
+  impl_check_detail TEXT,                              -- 이행점검세부내용
   end_date DATE,                                       -- 종료일
 
   -- 상태 관리
@@ -147,6 +148,7 @@ COMMENT ON COLUMN rsms.dept_manager_manuals.related_basis IS '관련근거';
 COMMENT ON COLUMN rsms.dept_manager_manuals.impl_check_frequency_cd IS '이행점검주기 (FLFL_ISPC_FRCD)';
 COMMENT ON COLUMN rsms.dept_manager_manuals.is_conditional_check IS '조건부점검항목여부 (Y/N)';
 COMMENT ON COLUMN rsms.dept_manager_manuals.impl_check_method IS '이행점검방법';
+COMMENT ON COLUMN rsms.dept_manager_manuals.impl_check_detail IS '이행점검세부내용';
 COMMENT ON COLUMN rsms.dept_manager_manuals.end_date IS '종료일';
 
 -- 상태 관리 코멘트

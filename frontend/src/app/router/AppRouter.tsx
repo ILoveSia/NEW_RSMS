@@ -42,7 +42,7 @@ const InternalControlMgmt = React.lazy(() => import('@/domains/activities/pages/
 const ImplMonitoring = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoring/ImplMonitoring'));
 const InspectorAssign = React.lazy(() => import('@/domains/compliance/pages/InspectorAssign'));
 const ImplMonitoringStatus = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoringStatus'));
-const RejectionMgmt = React.lazy(() => import('@/domains/compliance/pages/RejectionMgmt'));
+const ImplMonitoringImprovement = React.lazy(() => import('@/domains/compliance/pages/ImplMonitoringImprovement'));
 
 // Reports (보고서) 도메인
 const ExecutiveReport = React.lazy(() => import('@/domains/reports/pages/ExecutiveReport'));
@@ -856,24 +856,24 @@ const AppRouter: React.FC = () => {
                     />
                   } />
 
-                  {/* 반려관리 */}
-                  <Route path="rejection-management" element={<RejectionMgmt />} />
-                  <Route path="rejection-management/:id" element={
+                  {/* 이행점검개선 */}
+                  <Route path="impl-monitoring-improvement" element={<ImplMonitoringImprovement />} />
+                  <Route path="impl-monitoring-improvement/:id" element={
                     <TemporaryPage
-                      title="반려항목 상세"
-                      description="반려항목의 상세 정보와 처리 이력을 확인하는 페이지입니다."
+                      title="이행점검개선 상세"
+                      description="이행점검개선 항목의 상세 정보와 처리 이력을 확인하는 페이지입니다."
                     />
                   } />
-                  <Route path="rejection-management/create" element={
+                  <Route path="impl-monitoring-improvement/create" element={
                     <TemporaryPage
-                      title="반려항목 등록"
-                      description="새로운 반려항목을 등록하는 페이지입니다."
+                      title="이행점검개선 등록"
+                      description="새로운 이행점검개선 항목을 등록하는 페이지입니다."
                     />
                   } />
-                  <Route path="rejection-management/:id/edit" element={
+                  <Route path="impl-monitoring-improvement/:id/edit" element={
                     <TemporaryPage
-                      title="반려항목 편집"
-                      description="기존 반려항목 정보를 수정하는 페이지입니다."
+                      title="이행점검개선 편집"
+                      description="기존 이행점검개선 정보를 수정하는 페이지입니다."
                     />
                   } />
 
