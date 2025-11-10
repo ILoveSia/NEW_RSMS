@@ -6,35 +6,9 @@
 import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { Chip } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { BoardHistory } from '../../types/boardHistory.types';
 
-// 책무구조도 생성 여부 렌더러
-const ResponsibilityChartRenderer = ({ value }: { value: boolean }) => {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-      {value ? (
-        <Chip
-          icon={<CheckCircleIcon />}
-          label="생성됨"
-          color="success"
-          size="small"
-          variant="outlined"
-        />
-      ) : (
-        <Chip
-          icon={<CancelIcon />}
-          label="미생성"
-          color="default"
-          size="small"
-          variant="outlined"
-        />
-      )}
-    </div>
-  );
-};
 
 // 첨부파일 개수 렌더러
 const FileCountRenderer = ({ data }: { data: BoardHistory }) => {
@@ -110,7 +84,7 @@ const dateFormatter = (params: any) => {
   }
 };
 
-// 이사회 회차 포맷터
+// 회차 포맷터
 const roundFormatter = (params: any) => {
   if (!params.value) return '-';
   return `제${params.value}차`;
@@ -126,6 +100,19 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
     sortable: true,
     filter: false,
     resizable: false
+  },
+  {
+    field: 'ledgerOrderId',
+    headerName: '책무이행차수',
+    width: 140,
+    cellStyle: { textAlign: 'center', fontWeight: '500' },
+    headerClass: 'ag-header-cell-center',
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    filterParams: {
+      filterOptions: ['contains', 'equals'],
+      suppressAndOrCondition: true
+    }
   },
   {
     field: 'round',
@@ -185,46 +172,6 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
     sortable: true,
     filter: 'agDateColumnFilter',
     valueFormatter: dateFormatter
-  },
-  {
-    field: 'authorPosition',
-    headerName: '작성자 직책',
-    width: 120,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    filterParams: {
-      filterOptions: ['contains', 'equals'],
-      suppressAndOrCondition: true
-    }
-  },
-  {
-    field: 'authorName',
-    headerName: '작성자',
-    width: 100,
-    cellStyle: { textAlign: 'center', fontWeight: '500' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    filterParams: {
-      filterOptions: ['contains', 'equals'],
-      suppressAndOrCondition: true
-    }
-  },
-  {
-    field: 'hasResponsibilityChart',
-    headerName: '책무구조도',
-    width: 120,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    filter: 'agSetColumnFilter',
-    filterParams: {
-      values: [true, false],
-      valueFormatter: (params: any) => params.value ? '생성됨' : '미생성'
-    },
-    cellRenderer: ResponsibilityChartRenderer
   },
   {
     field: 'fileCount',

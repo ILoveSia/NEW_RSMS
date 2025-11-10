@@ -44,6 +44,12 @@ export const MENU_DATA: MenuItem[] = [
         permission: 'auth'
       },
       {
+        id: 'boardhistorymgmt',
+        title: '이사회이력관리',
+        path: '/app/resps/boardhistorymgmt',
+        permission: 'auth'
+      },
+      {
         id: 'responsibilitymgmt',
         title: '책무관리',
         path: '/app/resps/responsibilitymgmt',

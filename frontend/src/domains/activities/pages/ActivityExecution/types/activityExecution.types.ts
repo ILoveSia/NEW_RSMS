@@ -61,17 +61,16 @@ export interface ActivityExecutionFormData {
   controlGuide: string;
   controlIssues: string;
   controlIndicators: string;
-  checklist: string;
   legalReferences: string;
 }
 
 // 필터 타입
 export interface ActivityExecutionFilters {
+  ledgerOrderId: string;             // 책무이행차수
   targetPeriodStart: string;         // 관리활동 대상기간 시작
   targetPeriodEnd: string;           // 관리활동 대상기간 종료
   performanceStatus: string;         // 관리활동 수행여부 (전체/수행완료/미수행)
   departmentCode: string;            // 부서코드
-  searchKeyword: string;             // 검색어 (관리활동명, 수행자명 등)
 }
 
 // 페이지네이션 타입

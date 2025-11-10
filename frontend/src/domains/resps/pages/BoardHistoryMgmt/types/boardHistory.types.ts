@@ -8,12 +8,11 @@
 export interface BoardHistory {
   id: string;
   seq: number;
-  round: number; // 이사회 회차
+  ledgerOrderId: string; // 책무이행차수
+  round: number; // 회차
   resolutionName: string; // 이사회 결의명
   resolutionDate: string; // 이사회 결의일자 (YYYY-MM-DD)
   uploadDate: string; // 업로드 일자 (YYYY-MM-DD)
-  authorPosition: string; // 작성자 직책
-  authorName: string; // 작성자
   summary?: string; // 요약정보
   content?: string; // 내용
   hasResponsibilityChart: boolean; // 책무구조도 생성 여부
@@ -28,20 +27,17 @@ export interface BoardHistory {
 
 // 이사회 이력 검색 필터
 export interface BoardHistoryFilters {
+  ledgerOrderId: string; // 책무이행차수
   resolutionName: string; // 이사회 결의명 검색
   resolutionDateFrom: string; // 이사회 결의일자 시작
   resolutionDateTo: string; // 이사회 결의일자 종료
-  authorName: string; // 작성자 검색
-  hasResponsibilityChart: string; // 책무구조도 생성여부 ('Y' | 'N' | '')
 }
 
 // 이사회 이력 폼 데이터
 export interface BoardHistoryFormData {
-  round: number; // 이사회 회차
+  ledgerOrderId: string; // 책무이행차수
   resolutionName: string; // 이사회 결의명
   resolutionDate: string; // 이사회 결의일자
-  authorPosition: string; // 작성자 직책
-  authorName: string; // 작성자
   summary?: string; // 요약정보
   content?: string; // 내용
   files: BoardHistoryFile[]; // 첨부파일 목록

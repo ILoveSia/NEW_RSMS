@@ -6,25 +6,25 @@ import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState, Suspense } from 'react';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './CeoReport.module.scss';
 
 // Types
 import type {
-  CeoReportFilters,
-  CeoSummaryStats,
-  CeoOverallDutyInspection,
   CeoComplianceOpinionStatus,
-  CeoReportModalState,
+  CeoDashboardStats,
+  CeoOverallDutyInspection,
+  CeoReportFilters,
   CeoReportLoadingStates,
-  CeoDashboardStats
+  CeoReportModalState,
+  CeoSummaryStats
 } from './types/ceoReport.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
-import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import { BaseSearchFilter, type FilterField } from '@/shared/components/organisms/BaseSearchFilter';
 
 // CeoReport specific components
 // Lazy-loaded components for performance optimization
@@ -453,15 +453,15 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
         <div className={styles.tableSection}>
           <h3 className={styles.sectionTitle}>
             <SecurityIcon className={styles.sectionIcon} />
-            2) 총괄 관리의무별 이행 부적정의견/개선의견 현황
+            2) 총괄 관리의무 이행 부적정미이행/개선이행 현황
           </h3>
           <div className={styles.simpleTable}>
             <div className={styles.simpleTableHeader}>
               <div className={styles.simpleTableHeaderCell}>순번</div>
               <div className={styles.simpleTableHeaderCell}>책무</div>
-              <div className={styles.simpleTableHeaderCell}>작성</div>
+              <div className={styles.simpleTableHeaderCell}>직책</div>
               <div className={styles.simpleTableHeaderCell}>관리의무 수</div>
-              <div className={styles.simpleTableHeaderCell}>부작성</div>
+              <div className={styles.simpleTableHeaderCell}>부작정</div>
               <div className={styles.simpleTableHeaderCell}>미이행</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />완료</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />진행중</div>
@@ -487,15 +487,15 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
         <div className={styles.tableSection}>
           <h3 className={styles.sectionTitle}>
             <BusinessCenterIcon className={styles.sectionIcon} />
-            3) CEO 간주 관리의무 이행 현황
+            3) CEO 고유 관리의무 이행 현황
           </h3>
           <div className={styles.simpleTable}>
             <div className={styles.simpleTableHeader}>
               <div className={styles.simpleTableHeaderCell}>순번</div>
               <div className={styles.simpleTableHeaderCell}>관리의무</div>
-              <div className={styles.simpleTableHeaderCell}>작성</div>
+              <div className={styles.simpleTableHeaderCell}>직책</div>
               <div className={styles.simpleTableHeaderCell}>부서</div>
-              <div className={styles.simpleTableHeaderCell}>관리본부</div>
+              <div className={styles.simpleTableHeaderCell}>관리활동</div>
               <div className={styles.simpleTableHeaderCell}>점검결과</div>
               <div className={styles.simpleTableHeaderCell}>비고</div>
             </div>

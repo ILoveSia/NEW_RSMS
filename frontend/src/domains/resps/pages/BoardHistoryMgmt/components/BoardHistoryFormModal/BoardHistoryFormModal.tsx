@@ -4,38 +4,33 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Typography,
   Box,
   Divider,
   IconButton,
-  Chip,
-  LinearProgress
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Chip
 } from '@mui/material';
 import {
-  Add as AddIcon,
   Delete as DeleteIcon,
-  CloudUpload as UploadIcon,
-  Description as FileIcon,
-  AttachFile as AttachFileIcon,
-  AccountTree as ResponsibilityIcon
+  Download as DownloadIcon,
+  InsertDriveFile as FileDefaultIcon
 } from '@mui/icons-material';
-import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
-import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { Button } from '@/shared/components/atoms/Button';
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import {
   BoardHistory,
   BoardHistoryFormData,
   BoardHistoryFile,
-  FileUploadData,
   BOARD_HISTORY_CONSTANTS
 } from '../../types/boardHistory.types';
-import { fileListColumns } from '../BoardHistoryDataGrid/boardHistoryColumns';
-import styles from './BoardHistoryFormModal.module.scss';
 
 interface BoardHistoryFormModalProps {
   open: boolean;
@@ -48,11 +43,9 @@ interface BoardHistoryFormModalProps {
 }
 
 const schema = yup.object({
-  round: yup
-    .number()
-    .required('이사회 회차는 필수입니다')
-    .positive('이사회 회차는 양수여야 합니다')
-    .integer('이사회 회차는 정수여야 합니다'),
+  ledgerOrderId: yup
+    .string()
+    .required('책무이행차수는 필수입니다'),
   resolutionName: yup
     .string()
     .required('이사회 결의명은 필수입니다')
@@ -67,14 +60,6 @@ const schema = yup.object({
       today.setHours(23, 59, 59, 999); // 오늘까지 허용
       return selectedDate <= today;
     }),
-  authorPosition: yup
-    .string()
-    .required('작성자 직책은 필수입니다')
-    .max(50, '작성자 직책은 50자 이내로 입력해주세요'),
-  authorName: yup
-    .string()
-    .required('작성자는 필수입니다')
-    .max(50, '작성자는 50자 이내로 입력해주세요'),
   summary: yup
     .string()
     .max(BOARD_HISTORY_CONSTANTS.MAX_SUMMARY_LENGTH, `요약정보는 ${BOARD_HISTORY_CONSTANTS.MAX_SUMMARY_LENGTH}자 이내로 입력해주세요`),
@@ -93,8 +78,6 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
   loading = false
 }) => {
   const [files, setFiles] = useState<BoardHistoryFile[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const {
     control,
@@ -105,11 +88,9 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
     resolver: yupResolver(schema) as any,
     mode: 'onChange',
     defaultValues: {
-      round: 0,
+      ledgerOrderId: '',
       resolutionName: '',
       resolutionDate: '',
-      authorPosition: '',
-      authorName: '',
       summary: '',
       content: '',
       files: []
@@ -121,11 +102,9 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
     if (open) {
       if (mode === 'detail' && boardHistory) {
         reset({
-          round: boardHistory.round,
+          ledgerOrderId: boardHistory.ledgerOrderId || '',
           resolutionName: boardHistory.resolutionName,
           resolutionDate: boardHistory.resolutionDate,
-          authorPosition: boardHistory.authorPosition,
-          authorName: boardHistory.authorName,
           summary: boardHistory.summary || '',
           content: boardHistory.content || '',
           files: []
@@ -133,13 +112,10 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
         // 상세 모드에서 파일목록 로드 (실제로는 API 호출)
         loadFileList(boardHistory.id);
       } else {
-        const currentYear = new Date().getFullYear();
         reset({
-          round: 0,
+          ledgerOrderId: '',
           resolutionName: '',
           resolutionDate: '',
-          authorPosition: '관리자',
-          authorName: '관리자',
           summary: '',
           content: '',
           files: []
@@ -193,66 +169,6 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
     }
   }, []);
 
-  // 파일 업로드 핸들러
-  const handleFileUpload = useCallback(async (uploadFiles: File[], category: 'responsibility' | 'general') => {
-    if (files.length + uploadFiles.length > BOARD_HISTORY_CONSTANTS.MAX_FILES_PER_HISTORY) {
-      alert(`최대 ${BOARD_HISTORY_CONSTANTS.MAX_FILES_PER_HISTORY}개까지 업로드 가능합니다.`);
-      return;
-    }
-
-    // 파일 크기 검증
-    for (const file of uploadFiles) {
-      if (file.size > BOARD_HISTORY_CONSTANTS.MAX_FILE_SIZE) {
-        alert(`파일 크기는 ${BOARD_HISTORY_CONSTANTS.MAX_FILE_SIZE / (1024 * 1024)}MB 이하여야 합니다.`);
-        return;
-      }
-
-      if (!BOARD_HISTORY_CONSTANTS.ALLOWED_FILE_TYPES.includes(file.type)) {
-        alert(`지원되지 않는 파일 형식입니다: ${file.name}`);
-        return;
-      }
-    }
-
-    setUploading(true);
-    setUploadProgress(0);
-
-    try {
-      // TODO: 실제 파일 업로드 API 호출
-      // const uploadPromises = uploadFiles.map(file => boardHistoryApi.uploadFile(file, category));
-      // const responses = await Promise.all(uploadPromises);
-
-      // 시뮬레이션
-      for (let i = 0; i < uploadFiles.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setUploadProgress(((i + 1) / uploadFiles.length) * 100);
-      }
-
-      // 임시로 새 파일 객체들 생성
-      const newFiles: BoardHistoryFile[] = uploadFiles.map((file, index) => ({
-        id: (Date.now() + index).toString(),
-        boardHistoryId: boardHistory?.id || '',
-        seq: files.length + index + 1,
-        fileName: file.name,
-        originalFileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        fileCategory: category,
-        filePath: `/files/board/${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, '0')}/`,
-        uploadDate: new Date().toISOString().split('T')[0],
-        uploadBy: '현재사용자',
-        isActive: true
-      }));
-
-      setFiles(prev => [...prev, ...newFiles]);
-      alert(`${uploadFiles.length}개 파일이 업로드되었습니다.`);
-    } catch (error) {
-      console.error('파일 업로드 실패:', error);
-      alert('파일 업로드에 실패했습니다.');
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-    }
-  }, [files.length, boardHistory?.id]);
 
   // 파일 삭제 핸들러
   const handleFileDelete = useCallback((fileId: string) => {
@@ -274,47 +190,11 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
     alert(`${file.fileName} 다운로드를 시작합니다.`);
   }, [files]);
 
-  // 책무구조도 파일 추가 핸들러
-  const handleResponsibilityFileAdd = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.accept = '.pdf,.doc,.docx,.xls,.xlsx';
-    input.onchange = (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files) {
-        const filesArray = Array.from(target.files);
-        handleFileUpload(filesArray, 'responsibility');
-      }
-    };
-    input.click();
-  }, [handleFileUpload]);
-
-  // 기타 파일 추가 핸들러
-  const handleGeneralFileAdd = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif';
-    input.onchange = (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files) {
-        const filesArray = Array.from(target.files);
-        handleFileUpload(filesArray, 'general');
-      }
-    };
-    input.click();
-  }, [handleFileUpload]);
-
   // 폼 제출 처리
   const onSubmit = useCallback((data: BoardHistoryFormData) => {
-    const formDataWithFiles = {
+    const formDataWithFiles: BoardHistoryFormData = {
       ...data,
-      files: files.map(f => ({
-        file: new File([], f.fileName),
-        category: f.fileCategory,
-        description: f.fileName
-      }))
+      files: files
     };
 
     if (mode === 'create') {
@@ -325,60 +205,16 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
   }, [mode, boardHistory, onSave, onUpdate, files]);
 
   const modalTitle = mode === 'create' ? '이사회 결의 추가' : '이사회 이력 상세';
-  const submitButtonText = mode === 'create' ? '저장' : '수정';
+  const submitButtonText = mode === 'create' ? '등록' : '저장';
 
-  // BaseModal 액션 버튼 정의
-  const modalActions: ModalAction[] = [
-    {
-      key: 'cancel',
-      label: '닫기',
-      variant: 'outlined',
-      onClick: onClose,
-      disabled: loading || uploading
-    },
-    {
-      key: 'submit',
-      label: submitButtonText,
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleSubmit(onSubmit),
-      disabled: !isValid || loading || uploading,
-      loading: loading
-    }
-  ];
-
-  // 파일 테이블용 액션 컬럼 추가
-  const enhancedFileColumns = [
-    ...fileListColumns,
-    {
-      field: 'actions',
-      headerName: '작업',
-      width: 120,
-      sortable: false,
-      filter: false,
-      cellRenderer: ({ data }: { data: BoardHistoryFile }) => (
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '100%' }}>
-          <IconButton
-            size="small"
-            onClick={() => handleFileDownload(data.id)}
-            color="primary"
-            title="다운로드"
-          >
-            <FileIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => handleFileDelete(data.id)}
-            color="error"
-            title="삭제"
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </div>
-      ),
-      cellStyle: { textAlign: 'center' }
-    }
-  ];
+  // 파일 크기 포맷팅 함수
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
 
   // 파일 통계
   const fileStats = {
@@ -388,235 +224,246 @@ const BoardHistoryFormModal: React.FC<BoardHistoryFormModalProps> = ({
   };
 
   return (
-    <BaseModal
+    <Dialog
       open={open}
       onClose={onClose}
-      title={modalTitle}
-      size="lg"
-      actions={modalActions}
-      loading={loading}
-      className={styles.modal}
-      contentClassName={styles.modalContent}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 1,
+          maxHeight: '90vh'
+        }
+      }}
     >
+      <DialogTitle
+        sx={{
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
+        }}
+      >
+        {modalTitle}
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ p: 2 }}>
       {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <div className={styles.formSection}>
-          <Typography variant="h6" className={styles.sectionTitle}>
-            📋 기본정보
-          </Typography>
+      <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        {/* 기본정보 섹션 */}
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+          기본정보
+        </Typography>
 
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <Controller
-                name="round"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="이사회 회차 *"
-                    variant="outlined"
-                    fullWidth
-                    type="number"
-                    error={!!errors.round}
-                    helperText={errors.round?.message}
-                    placeholder="1"
-                  />
-                )}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <Controller
-                name="resolutionDate"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="이사회 결의일자 *"
-                    variant="outlined"
-                    fullWidth
-                    type="date"
-                    error={!!errors.resolutionDate}
-                    helperText={errors.resolutionDate?.message}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                )}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <Controller
-                name="authorPosition"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="작성자 직책 *"
-                    variant="outlined"
-                    fullWidth
-                    error={!!errors.authorPosition}
-                    helperText={errors.authorPosition?.message}
-                    placeholder="관리자"
-                  />
-                )}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <Controller
-                name="authorName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="작성자 *"
-                    variant="outlined"
-                    fullWidth
-                    error={!!errors.authorName}
-                    helperText={errors.authorName?.message}
-                    placeholder="관리자"
-                  />
-                )}
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <Controller
-                name="resolutionName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="이사회 결의명 *"
-                    variant="outlined"
-                    fullWidth
-                    error={!!errors.resolutionName}
-                    helperText={errors.resolutionName?.message}
-                    placeholder="2025년 1차 이사회결의"
-                  />
-                )}
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <Controller
-                name="summary"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="요약정보"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    error={!!errors.summary}
-                    helperText={errors.summary?.message}
-                    placeholder="신규 임원 선임 및 조직 개편에 관한 이사회 결의"
-                  />
-                )}
-              />
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <Controller
-                name="content"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="내용"
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={6}
-                    error={!!errors.content}
-                    helperText={errors.content?.message}
-                    placeholder="대상 임원: ○○○&#10;대상 민원: ○○○"
-                  />
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* 파일 관리 섹션 */}
-        <Divider className={styles.divider} />
-
-        <div className={styles.formSection}>
-          <div className={styles.sectionHeader}>
-            <Typography variant="h6" className={styles.sectionTitle}>
-              📎 파일 첨부
-            </Typography>
-            <div className={styles.fileStats}>
-              <Chip
-                icon={<AttachFileIcon />}
-                label={`총 ${fileStats.total}개`}
-                color="primary"
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+          <Controller
+            name="ledgerOrderId"
+            control={control}
+            render={({ field }) => (
+              <LedgerOrderComboBox
+                value={field.value || undefined}
+                onChange={(value) => field.onChange(value || '')}
+                label="책무이행차수"
                 size="small"
-                variant="outlined"
+                fullWidth
+                required
+                error={!!errors.ledgerOrderId}
+                helperText={errors.ledgerOrderId?.message}
               />
-              <Chip
-                icon={<ResponsibilityIcon />}
-                label={`책무구조도 ${fileStats.responsibility}개`}
-                color="info"
+            )}
+          />
+
+          <Controller
+            name="resolutionDate"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="이사회 결의일자"
                 size="small"
-                variant="outlined"
+                fullWidth
+                type="date"
+                required
+                error={!!errors.resolutionDate}
+                helperText={errors.resolutionDate?.message}
+                InputLabelProps={{ shrink: true }}
               />
-            </div>
-          </div>
+            )}
+          />
+        </Box>
 
-          {/* 파일 업로드 버튼들 */}
-          <div className={styles.fileActions}>
-            <Button
-              variant="contained"
-              startIcon={<ResponsibilityIcon />}
-              onClick={handleResponsibilityFileAdd}
-              disabled={uploading}
-              color="primary"
-            >
-              책무구조도 파일 추가
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<UploadIcon />}
-              onClick={handleGeneralFileAdd}
-              disabled={uploading}
-            >
-              기타 파일 추가
-            </Button>
-          </div>
-
-          {/* 업로드 진행률 */}
-          {uploading && (
-            <div className={styles.uploadProgress}>
-              <Typography variant="body2" color="textSecondary">
-                파일 업로드 중... {Math.round(uploadProgress)}%
-              </Typography>
-              <LinearProgress variant="determinate" value={uploadProgress} />
-            </div>
-          )}
-
-          {/* 파일 목록 테이블 */}
-          <div className={styles.fileList}>
-            <BaseDataGrid
-              data={files}
-              columns={enhancedFileColumns}
-              pagination={false}
-              height={files.length > 0 ? Math.min(300, files.length * 50 + 50) : 100}
-              theme="rsms"
-              emptyMessage="조회된 정보가 없습니다."
+        <Controller
+          name="resolutionName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="이사회 결의명"
+              size="small"
+              fullWidth
+              required
+              error={!!errors.resolutionName}
+              helperText={errors.resolutionName?.message}
+              placeholder="2025년 1차 이사회결의"
             />
-          </div>
-        </div>
+          )}
+        />
+
+        <Controller
+          name="summary"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="요약정보"
+              size="small"
+              fullWidth
+              multiline
+              rows={3}
+              error={!!errors.summary}
+              helperText={errors.summary?.message}
+              placeholder="신규 임원 선임 및 조직 개편에 관한 이사회 결의"
+            />
+          )}
+        />
+
+        <Controller
+          name="content"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="내용"
+              size="small"
+              fullWidth
+              multiline
+              rows={6}
+              error={!!errors.content}
+              helperText={errors.content?.message}
+              placeholder="대상 임원: ○○○&#10;대상 민원: ○○○"
+            />
+          )}
+        />
+
+        {/* 파일 첨부 섹션 */}
+        <Divider sx={{ my: 1.5 }} />
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            파일 첨부 ({fileStats.total}개)
+          </Typography>
+        </Box>
+
+        {/* 파일 목록 리스트 */}
+        {files.length > 0 ? (
+          <List
+            sx={{
+              width: '100%',
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              maxHeight: 300,
+              overflow: 'auto'
+            }}
+          >
+            {files.map((file, index) => (
+              <React.Fragment key={file.id}>
+                {index > 0 && <Divider />}
+                <ListItem
+                  sx={{
+                    py: 1,
+                    '&:hover': {
+                      bgcolor: 'action.hover'
+                    }
+                  }}
+                  secondaryAction={
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        edge="end"
+                        size="small"
+                        onClick={() => handleFileDownload(file.id)}
+                        color="primary"
+                        title="다운로드"
+                      >
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        edge="end"
+                        size="small"
+                        onClick={() => handleFileDelete(file.id)}
+                        color="error"
+                        title="삭제"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  }
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <FileDefaultIcon color="action" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {file.fileName}
+                        </Typography>
+                        {file.fileCategory === 'responsibility' && (
+                          <Chip
+                            label="책무구조도"
+                            size="small"
+                            color="info"
+                            sx={{ height: 20, fontSize: '0.7rem' }}
+                          />
+                        )}
+                      </Box>
+                    }
+                    secondary={
+                      <Typography variant="caption" color="text.secondary">
+                        {formatFileSize(file.fileSize)} · {file.uploadDate} · {file.uploadBy}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              </React.Fragment>
+            ))}
+          </List>
+        ) : (
+          <Box
+            sx={{
+              width: '100%',
+              height: 100,
+              border: '1px dashed',
+              borderColor: 'divider',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: 'background.paper'
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              첨부된 파일이 없습니다
+            </Typography>
+          </Box>
+        )}
       </Box>
-    </BaseModal>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 1, gap: 1 }}>
+        <Button variant="outlined" onClick={onClose} disabled={loading}>
+          닫기
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit(onSubmit)}
+          disabled={!isValid || loading}
+        >
+          {loading ? '저장 중...' : submitButtonText}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

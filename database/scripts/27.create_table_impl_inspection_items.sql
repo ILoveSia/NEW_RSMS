@@ -72,7 +72,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- ============================================
   -- 1단계: 점검 정보
   -- ============================================
-  inspector_id VARCHAR(50),                           -- 점검자ID (사용자ID)
+  inspector_id VARCHAR(50),                           -- 점검자ID
   inspection_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 점검결과상태코드 (01:미점검, 02:적정, 03:부적정)
   inspection_result_content TEXT,                     -- 점검결과내용
   inspection_date DATE,                               -- 점검일자
@@ -80,17 +80,20 @@ CREATE TABLE rsms.impl_inspection_items (
   -- ============================================
   -- 2단계: 개선이행 정보 (부적정 시에만 사용)
   -- ============================================
-  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:진행중, 03:완료)
-  improvement_manager_id VARCHAR(50),                 -- 개선담당자ID (사용자ID)
+  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:개선완료)
+  improvement_manager_id VARCHAR(50),                 -- 개선담당자ID (사용자ID : 수행자)
   improvement_plan_content TEXT,                      -- 개선계획내용
   improvement_plan_date DATE,                         -- 개선계획수립일자
+
+   improvement_plan_approved_by VARCHAR(50),          -- 개선계획 승인자ID (결재시스템 연동용)
+  improvement_plan_approved_date DATE,                -- 개선계획 승인일자
+
   improvement_detail_content TEXT,                    -- 개선이행세부내용
   improvement_completed_date DATE,                    -- 개선완료일자
 
   -- ============================================
   -- 3단계: 최종점검(승인) 정보
   -- ============================================
-  final_inspector_id VARCHAR(50),                     -- 최종점검자ID (사용자ID)
   final_inspection_result_cd VARCHAR(20),             -- 최종점검결과코드 (01:승인, 02:반려)
   final_inspection_result_content TEXT,               -- 최종점검결과내용
   final_inspection_date DATE,                         -- 최종점검일자
@@ -195,9 +198,9 @@ CREATE INDEX idx_impl_inspection_items_inspector
 CREATE INDEX idx_impl_inspection_items_improvement_mgr
   ON rsms.impl_inspection_items(improvement_manager_id);
 
--- 최종점검자ID 인덱스
-CREATE INDEX idx_impl_inspection_items_final_inspector
-  ON rsms.impl_inspection_items(final_inspector_id);
+-- 개선계획 승인자ID 인덱스
+CREATE INDEX idx_impl_inspection_items_plan_approved_by
+  ON rsms.impl_inspection_items(improvement_plan_approved_by);
 
 -- 점검결과상태코드 인덱스
 CREATE INDEX idx_impl_inspection_items_insp_status
@@ -248,7 +251,7 @@ COMMENT ON COLUMN rsms.impl_inspection_items.impl_inspection_plan_id IS '이행�
 COMMENT ON COLUMN rsms.impl_inspection_items.manual_id IS '부서장업무메뉴얼ID (FK → dept_manager_manuals.manual_id)';
 
 -- 1단계: 점검 정보
-COMMENT ON COLUMN rsms.impl_inspection_items.inspector_id IS '점검자ID (사용자ID)';
+COMMENT ON COLUMN rsms.impl_inspection_items.inspector_id IS '점검자ID (최초 점검자 및 최종 점검자 겸임)';
 COMMENT ON COLUMN rsms.impl_inspection_items.inspection_status_cd IS '점검결과상태코드 (01:미점검, 02:적정, 03:부적정) - common_code_details 참조';
 COMMENT ON COLUMN rsms.impl_inspection_items.inspection_result_content IS '점검결과내용';
 COMMENT ON COLUMN rsms.impl_inspection_items.inspection_date IS '점검일자';
@@ -260,9 +263,10 @@ COMMENT ON COLUMN rsms.impl_inspection_items.improvement_plan_content IS '개선
 COMMENT ON COLUMN rsms.impl_inspection_items.improvement_plan_date IS '개선계획수립일자';
 COMMENT ON COLUMN rsms.impl_inspection_items.improvement_detail_content IS '개선이행세부내용';
 COMMENT ON COLUMN rsms.impl_inspection_items.improvement_completed_date IS '개선완료일자';
+COMMENT ON COLUMN rsms.impl_inspection_items.improvement_plan_approved_by IS '개선계획 승인자ID (결재시스템 연동용 - 점검자 또는 별도 승인자)';
+COMMENT ON COLUMN rsms.impl_inspection_items.improvement_plan_approved_date IS '개선계획 승인일자';
 
 -- 3단계: 최종점검 정보
-COMMENT ON COLUMN rsms.impl_inspection_items.final_inspector_id IS '최종점검자ID (사용자ID)';
 COMMENT ON COLUMN rsms.impl_inspection_items.final_inspection_result_cd IS '최종점검결과코드 (01:승인, 02:반려) - common_code_details 참조';
 COMMENT ON COLUMN rsms.impl_inspection_items.final_inspection_result_content IS '최종점검결과내용';
 COMMENT ON COLUMN rsms.impl_inspection_items.final_inspection_date IS '최종점검일자';

@@ -51,7 +51,7 @@ export interface DutyInspection extends BaseInspection {
 
 // 검색 필터 인터페이스
 export interface ExecutiveReportFilters {
-  inspectionYear: string; // 점검연도
+  ledgerOrderId: string; // 책무이행차수
   inspectionName: string; // 점검명
   branchName: string; // 부점명
   inspectionStatus: InspectionStatus | ''; // 점검상태

@@ -30,6 +30,9 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
+import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // DeptOpManuals specific components
 import { deptOpManualsColumns } from './components/DeptOpManualsDataGrid/deptOpManualsColumns';
@@ -85,6 +88,9 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     isOpen: false,
     mode: 'create'
   });
+
+  // 조직조회팝업 상태
+  const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
   // 📊 Mock 데이터
   const mockDeptOpManuals: DeptOpManual[] = useMemo(() => [
@@ -266,69 +272,64 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     }));
   }, [displayData]);
 
+  // 조직조회 핸들러
+  const handleOrganizationSearch = useCallback(() => {
+    setOrganizationSearchOpen(true);
+  }, []);
+
+  // 조직 선택 핸들러
+  const handleOrganizationSelect = useCallback((organization: Organization) => {
+    setFilters(prev => ({
+      ...prev,
+      irregularityName: organization.orgCode || ''
+    }));
+    setOrganizationSearchOpen(false);
+    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
+  }, []);
+
+  // 조직조회 모달 닫기
+  const handleOrganizationSearchClose = useCallback(() => {
+    setOrganizationSearchOpen(false);
+  }, []);
+
   // 🔍 검색 필드 정의
-  const searchFields: FilterField[] = [
+  const searchFields: FilterField[] = useMemo(() => [
     {
       key: 'ledgerOrder',
       label: '책무이행차수',
-      type: 'select',
-      options: [
-        { value: 'all', label: '전체' },
-        { value: '2025-01', label: '2025년 1차' },
-        { value: '2025-02', label: '2025년 2차' },
-        { value: '2024-01', label: '2024년 1차' },
-        { value: '2024-02', label: '2024년 2차' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      type: 'custom',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrder || undefined}
+          onChange={(value) => setFilters(prev => ({ ...prev, ledgerOrder: value || '' }))}
+          label="책무이행차수"
+          size="small"
+          fullWidth
+        />
+      )
     },
     {
       key: 'irregularityName',
-      label: '부점명',
+      label: '부점코드',
       type: 'text',
-      placeholder: '부점명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2.5 }
+      placeholder: '부점코드를 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      endAdornment: {
+        type: 'button',
+        icon: 'Search',
+        onClick: handleOrganizationSearch,
+        tooltip: '부점조회'
+      }
     },
     {
-      key: 'managementActivityType',
-      label: '관리활동구분',
-      type: 'select',
-      options: [
-        { value: 'all', label: '전체' },
-        { value: 'compliance', label: '준법' },
-        { value: 'risk', label: '리스크' },
-        { value: 'internal_audit', label: '내부감사' },
-        { value: 'operation', label: '운영' },
-        { value: 'finance', label: '재무' },
-        { value: 'hr', label: '인사' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'riskAssessmentLevel',
-      label: '위험평가등급',
-      type: 'select',
-      options: [
-        { value: 'all', label: '전체' },
-        { value: 'very_high', label: '매우높음' },
-        { value: 'high', label: '높음' },
-        { value: 'medium', label: '보통' },
-        { value: 'low', label: '낮음' },
-        { value: 'very_low', label: '매우낮음' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'isActive',
-      label: '사용여부',
-      type: 'select',
-      options: [
-        { value: 'all', label: '전체' },
-        { value: true, label: '사용' },
-        { value: false, label: '미사용' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 1.5 }
+      key: 'managementActivity',
+      label: '관리활동명',
+      type: 'text',
+      placeholder: '관리활동명을 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 4 }
     }
-  ];
+  ], [filters.ledgerOrder, handleOrganizationSearch]);
 
   // 🎯 이벤트 핸들러
   const handleFiltersChange = useCallback((values: Partial<FilterValues>) => {
@@ -336,10 +337,10 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       ledgerOrder: values.ledgerOrder as string || '',
       managementObligation: '',
       irregularityName: values.irregularityName as string || '',
-      managementActivityType: (values.managementActivityType as ManagementActivityType) || 'all',
-      managementActivity: '',
-      riskAssessmentLevel: (values.riskAssessmentLevel as RiskAssessmentLevel) || 'all',
-      isActive: values.isActive === 'all' ? 'all' : Boolean(values.isActive),
+      managementActivityType: 'all',
+      managementActivity: values.managementActivity as string || '',
+      riskAssessmentLevel: 'all',
+      isActive: 'all',
       approvalStatus: 'all',
       implementationManager: ''
     };
@@ -567,7 +568,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
           <div className={styles.titleSection}>
             <AssignmentIcon className={styles.headerIcon} />
             <div>
-              <h1 className={styles.pageTitle}>부서장업무메뉴얼관리</h1>
+              <h1 className={styles.pageTitle}>업무메뉴얼관리</h1>
               <p className={styles.pageDescription}>
                 부서장업무 관련 관리활동 등록 및 관리
               </p>
@@ -638,7 +639,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         {modalState.isOpen && (
           <DeptOpManualsFormModal
             open={modalState.isOpen}
-            mode={modalState.mode === 'view' ? 'detail' : modalState.mode}
+            mode={modalState.mode === 'view' ? 'detail' : modalState.mode === 'edit' ? 'detail' : modalState.mode}
             manual={modalState.selectedItem || null}
             onClose={handleModalClose}
             onSave={handleSave}
@@ -647,6 +648,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
           />
         )}
       </React.Suspense>
+
+      {/* 🏢 조직조회 모달 */}
+      <OrganizationSearchModal
+        open={organizationSearchOpen}
+        onClose={handleOrganizationSearchClose}
+        onSelect={handleOrganizationSelect}
+        title="부점조회"
+      />
     </div>
   );
 };

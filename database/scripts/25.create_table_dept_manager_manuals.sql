@@ -52,6 +52,11 @@ CREATE TABLE rsms.dept_manager_manuals (
   is_active CHAR(1) DEFAULT 'Y',                       -- 사용여부 (Y/N)
   status VARCHAR(20) DEFAULT 'active',                 -- 상태 (active: 사용, inactive: 미사용, pending: 검토중, approved: 승인완료)
 
+  -- 수행 정보
+  executor_id VARCHAR(50),                             -- 수행자ID
+  execution_status VARCHAR(20),                        -- 수행여부 (01:미수행, 02:수행완료)
+  execution_result VARCHAR(500),                       -- 수행결과
+
   -- 감사 필드 (BaseEntity 패턴)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- 등록일시
   created_by VARCHAR(50) NOT NULL,                     -- 등록자
@@ -70,7 +75,10 @@ CREATE TABLE rsms.dept_manager_manuals (
   CONSTRAINT chk_is_active CHECK (is_active IN ('Y', 'N')),
 
   -- 제약조건: 상태는 정해진 값만 가능
-  CONSTRAINT chk_status CHECK (status IN ('active', 'inactive', 'pending', 'approved'))
+  CONSTRAINT chk_status CHECK (status IN ('active', 'inactive', 'pending', 'approved')),
+
+  -- 제약조건: 수행여부는 정해진 값만 가능
+  CONSTRAINT chk_execution_status CHECK (execution_status IN ('01', '02'))
 );
 
 -- =====================================================
@@ -119,6 +127,14 @@ CREATE INDEX idx_dept_manager_manuals_risk_level
 CREATE INDEX idx_dept_manager_manuals_created_at
   ON rsms.dept_manager_manuals(created_at DESC);
 
+-- 수행여부 인덱스 (수행 상태 필터링 시 사용)
+CREATE INDEX idx_dept_manager_manuals_execution_status
+  ON rsms.dept_manager_manuals(execution_status);
+
+-- 수행자ID 인덱스 (수행자별 조회 시 사용)
+CREATE INDEX idx_dept_manager_manuals_executor_id
+  ON rsms.dept_manager_manuals(executor_id);
+
 -- =====================================================
 -- STEP 4: 테이블 및 컬럼 코멘트 추가
 -- =====================================================
@@ -155,6 +171,11 @@ COMMENT ON COLUMN rsms.dept_manager_manuals.end_date IS '종료일';
 COMMENT ON COLUMN rsms.dept_manager_manuals.is_active IS '사용여부 (Y: 사용, N: 미사용)';
 COMMENT ON COLUMN rsms.dept_manager_manuals.status IS '상태 (active: 사용, inactive: 미사용, pending: 검토중, approved: 승인완료)';
 
+-- 수행 정보 코멘트
+COMMENT ON COLUMN rsms.dept_manager_manuals.executor_id IS '수행자ID';
+COMMENT ON COLUMN rsms.dept_manager_manuals.execution_status IS '수행여부 (01: 미수행, 02: 수행완료)';
+COMMENT ON COLUMN rsms.dept_manager_manuals.execution_result IS '수행결과';
+
 -- 감사 필드 코멘트
 COMMENT ON COLUMN rsms.dept_manager_manuals.created_at IS '등록일시';
 COMMENT ON COLUMN rsms.dept_manager_manuals.created_by IS '등록자';
@@ -181,5 +202,5 @@ BEGIN
   RAISE NOTICE '📋 설명: 부서장업무메뉴얼 관리 테이블';
   RAISE NOTICE '📋 기본키: manual_id (BIGSERIAL)';
   RAISE NOTICE '📋 외래키: ledger_order_id, org_code';
-  RAISE NOTICE '📋 인덱스: 6개 생성 완료';
+  RAISE NOTICE '📋 인덱스: 8개 생성 완료 (수행여부, 수행자ID 인덱스 포함)';
 END $$;

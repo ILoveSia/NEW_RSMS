@@ -24,6 +24,9 @@ import type {
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
+import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // Lazy-loaded components for performance optimization
 const ExecutiveReportFormModal = React.lazy(() =>
@@ -50,7 +53,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<ExecutiveReportFilters>({
-    inspectionYear: '',
+    ledgerOrderId: '',
     inspectionName: '',
     branchName: '',
     inspectionStatus: '',
@@ -197,7 +200,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
-      inspectionYear: '',
+      ledgerOrderId: '',
       inspectionName: '',
       branchName: '',
       inspectionStatus: '',
@@ -228,25 +231,59 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
   }, [responsibilityData, dutyData]);
 
 
+  // 조직조회팝업 상태
+  const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
+
+  // 조직조회 팝업 핸들러
+  const handleOrganizationSearch = useCallback(() => {
+    setOrganizationSearchOpen(true);
+  }, []);
+
+  // 조직선택 완료 핸들러
+  const handleOrganizationSelect = useCallback((selected: Organization | Organization[]) => {
+    const selectedOrg = Array.isArray(selected) ? selected[0] : selected;
+    if (selectedOrg) {
+      setFilters(prev => ({
+        ...prev,
+        branchName: selectedOrg.orgName
+      }));
+      setOrganizationSearchOpen(false);
+      toast.success(`${selectedOrg.orgName}(${selectedOrg.orgCode})이 선택되었습니다.`);
+    }
+  }, []);
+
+  // 조직조회팝업 닫기 핸들러
+  const handleOrganizationSearchClose = useCallback(() => {
+    setOrganizationSearchOpen(false);
+  }, []);
+
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'inspectionYear',
-      type: 'select',
-      label: '점검연도',
-      options: [
-        { value: '', label: '전체' },
-        { value: '2024', label: '2024년' },
-        { value: '2025', label: '2025년' },
-        { value: '2026', label: '2026년' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={(value) => handleFiltersChange({ ledgerOrderId: value || '' })}
+          label="책무이행차수"
+          size="small"
+          fullWidth
+        />
+      )
     },
     {
       key: 'inspectionName',
-      type: 'text',
+      type: 'select',
       label: '점검명',
-      placeholder: '점검명을 입력하세요',
+      options: [
+        { value: '', label: '전체' },
+        { value: '2024년1회차 이행점검', label: '2024년1회차 이행점검' },
+        { value: '2024년2회차 이행점검', label: '2024년2회차 이행점검' },
+        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' }
+      ],
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -254,9 +291,15 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
       type: 'text',
       label: '부점명',
       placeholder: '부점명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      endAdornment: {
+        type: 'button',
+        icon: 'Search',
+        onClick: handleOrganizationSearch,
+        tooltip: '부점조회'
+      }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleFiltersChange, handleOrganizationSearch]);
 
   // BaseActionBar용 액션 버튼 정의 (PositionMgmt.tsx와 동일한 패턴)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -645,41 +688,6 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
               </div>
             </div>
           </div>
-
-          {/* 📋 4) 내부통제 본 점검 현황 [작성(부작성)] */}
-          <div className={styles.tableSection}>
-            <h3 className={styles.sectionTitle}>
-              <SecurityIcon className={styles.sectionIcon} />
-              4) 내부통제 본 점검 현황 [작성(부작성)]
-            </h3>
-            <div className={styles.emptyTable}>
-              <div className={styles.emptyTableMessage}>점검 데이터가 없습니다.</div>
-            </div>
-          </div>
-
-          {/* 📋 5) 중대 유형별 점검 현황 [작성(부작성)] */}
-          <div className={styles.tableSection}>
-            <h3 className={styles.sectionTitle}>
-              <TrendingUpIcon className={styles.sectionIcon} />
-              5) 중대 유형별 점검 현황 [작성(부작성)]
-            </h3>
-            <div className={styles.simpleTable}>
-              <div className={styles.simpleTableHeader}>
-                <div className={styles.simpleTableHeaderCell} style={{width: '25%'}}>내부통제점검</div>
-                <div className={styles.simpleTableHeaderCell} style={{width: '25%'}}>교육수행여부</div>
-                <div className={styles.simpleTableHeaderCell} style={{width: '25%'}}>통일로</div>
-                <div className={styles.simpleTableHeaderCell} style={{width: '25%'}}>점검결과</div>
-              </div>
-              <div className={styles.simpleTableBody}>
-                <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>0 (0)</div>
-                  <div className={styles.simpleTableCell}>0 (0)</div>
-                  <div className={styles.simpleTableCell}>0 (1)</div>
-                  <div className={styles.simpleTableCell}>-</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* 보고서 등록/상세 모달 */}
@@ -694,6 +702,15 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
             loading={loading}
           />
         </React.Suspense>
+
+        {/* 조직조회 모달 */}
+        <OrganizationSearchModal
+          open={organizationSearchOpen}
+          onClose={handleOrganizationSearchClose}
+          onSelect={handleOrganizationSelect}
+          mode="single"
+          title="부점 조회"
+        />
       </div>
     </React.Profiler>
   );

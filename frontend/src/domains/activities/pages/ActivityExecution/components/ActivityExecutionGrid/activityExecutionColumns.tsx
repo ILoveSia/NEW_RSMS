@@ -1,8 +1,8 @@
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
 import { ActivityExecution } from '../../types/activityExecution.types';
 
-// 이미지 기반으로 정확한 관리활동 수행 그리드 컬럼 정의
+// 관리활동 수행 그리드 컬럼 정의
+// 컬럼 순서: 관리활동구분, 부점, 관리활동명, 관리활동수행주기, 관리활동상세, 위험평가등급, 수행자, 수행여부, 수행결과
 export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
   {
     field: 'sequence',
@@ -12,6 +12,42 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     headerClass: 'ag-header-cell-center',
     sortable: false,
     resizable: false
+  },
+  {
+    field: 'gnrzOblgDvcd',
+    headerName: '관리활동구분',
+    width: 150,
+    cellStyle: { textAlign: 'center' },
+    headerClass: 'ag-header-cell-center',
+    sortable: true,
+    resizable: true,
+    cellRenderer: (params: any) => {
+      const value = params.value || '';
+      return (
+        <span
+          style={{
+            padding: '2px 6px',
+            borderRadius: '4px',
+            backgroundColor: '#f3e5f5',
+            color: '#7b1fa2',
+            fontSize: '12px',
+            fontWeight: '500'
+          }}
+        >
+          {value}
+        </span>
+      );
+    }
+  },
+  {
+    field: 'responsibilityArea',
+    headerName: '부점',
+    width: 140,
+    cellStyle: { textAlign: 'left' },
+    headerClass: 'ag-header-cell-left',
+    sortable: true,
+    resizable: true,
+    tooltipField: 'responsibilityArea'
   },
   {
     field: 'activityName',
@@ -42,34 +78,9 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     }
   },
   {
-    field: 'activityDetail',
-    headerName: '활동상세',
-    width: 150,
-    cellStyle: { textAlign: 'left' },
-    headerClass: 'ag-header-cell-left',
-    sortable: true,
-    resizable: true,
-    tooltipField: 'activityDetail',
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      return (
-        <div
-          title={value}
-          style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {value}
-        </div>
-      );
-    }
-  },
-  {
     field: 'cycle',
-    headerName: '주기',
-    width: 100,
+    headerName: '관리활동수행주기',
+    width: 140,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -93,45 +104,70 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     }
   },
   {
-    field: 'isInternalActivity',
-    headerName: '내부활동',
-    width: 100,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
+    field: 'activityDetail',
+    headerName: '관리활동상세',
+    width: 150,
+    cellStyle: { textAlign: 'left' },
+    headerClass: 'ag-header-cell-left',
     sortable: true,
-    resizable: false,
+    resizable: true,
+    tooltipField: 'activityDetail',
     cellRenderer: (params: any) => {
-      const isInternal = params.value;
+      const value = params.value || '';
       return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          {isInternal ? (
-            <CheckBox style={{ color: '#4caf50', fontSize: '20px' }} />
-          ) : (
-            <CheckBoxOutlineBlank style={{ color: '#9e9e9e', fontSize: '20px' }} />
-          )}
+        <div
+          title={value}
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {value}
         </div>
       );
     }
   },
   {
     field: 'regulation',
-    headerName: '규율',
-    width: 140,
-    cellStyle: { textAlign: 'left' },
-    headerClass: 'ag-header-cell-left',
+    headerName: '위험평가등급',
+    width: 120,
+    cellStyle: { textAlign: 'center' },
+    headerClass: 'ag-header-cell-center',
     sortable: true,
     resizable: true,
-    tooltipField: 'regulation'
-  },
-  {
-    field: 'responsibilityArea',
-    headerName: '내부활동책임영역',
-    width: 160,
-    cellStyle: { textAlign: 'left' },
-    headerClass: 'ag-header-cell-left',
-    sortable: true,
-    resizable: true,
-    tooltipField: 'responsibilityArea'
+    cellRenderer: (params: any) => {
+      const value = params.value || '';
+      // 위험평가등급에 따른 색상 처리 (예시)
+      let backgroundColor = '#f5f5f5';
+      let color = '#666666';
+
+      if (value.includes('상') || value.includes('고')) {
+        backgroundColor = '#ffebee';
+        color = '#c62828';
+      } else if (value.includes('중')) {
+        backgroundColor = '#fff3e0';
+        color = '#ef6c00';
+      } else if (value.includes('하') || value.includes('저')) {
+        backgroundColor = '#e8f5e8';
+        color = '#2e7d32';
+      }
+
+      return (
+        <span
+          style={{
+            padding: '2px 6px',
+            borderRadius: '4px',
+            backgroundColor,
+            color,
+            fontSize: '12px',
+            fontWeight: '500'
+          }}
+        >
+          {value}
+        </span>
+      );
+    }
   },
   {
     field: 'performer',
@@ -230,50 +266,6 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
           }}
         >
           {result || '-'}
-        </span>
-      );
-    }
-  },
-  {
-    field: 'cssConst',
-    headerName: 'CSS_CONST',
-    width: 110,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    resizable: false,
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      const color = value === 'Y' ? '#4caf50' : '#9e9e9e';
-      return (
-        <span style={{ color, fontWeight: '600' }}>
-          {value}
-        </span>
-      );
-    }
-  },
-  {
-    field: 'gnrzOblgDvcd',
-    headerName: 'GNRZ_OBLG_DVCD',
-    width: 140,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    resizable: false,
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      return (
-        <span
-          style={{
-            padding: '2px 6px',
-            borderRadius: '4px',
-            backgroundColor: '#f3e5f5',
-            color: '#7b1fa2',
-            fontSize: '12px',
-            fontWeight: '500'
-          }}
-        >
-          {value}
         </span>
       );
     }

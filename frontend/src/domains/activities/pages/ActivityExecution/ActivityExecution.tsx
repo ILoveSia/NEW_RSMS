@@ -13,17 +13,20 @@ import type {
   ActivityExecution,
   ActivityExecutionFilters,
   ActivityExecutionFormData,
+  ActivityExecutionLoadingStates,
   ActivityExecutionModalState,
   ActivityExecutionPagination,
-  ActivityExecutionLoadingStates,
   ActivityExecutionStatistics
 } from './types/activityExecution.types';
 
 // Shared Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
+import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
 
 // ActivityExecution specific components
 import { activityExecutionColumns } from './components/ActivityExecutionGrid/activityExecutionColumns';
@@ -48,6 +51,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   const [activities, setActivities] = useState<ActivityExecution[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedActivities, setSelectedActivities] = useState<ActivityExecution[]>([]);
+  const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
   // 개별 로딩 상태
   const [loadingStates, setLoadingStates] = useState<ActivityExecutionLoadingStates>({
@@ -58,11 +62,11 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<ActivityExecutionFilters>({
-    targetPeriodStart: '2025-01-01',
-    targetPeriodEnd: '2025-08-31',
+    ledgerOrderId: '',
+    targetPeriodStart: '',
+    targetPeriodEnd: '',
     performanceStatus: '', // 전체/수행완료/미수행
-    departmentCode: '',
-    searchKeyword: ''
+    departmentCode: ''
   });
 
   const [pagination, setPagination] = useState<ActivityExecutionPagination>({
@@ -84,18 +88,15 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
-  const handleModifyRequest = useCallback(() => {
-    if (selectedActivities.length !== 1) {
-      toast.warning('수정할 관리활동을 하나만 선택해주세요.');
+  const handleAssignPerformer = useCallback(() => {
+    if (selectedActivities.length === 0) {
+      toast.warning('수행자를 지정할 관리활동을 선택해주세요.');
       return;
     }
 
-    setModalState(prev => ({
-      ...prev,
-      executionModal: true,
-      selectedActivity: selectedActivities[0]
-    }));
-    toast.info('관리활동 수행 내용을 수정해주세요.', { autoClose: 2000 });
+    // TODO: 수행자 지정 모달 또는 로직 구현
+    toast.info(`${selectedActivities.length}개 관리활동의 수행자를 지정합니다.`, { autoClose: 2000 });
+    console.log('수행자 지정 대상:', selectedActivities);
   }, [selectedActivities]);
 
   const handleExcelDownload = useCallback(async () => {
@@ -225,14 +226,32 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
-      targetPeriodStart: '2025-01-01',
-      targetPeriodEnd: '2025-08-31',
+      ledgerOrderId: '',
+      targetPeriodStart: '',
+      targetPeriodEnd: '',
       performanceStatus: '',
-      departmentCode: '',
-      searchKeyword: ''
+      departmentCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+  }, []);
+
+  // 조직검색 핸들러
+  const handleOrganizationSearch = useCallback(() => {
+    setOrganizationSearchOpen(true);
+  }, []);
+
+  const handleOrganizationSelect = useCallback((organization: Organization) => {
+    setFilters(prev => ({
+      ...prev,
+      departmentCode: organization.orgCode || ''
+    }));
+    setOrganizationSearchOpen(false);
+    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
+  }, []);
+
+  const handleOrganizationSearchClose = useCallback(() => {
+    setOrganizationSearchOpen(false);
   }, []);
 
   // Grid Event Handlers
@@ -272,12 +291,19 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'targetPeriod',
-      type: 'dateRange',
-      label: '관리활동 대상기간',
-      startKey: 'targetPeriodStart',
-      endKey: 'targetPeriodEnd',
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={(value) => setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }))}
+          label="책무이행차수"
+          size="small"
+          fullWidth
+        />
+      )
     },
     {
       key: 'performanceStatus',
@@ -288,23 +314,22 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
         { value: 'completed', label: '수행완료' },
         { value: 'pending', label: '미수행' }
       ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
       key: 'departmentCode',
       type: 'text',
-      label: '부서코드',
-      placeholder: '0000',
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'searchKeyword',
-      type: 'text',
-      label: '검색어',
-      placeholder: '관리활동명, 수행자명 등',
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      label: '부점코드',
+      placeholder: '부점코드를 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      endAdornment: {
+        type: 'button',
+        icon: 'Search',
+        onClick: handleOrganizationSearch,
+        tooltip: '부점조회'
+      }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleOrganizationSearch]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -316,11 +341,11 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       loading: loadingStates.excel
     },
     {
-      key: 'modify',
-      type: 'edit',
-      label: '수정요청',
-      onClick: handleModifyRequest,
-      disabled: selectedActivities.length !== 1 || loadingStates.modify,
+      key: 'assign',
+      type: 'custom',
+      label: '수행자지정',
+      onClick: handleAssignPerformer,
+      disabled: selectedActivities.length === 0 || loadingStates.modify,
       loading: loadingStates.modify,
       confirmationRequired: false
     },
@@ -333,7 +358,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       loading: loadingStates.approval,
       confirmationRequired: true
     }
-  ], [handleExcelDownload, handleModifyRequest, handleApprovalRequest, selectedActivities.length, loadingStates]);
+  ], [handleExcelDownload, handleAssignPerformer, handleApprovalRequest, selectedActivities.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -410,17 +435,17 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       {
         id: '1',
         sequence: 1,
-        activityName: '영업 실적',
-        activityDetail: '상세내용',
+        activityName: '자금세탁방지 시스템 운영',
+        activityDetail: '상세내용 자금세탁방지 시스템 운영',
         cycle: '분기',
         isInternalActivity: true,
-        regulation: '교육수행팀장',
-        responsibilityArea: '교육수행팀장',
-        performer: '0000000',
+        regulation: '상',
+        responsibilityArea: '경영전략부',
+        performer: '미지정',
         isPerformed: true,
         performanceResult: '적정',
         cssConst: 'Y',
-        gnrzOblgDvcd: '02',
+        gnrzOblgDvcd: '고유',
         executionDate: '2024-01-15',
         status: 'completed',
         createdAt: '2024-01-15',
@@ -555,6 +580,14 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
             loading={loadingStates.approval}
           />
         </React.Suspense>
+
+        {/* 조직검색 모달 */}
+        <OrganizationSearchModal
+          open={organizationSearchOpen}
+          onClose={handleOrganizationSearchClose}
+          onSelect={handleOrganizationSelect}
+          title="부점조회"
+        />
       </div>
     </React.Profiler>
   );

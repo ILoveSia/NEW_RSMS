@@ -5,40 +5,39 @@
  * - 각 행: 관리의무 + 관리활동 기본정보 + 이행점검 정보
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+import { getManagementObligationsByOrgCode } from '@/shared/api/organizationApi';
+import { Button } from '@/shared/components/atoms/Button';
+import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
+import { useCommonCode } from '@/shared/hooks';
+import toast from '@/shared/utils/toast';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  Divider,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  InputAdornment
+  TextField,
+  Typography
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
-import toast from '@/shared/utils/toast';
-import { Button } from '@/shared/components/atoms/Button';
-import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
-import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
-import { useCommonCode } from '@/shared/hooks';
-import { getManagementObligationsByOrgCode } from '@/shared/api/organizationApi';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 관리의무 행 데이터 타입
 export interface ObligationRowData {
@@ -117,7 +116,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
 
   // 모달 제목
-  const modalTitle = mode === 'create' ? '부서장업무메뉴얼 등록' : '부서장업무메뉴얼 상세';
+  const modalTitle = mode === 'create' ? '업무메뉴얼 등록' : '업무메뉴얼 상세';
 
   // 읽기 전용 모드
   const isReadOnly = mode === 'detail' && !isEditing;

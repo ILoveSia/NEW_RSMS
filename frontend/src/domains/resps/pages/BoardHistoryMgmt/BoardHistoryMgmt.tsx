@@ -23,6 +23,7 @@ import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // BoardHistory specific components
 import { boardHistoryColumns } from './components/BoardHistoryDataGrid/boardHistoryColumns';
@@ -52,11 +53,10 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<BoardHistoryFilters>({
+    ledgerOrderId: '',
     resolutionName: '',
     resolutionDateFrom: '',
-    resolutionDateTo: '',
-    authorName: '',
-    hasResponsibilityChart: ''
+    resolutionDateTo: ''
   });
 
   const [pagination, setPagination] = useState<BoardHistoryPagination>({
@@ -170,12 +170,11 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       const newBoardHistory: BoardHistory = {
         id: Date.now().toString(),
         seq: boardHistories.length + 1,
-        round: formData.round,
+        ledgerOrderId: formData.ledgerOrderId,
+        round: boardHistories.length + 1, // 회차는 자동 증가
         resolutionName: formData.resolutionName,
         resolutionDate: formData.resolutionDate,
         uploadDate: new Date().toISOString().split('T')[0],
-        authorPosition: formData.authorPosition,
-        authorName: formData.authorName,
         summary: formData.summary,
         content: formData.content,
         hasResponsibilityChart: false, // 초기값
@@ -183,7 +182,7 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
         createdAt: new Date().toISOString(),
         createdBy: '현재사용자',
         fileCount: formData.files?.length || 0,
-        responsibilityFileCount: formData.files?.filter(f => f.category === 'responsibility').length || 0
+        responsibilityFileCount: formData.files?.filter(f => f.fileCategory === 'responsibility').length || 0
       };
 
       setBoardHistories(prev => [newBoardHistory, ...prev]);
@@ -210,17 +209,15 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
           history.id === id
             ? {
                 ...history,
-                round: formData.round,
+                ledgerOrderId: formData.ledgerOrderId,
                 resolutionName: formData.resolutionName,
                 resolutionDate: formData.resolutionDate,
-                authorPosition: formData.authorPosition,
-                authorName: formData.authorName,
                 summary: formData.summary,
                 content: formData.content,
                 updatedAt: new Date().toISOString(),
                 updatedBy: '현재사용자',
                 fileCount: formData.files?.length || 0,
-                responsibilityFileCount: formData.files?.filter(f => f.category === 'responsibility').length || 0
+                responsibilityFileCount: formData.files?.filter(f => f.fileCategory === 'responsibility').length || 0
               }
             : history
         )
@@ -272,11 +269,10 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
       resolutionName: '',
       resolutionDateFrom: '',
-      resolutionDateTo: '',
-      authorName: '',
-      hasResponsibilityChart: ''
+      resolutionDateTo: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
@@ -326,6 +322,21 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={(value) => handleFiltersChange({ ledgerOrderId: value || '' })}
+          label="책무이행차수"
+          size="small"
+          fullWidth
+        />
+      )
+    },
+    {
       key: 'resolutionName',
       type: 'text',
       label: '이사회 결의명',
@@ -343,26 +354,8 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       type: 'date',
       label: '결의일자 종료',
       gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'authorName',
-      type: 'text',
-      label: '작성자',
-      placeholder: '작성자명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'hasResponsibilityChart',
-      type: 'select',
-      label: '책무구조도',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'Y', label: '생성됨' },
-        { value: 'N', label: '미생성' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 2 }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleFiltersChange]);
 
   // BaseActionBar용 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -412,12 +405,11 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       {
         id: '1',
         seq: 1,
+        ledgerOrderId: '20250001',
         round: 1,
         resolutionName: '2025년 1차 이사회결의',
         resolutionDate: '2025-08-13',
         uploadDate: '2025-08-13',
-        authorPosition: '관리자',
-        authorName: '관리자',
         summary: '신규 임원 선임 및 조직 개편에 관한 이사회 결의',
         content: '대상 임원: ○○○\n대상 민원: ○○○',
         hasResponsibilityChart: true,
@@ -430,12 +422,11 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       {
         id: '2',
         seq: 2,
+        ledgerOrderId: '20250001',
         round: 2,
         resolutionName: '2025년 2차 이사회결의',
         resolutionDate: '2025-09-15',
         uploadDate: '2025-09-15',
-        authorPosition: '관리자',
-        authorName: '관리자',
         summary: '예산 승인 및 신사업 추진 계획 검토',
         content: '2025년 하반기 예산 및 신사업 계획 심의',
         hasResponsibilityChart: false,
@@ -448,12 +439,11 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       {
         id: '3',
         seq: 3,
+        ledgerOrderId: '20250001',
         round: 3,
         resolutionName: '2025년 3차 이사회결의',
         resolutionDate: '2025-09-20',
         uploadDate: '2025-09-20',
-        authorPosition: '관리자',
-        authorName: '관리자',
         summary: '리스크 관리 체계 개선 방안 논의',
         content: '리스크 관리 체계 강화 및 모니터링 시스템 구축',
         hasResponsibilityChart: true,
