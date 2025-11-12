@@ -14,7 +14,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import type { Position, PositionSelectModalProps } from '../../types/roleHistory.types';
 import type { ColDef } from 'ag-grid-community';
-import styles from './PositionSelectModal.module.scss';
 
 /**
  * 직책 선택 모달 컴포넌트
@@ -218,15 +217,15 @@ const PositionSelectModal: React.FC<PositionSelectModalProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      className={styles.modal}
+      
       PaperProps={{
         className: styles.paper
       }}
     >
       {/* 모달 헤더 */}
-      <DialogTitle className={styles.modalTitle}>
-        <div className={styles.titleContent}>
-          <PersonIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <PersonIcon  />
           <Typography variant="h6" component="div">
             직책 선택
           </Typography>
@@ -234,16 +233,16 @@ const PositionSelectModal: React.FC<PositionSelectModalProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          className={styles.closeButton}
+          
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
       {/* 모달 컨텐츠 */}
-      <DialogContent className={styles.modalContent}>
+      <DialogContent >
         {/* 검색 영역 */}
-        <div className={styles.searchSection}>
+        <div >
           <TextField
             fullWidth
             label="직책"
@@ -256,20 +255,20 @@ const PositionSelectModal: React.FC<PositionSelectModalProps> = ({
               }
             }}
             size="small"
-            className={styles.searchField}
+            
           />
           <Button
             variant="contained"
             onClick={handleSearch}
             disabled={searchLoading}
-            className={styles.searchButton}
+            
           >
             조회
           </Button>
         </div>
 
         {/* 직책 목록 그리드 */}
-        <div className={styles.gridSection}>
+        <div >
           <BaseDataGrid
             data={positions}
             columns={columns}
@@ -286,11 +285,11 @@ const PositionSelectModal: React.FC<PositionSelectModalProps> = ({
       </DialogContent>
 
       {/* 모달 액션 */}
-      <DialogActions className={styles.modalActions}>
+      <DialogActions >
         <Button
           onClick={onClose}
           variant="outlined"
-          className={styles.cancelButton}
+          
         >
           취소
         </Button>
@@ -298,7 +297,7 @@ const PositionSelectModal: React.FC<PositionSelectModalProps> = ({
           onClick={handlePositionSelect}
           variant="contained"
           disabled={!selectedPosition || loading}
-          className={styles.selectButton}
+          
         >
           선택
         </Button>

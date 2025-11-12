@@ -18,7 +18,6 @@ import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal'
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { InternalControlMgmt, InternalControlMgmtFormData, DepartmentOption } from '../../types/internalControlMgmt.types';
 import { ColDef } from 'ag-grid-community';
-import styles from './InternalControlFormModal.module.scss';
 
 interface InternalControlFormModalProps {
   open: boolean;
@@ -213,12 +212,10 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
       size="md"
       actions={modalActions}
       loading={loading}
-      className={styles.modal}
-      contentClassName={styles.modalContent}
     >
       {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <div className={styles.formRow}>
+      <Box component="form" >
+        <div >
           <Controller
             name="departmentName"
             control={control}
@@ -226,7 +223,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={styles.formField}
+                
               >
                 <InputLabel>부정명</InputLabel>
                 <Select
@@ -254,14 +251,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.managementActivityName}
                 helperText={errors.managementActivityName?.message}
-                className={styles.formField}
+                
                 placeholder="리스크 평가"
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="internalControl"
             control={control}
@@ -273,7 +270,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.internalControl}
                 helperText={errors.internalControl?.message}
-                className={styles.formField}
+                
                 placeholder="리스크관리시스템"
               />
             )}
@@ -290,14 +287,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.unifiedNumber}
                 helperText={errors.unifiedNumber?.message}
-                className={styles.formField}
+                
                 placeholder="IC2024001"
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="url"
             control={control}
@@ -309,7 +306,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.url}
                 helperText={errors.url?.message}
-                className={styles.formField}
+                
                 placeholder="https://risk.example.com"
                 type="url"
               />
@@ -327,7 +324,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.applicationDate}
                 helperText={errors.applicationDate?.message}
-                className={styles.formField}
+                
                 type="date"
                 InputLabelProps={{
                   shrink: true,
@@ -341,14 +338,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
       {/* 목록 테이블 (상세 모드에서만 표시) */}
       {mode === 'detail' && (
         <>
-          <Divider className={styles.divider} />
-          <Box className={styles.tableSection}>
-            <div className={styles.tableHeader}>
-              <Typography variant="subtitle1" className={styles.tableTitle}>
+          <Divider  />
+          <Box >
+            <div >
+              <Typography variant="subtitle1" >
                 📋 내부통제장치 목록
               </Typography>
             </div>
-            <div className={styles.tableContainer}>
+            <div >
               <BaseDataGrid
                 data={itemList}
                 columns={columns}

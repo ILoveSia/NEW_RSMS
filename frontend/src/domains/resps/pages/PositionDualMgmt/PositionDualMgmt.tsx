@@ -122,25 +122,19 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
       addModal: true,
       selectedPositionDual: null
     }));
-    toast.info('새 겸직 관계를 등록해주세요.', { autoClose: 2000 });
   }, []);
 
   const handleExcelDownload = useCallback(async () => {
     setLoadingStates(prev => ({ ...prev, excel: true }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
-
     try {
       // TODO: 실제 엑셀 다운로드 API 호출
       await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
 
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
+      toast.success('엑셀 파일이 다운로드되었습니다.');
       console.log('직책겸직 엑셀 다운로드 완료');
     } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
+      toast.error('엑셀 다운로드에 실패했습니다.');
       console.error('엑셀 다운로드 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, excel: false }));
@@ -161,9 +155,6 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
 
     setLoadingStates(prev => ({ ...prev, delete: true }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading(`${selectedPositionDuals.length}개 겸직 관계를 삭제 중입니다...`);
-
     try {
       // TODO: 실제 삭제 API 호출
       await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
@@ -178,11 +169,9 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
       }));
       setSelectedPositionDuals([]);
 
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedPositionDuals.length}개 겸직 관계가 삭제되었습니다.`);
+      toast.success(`${selectedPositionDuals.length}개 겸직 관계가 삭제되었습니다.`);
     } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '겸직 관계 삭제에 실패했습니다.');
+      toast.error('겸직 관계 삭제에 실패했습니다.');
       console.error('겸직 관계 삭제 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
@@ -291,9 +280,6 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('겸직 관계 정보를 검색 중입니다...');
-
     try {
       // 실제 API 호출
       const dtos = await getPositionConcurrents(filters.ledgerOrderId);
@@ -322,11 +308,9 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
         totalPages: Math.ceil(sortedPositionDuals.length / prev.size)
       }));
 
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `검색 완료: ${sortedPositionDuals.length}건`);
+      toast.success(`검색 완료: ${sortedPositionDuals.length}건`);
     } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
+      toast.error('검색에 실패했습니다.');
       console.error('검색 실패:', error);
       setPositionDuals([]);
       setPagination(prev => ({
@@ -349,7 +333,6 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
       concurrentStatusCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
-    toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
   // 겸직현황코드 클릭 핸들러 (상세 모달 오픈)
@@ -358,15 +341,10 @@ const PositionDualMgmt: React.FC<PositionDualMgmtProps> = ({ className }) => {
       setLoading(true);
 
       // 겸직그룹코드로 해당 그룹의 모든 직책 조회
-      const loadingToastId = toast.loading('겸직 관계 상세 정보를 조회 중입니다...');
-
       const dtos = await getPositionConcurrentsByGroup(positionDual.concurrentStatusCode);
 
       // 조회한 데이터를 상태에 저장
       setSelectedGroupData(dtos);
-
-      // 조회 성공 토스트
-      toast.update(loadingToastId, 'success', `겸직 그룹 ${positionDual.concurrentStatusCode}: ${dtos.length}건 조회 완료`);
 
       // 모달 열기 (첫 번째 항목을 대표로 전달)
       handlePositionDualDetail(positionDual);

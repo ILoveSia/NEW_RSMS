@@ -20,19 +20,17 @@ import type {
   DeptOpManualsFilters,
   DeptOpManualsModalState,
   DeptOpManualsPagination,
-  DeptOpManualsStatistics,
-  ManagementActivityType,
-  RiskAssessmentLevel
+  DeptOpManualsStatistics
 } from './types/deptOpManuals.types';
 
 // Shared Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
-import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // DeptOpManuals specific components
 import { deptOpManualsColumns } from './components/DeptOpManualsDataGrid/deptOpManualsColumns';
@@ -92,8 +90,8 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   // 조직조회팝업 상태
   const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
-  // 📊 Mock 데이터
-  const mockDeptOpManuals: DeptOpManual[] = useMemo(() => [
+  // 📊 Mock 데이터 (useState로 관리하여 등록/수정/삭제 시 실시간 반영)
+  const [mockDeptOpManuals, setMockDeptOpManuals] = useState<DeptOpManual[]>([
     {
       id: '1',
       seq: 1,
@@ -147,7 +145,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       managementActivity: '내부감사 품질관리',
       managementActivityName: '내부감사 품질관리',
       managementActivityDetail: '내부감사 품질 보증 및 개선',
-      managementActivityType: 'internal_audit',
+      managementActivityType: 'compliance',
       riskAssessmentLevel: 'medium',
       implementationManager: '내부감사 품질 보증 및 개선',
       implementationDepartment: '내부감사부',
@@ -167,7 +165,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       managementActivity: '재무보고서 작성 및 검토',
       managementActivityName: '재무보고서 작성 및 검토',
       managementActivityDetail: '월간/분기별 재무보고서 작성',
-      managementActivityType: 'finance',
+      managementActivityType: 'compliance',
       riskAssessmentLevel: 'low',
       implementationManager: '월간/분기별 재무보고서 작성',
       implementationDepartment: '재무부',
@@ -180,7 +178,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       updatedBy: '재무부',
       remarks: '프로세스 개선 필요'
     }
-  ], []);
+  ]);
 
   // 📊 통계 계산
   const statistics: DeptOpManualsStatistics = useMemo(() => {
@@ -378,6 +376,8 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   }, []);
 
   const handleRowClick = useCallback((data: DeptOpManual) => {
+    console.log('🔍 [DeptOpManualsMgmt] 상세조회 클릭:', data);
+
     setModalState({
       isOpen: true,
       mode: 'view',
@@ -386,6 +386,8 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   }, []);
 
   const handleRowDoubleClick = useCallback((data: DeptOpManual) => {
+    console.log('✏️ [DeptOpManualsMgmt] 수정모드 더블클릭:', data);
+
     setModalState({
       isOpen: true,
       mode: 'edit',
@@ -432,10 +434,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, delete: true }));
 
     try {
-      // 삭제 로직 구현
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock
+      // State 업데이트: 선택된 항목 삭제
+      const selectedIds = selectedItems.map(item => item.id);
+      setMockDeptOpManuals(prev => prev.filter(item => !selectedIds.includes(item.id)));
+
       setSelectedItems([]);
       toast.success('선택한 관리활동이 삭제되었습니다.');
+
+      // 실제 API 연동 시: await deleteDeptOpManuals(selectedIds);
     } catch (error) {
       console.error('Delete error:', error);
       toast.error('삭제 중 오류가 발생했습니다.');
@@ -453,29 +459,78 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
-      // 생성 로직
-      console.log('등록 데이터:', formData);
-      toast.success('관리활동이 등록되었습니다.');
+      // 목업 데이터 생성
+      const newManual: DeptOpManual = {
+        id: String(Date.now()),
+        seq: mockDeptOpManuals.length + 1,
+        managementObligation: formData.obligationCd || '새로운 관리의무',
+        irregularityName: formData.orgCode,
+        managementActivityCode: `M${Date.now()}`,
+        managementActivity: formData.activityName || '새로운 관리활동',
+        managementActivityName: formData.activityName || '',
+        managementActivityDetail: formData.activityDetail || '',
+        managementActivityType: formData.activityTypeCd === 'COMP' ? 'compliance' : 'risk',
+        riskAssessmentLevel: formData.riskAssessmentLevelCd === 'HIGH' ? 'high' : formData.riskAssessmentLevelCd === 'MED' ? 'medium' : 'low',
+        implementationManager: formData.implCheckMethod || '담당자',
+        implementationDepartment: '담당부서',
+        isActive: formData.isActive === 'Y',
+        status: 'active',
+        approvalStatus: 'draft',
+        createdAt: new Date().toISOString(),
+        createdBy: '관리자',
+        remarks: formData.remarks || ''
+      };
+
+      // State 업데이트: 새 데이터를 목록에 추가
+      setMockDeptOpManuals(prev => [...prev, newManual]);
+
+      console.log('✅ [DeptOpManualsMgmt] 등록 완료:', newManual);
+      toast.success(`업무메뉴얼 "${newManual.managementActivity}"이(가) 등록되었습니다.`, { autoClose: 2000 });
       handleModalClose();
+
+      // 실제 API 연동 시: await createDeptOpManual(formData);
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('❌ [DeptOpManualsMgmt] Save error:', error);
       toast.error('등록 중 오류가 발생했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, create: false }));
     }
-  }, [handleModalClose]);
+  }, [mockDeptOpManuals.length, handleModalClose]);
 
   // 수정 핸들러
   const handleUpdate = useCallback(async (id: string, formData: any) => {
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
-      // 수정 로직
-      console.log('수정 데이터:', id, formData);
-      toast.success('관리활동이 수정되었습니다.');
+      // State 업데이트: 기존 데이터 수정
+      setMockDeptOpManuals(prev => prev.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            managementObligation: formData.obligationCd || item.managementObligation,
+            irregularityName: formData.orgCode || item.irregularityName,
+            managementActivity: formData.activityName || item.managementActivity,
+            managementActivityName: formData.activityName || item.managementActivityName,
+            managementActivityDetail: formData.activityDetail || item.managementActivityDetail,
+            managementActivityType: formData.activityTypeCd === 'COMP' ? 'compliance' : 'risk',
+            riskAssessmentLevel: formData.riskAssessmentLevelCd === 'HIGH' ? 'high' : formData.riskAssessmentLevelCd === 'MED' ? 'medium' : 'low',
+            implementationManager: formData.implCheckMethod || item.implementationManager,
+            isActive: formData.isActive === 'Y',
+            updatedAt: new Date().toISOString(),
+            updatedBy: '관리자',
+            remarks: formData.remarks || item.remarks
+          };
+        }
+        return item;
+      }));
+
+      console.log('✅ [DeptOpManualsMgmt] 수정 완료:', id, formData);
+      toast.success('업무메뉴얼이 수정되었습니다.', { autoClose: 2000 });
       handleModalClose();
+
+      // 실제 API 연동 시: await updateDeptOpManual(id, formData);
     } catch (error) {
-      console.error('Update error:', error);
+      console.error('❌ [DeptOpManualsMgmt] Update error:', error);
       toast.error('수정 중 오류가 발생했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, create: false }));
@@ -639,7 +694,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         {modalState.isOpen && (
           <DeptOpManualsFormModal
             open={modalState.isOpen}
-            mode={modalState.mode === 'view' ? 'detail' : modalState.mode === 'edit' ? 'detail' : modalState.mode}
+            mode={modalState.mode}
             manual={modalState.selectedItem || null}
             onClose={handleModalClose}
             onSave={handleSave}

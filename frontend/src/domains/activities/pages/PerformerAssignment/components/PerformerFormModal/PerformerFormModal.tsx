@@ -19,7 +19,6 @@ import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal'
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { PerformerAssignment, PerformerFormData, ActivityOption, UserOption, PerformRoleOption } from '../../types/performer.types';
 import { ColDef } from 'ag-grid-community';
-import styles from './PerformerFormModal.module.scss';
 
 interface PerformerFormModalProps {
   open: boolean;
@@ -327,12 +326,12 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
       size="lg"
       actions={modalActions}
       loading={loading}
-      className={styles.modal}
+      
       contentClassName={styles.modalContent}
     >
       {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <div className={styles.formRow}>
+      <Box component="form" >
+        <div >
           <Controller
             name="activityId"
             control={control}
@@ -366,7 +365,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                     fullWidth
                     error={!!errors.activityId}
                     helperText={errors.activityId?.message}
-                    className={styles.formField}
+                    
                     placeholder="관리활동을 선택하세요"
                   />
                 )}
@@ -407,7 +406,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                     fullWidth
                     error={!!errors.performerUserId}
                     helperText={errors.performerUserId?.message}
-                    className={styles.formField}
+                    
                     placeholder="수행자를 선택하세요"
                   />
                 )}
@@ -416,7 +415,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="performPeriodStart"
             control={control}
@@ -429,7 +428,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                 fullWidth
                 error={!!errors.performPeriodStart}
                 helperText={errors.performPeriodStart?.message}
-                className={styles.formField}
+                
                 InputLabelProps={{ shrink: true }}
                 disabled={isReadOnly}
               />
@@ -448,7 +447,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                 fullWidth
                 error={!!errors.performPeriodEnd}
                 helperText={errors.performPeriodEnd?.message}
-                className={styles.formField}
+                
                 InputLabelProps={{ shrink: true }}
                 disabled={isReadOnly}
               />
@@ -456,7 +455,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="performRole"
             control={control}
@@ -465,7 +464,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                 variant="outlined"
                 fullWidth
                 error={!!errors.performRole}
-                className={styles.formField}
+                
               >
                 <InputLabel>수행역할 *</InputLabel>
                 <Select
@@ -500,7 +499,7 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
                   rows={2}
                   error={!!errors.assignmentReason}
                   helperText={errors.assignmentReason?.message}
-                  className={styles.formField}
+                  
                   placeholder="변경 사유를 입력하세요"
                   disabled={isReadOnly}
                 />
@@ -513,14 +512,14 @@ const PerformerFormModal: React.FC<PerformerFormModalProps> = ({
       {/* 지정 이력 테이블 (상세 모드에서만 표시) */}
       {mode === 'detail' && (
         <>
-          <Divider className={styles.divider} />
-          <Box className={styles.tableSection}>
-            <div className={styles.tableHeader}>
-              <Typography variant="subtitle1" className={styles.tableTitle}>
+          <Divider  />
+          <Box >
+            <div >
+              <Typography variant="subtitle1" >
                 📋 수행자 지정 이력
               </Typography>
             </div>
-            <div className={styles.tableContainer}>
+            <div >
               <BaseDataGrid
                 data={assignmentHistory}
                 columns={historyColumns}

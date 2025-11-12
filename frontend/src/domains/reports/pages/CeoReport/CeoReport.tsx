@@ -22,6 +22,7 @@ import type {
 } from './types/ceoReport.types';
 
 // Shared Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseSearchFilter, type FilterField } from '@/shared/components/organisms/BaseSearchFilter';
@@ -97,6 +98,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<CeoReportFilters>({
+    ledgerOrderId: '',
     inspectionYear: '',
     inspectionName: '2026년1회차 이행점검',
     branchName: '',
@@ -143,6 +145,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
+      ledgerOrderId: '',
       inspectionYear: '',
       inspectionName: '2026년1회차 이행점검',
       branchName: '',
@@ -228,40 +231,47 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
   // BaseSearchFilter용 검색 필드 정의 (PositionMgmt 패턴)
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'inspectionYear',
-      type: 'select',
-      label: '점검연도',
-      options: [
-        { value: '', label: '전체' },
-        { value: '2026', label: '2026년' },
-        { value: '2025', label: '2025년' },
-        { value: '2024', label: '2024년' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 3 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId || undefined}
+          onChange={(value) => handleFiltersChange({ ledgerOrderId: value || '' })}
+          label="책무이행차수"
+          size="small"
+          fullWidth
+        />
+      )
     },
     {
       key: 'inspectionName',
-      type: 'text',
+      type: 'select',
       label: '점검명',
-      placeholder: '점검명을 입력하세요',
-      defaultValue: '2026년1회차 이행점검',
-      disabled: true, // 표시용
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      options: [
+        { value: '', label: '전체' },
+        { value: '2024년1회차 이행점검', label: '2024년1회차 이행점검' },
+        { value: '2024년2회차 이행점검', label: '2024년2회차 이행점검' },
+        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' },
+        { value: '2026년1회차 이행점검', label: '2026년1회차 이행점검' }
+      ],
+      gridSize: { xs: 12, sm: 6, md: 3 }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleFiltersChange]);
 
   // BaseActionBar용 액션 버튼 정의 (PositionMgmt와 동일한 패턴)
   const actionButtons = useMemo<ActionButton[]>(() => [
-    {
-      key: 'templateDownload',
-      type: 'custom',
-      label: '보고서 템플릿 다운로드',
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleTemplateDownload,
-      disabled: loadingStates.templateDownload,
-      loading: loadingStates.templateDownload
-    },
+    // {
+    //   key: 'templateDownload',
+    //   type: 'custom',
+    //   label: '보고서 템플릿 다운로드',
+    //   variant: 'contained',
+    //   color: 'primary',
+    //   onClick: handleTemplateDownload,
+    //   disabled: loadingStates.templateDownload,
+    //   loading: loadingStates.templateDownload
+    // },
     {
       key: 'newReport',
       type: 'custom',

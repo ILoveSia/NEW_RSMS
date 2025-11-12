@@ -18,8 +18,7 @@ import type {
   ExecutionFilters,
   ExecutionModalState,
   ExecutionPagination,
-  ExecutionStatistics,
-  InspectionExecution
+  ExecutionStatistics
 } from '../ImplMonitoringStatus/types/implMonitoringStatus.types';
 
 // Shared Components
@@ -33,8 +32,8 @@ import type { Organization } from '@/shared/components/organisms/OrganizationSea
 // Domain Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
-// ImplMonitoringStatus 컬럼 재사용
-import { executionColumns } from '../ImplMonitoringStatus/components/ImplMonitoringDataGrid/implMonitoringColumns';
+// 개선이행 전용 컬럼 (dept_manager_manuals + impl_inspection_items 결합)
+import { improvementColumns, type ImprovementData } from './components/ImprovementDataGrid/improvementColumns';
 
 // Lazy-loaded components
 const ImprovementDetailModal = React.lazy(() =>
@@ -49,9 +48,9 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
   const { t } = useTranslation('compliance');
 
   // State Management
-  const [executions, setExecutions] = useState<InspectionExecution[]>([]);
+  const [executions, setExecutions] = useState<ImprovementData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedExecutions, setSelectedExecutions] = useState<InspectionExecution[]>([]);
+  const [selectedExecutions, setSelectedExecutions] = useState<ImprovementData[]>([]);
 
   const [loadingStates, setLoadingStates] = useState({
     search: false,
@@ -124,6 +123,42 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }));
   }, [selectedExecutions]);
 
+  const handleRequestApproval = useCallback(async () => {
+    if (selectedExecutions.length === 0) {
+      toast.warning('승인요청할 항목을 선택해주세요.');
+      return;
+    }
+
+    const confirmMessage = `선택된 ${selectedExecutions.length}개의 개선계획을 승인요청하시겠습니까?`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    setLoadingStates(prev => ({ ...prev, detail: true }));
+    const loadingToastId = toast.loading(`${selectedExecutions.length}개 개선계획을 승인요청 중입니다...`);
+
+    try {
+      // TODO: 실제 개선계획 승인요청 API 호출
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      setExecutions(prev =>
+        prev.map(exec =>
+          selectedExecutions.some(selected => selected.id === exec.id)
+            ? { ...exec, improvementStatus: '04' } // 개선이행으로 상태 변경
+            : exec
+        )
+      );
+      setSelectedExecutions([]);
+
+      toast.update(loadingToastId, 'success', `${selectedExecutions.length}개 개선계획이 승인요청되었습니다.`);
+    } catch (error) {
+      toast.update(loadingToastId, 'error', '개선계획 승인요청에 실패했습니다.');
+      console.error('승인요청 실패:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, detail: false }));
+    }
+  }, [selectedExecutions]);
+
   const handleCompleteImprovement = useCallback(async () => {
     if (selectedExecutions.length === 0) {
       toast.warning('개선완료 처리할 항목을 선택해주세요.');
@@ -183,7 +218,7 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }));
   }, []);
 
-  const handleExecutionDetail = useCallback((execution: InspectionExecution) => {
+  const handleExecutionDetail = useCallback((execution: ImprovementData) => {
     setModalState(prev => ({
       ...prev,
       detailModal: true,
@@ -225,15 +260,15 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     setFilters(prev => ({ ...prev, ledgerOrderId: value || '' }));
   }, []);
 
-  const handleRowClick = useCallback((execution: InspectionExecution) => {
+  const handleRowClick = useCallback((execution: ImprovementData) => {
     console.log('행 클릭:', execution);
   }, []);
 
-  const handleRowDoubleClick = useCallback((execution: InspectionExecution) => {
+  const handleRowDoubleClick = useCallback((execution: ImprovementData) => {
     handleExecutionDetail(execution);
   }, [handleExecutionDetail]);
 
-  const handleSelectionChange = useCallback((selected: InspectionExecution[]) => {
+  const handleSelectionChange = useCallback((selected: ImprovementData[]) => {
     setSelectedExecutions(selected);
     console.log('선택된 행:', selected.length);
   }, []);
@@ -241,10 +276,11 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
   // Memoized computed values
   const statistics = useMemo<ExecutionStatistics>(() => {
     const total = pagination.total;
-    const inProgress = executions.filter(e => e.inspectionStatus === 'FIRST_INSPECTION' || e.inspectionStatus === 'SECOND_INSPECTION').length;
-    const completed = executions.filter(e => e.inspectionStatus === 'COMPLETED').length;
-    const notStarted = executions.filter(e => e.inspectionStatus === 'NOT_STARTED').length;
-    const rejected = executions.filter(e => e.inspectionStatus === 'REJECTED').length;
+    // 개선이행상태 기준으로 통계 계산 (improvement_status_cd)
+    const inProgress = executions.filter(e => e.improvementStatus === '04' || e.improvementStatus === '개선이행').length;
+    const completed = executions.filter(e => e.improvementStatus === '03' || e.improvementStatus === '완료' || e.improvementStatus === '개선완료').length;
+    const notStarted = executions.filter(e => e.improvementStatus === '01' || e.improvementStatus === '개선미이행').length;
+    const rejected = executions.filter(e => e.finalInspectionResult === '02' || e.finalInspectionResult === '반려').length;
     const systemUptime = 99.2;
 
     return {
@@ -257,9 +293,9 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     };
   }, [pagination.total, executions]);
 
-  // 부적정 항목만 필터링
+  // 부적정 항목만 필터링 (inspection_status_cd: 03=부적정)
   const displayExecutions = useMemo(() => {
-    return executions.filter(e => e.inspectionResult === '부적정' || e.inspectionResult === 'FAIL');
+    return executions.filter(e => e.inspectionResult === '03' || e.inspectionResult === '부적정' || e.inspectionResult === 'FAIL');
   }, [executions]);
 
   const searchFields = useMemo<FilterField[]>(() => [
@@ -299,29 +335,54 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }
   ], [filters.ledgerOrderId, handleLedgerOrderChange, handleOrganizationSearch]);
 
-  const actionButtons = useMemo<ActionButton[]>(() => [
-    {
-      key: 'writePlan',
-      type: 'custom',
-      label: '개선계획 작성',
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleWriteImprovementPlan,
-      disabled: selectedExecutions.length === 0,
-      confirmationRequired: false
-    },
-    {
-      key: 'complete',
-      type: 'custom',
-      label: '개선완료',
-      variant: 'contained',
-      color: 'success',
-      onClick: handleCompleteImprovement,
-      disabled: selectedExecutions.length === 0 || loadingStates.complete,
-      loading: loadingStates.complete,
-      confirmationRequired: true
-    }
-  ], [handleWriteImprovementPlan, handleCompleteImprovement, selectedExecutions.length, loadingStates]);
+  const actionButtons = useMemo<ActionButton[]>(() => {
+    // 개선계획이행 작성: 01(개선미이행) 또는 04(개선이행) 상태만 활성화
+    const canWritePlan = selectedExecutions.length > 0 &&
+      selectedExecutions.every(e => e.improvementStatus === '01' || e.improvementStatus === '04');
+
+    // 개선계획 승인요청: 02(개선계획) 상태만 활성화
+    const canRequestApproval = selectedExecutions.length > 0 &&
+      selectedExecutions.every(e => e.improvementStatus === '02');
+
+    // 개선완료: 04(개선이행) 상태만 활성화
+    const canComplete = selectedExecutions.length > 0 &&
+      selectedExecutions.every(e => e.improvementStatus === '04');
+
+    return [
+      {
+        key: 'writePlan',
+        type: 'custom',
+        label: '개선계획/이행작성',
+        variant: 'contained',
+        color: 'primary',
+        onClick: handleWriteImprovementPlan,
+        disabled: !canWritePlan,
+        confirmationRequired: false
+      },
+      {
+        key: 'requestApproval',
+        type: 'custom',
+        label: '개선계획 승인요청',
+        variant: 'contained',
+        color: 'primary',
+        onClick: handleRequestApproval,
+        disabled: !canRequestApproval || loadingStates.detail,
+        loading: loadingStates.detail,
+        confirmationRequired: true
+      },
+      {
+        key: 'complete',
+        type: 'custom',
+        label: '개선완료',
+        variant: 'contained',
+        color: 'success',
+        onClick: handleCompleteImprovement,
+        disabled: !canComplete || loadingStates.complete,
+        loading: loadingStates.complete,
+        confirmationRequired: true
+      }
+    ];
+  }, [handleWriteImprovementPlan, handleRequestApproval, handleCompleteImprovement, selectedExecutions, loadingStates]);
 
   const statusInfo = useMemo<StatusInfo[]>(() => [
     {
@@ -367,25 +428,80 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }
   }, []);
 
-  // Mock data - 부적정 항목만
+  // Mock data - 부적정 항목 (dept_manager_manuals + impl_inspection_items)
   React.useEffect(() => {
-    const mockExecutions: InspectionExecution[] = [
+    const mockExecutions: ImprovementData[] = [
       {
-        id: '2',
-        sequenceNumber: 2,
+        id: '1',
+        // dept_manager_manuals 테이블 컬럼
+        sequenceNumber: 1,
         inspectionName: '2025년 1분기 정기점검',
         obligationInfo: '정보보호 관리 의무',
         managementActivityName: '개인정보 보호 점검',
-        activityFrequencyCd: '월별',
         orgCode: '준법지원부',
-        inspectionMethod: '시스템 점검',
+        // impl_inspection_items 테이블 컬럼
         inspector: '김철수',
-        inspectionResult: '부적정',
-        inspectionDetail: '일부 항목 보완 필요',
-        inspectionStatus: 'FIRST_INSPECTION',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
+        inspectionResult: '03', // 부적정
+        improvementManager: '이영희',
+        improvementStatus: '02', // 개선계획
+        improvementPlanDate: '2025-01-17',
+        improvementApprovedDate: null,
+        improvementCompletedDate: null,
+        finalInspectionResult: ''
+      },
+      {
+        id: '2',
+        // dept_manager_manuals 테이블 컬럼
+        sequenceNumber: 2,
+        inspectionName: '2025년 1분기 정기점검',
+        obligationInfo: '자금세탁방지 의무',
+        managementActivityName: '자금세탁방지 시스템 점검',
+        orgCode: '리스크관리부',
+        // impl_inspection_items 테이블 컬럼
+        inspector: '박민수',
+        inspectionResult: '03', // 부적정
+        improvementManager: '정수진',
+        improvementStatus: '05', // 개선완료
+        improvementPlanDate: '2025-01-19',
+        improvementApprovedDate: '2025-01-22',
+        improvementCompletedDate: '2025-01-25',
+        finalInspectionResult: '01' // 승인
+      },
+      {
+        id: '3',
+        // dept_manager_manuals 테이블 컬럼
+        sequenceNumber: 3,
+        inspectionName: '2025년 1분기 정기점검',
+        obligationInfo: '리스크 관리 의무',
+        managementActivityName: '신용리스크 평가 점검',
+        orgCode: '신용평가부',
+        // impl_inspection_items 테이블 컬럼
+        inspector: '최준호',
+        inspectionResult: '03', // 부적정
+        improvementManager: '강민지',
+        improvementStatus: '01', // 개선미이행
+        improvementPlanDate: null,
+        improvementApprovedDate: null,
+        improvementCompletedDate: null,
+        finalInspectionResult: ''
+      },
+      {
+        id: '4',
+        // dept_manager_manuals 테이블 컬럼
+        sequenceNumber: 4,
+        inspectionName: '2025년 1분기 정기점검',
+        obligationInfo: '내부통제 관리 의무',
+        managementActivityName: '내부통제 프로세스 점검',
+        orgCode: '내부감사부',
+        // impl_inspection_items 테이블 컬럼
+        inspector: '윤서영',
+        inspectionResult: '03', // 부적정
+        improvementManager: '김태현',
+        improvementStatus: '04', // 개선이행
+        improvementPlanDate: '2025-01-20',
+        improvementApprovedDate: '2025-01-23',
+        improvementCompletedDate: null,
+        finalInspectionResult: ''
       }
     ];
 
@@ -485,7 +601,7 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
 
           <BaseDataGrid
             data={displayExecutions}
-            columns={executionColumns.map(col => {
+            columns={improvementColumns.map(col => {
               if (col.field === 'managementActivityName') {
                 return {
                   ...col,
@@ -521,8 +637,11 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
         <React.Suspense fallback={<LoadingSpinner />}>
           <ImprovementDetailModal
             open={modalState.detailModal}
-            execution={modalState.selectedExecution}
+            mode="detail"
+            improvement={modalState.selectedExecution}
             onClose={handleModalClose}
+            onSave={() => {}}
+            onUpdate={() => {}}
             loading={loading}
           />
         </React.Suspense>

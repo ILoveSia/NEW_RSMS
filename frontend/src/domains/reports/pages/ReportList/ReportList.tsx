@@ -3,36 +3,43 @@ import toast from '@/shared/utils/toast';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { TextField } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ReportList.module.scss';
 
 // Types
 import type {
+  ImprovementActionFormData,
   Report,
-  ReportListFilters,
   ReportFormData,
+  ReportListFilters,
   ReportListModalState,
-  ReportListPagination,
-  ImprovementActionFormData
+  ReportListPagination
 } from './types/reportList.types';
 
 // Shared Components
+import { Button } from '@/shared/components/atoms/Button';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // Report specific components
 import { reportColumns } from './components/ReportDataGrid/reportColumns';
 
 // Lazy-loaded components for performance optimization
 const ReportFormModal = React.lazy(() =>
-  import('./components/ReportFormModal').then(module => ({ default: module.default }))
+  import('./components/ReportFormModal/ReportFormModal').then(module => ({ default: module.default }))
 );
 
 const ImprovementActionModal = React.lazy(() =>
-  import('./components/ImprovementActionModal').then(module => ({ default: module.default }))
+  import('./components/ImprovementActionModal/ImprovementActionModal').then(module => ({ default: module.default }))
 );
 
 interface ReportListProps {
@@ -58,10 +65,13 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<ReportListFilters>({
-    inspectionYear: '',
-    branchName: '',
-    inspectionStatus: ''
+    ledgerOrderId: '',
+    inspectionName: '',
+    orgCode: ''
   });
+
+  // 부점 조회 팝업 상태
+  const [isOrgSearchModalOpen, setIsOrgSearchModalOpen] = useState(false);
 
   const [pagination, setPagination] = useState<ReportListPagination>({
     page: 1,
@@ -159,6 +169,37 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     }
   }, [handleModalClose, reports.length]);
 
+  const handleDeleteReports = useCallback(async () => {
+    if (selectedReports.length === 0) {
+      toast.warning('삭제할 보고서를 선택해주세요.');
+      return;
+    }
+
+    if (!window.confirm(`선택한 ${selectedReports.length}건의 보고서를 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setLoadingStates(prev => ({ ...prev, delete: true }));
+
+      // TODO: API 호출로 실제 삭제
+      // await deleteReports(selectedReports.map(r => r.id));
+
+      // 임시로 로컬 상태에서 제거
+      const selectedIds = selectedReports.map(r => r.id);
+      setReports(prev => prev.filter(report => !selectedIds.includes(report.id)));
+      setPagination(prev => ({ ...prev, total: prev.total - selectedReports.length }));
+      setSelectedReports([]);
+
+      toast.success(`${selectedReports.length}건의 보고서가 삭제되었습니다.`);
+    } catch (error) {
+      console.error('보고서 삭제 실패:', error);
+      toast.error('보고서 삭제에 실패했습니다.');
+    } finally {
+      setLoadingStates(prev => ({ ...prev, delete: false }));
+    }
+  }, [selectedReports]);
+
   const handleImprovementSave = useCallback(async (formData: ImprovementActionFormData) => {
     try {
       setLoading(true);
@@ -223,12 +264,29 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
-      inspectionYear: '',
-      branchName: '',
-      inspectionStatus: ''
+      ledgerOrderId: '',
+      inspectionName: '',
+      orgCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
-    toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+  }, []);
+
+  // 부점 조회 팝업 핸들러
+  const handleOrgSearchOpen = useCallback(() => {
+    setIsOrgSearchModalOpen(true);
+  }, []);
+
+  const handleOrgSearchClose = useCallback(() => {
+    setIsOrgSearchModalOpen(false);
+  }, []);
+
+  const handleOrganizationSelect = useCallback((organization: Organization) => {
+    setFilters(prev => ({
+      ...prev,
+      orgCode: organization.orgCode || ''
+    }));
+    setIsOrgSearchModalOpen(false);
+    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
   }, []);
 
   // Grid Event Handlers
@@ -268,67 +326,63 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'inspectionYear',
-      type: 'select',
-      label: '점검연도',
-      options: [
-        { value: '', label: '전체' },
-        { value: '2024', label: '2024년' },
-        { value: '2023', label: '2023년' },
-        { value: '2022', label: '2022년' }
-      ],
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      placeholder: '책무이행차수를 선택하세요',
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId}
+          onChange={(newValue) => handleFiltersChange({ ledgerOrderId: newValue || '' })}
+          required
+        />
+      ),
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'branchName',
-      type: 'select',
-      label: '부점명',
-      options: [
-        { value: '', label: '전체' },
-        { value: '본점', label: '본점' },
-        { value: '강남지점', label: '강남지점' },
-        { value: '종로지점', label: '종로지점' },
-        { value: '부산지점', label: '부산지점' }
-      ],
+      key: 'inspectionName',
+      type: 'text',
+      label: '점검명',
+      placeholder: '점검명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'inspectionStatus',
-      type: 'select',
-      label: '점검상태',
-      options: [
-        { value: '', label: '전체' },
-        { value: 'DRAFT', label: '작성중' },
-        { value: 'SUBMITTED', label: '제출완료' },
-        { value: 'APPROVED', label: '승인완료' },
-        { value: 'REJECTED', label: '반려' }
-      ],
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      key: 'orgCode',
+      type: 'text',
+      label: '부점코드',
+      placeholder: '부점코드를 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      endAdornment: {
+        type: 'button',
+        icon: 'Search',
+        onClick: handleOrgSearchOpen,
+        tooltip: '부점조회'
+      }
     }
-  ], []);
+  ], [filters.ledgerOrderId, handleFiltersChange, handleOrgSearchOpen]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
-    {
-      key: 'improvement',
-      type: 'custom',
-      label: '개선조치등록',
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleImprovementAction,
-      disabled: selectedReports.length === 0 || loadingStates.improvement,
-      loading: loadingStates.improvement
-    },
-    {
-      key: 'ceoReport',
-      type: 'custom',
-      label: 'CEO 보고서 작성',
-      variant: 'contained',
-      color: 'secondary',
-      onClick: handleCeoReport,
-      disabled: loadingStates.ceoReport,
-      loading: loadingStates.ceoReport
-    },
+    // {
+    //   key: 'improvement',
+    //   type: 'custom',
+    //   label: '개선조치등록',
+    //   variant: 'contained',
+    //   color: 'primary',
+    //   onClick: handleImprovementAction,
+    //   disabled: selectedReports.length === 0 || loadingStates.improvement,
+    //   loading: loadingStates.improvement
+    // },
+    // {
+    //   key: 'ceoReport',
+    //   type: 'custom',
+    //   label: 'CEO 보고서 작성',
+    //   variant: 'contained',
+    //   color: 'secondary',
+    //   onClick: handleCeoReport,
+    //   disabled: loadingStates.ceoReport,
+    //   loading: loadingStates.ceoReport
+    // },
     {
       key: 'newReport',
       type: 'custom',
@@ -338,8 +392,18 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       onClick: handleNewReport,
       disabled: loadingStates.newReport,
       loading: loadingStates.newReport
+    },
+    {
+      key: 'delete',
+      type: 'custom',
+      label: '삭제',
+      variant: 'contained',
+      color: 'error',
+      onClick: handleDeleteReports,
+      disabled: selectedReports.length === 0 || loadingStates.delete,
+      loading: loadingStates.delete
     }
-  ], [handleImprovementAction, handleCeoReport, handleNewReport, selectedReports.length, loadingStates]);
+  ], [handleImprovementAction, handleCeoReport, handleNewReport, handleDeleteReports, selectedReports.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -535,8 +599,13 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
           />
         </div>
 
-        {/* 보고서 작성 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        {/* 보고서 작성 모달 - BaseModalWrapper 적용 */}
+        <BaseModalWrapper
+          isOpen={modalState.ceoReportModal || modalState.newReportModal || modalState.detailModal}
+          onClose={handleModalClose}
+          ariaLabel="보고서 작성 모달"
+          fallbackComponent={<LoadingSpinner text="보고서 모달을 불러오는 중..." />}
+        >
           <ReportFormModal
             open={modalState.ceoReportModal || modalState.newReportModal || modalState.detailModal}
             onClose={handleModalClose}
@@ -545,17 +614,29 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
             onSubmit={handleReportSave}
             title={modalState.ceoReportModal ? 'CEO 보고서 작성' : modalState.newReportModal ? '신규 보고서 작성' : '보고서 상세'}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
 
-        {/* 개선조치 등록 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        {/* 개선조치 등록 모달 - BaseModalWrapper 적용 */}
+        <BaseModalWrapper
+          isOpen={modalState.improvementModal}
+          onClose={handleModalClose}
+          ariaLabel="개선조치 등록 모달"
+          fallbackComponent={<LoadingSpinner text="개선조치 모달을 불러오는 중..." />}
+        >
           <ImprovementActionModal
             open={modalState.improvementModal}
             onClose={handleModalClose}
             reportData={modalState.selectedReport}
             onSubmit={handleImprovementSave}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
+
+        {/* 부점 조회 팝업 */}
+        <OrganizationSearchModal
+          open={isOrgSearchModalOpen}
+          onClose={handleOrgSearchClose}
+          onSelect={handleOrganizationSelect}
+        />
       </div>
     </React.Profiler>
   );

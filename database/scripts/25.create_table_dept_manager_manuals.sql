@@ -54,8 +54,10 @@ CREATE TABLE rsms.dept_manager_manuals (
 
   -- 수행 정보
   executor_id VARCHAR(50),                             -- 수행자ID
+  execution_date DATE,                                 -- 수행일자
   execution_status VARCHAR(20),                        -- 수행여부 (01:미수행, 02:수행완료)
-  execution_result VARCHAR(500),                       -- 수행결과
+  execution_result_cd VARCHAR(20),                     -- 수행결과코드 (01:적정, 02:부적정)
+  execution_result_content TEXT,                       -- 수행결과내용
 
   -- 감사 필드 (BaseEntity 패턴)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- 등록일시
@@ -78,7 +80,10 @@ CREATE TABLE rsms.dept_manager_manuals (
   CONSTRAINT chk_status CHECK (status IN ('active', 'inactive', 'pending', 'approved')),
 
   -- 제약조건: 수행여부는 정해진 값만 가능
-  CONSTRAINT chk_execution_status CHECK (execution_status IN ('01', '02'))
+  CONSTRAINT chk_execution_status CHECK (execution_status IN ('01', '02')),
+
+  -- 제약조건: 수행결과코드는 정해진 값만 가능
+  CONSTRAINT chk_execution_result_cd CHECK (execution_result_cd IN ('01', '02'))
 );
 
 -- =====================================================
@@ -173,8 +178,10 @@ COMMENT ON COLUMN rsms.dept_manager_manuals.status IS '상태 (active: 사용, i
 
 -- 수행 정보 코멘트
 COMMENT ON COLUMN rsms.dept_manager_manuals.executor_id IS '수행자ID';
+COMMENT ON COLUMN rsms.dept_manager_manuals.execution_date IS '수행일자';
 COMMENT ON COLUMN rsms.dept_manager_manuals.execution_status IS '수행여부 (01: 미수행, 02: 수행완료)';
-COMMENT ON COLUMN rsms.dept_manager_manuals.execution_result IS '수행결과';
+COMMENT ON COLUMN rsms.dept_manager_manuals.execution_result_cd IS '수행결과코드 (01: 적정, 02: 부적정)';
+COMMENT ON COLUMN rsms.dept_manager_manuals.execution_result_content IS '수행결과내용';
 
 -- 감사 필드 코멘트
 COMMENT ON COLUMN rsms.dept_manager_manuals.created_at IS '등록일시';

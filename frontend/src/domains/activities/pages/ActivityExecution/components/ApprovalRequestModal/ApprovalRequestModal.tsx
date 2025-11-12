@@ -14,7 +14,6 @@ import {
   ApprovalTargetActivity,
   ApprovalRequest
 } from '../../types/activityExecution.types';
-import styles from './ApprovalRequestModal.module.scss';
 
 interface ApprovalRequestModalProps {
   open: boolean;
@@ -314,11 +313,11 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
       actions={modalActions}
       loading={loading}
     >
-      <div className={styles.modalContent}>
+      <div >
         {/* 📊 결재요청내용 섹션 */}
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <Typography variant="h6" className={styles.sectionTitle}>
+        <div >
+          <div >
+            <Typography variant="h6" >
               🎯 결재요청내용
             </Typography>
             <Typography variant="body2" color="textSecondary">
@@ -326,7 +325,7 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
             </Typography>
           </div>
 
-          <div className={styles.gridContainer}>
+          <div >
             <BaseDataGrid
               data={targetActivityData}
               columns={targetActivityColumns}
@@ -341,12 +340,12 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
           </div>
         </div>
 
-        <Divider className={styles.sectionDivider} />
+        <Divider  />
 
         {/* 🏛️ 결재선 섹션 */}
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <Typography variant="h6" className={styles.sectionTitle}>
+        <div >
+          <div >
+            <Typography variant="h6" >
               🏛️ 결재선
             </Typography>
             <Typography variant="body2" color="textSecondary">
@@ -354,7 +353,7 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
             </Typography>
           </div>
 
-          <div className={styles.gridContainer}>
+          <div >
             <BaseDataGrid
               data={approvalLineData}
               columns={approvalLineColumns}
@@ -370,11 +369,11 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
         </div>
 
         {/* 📝 승인 요청 안내 */}
-        <div className={styles.noticeSection}>
-          <Typography variant="body2" color="primary" className={styles.noticeText}>
+        <div >
+          <Typography variant="body2" color="primary" >
             * 결재 요청 시 정시 이후 응찰한 작업 이용에 추가됩니다.
           </Typography>
-          <Typography variant="body2" color="textSecondary" className={styles.noticeSubText}>
+          <Typography variant="body2" color="textSecondary" >
             예: 순번1 결재 수 수정시 순번 1,2,3,4 순은 2,3,4로 변경<br/>
             예: 순번3 결재 수 수정시 순번 3,4 순은 2,3로 변경
           </Typography>
@@ -382,8 +381,8 @@ const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
 
         {/* 진행 상태 표시 */}
         {approvalInProgress && (
-          <div className={styles.progressSection}>
-            <Typography variant="body2" color="primary" className={styles.progressText}>
+          <div >
+            <Typography variant="body2" color="primary" >
               승인 요청을 처리하고 있습니다...
             </Typography>
           </div>

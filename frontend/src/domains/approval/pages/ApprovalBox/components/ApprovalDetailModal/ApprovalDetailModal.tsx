@@ -34,7 +34,6 @@ import type {
   ApprovalLineStatus,
   APPROVAL_STATUS_COLOR_MAP
 } from '../../types/approvalBox.types';
-import styles from './ApprovalDetailModal.module.scss';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -219,18 +218,18 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      className={styles.dialog}
+      
     >
-      <DialogTitle className={styles.dialogTitle}>
-        <div className={styles.titleContent}>
-          <div className={styles.titleMain}>
-            <InfoIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <div >
+            <InfoIcon  />
             <div>
-              <Typography variant="h6" className={styles.title}>
+              <Typography variant="h6" >
                 {modalTitle}
               </Typography>
               {itemData && (
-                <Typography variant="body2" className={styles.subtitle}>
+                <Typography variant="body2" >
                   결재ID: {itemData.approvalId} | {itemData.workType}
                 </Typography>
               )}
@@ -238,7 +237,7 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
           </div>
           <IconButton
             onClick={onClose}
-            className={styles.closeButton}
+            
             size="small"
           >
             <CloseIcon />
@@ -246,48 +245,48 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
         </div>
       </DialogTitle>
 
-      <DialogContent className={styles.dialogContent}>
+      <DialogContent >
         {mode === 'detail' && itemData && (
           <>
             {/* 기본 정보 */}
-            <Paper className={styles.infoSection}>
-              <Typography variant="h6" className={styles.sectionTitle}>
+            <Paper >
+              <Typography variant="h6" >
                 기본 정보
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <Box className={styles.infoItem}>
-                    <Typography variant="body2" className={styles.infoLabel}>
+                  <Box >
+                    <Typography variant="body2" >
                       결재ID
                     </Typography>
-                    <Typography variant="body1" className={styles.infoValue}>
+                    <Typography variant="body1" >
                       {itemData.approvalId}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Box className={styles.infoItem}>
-                    <Typography variant="body2" className={styles.infoLabel}>
+                  <Box >
+                    <Typography variant="body2" >
                       업무종류
                     </Typography>
-                    <Typography variant="body1" className={styles.infoValue}>
+                    <Typography variant="body1" >
                       {itemData.workType}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <Box className={styles.infoItem}>
-                    <Typography variant="body2" className={styles.infoLabel}>
+                  <Box >
+                    <Typography variant="body2" >
                       내용
                     </Typography>
-                    <Typography variant="body1" className={styles.infoValue}>
+                    <Typography variant="body1" >
                       {itemData.content}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Box className={styles.infoItem}>
-                    <Typography variant="body2" className={styles.infoLabel}>
+                  <Box >
+                    <Typography variant="body2" >
                       결재상태
                     </Typography>
                     <Chip
@@ -301,11 +300,11 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Box className={styles.infoItem}>
-                    <Typography variant="body2" className={styles.infoLabel}>
+                  <Box >
+                    <Typography variant="body2" >
                       결재일정
                     </Typography>
-                    <Typography variant="body1" className={styles.infoValue}>
+                    <Typography variant="body1" >
                       {itemData.approvalSchedule}
                     </Typography>
                   </Box>
@@ -314,7 +313,7 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
             </Paper>
 
             {/* 탭 컨테이너 */}
-            <Paper className={styles.tabSection}>
+            <Paper >
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
                   <Tab
@@ -422,8 +421,8 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
         )}
 
         {(mode === 'create' || mode === 'edit') && (
-          <Paper className={styles.formSection}>
-            <Typography variant="h6" className={styles.sectionTitle}>
+          <Paper >
+            <Typography variant="h6" >
               {mode === 'create' ? '결재 등록' : '결재 수정'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -433,7 +432,7 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
         )}
       </DialogContent>
 
-      <DialogActions className={styles.dialogActions}>
+      <DialogActions >
         <Button
           variant="outlined"
           onClick={onClose}

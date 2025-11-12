@@ -149,6 +149,21 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     }
   },
   {
+    field: 'inspectionDetail',
+    headerName: '점검세부내용',
+    flex: 1,
+    minWidth: 200,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
+    }
+  },
+  {
     field: 'inspectionResult',
     headerName: '점검결과',
     width: 120,
@@ -176,45 +191,6 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
           {value}
         </span>
       );
-    }
-  },
-  {
-    field: 'inspectionDetail',
-    headerName: '점검세부내용',
-    flex: 1,
-    minWidth: 200,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellClass: 'ag-cell-left',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      if (!value) return '-';
-      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
-    }
-  },
-  {
-    field: 'inspectionStatus',
-    headerName: '상태',
-    width: 120,
-    minWidth: 100,
-    maxWidth: 150,
-    sortable: true,
-    filter: 'agSetColumnFilter',
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      let statusText = '';
-      switch (value) {
-        case 'NOT_STARTED': statusText = '미수행'; break;
-        case 'FIRST_INSPECTION': statusText = '1차점검중'; break;
-        case 'SECOND_INSPECTION': statusText = '2차점검중'; break;
-        case 'COMPLETED': statusText = '✓ 완료'; break;
-        case 'REJECTED': statusText = '반려'; break;
-        default: statusText = '미수행';
-      }
-      return statusText;
     }
   }
 ];

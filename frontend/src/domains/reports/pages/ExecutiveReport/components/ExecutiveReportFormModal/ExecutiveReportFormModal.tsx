@@ -1,73 +1,99 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText,
-  Typography,
-  Box,
-  Divider,
-  Chip,
-  Button
-} from '@mui/material';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { BaseModal, ModalAction } from '@/shared/components/organisms/BaseModal';
-import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import {
-  ResponsibilityInspection,
-  DutyInspection,
-  ExecutiveReportFormData,
-  TargetOrganization
-} from '../../types/executiveReport.types';
-import { ColDef } from 'ag-grid-community';
-import styles from './ExecutiveReportFormModal.module.scss';
+/**
+ * 이행점검결과보고서 등록/수정/상세 모달
+ * - impl_inspection_reports 테이블 구조 반영
+ * - PositionFormModal.tsx 표준 스타일 적용
+ * - BaseModalWrapper 미사용 (Dialog 직접 사용)
+ */
 
+import { Button } from '@/shared/components/atoms/Button';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+
+/**
+ * 이행점검결과보고서 폼 데이터 타입
+ */
+interface ExecutiveReportFormData {
+  ledgerOrderId: string;              // 원장차수ID
+  implInspectionPlanId: string;       // 이행점검ID
+  reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서)
+  reviewContent: string;              // 검토내용
+  reviewDate: string | null;          // 검토일자
+  result: string;                     // 결과
+  improvementAction: string;          // 개선조치
+  remarks: string;                    // 비고
+}
+
+/**
+ * 모달 Props
+ */
 interface ExecutiveReportFormModalProps {
   open: boolean;
-  mode: 'create' | 'edit' | 'detail';
-  report?: ResponsibilityInspection | DutyInspection | null;
+  mode: 'create' | 'detail';
+  report: any | null;
   onClose: () => void;
-  onSave: (data: ExecutiveReportFormData) => void;
-  onUpdate: (id: string, data: ExecutiveReportFormData) => void;
+  onSave: (formData: ExecutiveReportFormData) => Promise<void>;
+  onUpdate: (id: string, formData: ExecutiveReportFormData) => Promise<void>;
+  onRefresh?: () => Promise<void>;
   loading?: boolean;
 }
 
-const schema = yup.object({
-  inspectionRound: yup
+/**
+ * 폼 검증 스키마
+ */
+const schema = yup.object().shape({
+  ledgerOrderId: yup
     .string()
-    .required('점검회차는 필수입니다')
-    .max(50, '점검회차는 50자 이내로 입력해주세요'),
-  inspectionContent: yup
+    .required('원장차수는 필수입니다'),
+  implInspectionPlanId: yup
     .string()
-    .required('점검내용은 필수입니다')
-    .max(1000, '점검내용은 1000자 이내로 입력해주세요'),
-  targetOrganization: yup
+    .required('이행점검ID는 필수입니다')
+    .max(13, '이행점검ID는 13자리입니다'),
+  reportTypeCd: yup
     .string()
-    .required('대상조직은 필수입니다'),
-  reportSummary: yup
+    .required('보고서구분은 필수입니다')
+    .oneOf(['01', '02'], '보고서구분은 01 또는 02만 가능합니다'),
+  reviewContent: yup
     .string()
-    .required('보고서 요약은 필수입니다')
-    .max(500, '보고서 요약은 500자 이내로 입력해주세요'),
-  inspectionScope: yup
+    .default('')
+    .max(2000, '검토내용은 2000자 이내로 입력해주세요'),
+  reviewDate: yup
     .string()
-    .required('점검범위는 필수입니다')
-    .max(300, '점검범위는 300자 이내로 입력해주세요'),
-  keyFindings: yup
+    .nullable()
+    .default(null),
+  result: yup
     .string()
-    .max(1000, '주요 발견사항은 1000자 이내로 입력해주세요'),
-  recommendations: yup
+    .default('')
+    .max(2000, '결과는 2000자 이내로 입력해주세요'),
+  improvementAction: yup
     .string()
-    .max(1000, '권고사항은 1000자 이내로 입력해주세요'),
-  followUpActions: yup
+    .default('')
+    .max(2000, '개선조치는 2000자 이내로 입력해주세요'),
+  remarks: yup
     .string()
-    .max(1000, '후속조치 계획은 1000자 이내로 입력해주세요')
+    .default('')
+    .max(500, '비고는 500자 이내로 입력해주세요')
 });
 
 const ExecutiveReportFormModal: React.FC<ExecutiveReportFormModalProps> = ({
@@ -75,544 +101,351 @@ const ExecutiveReportFormModal: React.FC<ExecutiveReportFormModalProps> = ({
   mode,
   report,
   onClose,
-  onSave,
-  onUpdate,
+  onRefresh,
   loading = false
 }) => {
-  const { t } = useTranslation('reports');
-  const [targetOrgList, setTargetOrgList] = useState<TargetOrganization[]>([]);
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-
-  // 대상조직 옵션 (실제로는 API에서 가져와야 함)
-  const targetOrganizationOptions = [
-    { value: 'headquarters', label: '본부' },
-    { value: 'regional_branch', label: '지역본부' },
-    { value: 'sales_branch', label: '영업점' },
-    { value: 'center', label: '센터' }
-  ];
+  // 수정 모드 상태
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid }
+    formState: { errors }
   } = useForm<ExecutiveReportFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      inspectionRound: '',
-      inspectionPeriod: {
-        startDate: '',
-        endDate: ''
-      },
-      inspectionContent: '',
-      targetOrganization: '',
-      reportSummary: '',
-      attachmentFiles: [],
-      inspectionScope: '',
-      keyFindings: '',
-      recommendations: '',
-      followUpActions: ''
+      ledgerOrderId: '',
+      implInspectionPlanId: '',
+      reportTypeCd: '01', // 기본값: CEO보고서
+      reviewContent: '',
+      reviewDate: dayjs().format('YYYY-MM-DD'),
+      result: '',
+      improvementAction: '',
+      remarks: ''
     }
   });
 
-  // 폼 초기화
+  /**
+   * 폼 초기화
+   * - mode와 report 데이터에 따라 폼 데이터 설정
+   */
   useEffect(() => {
-    if (open) {
-      if ((mode === 'edit' || mode === 'detail') && report) {
-        reset({
-          inspectionRound: `${report.inspectionYear}년 ${report.inspectionName}`,
-          inspectionPeriod: {
-            startDate: '2024-01-01',
-            endDate: '2024-12-31'
-          },
-          inspectionContent: mode === 'detail' && 'managementActivity' in report
-            ? report.managementActivity : '점검 내용',
-          targetOrganization: report.branchName,
-          reportSummary: mode === 'detail' && 'resultDetail' in report
-            ? report.resultDetail : '보고서 요약',
-          inspectionScope: '점검 범위',
-          keyFindings: mode === 'detail' && 'resultDetail' in report
-            ? report.resultDetail : '',
-          recommendations: mode === 'detail' && 'improvementDetail' in report
-            ? report.improvementDetail : '',
-          followUpActions: '후속조치 계획',
-          attachmentFiles: []
-        });
-        // 상세/수정 모드에서 대상조직 목록 로드
-        loadTargetOrgList(report.id);
-      } else {
-        reset({
-          inspectionRound: '',
-          inspectionPeriod: {
-            startDate: '',
-            endDate: ''
-          },
-          inspectionContent: '',
-          targetOrganization: '',
-          reportSummary: '',
-          attachmentFiles: [],
-          inspectionScope: '',
-          keyFindings: '',
-          recommendations: '',
-          followUpActions: ''
-        });
-        setTargetOrgList([]);
-        setAttachedFiles([]);
-      }
-    }
-  }, [open, mode, report, reset]);
-
-  // 대상조직 목록 로드 함수
-  const loadTargetOrgList = useCallback(async (reportId: string) => {
-    try {
-      // TODO: API 호출로 해당 보고서의 대상조직 정보 로드
-      // const response = await executiveReportApi.getTargetOrganizations(reportId);
-      // setTargetOrgList(response.data.organizations);
-
-      // 임시 데이터
-      setTargetOrgList([
-        {
-          id: '1',
-          organizationName: '본부 경영진단팀',
-          organizationType: 'HEADQUARTERS',
-          parentOrganization: '경영진단본부',
-          manager: '홍길동',
-          managerPosition: '팀장',
-          contactInfo: '02-1234-5678',
-          isActive: true,
-          authorityLevel: 'ADMIN'
-        },
-        {
-          id: '2',
-          organizationName: '서울지역본부',
-          organizationType: 'BRANCH',
-          parentOrganization: '영업본부',
-          manager: '김철수',
-          managerPosition: '본부장',
-          contactInfo: '02-2345-6789',
-          isActive: true,
-          authorityLevel: 'WRITE'
-        }
-      ]);
-    } catch (error) {
-      console.error('대상조직 목록 로드 실패:', error);
-    }
-  }, []);
-
-  // 파일 업로드 처리
-  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files);
-      setAttachedFiles(prev => [...prev, ...newFiles]);
-    }
-  }, []);
-
-  // 파일 삭제 처리
-  const handleFileRemove = useCallback((index: number) => {
-    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
-  }, []);
-
-  // 폼 제출 처리
-  const onSubmit = useCallback((data: ExecutiveReportFormData) => {
-    const submitData: ExecutiveReportFormData = {
-      ...data,
-      attachmentFiles: attachedFiles
-    };
-
     if (mode === 'create') {
-      onSave(submitData);
-    } else if ((mode === 'edit' || mode === 'detail') && report) {
-      onUpdate(report.id, submitData);
+      reset({
+        ledgerOrderId: '',
+        implInspectionPlanId: '',
+        reportTypeCd: '01',
+        reviewContent: '',
+        reviewDate: dayjs().format('YYYY-MM-DD'),
+        result: '',
+        improvementAction: '',
+        remarks: ''
+      });
+      setIsEditing(true);
+    } else if (report) {
+      reset({
+        ledgerOrderId: report.ledgerOrderId || '',
+        implInspectionPlanId: report.implInspectionPlanId || '',
+        reportTypeCd: report.reportTypeCd || '01',
+        reviewContent: report.reviewContent || '',
+        reviewDate: report.reviewDate || dayjs().format('YYYY-MM-DD'),
+        result: report.result || '',
+        improvementAction: report.improvementAction || '',
+        remarks: report.remarks || ''
+      });
+      setIsEditing(false);
     }
-  }, [mode, report, onSave, onUpdate, attachedFiles]);
+  }, [mode, report, reset]);
 
-  // 대상조직 테이블 컬럼 정의
-  const orgColumns: ColDef<TargetOrganization>[] = [
-    {
-      field: 'organizationName',
-      headerName: '조직명',
-      width: 200,
-      sortable: true
-    },
-    {
-      field: 'organizationType',
-      headerName: '조직구분',
-      width: 120,
-      sortable: true,
-      valueFormatter: (params) => {
-        const typeMap = {
-          HEADQUARTERS: '본부',
-          BRANCH: '지점',
-          CENTER: '센터',
-          TEAM: '팀'
-        };
-        return typeMap[params.value as keyof typeof typeMap] || params.value;
+  /**
+   * 폼 제출 핸들러
+   */
+  const onSubmit = useCallback(async (formData: ExecutiveReportFormData) => {
+    try {
+      if (mode === 'create') {
+        // TODO: API 호출 - 보고서 등록
+        console.log('보고서 등록:', formData);
+        alert('보고서가 성공적으로 등록되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
+      } else if (report && isEditing) {
+        // TODO: API 호출 - 보고서 수정
+        console.log('보고서 수정:', report.id, formData);
+        alert('보고서가 성공적으로 수정되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
       }
-    },
-    {
-      field: 'manager',
-      headerName: '담당자',
-      width: 100,
-      sortable: true
-    },
-    {
-      field: 'managerPosition',
-      headerName: '직책',
-      width: 100,
-      sortable: true
-    },
-    {
-      field: 'authorityLevel',
-      headerName: '권한수준',
-      width: 100,
-      sortable: true,
-      valueFormatter: (params) => {
-        const levelMap = {
-          READ: '읽기',
-          WRITE: '읽기/쓰기',
-          ADMIN: '관리자'
-        };
-        return levelMap[params.value as keyof typeof levelMap] || params.value;
-      }
+    } catch (error) {
+      console.error('보고서 저장 실패:', error);
+      alert(error instanceof Error ? error.message : '보고서 저장에 실패했습니다.');
     }
-  ];
+  }, [mode, report, isEditing, onClose, onRefresh]);
 
-  const modalTitle = mode === 'create' ? '신규 보고서 작성' :
-                     mode === 'edit' ? '보고서 수정' : '보고서 상세';
-  const submitButtonText = mode === 'create' ? '저장' :
-                           mode === 'edit' ? '수정' : '확인';
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+  }, []);
 
-  // BaseModal 액션 버튼 정의
-  const modalActions: ModalAction[] = [
-    {
-      key: 'cancel',
-      label: '닫기',
-      variant: 'outlined',
-      onClick: onClose,
-      disabled: loading
+  const handleCancel = useCallback(() => {
+    if (mode === 'detail' && report) {
+      reset({
+        ledgerOrderId: report.ledgerOrderId || '',
+        implInspectionPlanId: report.implInspectionPlanId || '',
+        reportTypeCd: report.reportTypeCd || '01',
+        reviewContent: report.reviewContent || '',
+        reviewDate: report.reviewDate || dayjs().format('YYYY-MM-DD'),
+        result: report.result || '',
+        improvementAction: report.improvementAction || '',
+        remarks: report.remarks || ''
+      });
+      setIsEditing(false);
+    } else {
+      onClose();
     }
-  ];
+  }, [mode, report, onClose, reset]);
 
-  // 등록/수정 모드에서만 저장 버튼 추가
-  if (mode === 'create' || mode === 'edit') {
-    modalActions.push({
-      key: 'submit',
-      label: submitButtonText,
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleSubmit(onSubmit),
-      disabled: !isValid || loading,
-      loading: loading
-    });
-  }
+  const title = mode === 'create' ? '이행점검결과보고서 등록' : '이행점검결과보고서 상세';
+  const isReadOnly = mode === 'detail' && !isEditing;
 
   return (
-    <BaseModal
+    <Dialog
       open={open}
       onClose={onClose}
-      title={modalTitle}
-      size="lg"
-      actions={modalActions}
-      loading={loading}
-      className={styles.modal}
-      contentClassName={styles.modalContent}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 1,
+          maxHeight: '90vh'
+        }
+      }}
     >
-      {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <Typography variant="h6" className={styles.sectionTitle}>
-          📋 보고서 기본정보
-        </Typography>
+      <DialogTitle
+        sx={{
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
+        }}
+      >
+        {title}
+      </DialogTitle>
 
-        <div className={styles.formRow}>
-          <Controller
-            name="inspectionRound"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="점검회차 *"
-                variant="outlined"
+      <DialogContent dividers sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {/* 원장차수 + 이행점검ID */}
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box sx={{ flex: 1 }}>
+              <LedgerOrderComboBox
+                value={undefined}
+                onChange={() => {}}
+                label="원장차수"
+                required
+                disabled={isReadOnly}
+                error={!!errors.ledgerOrderId}
+                helperText={errors.ledgerOrderId?.message}
                 fullWidth
-                error={!!errors.inspectionRound}
-                helperText={errors.inspectionRound?.message}
-                className={styles.formField}
-                placeholder="2024년1회차 이행점검"
-                disabled={mode === 'detail'}
+                size="small"
               />
-            )}
-          />
+            </Box>
 
-          <Controller
-            name="targetOrganization"
-            control={control}
-            render={({ field }) => (
-              <FormControl
-                variant="outlined"
-                fullWidth
-                error={!!errors.targetOrganization}
-                className={styles.formField}
-              >
-                <InputLabel>대상조직 *</InputLabel>
-                <Select
-                  {...field}
-                  label="대상조직 *"
-                  disabled={mode === 'detail'}
-                >
-                  {targetOrganizationOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.targetOrganization && (
-                  <FormHelperText>{errors.targetOrganization.message}</FormHelperText>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="implInspectionPlanId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="이행점검ID"
+                    required
+                    fullWidth
+                    size="small"
+                    disabled={isReadOnly}
+                    error={!!errors.implInspectionPlanId}
+                    helperText={errors.implInspectionPlanId?.message}
+                    placeholder="예: 20250001A0001"
+                  />
                 )}
-              </FormControl>
-            )}
-          />
-        </div>
-
-        <div className={styles.formRow}>
-          <Controller
-            name="inspectionPeriod.startDate"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="점검기간(시작) *"
-                type="date"
-                variant="outlined"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                className={styles.formField}
-                disabled={mode === 'detail'}
               />
-            )}
-          />
+            </Box>
+          </Box>
 
-          <Controller
-            name="inspectionPeriod.endDate"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="점검기간(종료) *"
-                type="date"
-                variant="outlined"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                className={styles.formField}
-                disabled={mode === 'detail'}
+          {/* 보고서구분 + 검토일자 */}
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="reportTypeCd"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    label="보고서구분"
+                    required
+                    fullWidth
+                    size="small"
+                    disabled={isReadOnly}
+                    error={!!errors.reportTypeCd}
+                    helperText={errors.reportTypeCd?.message}
+                  >
+                    <MenuItem value="01">CEO보고서</MenuItem>
+                    <MenuItem value="02">임원보고서</MenuItem>
+                  </TextField>
+                )}
               />
-            )}
-          />
-        </div>
+            </Box>
 
-        <div className={styles.formRow}>
-          <Controller
-            name="inspectionScope"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="점검범위 *"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={2}
-                error={!!errors.inspectionScope}
-                helperText={errors.inspectionScope?.message}
-                className={styles.formField}
-                placeholder="점검 대상 업무 범위를 입력하세요"
-                disabled={mode === 'detail'}
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="reviewDate"
+                control={control}
+                render={({ field }) => (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      {...field}
+                      label="검토일자"
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                      format="YYYY/MM/DD"
+                      disabled={isReadOnly}
+                      slotProps={{
+                        textField: {
+                          size: 'small',
+                          fullWidth: true,
+                          error: !!errors.reviewDate,
+                          helperText: errors.reviewDate?.message
+                        }
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
               />
-            )}
-          />
-        </div>
+            </Box>
+          </Box>
 
-        <div className={styles.formRow}>
+          {/* 검토내용 */}
           <Controller
-            name="inspectionContent"
+            name="reviewContent"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="점검내용 *"
-                variant="outlined"
+                label="검토내용"
                 fullWidth
                 multiline
                 rows={4}
-                error={!!errors.inspectionContent}
-                helperText={errors.inspectionContent?.message}
-                className={styles.formField}
-                placeholder="상세한 점검 내용을 입력하세요"
-                disabled={mode === 'detail'}
+                disabled={isReadOnly}
+                error={!!errors.reviewContent}
+                helperText={errors.reviewContent?.message}
+                placeholder="검토 내용을 입력하세요"
               />
             )}
           />
-        </div>
 
-        <div className={styles.formRow}>
+          {/* 결과 */}
           <Controller
-            name="reportSummary"
+            name="result"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="보고서 요약 *"
-                variant="outlined"
+                label="결과"
                 fullWidth
                 multiline
-                rows={3}
-                error={!!errors.reportSummary}
-                helperText={errors.reportSummary?.message}
-                className={styles.formField}
-                placeholder="보고서 주요 내용 요약"
-                disabled={mode === 'detail'}
+                rows={4}
+                disabled={isReadOnly}
+                error={!!errors.result}
+                helperText={errors.result?.message}
+                placeholder="점검 결과를 입력하세요"
               />
             )}
           />
-        </div>
 
-        <div className={styles.formRow}>
+          {/* 개선조치 */}
           <Controller
-            name="keyFindings"
+            name="improvementAction"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="주요 발견사항"
-                variant="outlined"
+                label="개선조치"
                 fullWidth
                 multiline
-                rows={3}
-                error={!!errors.keyFindings}
-                helperText={errors.keyFindings?.message}
-                className={styles.formField}
-                placeholder="점검을 통해 발견된 주요 사항을 기술하세요"
-                disabled={mode === 'detail'}
+                rows={4}
+                disabled={isReadOnly}
+                error={!!errors.improvementAction}
+                helperText={errors.improvementAction?.message}
+                placeholder="개선조치 내용을 입력하세요"
               />
             )}
           />
-        </div>
 
-        <div className={styles.formRow}>
+          {/* 비고 */}
           <Controller
-            name="recommendations"
+            name="remarks"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="권고사항"
-                variant="outlined"
+                label="비고"
                 fullWidth
                 multiline
-                rows={3}
-                error={!!errors.recommendations}
-                helperText={errors.recommendations?.message}
-                className={styles.formField}
-                placeholder="개선을 위한 권고사항을 입력하세요"
-                disabled={mode === 'detail'}
+                rows={2}
+                disabled={isReadOnly}
+                error={!!errors.remarks}
+                helperText={errors.remarks?.message}
+                placeholder="비고 사항을 입력하세요"
               />
             )}
           />
-        </div>
+        </Box>
+      </DialogContent>
 
-        <div className={styles.formRow}>
-          <Controller
-            name="followUpActions"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="후속조치 계획"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={3}
-                error={!!errors.followUpActions}
-                helperText={errors.followUpActions?.message}
-                className={styles.formField}
-                placeholder="향후 후속조치 계획을 입력하세요"
-                disabled={mode === 'detail'}
-              />
-            )}
-          />
-        </div>
-
-        {/* 첨부파일 섹션 */}
-        <Typography variant="h6" className={styles.sectionTitle}>
-          📎 첨부파일
-        </Typography>
-
-        <div className={styles.fileUploadSection}>
-          {mode !== 'detail' && (
-            <Button
-              variant="outlined"
-              component="label"
-              startIcon={<CloudUploadIcon />}
-              className={styles.uploadButton}
-            >
-              파일 업로드
-              <input
-                type="file"
-                hidden
-                multiple
-                onChange={handleFileUpload}
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png"
-              />
+      <DialogActions sx={{ p: 1, gap: 1 }}>
+        {mode === 'create' ? (
+          <>
+            <Button variant="outlined" onClick={onClose} disabled={loading}>
+              취소
             </Button>
-          )}
-
-          <div className={styles.fileList}>
-            {attachedFiles.map((file, index) => (
-              <Chip
-                key={index}
-                label={file.name}
-                icon={<AttachFileIcon />}
-                onDelete={mode !== 'detail' ? () => handleFileRemove(index) : undefined}
-                variant="outlined"
-                className={styles.fileChip}
-              />
-            ))}
-            {attachedFiles.length === 0 && (
-              <Typography variant="body2" color="textSecondary">
-                첨부된 파일이 없습니다.
-              </Typography>
+            <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+              {loading ? '등록 중...' : '등록'}
+            </Button>
+          </>
+        ) : (
+          <>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" onClick={handleCancel} disabled={loading}>
+                  취소
+                </Button>
+                <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+                  {loading ? '저장 중...' : '저장'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outlined" onClick={onClose}>
+                  닫기
+                </Button>
+                <Button variant="contained" onClick={handleEdit}>
+                  수정
+                </Button>
+              </>
             )}
-          </div>
-        </div>
-      </Box>
-
-      {/* 대상조직 목록 테이블 (상세/수정 모드에서만 표시) */}
-      {(mode === 'detail' || mode === 'edit') && (
-        <>
-          <Divider className={styles.divider} />
-          <Box className={styles.tableSection}>
-            <div className={styles.tableHeader}>
-              <Typography variant="subtitle1" className={styles.tableTitle}>
-                🏢 대상조직 목록
-              </Typography>
-            </div>
-            <div className={styles.tableContainer}>
-              <BaseDataGrid
-                data={targetOrgList}
-                columns={orgColumns}
-                pagination={false}
-                height={200}
-                theme="rsms"
-                emptyMessage="조회된 대상조직이 없습니다."
-              />
-            </div>
-          </Box>
-        </>
-      )}
-    </BaseModal>
+          </>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
-
-ExecutiveReportFormModal.displayName = 'ExecutiveReportFormModal';
 
 export default ExecutiveReportFormModal;

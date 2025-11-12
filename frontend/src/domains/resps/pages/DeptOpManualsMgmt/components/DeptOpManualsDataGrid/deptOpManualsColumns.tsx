@@ -70,8 +70,8 @@ const APPROVAL_LABELS = {
 };
 
 const ACTIVITY_TYPE_LABELS = {
-  compliance: '준법',
-  risk: '리스크',
+  compliance: '고유',
+  risk: '공통',
   internal_audit: '내부감사',
   operation: '운영',
   finance: '재무',
@@ -250,9 +250,11 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     width: 120,
     sortable: true,
     filter: 'agSetColumnFilter',
-    cellRenderer: ActivityTypeCellRenderer,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
+    valueFormatter: (params: ValueFormatterParams) => {
+      return ACTIVITY_TYPE_LABELS[params.value as ManagementActivityType] || params.value;
+    },
     filterParams: {
       values: Object.keys(ACTIVITY_TYPE_LABELS),
       valueFormatter: (params: any) => ACTIVITY_TYPE_LABELS[params.value as ManagementActivityType] || params.value

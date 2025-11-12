@@ -12,21 +12,22 @@ import styles from './ExecutiveReport.module.scss';
 
 // Types
 import type {
-  ResponsibilityInspection,
   DutyInspection,
+  ExecutiveDashboardStats,
   ExecutiveReportFilters,
   ExecutiveReportFormData,
   ExecutiveReportModalState,
-  ExecutiveDashboardStats
+  ResponsibilityInspection
 } from './types/executiveReport.types';
 
 // Shared Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
-import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // Lazy-loaded components for performance optimization
 const ExecutiveReportFormModal = React.lazy(() =>
@@ -103,9 +104,6 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
   const handleNewReport = useCallback(() => {
     setLoadingStates(prev => ({ ...prev, newReport: true }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('신규 보고서 작성 준비 중입니다...');
-
     try {
       setModalState(prev => ({
         ...prev,
@@ -114,10 +112,9 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
         selectedReport: null
       }));
 
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '신규 보고서 작성을 시작합니다.');
+      toast.success('신규 보고서 작성을 시작합니다.', { autoClose: 2000 });
     } catch (error) {
-      toast.update(loadingToastId, 'error', '신규 보고서 작성 준비에 실패했습니다.');
+      toast.error('신규 보고서 작성 준비에 실패했습니다.');
       console.error('신규 보고서 작성 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, newReport: false }));
@@ -282,7 +279,8 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
         { value: '', label: '전체' },
         { value: '2024년1회차 이행점검', label: '2024년1회차 이행점검' },
         { value: '2024년2회차 이행점검', label: '2024년2회차 이행점검' },
-        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' }
+        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' },
+        { value: '2026년1회차 이행점검', label: '2026년1회차 이행점검' }
       ],
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
@@ -303,16 +301,16 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
 
   // BaseActionBar용 액션 버튼 정의 (PositionMgmt.tsx와 동일한 패턴)
   const actionButtons = useMemo<ActionButton[]>(() => [
-    {
-      key: 'templateDownload',
-      type: 'custom',
-      label: '보고서 템플릿 다운로드',
-      variant: 'contained',
-      color: 'primary',
-      onClick: handleTargetOrgManagement,
-      disabled: loadingStates.targetOrg,
-      loading: loadingStates.targetOrg
-    },
+    // {
+    //   key: 'templateDownload',
+    //   type: 'custom',
+    //   label: '보고서 템플릿 다운로드',
+    //   variant: 'contained',
+    //   color: 'primary',
+    //   onClick: handleTargetOrgManagement,
+    //   disabled: loadingStates.targetOrg,
+    //   loading: loadingStates.targetOrg
+    // },
     {
       key: 'newReport',
       type: 'custom',
@@ -585,8 +583,8 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
               <div className={styles.summaryBody}>
                 <div className={styles.summaryRow}>
                   <div className={styles.summaryCell}>4개</div>
-                  <div className={styles.summaryCell}>4개</div>
-                  <div className={styles.summaryCell}>5개</div>
+                  <div className={styles.summaryCell}>8개</div>
+                  <div className={styles.summaryCell}>8개</div>
                   <div className={styles.summaryCell}>
                     <span className={styles.completed}>작성 : 0건</span>
                     <span className={styles.notCompleted}>부작성 : 0건</span>
@@ -690,8 +688,13 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
           </div>
         </div>
 
-        {/* 보고서 등록/상세 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        {/* 보고서 등록/상세 모달 - BaseModalWrapper 적용 */}
+        <BaseModalWrapper
+          isOpen={modalState.formModal || modalState.detailModal}
+          onClose={handleModalClose}
+          ariaLabel="임원보고서 모달"
+          fallbackComponent={<LoadingSpinner text="임원보고서 모달을 불러오는 중..." />}
+        >
           <ExecutiveReportFormModal
             open={modalState.formModal || modalState.detailModal}
             mode={modalState.modalMode}
@@ -701,7 +704,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
             onUpdate={handleReportUpdate}
             loading={loading}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
 
         {/* 조직조회 모달 */}
         <OrganizationSearchModal

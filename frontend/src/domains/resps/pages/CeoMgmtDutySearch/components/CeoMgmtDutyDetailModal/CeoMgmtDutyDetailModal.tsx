@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import toast from '@/shared/utils/toast';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { ceoManagementActivityColumns } from '../CeoMgmtDutyDataGrid/ceoMgmtDutyColumns';
-import styles from './CeoMgmtDutyDetailModal.module.scss';
 
 // Types
 import type {
@@ -173,12 +172,12 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      className={styles.modal}
+      
       aria-labelledby="ceo-duty-detail-modal-title"
     >
-      <DialogTitle className={styles.modalTitle}>
-        <div className={styles.titleContent}>
-          <FolderIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <FolderIcon  />
           <Typography variant="h6" component="h2">
             CEO 총괄 관리의무 상세
           </Typography>
@@ -186,24 +185,24 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          className={styles.closeButton}
+          
           size="small"
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent className={styles.modalContent}>
-        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+      <DialogContent >
+        <form onSubmit={handleSubmit(onSubmit)} >
           {/* 📋 기본 정보 섹션 */}
-          <div className={styles.formSection}>
-            <Typography variant="h6" className={styles.sectionTitle}>
+          <div >
+            <Typography variant="h6" >
               <FolderIcon />
               CEO 총괄 관리의무 상세
             </Typography>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
+            <div >
+              <div >
                 <TextField
                   label="관리의무코드"
                   {...register('dutyCode')}
@@ -217,8 +216,8 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
               </div>
             </div>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
+            <div >
+              <div >
                 <TextField
                   label="관리의무명"
                   {...register('dutyName', {
@@ -235,21 +234,21 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
                   size="small"
                   error={!!errors.dutyName}
                   helperText={errors.dutyName?.message}
-                  className={styles.expandedTextArea}
+                  
                 />
               </div>
             </div>
           </div>
 
           {/* 📊 관리활동 목록 섹션 */}
-          <div className={styles.formSection}>
-            <div className={styles.sectionHeader}>
-              <Typography variant="h6" className={styles.sectionTitle}>
+          <div >
+            <div >
+              <Typography variant="h6" >
                 <FolderIcon />
                 관리활동 목록
               </Typography>
 
-              <div className={styles.actionButtons}>
+              <div >
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -291,7 +290,7 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
             </div>
 
             {/* 관리활동 데이터 그리드 */}
-            <div className={styles.tableContainer}>
+            <div >
               <BaseDataGrid
                 data={activities}
                 columns={ceoManagementActivityColumns}
@@ -309,7 +308,7 @@ const CeoMgmtDutyDetailModal: React.FC<CeoMgmtDutyDetailModalProps> = ({
         </form>
       </DialogContent>
 
-      <DialogActions className={styles.modalActions}>
+      <DialogActions >
         <Button
           onClick={onClose}
           variant="outlined"

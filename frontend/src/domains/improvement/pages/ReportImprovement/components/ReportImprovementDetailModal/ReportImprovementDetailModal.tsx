@@ -35,7 +35,6 @@ import {
   PRIORITY_COLOR_MAP
 } from '../../types/reportImprovement.types';
 
-import styles from './ReportImprovementDetailModal.module.scss';
 
 interface ReportImprovementDetailModalProps {
   open: boolean;
@@ -203,9 +202,9 @@ const ReportImprovementDetailModal: React.FC<ReportImprovementDetailModalProps> 
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      className={styles.modal}
+      
     >
-        <DialogTitle className={styles.modalTitle}>
+        <DialogTitle >
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" component="div">
               {getModalTitle()}
@@ -221,11 +220,11 @@ const ReportImprovementDetailModal: React.FC<ReportImprovementDetailModalProps> 
           </Box>
         </DialogTitle>
 
-        <DialogContent className={styles.modalContent}>
+        <DialogContent >
           <Grid container spacing={3}>
             {/* 기본 정보 섹션 */}
             <Grid item xs={12}>
-              <Typography variant="subtitle1" className={styles.sectionTitle}>
+              <Typography variant="subtitle1" >
                 기본 정보
               </Typography>
               <Divider />
@@ -335,7 +334,7 @@ const ReportImprovementDetailModal: React.FC<ReportImprovementDetailModalProps> 
 
             {/* 보고서 정보 섹션 */}
             <Grid item xs={12}>
-              <Typography variant="subtitle1" className={styles.sectionTitle}>
+              <Typography variant="subtitle1" >
                 보고서 정보
               </Typography>
               <Divider />
@@ -376,7 +375,7 @@ const ReportImprovementDetailModal: React.FC<ReportImprovementDetailModalProps> 
 
             {/* 개선 정보 섹션 */}
             <Grid item xs={12}>
-              <Typography variant="subtitle1" className={styles.sectionTitle}>
+              <Typography variant="subtitle1" >
                 개선 정보
               </Typography>
               <Divider />
@@ -449,7 +448,7 @@ const ReportImprovementDetailModal: React.FC<ReportImprovementDetailModalProps> 
           </Grid>
         </DialogContent>
 
-        <DialogActions className={styles.modalActions}>
+        <DialogActions >
           <Button
             onClick={onClose}
             startIcon={<CloseIcon />}

@@ -24,7 +24,6 @@ import {
   ExternalSystemInfo
 } from '../../types/internalControlRegister.types';
 import { ColDef } from 'ag-grid-community';
-import styles from './InternalControlFormModal.module.scss';
 
 interface InternalControlFormModalProps {
   open: boolean;
@@ -255,12 +254,12 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
       size="lg"
       actions={modalActions}
       loading={loading}
-      className={styles.modal}
+      
       contentClassName={styles.modalContent}
     >
       {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <div className={styles.formRow}>
+      <Box component="form" >
+        <div >
           <Controller
             name="businessAreaName"
             control={control}
@@ -272,7 +271,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.businessAreaName}
                 helperText={errors.businessAreaName?.message}
-                className={styles.formField}
+                
                 placeholder="예: WRS"
               />
             )}
@@ -289,7 +288,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.businessAreaCode}
                 helperText={errors.businessAreaCode?.message}
-                className={styles.formField}
+                
                 placeholder="예: WRS"
                 inputProps={{ style: { textTransform: 'uppercase' } }}
               />
@@ -297,7 +296,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="utilizationStatus"
             control={control}
@@ -309,7 +308,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.utilizationStatus}
                 helperText={errors.utilizationStatus?.message}
-                className={styles.formField}
+                
                 placeholder="예: 내부통제원부"
               />
             )}
@@ -327,14 +326,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 fullWidth
                 error={!!errors.sortOrder}
                 helperText={errors.sortOrder?.message}
-                className={styles.formField}
+                
                 inputProps={{ min: 1, max: 999 }}
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="utilizationDetail"
             control={control}
@@ -348,14 +347,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                 rows={3}
                 error={!!errors.utilizationDetail}
                 helperText={errors.utilizationDetail?.message}
-                className={styles.formField}
+                
                 placeholder="예: 내부통제원부상세"
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="isActive"
             control={control}
@@ -369,7 +368,7 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
                   />
                 }
                 label="사용여부"
-                className={styles.switchField}
+                
               />
             )}
           />
@@ -379,14 +378,14 @@ const InternalControlFormModal: React.FC<InternalControlFormModalProps> = ({
       {/* 외부 시스템 연계 정보 테이블 (상세 모드에서만 표시) */}
       {mode === 'detail' && (
         <>
-          <Divider className={styles.divider} />
-          <Box className={styles.tableSection}>
-            <div className={styles.tableHeader}>
-              <Typography variant="subtitle1" className={styles.tableTitle}>
+          <Divider  />
+          <Box >
+            <div >
+              <Typography variant="subtitle1" >
                 🔗 외부 시스템 연계 정보
               </Typography>
             </div>
-            <div className={styles.tableContainer}>
+            <div >
               <BaseDataGrid
                 data={externalSystems}
                 columns={externalSystemColumns}

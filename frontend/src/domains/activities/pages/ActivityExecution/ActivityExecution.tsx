@@ -24,6 +24,7 @@ import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/Ledger
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper/BaseModalWrapper';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
@@ -38,6 +39,10 @@ const ActivityExecutionModal = React.lazy(() =>
 
 const ApprovalRequestModal = React.lazy(() =>
   import('./components/ApprovalRequestModal/ApprovalRequestModal').then(module => ({ default: module.default }))
+);
+
+const PerformerSelectionModal = React.lazy(() =>
+  import('./components/PerformerSelectionModal/PerformerSelectionModal')
 );
 
 interface ActivityExecutionProps {
@@ -83,6 +88,9 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     selectedActivity: null
   });
 
+  // 수행자 지정 모달 상태
+  const [performerModalOpen, setPerformerModalOpen] = useState<boolean>(false);
+
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<ActivityExecutionFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -94,9 +102,8 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       return;
     }
 
-    // TODO: 수행자 지정 모달 또는 로직 구현
-    toast.info(`${selectedActivities.length}개 관리활동의 수행자를 지정합니다.`, { autoClose: 2000 });
-    console.log('수행자 지정 대상:', selectedActivities);
+    // 수행자 지정 모달 열기
+    setPerformerModalOpen(true);
   }, [selectedActivities]);
 
   const handleExcelDownload = useCallback(async () => {
@@ -121,19 +128,6 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     }
   }, []);
 
-  const handleApprovalRequest = useCallback(() => {
-    if (selectedActivities.length === 0) {
-      toast.warning('승인 요청할 관리활동을 선택해주세요.');
-      return;
-    }
-
-    setModalState(prev => ({
-      ...prev,
-      approvalModal: true
-    }));
-    toast.info(`${selectedActivities.length}개 관리활동의 승인을 요청합니다.`, { autoClose: 2000 });
-  }, [selectedActivities]);
-
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({
       ...prev,
@@ -143,6 +137,40 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       selectedActivity: null
     }));
   }, []);
+
+  const handlePerformerModalClose = useCallback(() => {
+    setPerformerModalOpen(false);
+  }, []);
+
+  const handlePerformerAssign = useCallback(async (
+    activities: ActivityExecution[],
+    performer: any,
+    _formData: any
+  ) => {
+    try {
+      // TODO: API 호출 구현
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 로컬 상태 업데이트 - 선택된 모든 항목에 수행자 지정
+      const activityIds = activities.map(a => a.id);
+      setActivities(prev => prev.map(item =>
+        activityIds.includes(item.id)
+          ? {
+              ...item,
+              performer: performer.name,
+              updatedAt: new Date().toISOString()
+            }
+          : item
+      ));
+
+      toast.success(`${activities.length}건의 항목에 ${performer.name} 수행자가 지정되었습니다.`);
+      setSelectedActivities([]);  // 선택 초기화
+      handlePerformerModalClose();
+    } catch (error) {
+      console.error('Performer assignment error:', error);
+      toast.error('수행자 지정 중 오류가 발생했습니다.');
+    }
+  }, [handlePerformerModalClose]);
 
   // 폼 모달 핸들러들
   const handleActivitySave = useCallback(async (formData: ActivityExecutionFormData) => {
@@ -241,7 +269,8 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     setOrganizationSearchOpen(true);
   }, []);
 
-  const handleOrganizationSelect = useCallback((organization: Organization) => {
+  const handleOrganizationSelect = useCallback((selected: Organization | Organization[]) => {
+    const organization = Array.isArray(selected) ? selected[0] : selected;
     setFilters(prev => ({
       ...prev,
       departmentCode: organization.orgCode || ''
@@ -342,23 +371,14 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     },
     {
       key: 'assign',
-      type: 'custom',
       label: '수행자지정',
-      onClick: handleAssignPerformer,
-      disabled: selectedActivities.length === 0 || loadingStates.modify,
-      loading: loadingStates.modify,
-      confirmationRequired: false
-    },
-    {
-      key: 'approval',
-      type: 'custom',
-      label: '승인요청',
-      onClick: handleApprovalRequest,
-      disabled: selectedActivities.length === 0 || loadingStates.approval,
-      loading: loadingStates.approval,
-      confirmationRequired: true
+      variant: 'contained',
+      color: 'primary',
+      startIcon: 'PersonAdd',
+      disabled: selectedActivities.length === 0,
+      onClick: handleAssignPerformer
     }
-  ], [handleExcelDownload, handleAssignPerformer, handleApprovalRequest, selectedActivities.length, loadingStates]);
+  ], [handleExcelDownload, handleAssignPerformer, selectedActivities.length, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -442,12 +462,12 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
         regulation: '상',
         responsibilityArea: '경영전략부',
         performer: '미지정',
-        isPerformed: true,
+        isPerformed: false,
         performanceResult: '적정',
         cssConst: 'Y',
         gnrzOblgDvcd: '고유',
         executionDate: '2024-01-15',
-        status: 'completed',
+        status: 'pending',
         createdAt: '2024-01-15',
         updatedAt: '2024-03-20',
         isActive: true
@@ -559,7 +579,12 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
         </div>
 
         {/* 관리활동 수행 등록/수정 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        <BaseModalWrapper
+          isOpen={modalState.executionModal || modalState.detailModal}
+          onClose={handleModalClose}
+          fallbackComponent={<LoadingSpinner text="관리활동 수행 모달을 불러오는 중..." />}
+          ariaLabel="관리활동 수행 모달"
+        >
           <ActivityExecutionModal
             open={modalState.executionModal || modalState.detailModal}
             mode={modalState.executionModal ? 'edit' : 'detail'}
@@ -569,9 +594,10 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
             onUpdate={handleActivityUpdate}
             loading={loading}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
 
         {/* 승인 요청 모달 */}
+        {/*
         <React.Suspense fallback={<LoadingSpinner />}>
           <ApprovalRequestModal
             open={modalState.approvalModal}
@@ -579,7 +605,8 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
             onClose={handleModalClose}
             loading={loadingStates.approval}
           />
-        </React.Suspense>
+        </React.Suspense> */}
+
 
         {/* 조직검색 모달 */}
         <OrganizationSearchModal
@@ -588,6 +615,18 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
           onSelect={handleOrganizationSelect}
           title="부점조회"
         />
+
+        {/* 수행자 지정 모달 */}
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <PerformerSelectionModal
+            open={performerModalOpen}
+            activity={modalState.selectedActivity}
+            activities={selectedActivities}
+            onClose={handlePerformerModalClose}
+            onSelect={handlePerformerAssign}
+            loading={false}
+          />
+        </React.Suspense>
       </div>
     </React.Profiler>
   );

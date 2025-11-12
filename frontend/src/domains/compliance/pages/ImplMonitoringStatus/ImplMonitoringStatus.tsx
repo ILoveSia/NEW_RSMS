@@ -21,6 +21,7 @@ import type {
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper/BaseModalWrapper';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
@@ -177,48 +178,6 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     }));
   }, [selectedExecutions]);
 
-  const handleCompleteExecution = useCallback(async () => {
-    if (selectedExecutions.length === 0) {
-      toast.warning('승인요청할 항목을 선택해주세요.');
-      return;
-    }
-
-    // 확인 메시지
-    const confirmMessage = `선택된 ${selectedExecutions.length}개의 점검을 승인요청 처리하시겠습니까?`;
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
-
-    setLoadingStates(prev => ({ ...prev, complete: true }));
-
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading(`${selectedExecutions.length}개 점검을 승인요청 처리 중입니다...`);
-
-    try {
-      // TODO: 실제 승인요청 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-
-      // 상태 업데이트 (승인요청 상태로 변경)
-      setExecutions(prev =>
-        prev.map(exec =>
-          selectedExecutions.some(selected => selected.id === exec.id)
-            ? { ...exec, inspectionStatus: 'COMPLETED' }
-            : exec
-        )
-      );
-      setSelectedExecutions([]);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedExecutions.length}개 점검이 승인요청되었습니다.`);
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '점검 승인요청 처리에 실패했습니다.');
-      console.error('점검 승인요청 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, complete: false }));
-    }
-  }, [selectedExecutions]);
-
   const handleExcelDownload = useCallback(async () => {
     setLoadingStates(prev => ({ ...prev, excel: true }));
 
@@ -256,6 +215,42 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       selectedExecution: execution
     }));
   }, []);
+
+  const handleInspectionSave = useCallback(async (data: any) => {
+    setLoading(true);
+    const loadingToastId = toast.loading('점검 정보를 저장 중입니다...');
+
+    try {
+      // TODO: 실제 API 호출로 교체
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.update(loadingToastId, 'success', '점검 정보가 저장되었습니다.');
+      handleModalClose();
+    } catch (error) {
+      toast.update(loadingToastId, 'error', '점검 정보 저장에 실패했습니다.');
+      console.error('점검 정보 저장 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [handleModalClose]);
+
+  const handleInspectionUpdate = useCallback(async (id: string, data: any) => {
+    setLoading(true);
+    const loadingToastId = toast.loading('점검 정보를 수정 중입니다...');
+
+    try {
+      // TODO: 실제 API 호출로 교체
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast.update(loadingToastId, 'success', '점검 정보가 수정되었습니다.');
+      handleModalClose();
+    } catch (error) {
+      toast.update(loadingToastId, 'error', '점검 정보 수정에 실패했습니다.');
+      console.error('점검 정보 수정 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [handleModalClose]);
 
   const handleSearch = useCallback(async () => {
     setLoading(true);
@@ -385,19 +380,8 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
       onClick: handleWriteInspectionResult,
       disabled: selectedExecutions.length === 0,
       confirmationRequired: false
-    },
-    {
-      key: 'complete',
-      type: 'custom',
-      label: '승인요청',
-      variant: 'contained',
-      color: 'success',
-      onClick: handleCompleteExecution,
-      disabled: selectedExecutions.length === 0 || loadingStates.complete,
-      loading: loadingStates.complete,
-      confirmationRequired: true
     }
-  ], [handleWriteInspectionResult, handleCompleteExecution, selectedExecutions.length, loadingStates]);
+  ], [handleWriteInspectionResult, selectedExecutions.length]);
 
   // BaseActionBar용 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -664,14 +648,22 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         />
 
         {/* 점검 상세 모달 */}
-        <React.Suspense fallback={<LoadingSpinner />}>
+        <BaseModalWrapper
+          isOpen={modalState.detailModal}
+          onClose={handleModalClose}
+          fallbackComponent={<LoadingSpinner text="이행점검 상세 모달을 불러오는 중..." />}
+          ariaLabel="이행점검 상세 모달"
+        >
           <ImplMonitoringDetailModal
             open={modalState.detailModal}
+            mode="edit"
             execution={modalState.selectedExecution}
             onClose={handleModalClose}
+            onSave={handleInspectionSave}
+            onUpdate={handleInspectionUpdate}
             loading={loading}
           />
-        </React.Suspense>
+        </BaseModalWrapper>
       </div>
     </React.Profiler>
   );

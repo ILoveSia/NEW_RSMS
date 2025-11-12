@@ -1,82 +1,216 @@
-import React, { useState, useCallback } from 'react';
+/**
+ * 이행점검결과보고서 등록/수정/상세 모달
+ * - impl_inspection_reports 테이블 구조 반영
+ * - PositionFormModal.tsx 표준 스타일 적용
+ * - BaseModalWrapper 미사용 (Dialog 직접 사용)
+ */
+
+import { Button } from '@/shared/components/atoms/Button';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Grid,
   Box,
-  Typography,
-  IconButton
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import toast from '@/shared/utils/toast';
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
 
-import type { CeoNewReportFormData, CeoReportMetadata } from '../types/ceoReport.types';
+// Domain Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
+/**
+ * 이행점검결과보고서 폼 데이터 타입
+ */
+interface CeoReportFormData {
+  ledgerOrderId: string;              // 원장차수ID
+  implInspectionPlanId: string;       // 이행점검ID
+  reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서)
+  reviewContent: string;              // 검토내용
+  reviewDate: string | null;          // 검토일자
+  result: string;                     // 결과
+  improvementAction: string;          // 개선조치
+  remarks: string;                    // 비고
+}
+
+/**
+ * 모달 Props
+ */
 interface CeoReportFormModalProps {
   open: boolean;
+  mode: 'create' | 'detail';
+  report: any | null;
   onClose: () => void;
-  reportData?: CeoReportMetadata | null;
-  onSubmit: (data: CeoNewReportFormData) => void;
+  onSave: (formData: CeoReportFormData) => Promise<void>;
+  onUpdate: (id: string, formData: CeoReportFormData) => Promise<void>;
+  onRefresh?: () => Promise<void>;
+  loading?: boolean;
 }
+
+/**
+ * 폼 검증 스키마
+ */
+const schema = yup.object().shape({
+  ledgerOrderId: yup
+    .string()
+    .required('원장차수는 필수입니다'),
+  implInspectionPlanId: yup
+    .string()
+    .required('이행점검ID는 필수입니다')
+    .max(13, '이행점검ID는 13자리입니다'),
+  reportTypeCd: yup
+    .string()
+    .required('보고서구분은 필수입니다')
+    .oneOf(['01', '02'], '보고서구분은 01 또는 02만 가능합니다'),
+  reviewContent: yup
+    .string()
+    .default('')
+    .max(2000, '검토내용은 2000자 이내로 입력해주세요'),
+  reviewDate: yup
+    .string()
+    .nullable()
+    .default(null),
+  result: yup
+    .string()
+    .default('')
+    .max(2000, '결과는 2000자 이내로 입력해주세요'),
+  improvementAction: yup
+    .string()
+    .default('')
+    .max(2000, '개선조치는 2000자 이내로 입력해주세요'),
+  remarks: yup
+    .string()
+    .default('')
+    .max(500, '비고는 500자 이내로 입력해주세요')
+});
 
 const CeoReportFormModal: React.FC<CeoReportFormModalProps> = ({
   open,
+  mode,
+  report,
   onClose,
-  reportData,
-  onSubmit
+  onRefresh,
+  loading = false
 }) => {
-  const [formData, setFormData] = useState<CeoNewReportFormData>({
-    inspectionRound: '2026년1회차 이행점검',
-    inspectionPeriod: '2026.07.31 ~ 2026.08...',
-    inspectionContent: '',
-    attachments: []
+  // 수정 모드 상태
+  const [isEditing, setIsEditing] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<CeoReportFormData>({
+    resolver: yupResolver(schema),
+    mode: 'onChange',
+    defaultValues: {
+      ledgerOrderId: '',
+      implInspectionPlanId: '',
+      reportTypeCd: '01', // 기본값: CEO보고서
+      reviewContent: '',
+      reviewDate: dayjs().format('YYYY-MM-DD'),
+      result: '',
+      improvementAction: '',
+      remarks: ''
+    }
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const handleInputChange = useCallback((field: keyof CeoNewReportFormData) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: event.target.value
-    }));
-  }, []);
-
-  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        attachments: Array.from(files)
-      }));
-      toast.success(`${files.length}개 파일이 선택되었습니다.`);
+  /**
+   * 폼 초기화
+   * - mode와 report 데이터에 따라 폼 데이터 설정
+   */
+  useEffect(() => {
+    if (mode === 'create') {
+      reset({
+        ledgerOrderId: '',
+        implInspectionPlanId: '',
+        reportTypeCd: '01',
+        reviewContent: '',
+        reviewDate: dayjs().format('YYYY-MM-DD'),
+        result: '',
+        improvementAction: '',
+        remarks: ''
+      });
+      setIsEditing(true);
+    } else if (report) {
+      reset({
+        ledgerOrderId: report.ledgerOrderId || '',
+        implInspectionPlanId: report.implInspectionPlanId || '',
+        reportTypeCd: report.reportTypeCd || '01',
+        reviewContent: report.reviewContent || '',
+        reviewDate: report.reviewDate || dayjs().format('YYYY-MM-DD'),
+        result: report.result || '',
+        improvementAction: report.improvementAction || '',
+        remarks: report.remarks || ''
+      });
+      setIsEditing(false);
     }
-  }, []);
+  }, [mode, report, reset]);
 
-  const handleSubmit = useCallback(async () => {
-    if (!formData.inspectionContent.trim()) {
-      toast.warning('점검 내용을 입력해주세요.');
-      return;
-    }
-
-    setLoading(true);
+  /**
+   * 폼 제출 핸들러
+   */
+  const onSubmit = useCallback(async (formData: CeoReportFormData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-      onSubmit(formData);
-      toast.success('CEO 보고서가 성공적으로 등록되었습니다.');
+      if (mode === 'create') {
+        // TODO: API 호출 - 보고서 등록
+        console.log('보고서 등록:', formData);
+        alert('보고서가 성공적으로 등록되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
+      } else if (report && isEditing) {
+        // TODO: API 호출 - 보고서 수정
+        console.log('보고서 수정:', report.id, formData);
+        alert('보고서가 성공적으로 수정되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+
+        onClose();
+      }
     } catch (error) {
-      toast.error('보고서 등록에 실패했습니다.');
-      console.error('보고서 등록 실패:', error);
-    } finally {
-      setLoading(false);
+      console.error('보고서 저장 실패:', error);
+      alert(error instanceof Error ? error.message : '보고서 저장에 실패했습니다.');
     }
-  }, [formData, onSubmit]);
+  }, [mode, report, isEditing, onClose, onRefresh]);
+
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    if (mode === 'detail' && report) {
+      reset({
+        ledgerOrderId: report.ledgerOrderId || '',
+        implInspectionPlanId: report.implInspectionPlanId || '',
+        reportTypeCd: report.reportTypeCd || '01',
+        reviewContent: report.reviewContent || '',
+        reviewDate: report.reviewDate || dayjs().format('YYYY-MM-DD'),
+        result: report.result || '',
+        improvementAction: report.improvementAction || '',
+        remarks: report.remarks || ''
+      });
+      setIsEditing(false);
+    } else {
+      onClose();
+    }
+  }, [mode, report, onClose, reset]);
+
+  const title = mode === 'create' ? '이행점검결과보고서 등록' : '이행점검결과보고서 상세';
+  const isReadOnly = mode === 'detail' && !isEditing;
 
   return (
     <Dialog
@@ -84,129 +218,227 @@ const CeoReportFormModal: React.FC<CeoReportFormModalProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      aria-labelledby="ceo-report-form-title"
+      PaperProps={{
+        sx: {
+          borderRadius: 1,
+          maxHeight: '90vh'
+        }
+      }}
     >
       <DialogTitle
-        id="ceo-report-form-title"
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid #e0e0e0',
-          backgroundColor: '#f8f9fa'
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
         }}
       >
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-          이행점검 수행결과 보고서 등록
-        </Typography>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{ color: '#666' }}
-        >
-          <CloseIcon />
-        </IconButton>
+        {title}
       </DialogTitle>
 
-      <DialogContent sx={{ padding: 3 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="점검회차"
-              value={formData.inspectionRound}
-              onChange={handleInputChange('inspectionRound')}
-              fullWidth
-              required
-              variant="outlined"
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="점검기간"
-              value={formData.inspectionPeriod}
-              onChange={handleInputChange('inspectionPeriod')}
-              fullWidth
-              required
-              variant="outlined"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              label="점검 내용"
-              value={formData.inspectionContent}
-              onChange={handleInputChange('inspectionContent')}
-              fullWidth
-              required
-              multiline
-              rows={6}
-              variant="outlined"
-              placeholder="CEO 이행점검 수행 결과를 상세히 작성해주세요."
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box sx={{ border: '1px dashed #ccc', borderRadius: 1, p: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                파일 첨부
-              </Typography>
-              <input
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.hwp"
-                onChange={handleFileUpload}
-                style={{ display: 'none' }}
-                id="file-upload"
+      <DialogContent dividers sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {/* 원장차수 + 이행점검ID */}
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box sx={{ flex: 1 }}>
+              <LedgerOrderComboBox
+                value={undefined}
+                onChange={() => {}}
+                label="원장차수"
+                required
+                disabled={isReadOnly}
+                error={!!errors.ledgerOrderId}
+                helperText={errors.ledgerOrderId?.message}
+                fullWidth
+                size="small"
               />
-              <label htmlFor="file-upload">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  startIcon={<FileUploadIcon />}
-                  sx={{ mb: 1 }}
-                >
-                  파일 선택
-                </Button>
-              </label>
-
-              {formData.attachments && formData.attachments.length > 0 && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    선택된 파일: {formData.attachments.length}개
-                  </Typography>
-                  {formData.attachments.map((file, index) => (
-                    <Typography key={index} variant="caption" display="block">
-                      • {file.name}
-                    </Typography>
-                  ))}
-                </Box>
-              )}
             </Box>
-          </Grid>
-        </Grid>
+
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="implInspectionPlanId"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="이행점검ID"
+                    required
+                    fullWidth
+                    size="small"
+                    disabled={isReadOnly}
+                    error={!!errors.implInspectionPlanId}
+                    helperText={errors.implInspectionPlanId?.message}
+                    placeholder="예: 20250001A0001"
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+
+          {/* 보고서구분 + 검토일자 */}
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="reportTypeCd"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    label="보고서구분"
+                    required
+                    fullWidth
+                    size="small"
+                    disabled={isReadOnly}
+                    error={!!errors.reportTypeCd}
+                    helperText={errors.reportTypeCd?.message}
+                  >
+                    <MenuItem value="01">CEO보고서</MenuItem>
+                    <MenuItem value="02">임원보고서</MenuItem>
+                  </TextField>
+                )}
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="reviewDate"
+                control={control}
+                render={({ field }) => (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      {...field}
+                      label="검토일자"
+                      value={field.value ? dayjs(field.value) : null}
+                      onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                      format="YYYY/MM/DD"
+                      disabled={isReadOnly}
+                      slotProps={{
+                        textField: {
+                          size: 'small',
+                          fullWidth: true,
+                          error: !!errors.reviewDate,
+                          helperText: errors.reviewDate?.message
+                        }
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+              />
+            </Box>
+          </Box>
+
+          {/* 검토내용 */}
+          <Controller
+            name="reviewContent"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="검토내용"
+                fullWidth
+                multiline
+                rows={4}
+                disabled={isReadOnly}
+                error={!!errors.reviewContent}
+                helperText={errors.reviewContent?.message}
+                placeholder="검토 내용을 입력하세요"
+              />
+            )}
+          />
+
+          {/* 결과 */}
+          <Controller
+            name="result"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="결과"
+                fullWidth
+                multiline
+                rows={4}
+                disabled={isReadOnly}
+                error={!!errors.result}
+                helperText={errors.result?.message}
+                placeholder="점검 결과를 입력하세요"
+              />
+            )}
+          />
+
+          {/* 개선조치 */}
+          <Controller
+            name="improvementAction"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="개선조치"
+                fullWidth
+                multiline
+                rows={4}
+                disabled={isReadOnly}
+                error={!!errors.improvementAction}
+                helperText={errors.improvementAction?.message}
+                placeholder="개선조치 내용을 입력하세요"
+              />
+            )}
+          />
+
+          {/* 비고 */}
+          <Controller
+            name="remarks"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="비고"
+                fullWidth
+                multiline
+                rows={2}
+                disabled={isReadOnly}
+                error={!!errors.remarks}
+                helperText={errors.remarks?.message}
+                placeholder="비고 사항을 입력하세요"
+              />
+            )}
+          />
+        </Box>
       </DialogContent>
 
-      <DialogActions sx={{
-        padding: 2,
-        borderTop: '1px solid #e0e0e0',
-        backgroundColor: '#f8f9fa'
-      }}>
-        <Button
-          onClick={onClose}
-          color="inherit"
-          variant="outlined"
-        >
-          취소
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          disabled={loading}
-        >
-          {loading ? '등록 중...' : '등록'}
-        </Button>
+      <DialogActions sx={{ p: 1, gap: 1 }}>
+        {mode === 'create' ? (
+          <>
+            <Button variant="outlined" onClick={onClose} disabled={loading}>
+              취소
+            </Button>
+            <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+              {loading ? '등록 중...' : '등록'}
+            </Button>
+          </>
+        ) : (
+          <>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" onClick={handleCancel} disabled={loading}>
+                  취소
+                </Button>
+                <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+                  {loading ? '저장 중...' : '저장'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outlined" onClick={onClose}>
+                  닫기
+                </Button>
+                <Button variant="contained" onClick={handleEdit}>
+                  수정
+                </Button>
+              </>
+            )}
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );

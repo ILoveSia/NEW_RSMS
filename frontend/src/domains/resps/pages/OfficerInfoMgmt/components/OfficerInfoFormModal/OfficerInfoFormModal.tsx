@@ -60,7 +60,6 @@ import {
   managementObligationColumns
 } from '../OfficerInfoDataGrid/officerInfoColumns';
 
-import styles from './OfficerInfoFormModal.module.scss';
 
 // 🎯 Validation Schema
 const validationSchema = yup.object({
@@ -290,11 +289,11 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      className={styles.modal}
+      
     >
-      <DialogTitle className={styles.modalTitle}>
-        <div className={styles.titleContent}>
-          <PersonIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <PersonIcon  />
           <Typography variant="h6" component="div">
             {modalConfig.title}
           </Typography>
@@ -302,25 +301,25 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          className={styles.closeButton}
+          
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent className={styles.modalContent}>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.form}>
+      <DialogContent >
+        <form onSubmit={handleSubmit(handleFormSubmit)} >
           {/* 📋 Section 1: 임원 및 직책 정보 */}
-          <div className={styles.formSection}>
-            <div className={styles.sectionHeader}>
-              <Typography variant="h6" className={styles.sectionTitle}>
+          <div >
+            <div >
+              <Typography variant="h6" >
                 <PersonIcon />
                 임원 및 직책 정보
               </Typography>
             </div>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
+            <div >
+              <div >
                 <Controller
                   name="positionCode"
                   control={control}
@@ -343,7 +342,7 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
                   )}
                 />
               </div>
-              <div className={styles.formGroup}>
+              <div >
                 <Controller
                   name="officerName"
                   control={control}
@@ -361,8 +360,8 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
               </div>
             </div>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
+            <div >
+              <div >
                 <Controller
                   name="isDualPosition"
                   control={control}
@@ -384,7 +383,7 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
                   )}
                 />
               </div>
-              <div className={styles.formGroup}>
+              <div >
                 <Controller
                   name="responsibilityAssignDate"
                   control={control}
@@ -405,8 +404,8 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
             </div>
 
             {isDualPosition && (
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
+              <div >
+                <div >
                   <Controller
                     name="dualPositionDetails"
                     control={control}
@@ -428,12 +427,12 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
             )}
           </div>
 
-          <Divider className={styles.divider} />
+          <Divider  />
 
           {/* 📋 Section 2: 소관부점 회의체 정보 */}
-          <div className={styles.formSection}>
-            <div className={styles.sectionHeader}>
-              <Typography variant="h6" className={styles.sectionTitle}>
+          <div >
+            <div >
+              <Typography variant="h6" >
                 <BusinessIcon />
                 소관부점 정보
               </Typography>
@@ -448,7 +447,7 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
               )}
             </div>
 
-            <div className={styles.tableContainer}>
+            <div >
               <BaseDataGrid
                 data={meetingBodyFields}
                 columns={meetingBodyColumns}
@@ -459,17 +458,17 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
             </div>
           </div>
 
-          <Divider className={styles.divider} />
+          <Divider  />
 
           {/* 📋 Section 3: 작업내역 */}
-          <div className={styles.formSection}>
-            <Typography variant="h6" className={styles.sectionTitle}>
+          <div >
+            <Typography variant="h6" >
               <WorkIcon />
               작업내역
             </Typography>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
+            <div >
+              <div >
                 <Controller
                   name="verifierPosition"
                   control={control}
@@ -489,15 +488,15 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
           {/* 📋 Section 4: 책무정보 (상세 모드에서만 표시) */}
           {mode === 'view' && (
             <>
-              <Divider className={styles.divider} />
-              <div className={styles.formSection}>
-                <Typography variant="h6" className={styles.sectionTitle}>
+              <Divider  />
+              <div >
+                <Typography variant="h6" >
                   <AssignmentIcon />
                   책무정보
                 </Typography>
 
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                <div >
+                  <div >
                     <Controller
                       name="responsibilityOverview"
                       control={control}
@@ -515,7 +514,7 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
                   </div>
                 </div>
 
-                <div className={styles.tableContainer}>
+                <div >
                   <BaseDataGrid
                     data={responsibilityFields}
                     columns={responsibilityColumns}
@@ -526,16 +525,16 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
                 </div>
               </div>
 
-              <Divider className={styles.divider} />
+              <Divider  />
 
               {/* 📋 Section 5: 관리의무 */}
-              <div className={styles.formSection}>
-                <Typography variant="h6" className={styles.sectionTitle}>
+              <div >
+                <Typography variant="h6" >
                   <GavelIcon />
                   관리의무
                 </Typography>
 
-                <div className={styles.tableContainer}>
+                <div >
                   <BaseDataGrid
                     data={obligationFields}
                     columns={managementObligationColumns}
@@ -550,7 +549,7 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
         </form>
       </DialogContent>
 
-      <DialogActions className={styles.modalActions}>
+      <DialogActions >
         <Button
           variant="outlined"
           onClick={onClose}

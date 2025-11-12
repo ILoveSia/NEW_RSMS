@@ -18,7 +18,6 @@ import {
   ActivityTypeOption,
   RiskValueOption
 } from '../../types/manualInquiry.types';
-import styles from './ManualDetailModal.module.scss';
 
 interface ManualDetailModalProps {
   open: boolean;
@@ -196,12 +195,12 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
       size="md"
       actions={modalActions}
       loading={loading}
-      className={styles.modal}
+      
       contentClassName={styles.modalContent}
     >
       {/* 기본 정보 입력 폼 */}
-      <Box component="form" className={styles.form}>
-        <div className={styles.formRow}>
+      <Box component="form" >
+        <div >
           <Controller
             name="departmentName"
             control={control}
@@ -213,7 +212,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.departmentName}
                 helperText={errors.departmentName?.message}
-                className={styles.formField}
+                
                 placeholder="경영전략본부"
               />
             )}
@@ -230,14 +229,14 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.managementActivityCode}
                 helperText={errors.managementActivityCode?.message}
-                className={styles.formField}
+                
                 placeholder="MA001"
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="managementActivityName"
             control={control}
@@ -249,7 +248,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.managementActivityName}
                 helperText={errors.managementActivityName?.message}
-                className={styles.formField}
+                
                 placeholder="전략기획 및 실행관리"
               />
             )}
@@ -263,7 +262,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 variant="outlined"
                 fullWidth
                 error={!!errors.managementActivityType}
-                className={styles.formField}
+                
               >
                 <InputLabel>관리활동유형 *</InputLabel>
                 <Select
@@ -284,7 +283,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="managementActivityDetail"
             control={control}
@@ -298,13 +297,13 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 rows={3}
                 error={!!errors.managementActivityDetail}
                 helperText={errors.managementActivityDetail?.message}
-                className={styles.formField}
+                
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="riskAssessmentElement"
             control={control}
@@ -316,7 +315,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.riskAssessmentElement}
                 helperText={errors.riskAssessmentElement?.message}
-                className={styles.formField}
+                
               />
             )}
           />
@@ -329,7 +328,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 variant="outlined"
                 fullWidth
                 error={!!errors.riskValue}
-                className={styles.formField}
+                
               >
                 <InputLabel>위험도 *</InputLabel>
                 <Select
@@ -350,7 +349,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="startYearMonth"
             control={control}
@@ -363,7 +362,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 type="month"
                 error={!!errors.startYearMonth}
                 helperText={errors.startYearMonth?.message}
-                className={styles.formField}
+                
                 InputLabelProps={{ shrink: true }}
               />
             )}
@@ -381,14 +380,14 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 type="month"
                 error={!!errors.endYearMonth}
                 helperText={errors.endYearMonth?.message}
-                className={styles.formField}
+                
                 InputLabelProps={{ shrink: true }}
               />
             )}
           />
         </div>
 
-        <div className={styles.formRow}>
+        <div >
           <Controller
             name="relatedRegulation"
             control={control}
@@ -400,7 +399,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.relatedRegulation}
                 helperText={errors.relatedRegulation?.message}
-                className={styles.formField}
+                
               />
             )}
           />
@@ -416,7 +415,7 @@ const ManualDetailModal: React.FC<ManualDetailModalProps> = ({
                 fullWidth
                 error={!!errors.managementRepresentative}
                 helperText={errors.managementRepresentative?.message}
-                className={styles.formField}
+                
               />
             )}
           />

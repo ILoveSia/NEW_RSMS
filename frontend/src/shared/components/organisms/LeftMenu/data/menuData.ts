@@ -150,6 +150,12 @@ export const MENU_DATA: MenuItem[] = [
         title: '보고서목록',
         path: '/app/reports/report-list',
         permission: 'manager'
+      },
+      {
+        id: 'submit-report-list',
+        title: '제출보고서목록',
+        path: '/app/submitreport/submit-report-list',
+        permission: 'manager'
       }
     ]
   },

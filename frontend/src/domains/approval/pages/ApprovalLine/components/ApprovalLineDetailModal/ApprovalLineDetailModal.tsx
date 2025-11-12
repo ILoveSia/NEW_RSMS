@@ -45,7 +45,6 @@ import {
   WORK_TYPE_OPTIONS,
   USE_YN_OPTIONS
 } from '../../types/approvalLine.types';
-import styles from './ApprovalLineDetailModal.module.scss';
 
 interface ApprovalLineDetailModalProps {
   open: boolean;
@@ -214,18 +213,18 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      className={styles.dialog}
+      
     >
-      <DialogTitle className={styles.dialogTitle}>
-        <div className={styles.titleContent}>
-          <div className={styles.titleMain}>
-            <AccountTreeIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <div >
+            <AccountTreeIcon  />
             <div>
-              <Typography variant="h6" className={styles.title}>
+              <Typography variant="h6" >
                 {modalTitle}
               </Typography>
               {itemData && (
-                <Typography variant="body2" className={styles.subtitle}>
+                <Typography variant="body2" >
                   결재선ID: {itemData.id} | {itemData.workType}
                 </Typography>
               )}
@@ -233,7 +232,7 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
           </div>
           <IconButton
             onClick={onClose}
-            className={styles.closeButton}
+            
             size="small"
           >
             <CloseIcon />
@@ -241,11 +240,11 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
         </div>
       </DialogTitle>
 
-      <DialogContent className={styles.dialogContent}>
+      <DialogContent >
         <Grid container spacing={3}>
           {/* 기본 정보 섹션 */}
           <Grid item xs={12}>
-            <Box className={styles.sectionTitle}>
+            <Box >
               <Typography variant="h6">기본 정보</Typography>
             </Box>
           </Grid>
@@ -331,7 +330,7 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
 
           {/* 설정 섹션 */}
           <Grid item xs={12}>
-            <Box className={styles.sectionTitle} style={{ marginTop: '20px' }}>
+            <Box  style={{ marginTop: '20px' }}>
               <Typography variant="h6">설정</Typography>
             </Box>
           </Grid>
@@ -397,7 +396,7 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
           {mode === 'detail' && itemData && (
             <>
               <Grid item xs={12}>
-                <Box className={styles.sectionTitle} style={{ marginTop: '20px' }}>
+                <Box  style={{ marginTop: '20px' }}>
                   <Typography variant="h6">시스템 정보</Typography>
                 </Box>
               </Grid>
@@ -450,7 +449,7 @@ const ApprovalLineDetailModal: React.FC<ApprovalLineDetailModalProps> = ({
         </Grid>
       </DialogContent>
 
-      <DialogActions className={styles.dialogActions}>
+      <DialogActions >
         <Button
           variant="outlined"
           onClick={onClose}

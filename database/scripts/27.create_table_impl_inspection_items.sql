@@ -89,7 +89,7 @@ CREATE TABLE rsms.impl_inspection_items (
   improvement_plan_approved_date DATE,                -- 개선계획 승인일자
 
   improvement_detail_content TEXT,                    -- 개선이행세부내용
-  improvement_completed_date DATE,                    -- 개선완료일자
+  improvement_completed_date DATE,                    -- 개선이행완료일자
 
   -- ============================================
   -- 3단계: 최종점검(승인) 정보

@@ -11,9 +11,7 @@ import { Button } from '@/shared/components/atoms/Button';
 import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
 import { useCommonCode } from '@/shared/hooks';
 import toast from '@/shared/utils/toast';
-import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
@@ -26,51 +24,30 @@ import {
   IconButton,
   InputAdornment,
   MenuItem,
-  Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography
 } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
-// 관리의무 행 데이터 타입
-export interface ObligationRowData {
-  id: string;                            // 행 고유 ID (UUID)
-  obligationCd: string;                  // 관리의무코드
-  obligationName: string;                // 관리의무명 (표시용)
-  activityTypeCd: string;                // 관리활동구분코드
-  activityName: string;                  // 관리활동명
-  activityDetail: string;                // 관리활동상세
-  riskAssessmentLevelCd: string;         // 위험평가등급
-  activityFrequencyCd: string;           // 관리활동수행주기
-  evidenceTypeCd: string;                // 관리활동증빙유형코드
-  evidenceMaterial: string;              // 관리활동증빙자료
-  relatedBasis: string;                  // 관련근거
-  implCheckFrequencyCd: string;          // 이행점검주기
-  isConditionalCheck: 'Y' | 'N';         // 조건부점검항목여부
-  implCheckMethod: string;               // 이행점검방법
-  endDate: string;                       // 종료일
-  isActive: 'Y' | 'N';                   // 사용여부
-  status: string;                        // 상태
-  remarks: string;                       // 비고
-}
+import React, { useCallback, useEffect, useState } from 'react';
 
 // 부서장업무메뉴얼 폼 데이터 타입
 export interface DeptOpManualFormData {
   ledgerOrderId: string;                 // 원장차수ID
   orgCode: string;                       // 조직코드 (부서)
-  obligations: ObligationRowData[];      // 관리의무 목록
+  obligationCd: string;                  // 관리의무코드
+  activityTypeCd: string;                // 관리활동구분코드
+  activityName: string;                  // 관리활동명
+  activityDetail: string;                // 관리활동상세
+  riskAssessmentLevelCd: string;         // 위험평가등급
+  implCheckFrequencyCd: string;          // 이행점검주기
+  implCheckMethod: string;               // 이행점검방법
+  isActive: 'Y' | 'N';                   // 사용여부
+  remarks: string;                       // 비고
 }
 
 interface DeptOpManualsFormModalProps {
   open: boolean;
-  mode: 'create' | 'detail';
+  mode: 'create' | 'view' | 'edit';
   manual: any | null;
   onClose: () => void;
   onSave: (formData: DeptOpManualFormData) => Promise<void>;
@@ -103,7 +80,15 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   const [formData, setFormData] = useState<DeptOpManualFormData>({
     ledgerOrderId: '',
     orgCode: '',
-    obligations: []
+    obligationCd: '',
+    activityTypeCd: '',
+    activityName: '',
+    activityDetail: '',
+    riskAssessmentLevelCd: '',
+    implCheckFrequencyCd: '',
+    implCheckMethod: '',
+    isActive: 'Y',
+    remarks: ''
   });
 
   // 선택된 조직 정보
@@ -119,23 +104,33 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   const modalTitle = mode === 'create' ? '업무메뉴얼 등록' : '업무메뉴얼 상세';
 
   // 읽기 전용 모드
-  const isReadOnly = mode === 'detail' && !isEditing;
+  const isReadOnly = mode === 'view' && !isEditing;
 
   // 상세 모드일 때 기존 데이터 로드
   useEffect(() => {
-    if (mode === 'detail' && manual && open) {
+    if ((mode === 'view' || mode === 'edit') && manual && open) {
       console.log('🔍 [DeptOpManualsFormModal] 상세 데이터 로드:', manual);
+
+      // DeptOpManual 타입의 데이터를 폼 데이터로 변환
       setFormData({
-        ledgerOrderId: manual.ledgerOrderId || '',
-        orgCode: manual.orgCode || '',
-        obligations: manual.obligations || []
+        ledgerOrderId: manual.id || '',
+        orgCode: manual.irregularityName || '',
+        obligationCd: 'OBL001',
+        activityTypeCd: manual.managementActivityType === 'compliance' ? 'COMP' : 'RISK',
+        activityName: manual.managementActivity || manual.managementActivityName || '',
+        activityDetail: manual.managementActivityDetail || '',
+        riskAssessmentLevelCd: manual.riskAssessmentLevel === 'high' ? 'HIGH' : manual.riskAssessmentLevel === 'medium' ? 'MED' : 'LOW',
+        implCheckFrequencyCd: 'MONTHLY',
+        implCheckMethod: manual.implementationManager || '',
+        isActive: manual.isActive ? 'Y' : 'N',
+        remarks: manual.remarks || ''
       });
 
-      // 선택된 조직 정보도 복원 (추후 API에서 조직명 조회 필요)
-      if (manual.orgCode) {
+      // 선택된 조직 정보도 복원
+      if (manual.irregularityName) {
         setSelectedOrganization({
-          orgCode: manual.orgCode,
-          orgName: manual.orgName || manual.orgCode // 조직명이 있으면 사용, 없으면 코드 표시
+          orgCode: manual.irregularityName,
+          orgName: manual.irregularityName
         });
       }
     }
@@ -146,7 +141,15 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     setFormData({
       ledgerOrderId: '',
       orgCode: '',
-      obligations: []
+      obligationCd: '',
+      activityTypeCd: '',
+      activityName: '',
+      activityDetail: '',
+      riskAssessmentLevelCd: '',
+      implCheckFrequencyCd: '',
+      implCheckMethod: '',
+      isActive: 'Y',
+      remarks: ''
     });
     setSelectedOrganization(null);
     setIsEditing(false);
@@ -166,64 +169,6 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     }));
   }, []);
 
-  // 새 행 추가
-  const handleAddRow = useCallback(() => {
-    const newRow: ObligationRowData = {
-      id: crypto.randomUUID(),
-      obligationCd: '',
-      obligationName: '',
-      activityTypeCd: '',
-      activityName: '',
-      activityDetail: '',
-      riskAssessmentLevelCd: '',
-      activityFrequencyCd: '',
-      evidenceTypeCd: '',
-      evidenceMaterial: '',
-      relatedBasis: '',
-      implCheckFrequencyCd: '',
-      isConditionalCheck: 'N',
-      implCheckMethod: '',
-      endDate: '',
-      isActive: 'Y',
-      status: 'active',
-      remarks: ''
-    };
-
-    setFormData(prev => ({
-      ...prev,
-      obligations: [...prev.obligations, newRow]
-    }));
-  }, []);
-
-  // 행 삭제
-  const handleDeleteRow = useCallback((rowId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      obligations: prev.obligations.filter(row => row.id !== rowId)
-    }));
-  }, []);
-
-  // 행 데이터 변경
-  const handleRowChange = useCallback((rowId: string, field: keyof ObligationRowData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      obligations: prev.obligations.map(row => {
-        if (row.id === rowId) {
-          const updatedRow = { ...row, [field]: value };
-
-          // 관리의무 선택 시 관리의무명도 함께 업데이트
-          if (field === 'obligationCd') {
-            const option = obligationOptions.find(opt => opt.value === value);
-            updatedRow.obligationName = option?.label || '';
-          }
-
-          return updatedRow;
-        }
-        return row;
-      })
-    }));
-  }, [obligationOptions]);
-
   // 수정 버튼 클릭
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -234,16 +179,24 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     setIsEditing(false);
     if (manual) {
       setFormData({
-        ledgerOrderId: manual.ledgerOrderId || '',
-        orgCode: manual.orgCode || '',
-        obligations: manual.obligations || []
+        ledgerOrderId: manual.id || '',
+        orgCode: manual.irregularityName || '',
+        obligationCd: 'OBL001',
+        activityTypeCd: manual.managementActivityType === 'compliance' ? 'COMP' : 'RISK',
+        activityName: manual.managementActivity || manual.managementActivityName || '',
+        activityDetail: manual.managementActivityDetail || '',
+        riskAssessmentLevelCd: manual.riskAssessmentLevel === 'high' ? 'HIGH' : manual.riskAssessmentLevel === 'medium' ? 'MED' : 'LOW',
+        implCheckFrequencyCd: 'MONTHLY',
+        implCheckMethod: manual.implementationManager || '',
+        isActive: manual.isActive ? 'Y' : 'N',
+        remarks: manual.remarks || ''
       });
 
       // 선택된 조직 정보도 복원
-      if (manual.orgCode) {
+      if (manual.irregularityName) {
         setSelectedOrganization({
-          orgCode: manual.orgCode,
-          orgName: manual.orgName || manual.orgCode
+          orgCode: manual.irregularityName,
+          orgName: manual.irregularityName
         });
       }
     }
@@ -251,7 +204,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
 
   // 부점 조회 팝업 열기
   const handleOpenOrgSearch = useCallback(() => {
-    if (!isReadOnly && mode !== 'detail') {
+    if (!isReadOnly && mode !== 'view') {
       setIsOrgSearchModalOpen(true);
     }
   }, [isReadOnly, mode]);
@@ -306,32 +259,21 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       toast.warning('부점을 선택해주세요.');
       return;
     }
-    if (formData.obligations.length === 0) {
-      toast.warning('최소 1개 이상의 관리의무를 등록해주세요.');
+    if (!formData.obligationCd) {
+      toast.warning('관리의무를 선택해주세요.');
       return;
     }
-
-    // 각 관리의무 행 검증
-    for (let i = 0; i < formData.obligations.length; i++) {
-      const row = formData.obligations[i];
-      const rowNum = i + 1;
-
-      if (!row.obligationCd) {
-        toast.warning(`${rowNum}번째 행: 관리의무를 선택해주세요.`);
-        return;
-      }
-      if (!row.activityTypeCd) {
-        toast.warning(`${rowNum}번째 행: 관리활동구분을 선택해주세요.`);
-        return;
-      }
-      if (!row.activityName) {
-        toast.warning(`${rowNum}번째 행: 관리활동명을 입력해주세요.`);
-        return;
-      }
-      if (!row.riskAssessmentLevelCd) {
-        toast.warning(`${rowNum}번째 행: 위험평가등급을 선택해주세요.`);
-        return;
-      }
+    if (!formData.activityTypeCd) {
+      toast.warning('관리활동구분을 선택해주세요.');
+      return;
+    }
+    if (!formData.activityName) {
+      toast.warning('관리활동명을 입력해주세요.');
+      return;
+    }
+    if (!formData.riskAssessmentLevelCd) {
+      toast.warning('위험평가등급을 선택해주세요.');
+      return;
     }
 
     try {
@@ -346,11 +288,6 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       console.error('[DeptOpManualsFormModal] 저장 실패:', error);
     }
   }, [mode, formData, manual, onSave, onUpdate, handleClose]);
-
-  // 원장차수와 부서가 선택되었는지 확인
-  const canAddRow = useMemo(() => {
-    return formData.ledgerOrderId && formData.orgCode;
-  }, [formData.ledgerOrderId, formData.orgCode]);
 
   return (
     <Dialog
@@ -404,265 +341,244 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
               기본 정보
             </Typography>
 
-            {/* 책무이행차수와 부점 한 줄 배치 */}
+            {/* 책무이행차수, 부점, 관리의무 한 줄 배치 */}
             <Box sx={{ display: 'flex', gap: 2 }}>
-              {/* 책무이행차수 - 수정 모드일 때도 비활성화 */}
-              <LedgerOrderComboBox
-                value={formData.ledgerOrderId}
-                onChange={(value) => handleChange('ledgerOrderId', value || '')}
-                label="책무이행차수"
-                required
-                disabled={isReadOnly || mode === 'detail'}
-                size="small"
-              />
+              {/* 책무이행차수 */}
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <LedgerOrderComboBox
+                  value={formData.ledgerOrderId}
+                  onChange={(value) => handleChange('ledgerOrderId', value || '')}
+                  label="책무이행차수"
+                  required
+                  disabled={isReadOnly || mode === 'view'}
+                  size="small"
+                />
+              </Box>
 
-              {/* 부점 - 돋보기 버튼으로 조회 */}
-              <TextField
-                fullWidth
-                size="small"
-                label="부점"
-                required
-                disabled={isReadOnly || mode === 'detail'}
-                value={selectedOrganization ? `${selectedOrganization.orgName} (${selectedOrganization.orgCode})` : ''}
-                placeholder="돋보기 버튼을 클릭하여 부점을 선택하세요"
-                InputProps={{
-                  readOnly: true,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleOpenOrgSearch}
-                        disabled={isReadOnly || mode === 'detail'}
-                        size="small"
-                        edge="end"
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-              />
+              {/* 부점 */}
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="부점"
+                  required
+                  disabled={isReadOnly || mode === 'view'}
+                  value={selectedOrganization ? `${selectedOrganization.orgName} (${selectedOrganization.orgCode})` : ''}
+                  placeholder="돋보기 버튼을 클릭하여 부점을 선택하세요"
+                  InputProps={{
+                    readOnly: true,
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleOpenOrgSearch}
+                          disabled={isReadOnly || mode === 'view'}
+                          size="small"
+                          edge="end"
+                        >
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                  sx={{
+                    '& .MuiInputBase-input': {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }
+                  }}
+                />
+              </Box>
+
+              {/* 관리의무 */}
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  select
+                  label="관리의무"
+                  required
+                  disabled={isReadOnly || !formData.orgCode}
+                  value={formData.obligationCd}
+                  onChange={(e) => handleChange('obligationCd', e.target.value)}
+                  SelectProps={{
+                    MenuProps: {
+                      PaperProps: {
+                        sx: { maxHeight: 300 }
+                      }
+                    }
+                  }}
+                >
+                  <MenuItem value="">선택하세요</MenuItem>
+                  {obligationOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
             </Box>
           </Box>
 
           <Divider />
 
-          {/* 관리의무 Grid 섹션 */}
+          {/* 관리의무 정보 섹션 */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="subtitle1" fontWeight={600}>
-                관리의무 목록
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon sx={{ fontSize: '1rem' }} />}
-                onClick={handleAddRow}
-                disabled={isReadOnly || !canAddRow}
-                size="small"
-                sx={{
-                  fontSize: '0.8125rem',      // 폰트 크기 축소
-                  padding: '4px 12px',         // 패딩 축소
-                  minWidth: '90px',            // 최소 너비 설정
-                  height: '32px'               // 높이 고정
-                }}
-              >
-                행 추가
-              </Button>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+              관리활동 정보
+            </Typography>
+
+            {/* 관리활동구분, 관리활동명 한 줄 배치 */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {/* 관리활동구분 */}
+              <Box sx={{ flex: 1 }}>
+                <FormControl fullWidth size="small" required disabled={isReadOnly}>
+                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                    관리활동구분 *
+                  </Typography>
+                  <Select
+                    value={formData.activityTypeCd}
+                    onChange={(e) => handleChange('activityTypeCd', e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value="">선택하세요</MenuItem>
+                    {activityTypeCode.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* 관리활동명 */}
+              <Box sx={{ flex: 2 }}>
+                <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                  관리활동명 *
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  required
+                  value={formData.activityName}
+                  onChange={(e) => handleChange('activityName', e.target.value)}
+                  disabled={isReadOnly}
+                  placeholder="관리활동명을 입력하세요"
+                />
+              </Box>
             </Box>
 
-            {!canAddRow && (
-              <Typography variant="body2" color="text.secondary">
-                * 책무이행차수와 부점을 먼저 선택해주세요.
+            {/* 관리활동상세 */}
+            <Box>
+              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                관리활동상세
               </Typography>
-            )}
+              <TextField
+                fullWidth
+                size="small"
+                multiline
+                rows={3}
+                value={formData.activityDetail}
+                onChange={(e) => handleChange('activityDetail', e.target.value)}
+                disabled={isReadOnly}
+                placeholder="관리활동 상세 내용을 입력하세요"
+              />
+            </Box>
 
-            {/* Grid Table - 가로 스크롤 허용 */}
-            {formData.obligations.length > 0 && (
-              <TableContainer
-                component={Paper}
-                sx={{
-                  maxHeight: '400px',
-                  overflowX: 'auto',  // 가로 스크롤 허용
-                  overflowY: 'auto'   // 세로 스크롤 허용
-                }}
-              >
-                <Table stickyHeader size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ minWidth: 50, fontWeight: 600 }}>No</TableCell>
-                      <TableCell sx={{ minWidth: 150, fontWeight: 600 }}>관리의무 *</TableCell>
-                      <TableCell sx={{ minWidth: 120, fontWeight: 600 }}>관리활동구분 *</TableCell>
-                      <TableCell sx={{ minWidth: 150, fontWeight: 600 }}>관리활동명 *</TableCell>
-                      <TableCell sx={{ minWidth: 200, fontWeight: 600 }}>관리활동상세</TableCell>
-                      <TableCell sx={{ minWidth: 120, fontWeight: 600 }}>위험평가등급 *</TableCell>
-                      <TableCell sx={{ minWidth: 120, fontWeight: 600 }}>이행점검주기</TableCell>
-                      <TableCell sx={{ minWidth: 150, fontWeight: 600 }}>이행점검방법</TableCell>
-                      <TableCell sx={{ minWidth: 100, fontWeight: 600 }}>사용여부</TableCell>
-                      <TableCell sx={{ minWidth: 100, fontWeight: 600 }}>상태</TableCell>
-                      <TableCell sx={{ minWidth: 80, fontWeight: 600, textAlign: 'center' }}>삭제</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {formData.obligations.map((row, index) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{index + 1}</TableCell>
-
-                        {/* 관리의무 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.obligationCd}
-                              onChange={(e) => handleRowChange(row.id, 'obligationCd', e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="">선택</MenuItem>
-                              {obligationOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 관리활동구분 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.activityTypeCd}
-                              onChange={(e) => handleRowChange(row.id, 'activityTypeCd', e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="">선택</MenuItem>
-                              {activityTypeCode.options.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 관리활동명 */}
-                        <TableCell>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            value={row.activityName}
-                            onChange={(e) => handleRowChange(row.id, 'activityName', e.target.value)}
-                            disabled={isReadOnly}
-                            placeholder="입력"
-                          />
-                        </TableCell>
-
-                        {/* 관리활동상세 */}
-                        <TableCell>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            value={row.activityDetail}
-                            onChange={(e) => handleRowChange(row.id, 'activityDetail', e.target.value)}
-                            disabled={isReadOnly}
-                            placeholder="입력"
-                            multiline
-                            maxRows={2}
-                          />
-                        </TableCell>
-
-                        {/* 위험평가등급 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.riskAssessmentLevelCd}
-                              onChange={(e) => handleRowChange(row.id, 'riskAssessmentLevelCd', e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="">선택</MenuItem>
-                              {riskLevelCode.options.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 이행점검주기 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.implCheckFrequencyCd}
-                              onChange={(e) => handleRowChange(row.id, 'implCheckFrequencyCd', e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="">선택</MenuItem>
-                              {implCheckFrequencyCode.options.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 이행점검방법 */}
-                        <TableCell>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            value={row.implCheckMethod}
-                            onChange={(e) => handleRowChange(row.id, 'implCheckMethod', e.target.value)}
-                            disabled={isReadOnly}
-                            placeholder="입력"
-                            multiline
-                            maxRows={2}
-                          />
-                        </TableCell>
-
-                        {/* 사용여부 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.isActive}
-                              onChange={(e) => handleRowChange(row.id, 'isActive', e.target.value as 'Y' | 'N')}
-                            >
-                              <MenuItem value="Y">사용</MenuItem>
-                              <MenuItem value="N">미사용</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 상태 */}
-                        <TableCell>
-                          <FormControl fullWidth size="small" disabled={isReadOnly}>
-                            <Select
-                              value={row.status}
-                              onChange={(e) => handleRowChange(row.id, 'status', e.target.value)}
-                            >
-                              <MenuItem value="active">사용</MenuItem>
-                              <MenuItem value="inactive">미사용</MenuItem>
-                              <MenuItem value="pending">검토중</MenuItem>
-                              <MenuItem value="approved">승인완료</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </TableCell>
-
-                        {/* 삭제 */}
-                        <TableCell sx={{ textAlign: 'center' }}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteRow(row.id)}
-                            disabled={isReadOnly}
-                            color="error"
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+            {/* 위험평가등급, 이행점검주기, 사용여부 한 줄 배치 */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {/* 위험평가등급 */}
+              <Box sx={{ flex: 1 }}>
+                <FormControl fullWidth size="small" required disabled={isReadOnly}>
+                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                    위험평가등급 *
+                  </Typography>
+                  <Select
+                    value={formData.riskAssessmentLevelCd}
+                    onChange={(e) => handleChange('riskAssessmentLevelCd', e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value="">선택하세요</MenuItem>
+                    {riskLevelCode.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* 이행점검주기 */}
+              <Box sx={{ flex: 1 }}>
+                <FormControl fullWidth size="small" disabled={isReadOnly}>
+                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                    이행점검주기
+                  </Typography>
+                  <Select
+                    value={formData.implCheckFrequencyCd}
+                    onChange={(e) => handleChange('implCheckFrequencyCd', e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value="">선택하세요</MenuItem>
+                    {implCheckFrequencyCode.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* 사용여부 */}
+              <Box sx={{ flex: 1 }}>
+                <FormControl fullWidth size="small" disabled={isReadOnly}>
+                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                    사용여부
+                  </Typography>
+                  <Select
+                    value={formData.isActive}
+                    onChange={(e) => handleChange('isActive', e.target.value as 'Y' | 'N')}
+                  >
+                    <MenuItem value="Y">사용</MenuItem>
+                    <MenuItem value="N">미사용</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
+
+            {/* 이행점검방법 */}
+            <Box>
+              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                이행점검방법
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                multiline
+                rows={3}
+                value={formData.implCheckMethod}
+                onChange={(e) => handleChange('implCheckMethod', e.target.value)}
+                disabled={isReadOnly}
+                placeholder="이행점검방법을 입력하세요"
+              />
+            </Box>
+
+            {/* 비고 */}
+            <Box>
+              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                비고
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                multiline
+                rows={3}
+                value={formData.remarks}
+                onChange={(e) => handleChange('remarks', e.target.value)}
+                disabled={isReadOnly}
+                placeholder="비고를 입력하세요"
+              />
+            </Box>
           </Box>
         </Box>
       </DialogContent>
@@ -679,7 +595,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
               {loading ? '등록 중...' : '등록'}
             </Button>
           </>
-        ) : (
+        ) : mode === 'view' ? (
           <>
             {isEditing ? (
               <>
@@ -700,6 +616,16 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
                 </Button>
               </>
             )}
+          </>
+        ) : (
+          // mode === 'edit'
+          <>
+            <Button variant="outlined" onClick={handleClose} disabled={loading}>
+              취소
+            </Button>
+            <Button variant="contained" onClick={handleSubmit} disabled={loading}>
+              {loading ? '저장 중...' : '저장'}
+            </Button>
           </>
         )}
       </DialogActions>

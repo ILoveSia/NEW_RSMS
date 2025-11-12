@@ -14,7 +14,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import type { Responsibility, ResponsibilitySelectModalProps } from '../../types/roleHistory.types';
 import type { ColDef } from 'ag-grid-community';
-import styles from './ResponsibilitySelectModal.module.scss';
 
 /**
  * 책무 선택 모달 컴포넌트
@@ -200,15 +199,15 @@ const ResponsibilitySelectModal: React.FC<ResponsibilitySelectModalProps> = ({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      className={styles.modal}
+      
       PaperProps={{
         className: styles.paper
       }}
     >
       {/* 모달 헤더 */}
-      <DialogTitle className={styles.modalTitle}>
-        <div className={styles.titleContent}>
-          <AssignmentIcon className={styles.titleIcon} />
+      <DialogTitle >
+        <div >
+          <AssignmentIcon  />
           <Typography variant="h6" component="div">
             책무 선택
           </Typography>
@@ -216,16 +215,16 @@ const ResponsibilitySelectModal: React.FC<ResponsibilitySelectModalProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          className={styles.closeButton}
+          
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
       {/* 모달 컨텐츠 */}
-      <DialogContent className={styles.modalContent}>
+      <DialogContent >
         {/* 검색 영역 */}
-        <div className={styles.searchSection}>
+        <div >
           <TextField
             fullWidth
             label="책무"
@@ -238,20 +237,20 @@ const ResponsibilitySelectModal: React.FC<ResponsibilitySelectModalProps> = ({
               }
             }}
             size="small"
-            className={styles.searchField}
+            
           />
           <Button
             variant="contained"
             onClick={handleSearch}
             disabled={searchLoading}
-            className={styles.searchButton}
+            
           >
             조회
           </Button>
         </div>
 
         {/* 책무 목록 그리드 */}
-        <div className={styles.gridSection}>
+        <div >
           <BaseDataGrid
             data={responsibilities}
             columns={columns}
@@ -268,11 +267,11 @@ const ResponsibilitySelectModal: React.FC<ResponsibilitySelectModalProps> = ({
       </DialogContent>
 
       {/* 모달 액션 */}
-      <DialogActions className={styles.modalActions}>
+      <DialogActions >
         <Button
           onClick={onClose}
           variant="outlined"
-          className={styles.cancelButton}
+          
         >
           취소
         </Button>
@@ -280,7 +279,7 @@ const ResponsibilitySelectModal: React.FC<ResponsibilitySelectModalProps> = ({
           onClick={handleResponsibilitySelect}
           variant="contained"
           disabled={!selectedResponsibility || loading}
-          className={styles.selectButton}
+          
         >
           선택
         </Button>

@@ -20,24 +20,7 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
-    resizable: true,
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      return (
-        <span
-          style={{
-            padding: '2px 6px',
-            borderRadius: '4px',
-            backgroundColor: '#f3e5f5',
-            color: '#7b1fa2',
-            fontSize: '12px',
-            fontWeight: '500'
-          }}
-        >
-          {value}
-        </span>
-      );
-    }
+    resizable: true
   },
   {
     field: 'responsibilityArea',
@@ -84,24 +67,7 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
-    resizable: true,
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      return (
-        <span
-          style={{
-            padding: '2px 8px',
-            borderRadius: '4px',
-            backgroundColor: '#e3f2fd',
-            color: '#1565c0',
-            fontSize: '12px',
-            fontWeight: '500'
-          }}
-        >
-          {value}
-        </span>
-      );
-    }
+    resizable: true
   },
   {
     field: 'activityDetail',
@@ -135,39 +101,7 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
-    resizable: true,
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      // 위험평가등급에 따른 색상 처리 (예시)
-      let backgroundColor = '#f5f5f5';
-      let color = '#666666';
-
-      if (value.includes('상') || value.includes('고')) {
-        backgroundColor = '#ffebee';
-        color = '#c62828';
-      } else if (value.includes('중')) {
-        backgroundColor = '#fff3e0';
-        color = '#ef6c00';
-      } else if (value.includes('하') || value.includes('저')) {
-        backgroundColor = '#e8f5e8';
-        color = '#2e7d32';
-      }
-
-      return (
-        <span
-          style={{
-            padding: '2px 6px',
-            borderRadius: '4px',
-            backgroundColor,
-            color,
-            fontSize: '12px',
-            fontWeight: '500'
-          }}
-        >
-          {value}
-        </span>
-      );
-    }
+    resizable: true
   },
   {
     field: 'performer',
@@ -199,75 +133,8 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
     headerClass: 'ag-header-cell-center',
     sortable: true,
     resizable: false,
-    cellRenderer: (params: any) => {
-      const isPerformed = params.value;
-      const status = isPerformed ? '완료' : '미완료';
-      const backgroundColor = isPerformed ? '#e8f5e8' : '#fff3e0';
-      const color = isPerformed ? '#2e7d32' : '#ef6c00';
-
-      return (
-        <span
-          style={{
-            padding: '4px 8px',
-            borderRadius: '12px',
-            backgroundColor,
-            color,
-            fontSize: '12px',
-            fontWeight: '600',
-            border: `1px solid ${color}20`
-          }}
-        >
-          {status}
-        </span>
-      );
-    }
-  },
-  {
-    field: 'performanceResult',
-    headerName: '수행결과',
-    width: 100,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    resizable: false,
-    cellRenderer: (params: any) => {
-      const result = params.value || '';
-      let backgroundColor = '#f5f5f5';
-      let color = '#666666';
-
-      switch (result) {
-        case '적정':
-          backgroundColor = '#e8f5e8';
-          color = '#2e7d32';
-          break;
-        case '부적정':
-          backgroundColor = '#ffebee';
-          color = '#c62828';
-          break;
-        case '보완필요':
-          backgroundColor = '#fff3e0';
-          color = '#ef6c00';
-          break;
-        default:
-          backgroundColor = '#f5f5f5';
-          color = '#666666';
-      }
-
-      return (
-        <span
-          style={{
-            padding: '4px 8px',
-            borderRadius: '12px',
-            backgroundColor,
-            color,
-            fontSize: '12px',
-            fontWeight: '600',
-            border: `1px solid ${color}20`
-          }}
-        >
-          {result || '-'}
-        </span>
-      );
+    valueGetter: (params: any) => {
+      return params.data?.isPerformed ? '수행' : '미수행';
     }
   }
 ];

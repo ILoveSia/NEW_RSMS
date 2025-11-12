@@ -49,6 +49,9 @@ const ExecutiveReport = React.lazy(() => import('@/domains/reports/pages/Executi
 const CeoReport = React.lazy(() => import('@/domains/reports/pages/CeoReport'));
 const ReportList = React.lazy(() => import('@/domains/reports/pages/ReportList'));
 
+// SubmitReport (제출보고서) 도메인
+const SubmitReportList = React.lazy(() => import('@/domains/submitreport/pages/SubmitReportList'));
+
 // Improvement (개선이행) 도메인
 const ActComplImprovement = React.lazy(() => import('@/domains/improvement/pages/ActComplImprovement'));
 const ReportImprovement = React.lazy(() => import('@/domains/improvement/pages/ReportImprovement'));
@@ -537,6 +540,27 @@ const AppRouter: React.FC = () => {
                 </Routes>
               </Suspense>
             </AuthGuard>
+          } />
+
+          {/* 제출보고서 (매니저 이상) */}
+          <Route path="submitreport/*" element={
+            <ManagerGuard>
+              <Suspense fallback={<LoadingSpinner text="제출보고서 로딩 중..." />}>
+                <Routes>
+                  {/* 제출보고서목록 */}
+                  <Route path="submit-report-list" element={<SubmitReportList />} />
+                  <Route path="submit-report-list/:id" element={
+                    <TemporaryPage
+                      title="제출보고서 상세"
+                      description="제출보고서의 상세 정보를 확인하는 페이지입니다."
+                    />
+                  } />
+
+                  {/* 기본 리다이렉트 */}
+                  <Route index element={<Navigate to="/app/submitreport/submit-report-list" replace />} />
+                </Routes>
+              </Suspense>
+            </ManagerGuard>
           } />
 
           {/* 설정 */}

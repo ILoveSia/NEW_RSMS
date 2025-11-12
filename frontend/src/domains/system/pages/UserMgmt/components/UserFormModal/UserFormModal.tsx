@@ -42,7 +42,6 @@ import type {
   DetailRoleOption
 } from '../../types/user.types';
 
-import styles from './UserFormModal.module.scss';
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
   open,
@@ -345,7 +344,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         className: styles.modalPaper
       }}
     >
-      <DialogTitle className={styles.modalTitle}>
+      <DialogTitle >
         <Typography variant="h6">
           {mode === 'create' ? '사용자 정보 등록 팝업' : '사용자 정보 수정 팝업'}
         </Typography>
@@ -354,9 +353,9 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent className={styles.modalContent}>
+      <DialogContent >
         {/* 기본 정보 섹션 */}
-        <Box className={styles.formSection}>
+        <Box >
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
@@ -463,10 +462,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           </Grid>
         </Box>
 
-        <Divider className={styles.divider} />
+        <Divider  />
 
         {/* 비밀번호 설정 섹션 */}
-        <Box className={styles.formSection}>
+        <Box >
           <Typography variant="subtitle2" gutterBottom>
             비밀번호 설정
           </Typography>
@@ -498,17 +497,17 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           </Grid>
         </Box>
 
-        <Divider className={styles.divider} />
+        <Divider  />
 
         {/* 역할 할당 섹션 */}
-        <Box className={styles.roleSection}>
+        <Box >
           <Grid container spacing={2}>
             {/* 역할(MenuID) */}
             <Grid item xs={6}>
               <Typography variant="subtitle2" gutterBottom>
                 🔐 역할(MenuID)
               </Typography>
-              <Box className={styles.roleGrid}>
+              <Box >
                 <BaseDataGrid
                   data={mockRoles}
                   columns={roleColumns}
@@ -524,7 +523,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
               <Typography variant="subtitle2" gutterBottom>
                 🔍 상세 역할
               </Typography>
-              <Box className={styles.roleGrid}>
+              <Box >
                 <BaseDataGrid
                   data={mockDetailRoles}
                   columns={detailRoleColumns}
@@ -538,7 +537,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         </Box>
       </DialogContent>
 
-      <DialogActions className={styles.modalActions}>
+      <DialogActions >
         <Button
           variant="outlined"
           onClick={onClose}
