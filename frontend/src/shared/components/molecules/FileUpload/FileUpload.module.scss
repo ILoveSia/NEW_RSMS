@@ -1,0 +1,440 @@
+/**
+ * 파일 업로드 컴포넌트 스타일
+ * - 모던하고 세련된 디자인
+ * - 부드러운 애니메이션과 그라데이션
+ */
+
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  width: 100%;
+}
+
+// 라벨
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+  letter-spacing: 0.3px;
+
+  .optional {
+    color: $color-text-secondary;
+    font-weight: 400;
+    font-size: 0.8rem;
+  }
+}
+
+// 업로드 영역 - 모던한 디자인
+.uploadArea {
+  position: relative;
+  border: 2px dashed rgba($color-primary, 0.3);
+  border-radius: 12px;
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(145deg,
+    rgba($color-primary, 0.02) 0%,
+    rgba($color-primary, 0.05) 100%
+  );
+  overflow: hidden;
+
+  // 배경 애니메이션 효과
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba($color-primary, 0.1) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover:not(.disabled) {
+    border-color: $color-primary;
+    background: linear-gradient(145deg,
+      rgba($color-primary, 0.08) 0%,
+      rgba($color-primary, 0.12) 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba($color-primary, 0.15);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .uploadIcon {
+      transform: scale(1.1) rotate(5deg);
+      color: $color-primary;
+    }
+
+    .uploadText {
+      color: $color-primary;
+    }
+  }
+
+  &.dragging {
+    border-color: $color-primary;
+    border-width: 3px;
+    background: linear-gradient(145deg,
+      rgba($color-primary, 0.15) 0%,
+      rgba($color-primary, 0.2) 100%
+    );
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba($color-primary, 0.25);
+
+    &::before {
+      opacity: 1;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .uploadIcon {
+      transform: scale(1.15);
+      color: $color-primary;
+      animation: bounce 0.6s ease-in-out infinite;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: $color-background-disabled;
+    border-color: $color-border-default;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
+  &.error {
+    border-color: $color-error;
+    background: linear-gradient(145deg,
+      rgba($color-error, 0.05) 0%,
+      rgba($color-error, 0.08) 100%
+    );
+  }
+}
+
+.uploadIcon {
+  font-size: 48px; // ResponsibilityExcelUploadModal과 동일
+  color: rgba($color-primary, 0.6);
+  margin-bottom: $spacing-sm;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 4px 8px rgba($color-primary, 0.1));
+}
+
+.uploadText {
+  font-size: 1rem; // MUI Typography variant="body1" 기본값
+  font-weight: 500; // ResponsibilityExcelUploadModal과 동일
+  color: $color-text-primary;
+  margin: 0 0 4px 0; // mb: 0.5 (4px)
+  transition: color 0.3s ease;
+  letter-spacing: 0;
+}
+
+.uploadHint {
+  font-size: 0.75rem; // MUI Typography variant="caption" 기본값
+  color: $color-text-secondary;
+  margin: 0;
+  line-height: 1.66;
+  opacity: 1; // caption은 이미 text.secondary로 충분히 연함
+}
+
+// 애니메이션
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) scale(1.15); }
+  50% { transform: translateY(-10px) scale(1.2); }
+}
+
+// 에러 메시지 - 세련된 스타일
+.errorMessage {
+  color: $color-error;
+  font-size: 0.875rem;
+  margin-top: $spacing-sm;
+  margin-bottom: 0;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba($color-error, 0.1);
+  border-left: 3px solid $color-error;
+  border-radius: 4px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 파일 목록 - 모던한 카드 스타일
+.fileList {
+  margin-top: $spacing-md;
+  border: 1px solid rgba($color-primary, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: $color-background-paper;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.fileListHeader {
+  background: linear-gradient(135deg,
+    rgba($color-primary, 0.08) 0%,
+    rgba($color-primary, 0.04) 100%
+  );
+  padding: $spacing-sm $spacing-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  border-bottom: 1px solid rgba($color-primary, 0.15);
+  letter-spacing: 0.3px;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-bottom: 1px solid rgba($color-border-default, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: $color-primary;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: linear-gradient(90deg,
+      rgba($color-primary, 0.06) 0%,
+      rgba($color-primary, 0.02) 100%
+    );
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba($color-primary, 0.08);
+
+    &::before {
+      transform: scaleY(1);
+    }
+
+    .fileIcon {
+      color: $color-primary;
+      transform: scale(1.1);
+    }
+
+    .fileName {
+      color: $color-primary;
+    }
+  }
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+  min-width: 0;
+}
+
+.fileIcon {
+  color: rgba($color-primary, 0.5);
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba($color-primary, 0.1));
+}
+
+.fileDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $color-text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+  letter-spacing: 0.2px;
+}
+
+.fileSize {
+  font-size: 0.75rem;
+  color: $color-text-secondary;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.fileActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+
+  .fileItem:hover & {
+    opacity: 1;
+  }
+}
+
+// 컴팩트 모드 - 더 세련된 간결함
+.compact {
+  .uploadArea {
+    padding: $spacing-md $spacing-sm;
+    border-radius: 8px;
+  }
+
+  .uploadIcon {
+    font-size: 40px; // 컴팩트 모드에서도 충분히 큰 사이즈 유지
+  }
+
+  .uploadText {
+    font-size: 0.95rem; // 약간 작게
+  }
+
+  .uploadHint {
+    font-size: 0.7rem;
+  }
+
+  .fileListHeader {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.8rem;
+  }
+
+  .fileItem {
+    padding: $spacing-sm;
+
+    &:hover {
+      transform: translateX(2px);
+    }
+  }
+
+  .fileIcon {
+    font-size: 1.5rem;
+  }
+
+  .fileName {
+    font-size: 0.85rem;
+  }
+
+  .fileSize {
+    font-size: 0.7rem;
+  }
+}
+
+// 반응형 - 모바일 최적화
+@include responsive-breakpoint($breakpoint-tablet) {
+  .uploadArea {
+    padding: $spacing-lg $spacing-md;
+    border-radius: 10px;
+  }
+
+  .uploadIcon {
+    font-size: 44px; // 태블릿에서도 적당한 크기 유지
+  }
+
+  .uploadText {
+    font-size: 0.95rem;
+  }
+
+  .uploadHint {
+    font-size: 0.75rem;
+  }
+
+  .fileItem {
+    padding: $spacing-sm $spacing-md;
+
+    &:hover {
+      transform: translateX(2px);
+    }
+  }
+
+  .fileIcon {
+    font-size: 1.5rem;
+  }
+
+  .fileName {
+    font-size: 0.85rem;
+  }
+}
+
+@include responsive-breakpoint($breakpoint-mobile) {
+  .uploadArea {
+    padding: $spacing-md;
+    border-radius: 8px;
+
+    &:hover:not(.disabled) {
+      transform: translateY(-1px);
+    }
+  }
+
+  .uploadIcon {
+    font-size: 40px; // 모바일에서도 충분히 보이는 크기
+  }
+
+  .uploadText {
+    font-size: 0.9rem;
+  }
+
+  .fileItem {
+    padding: $spacing-sm;
+    gap: $spacing-xs;
+
+    &:hover {
+      transform: translateX(0);
+    }
+  }
+
+  .fileInfo {
+    gap: $spacing-sm;
+  }
+
+  .fileIcon {
+    font-size: 1.25rem;
+  }
+
+  .fileName {
+    font-size: 0.8rem;
+  }
+
+  .fileSize {
+    font-size: 0.7rem;
+  }
+
+  .fileActions {
+    gap: 2px;
+  }
+}

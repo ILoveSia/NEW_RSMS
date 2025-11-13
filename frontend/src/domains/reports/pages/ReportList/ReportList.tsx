@@ -3,7 +3,6 @@ import toast from '@/shared/utils/toast';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { TextField } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ReportList.module.scss';
@@ -19,13 +18,12 @@ import type {
 } from './types/reportList.types';
 
 // Shared Components
-import { Button } from '@/shared/components/atoms/Button';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
-import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
 
 // Domain Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
@@ -454,14 +452,14 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
         sequence: 1,
         department: '경영진단본부',
         category: 'EXECUTIVE',
-        inspectionName: '2024년 1차 이행점검',
-        inspectionPeriod: '2024.01.01~2024.03.31',
-        reportNumber: 'RPT-2024-001',
+        inspectionName: '2025년 1차 이행점검',
+        inspectionPeriod: '2025.01.01~2025.03.31',
+        reportNumber: '20250001A0001R001',
         status: 'APPROVED' as const,
         author: '홍길동',
-        createdAt: '2024-03-15',
+        createdAt: '2025-03-15',
         approver: '김대표',
-        approvedAt: '2024-03-20',
+        approvedAt: '2025-03-20',
         reviewContent: '정기 이행점검 완료',
         result: '적정',
         improvementAction: '지속 모니터링'
@@ -472,11 +470,11 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
         department: 'CEO',
         category: 'CEO',
         inspectionName: 'CEO 특별점검',
-        inspectionPeriod: '2024.02.01~2024.02.29',
-        reportNumber: 'RPT-2024-002',
+        inspectionPeriod: '2025.02.01~2025.02.29',
+        reportNumber: '20250001A0001R002',
         status: 'SUBMITTED' as const,
         author: '김철수',
-        createdAt: '2024-02-28',
+        createdAt: '2025-02-28',
         reviewContent: 'CEO 지시사항 점검',
         result: '개선필요'
       },
@@ -486,11 +484,11 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
         department: '영업본부',
         category: 'DEPARTMENT',
         inspectionName: '영업실적 점검',
-        inspectionPeriod: '2024.01.15~2024.02.15',
-        reportNumber: 'RPT-2024-003',
+        inspectionPeriod: '2025.01.15~2025.02.15',
+        reportNumber: '20250001A0001R003',
         status: 'DRAFT' as const,
         author: '박영희',
-        createdAt: '2024-02-15',
+        createdAt: '2025-02-15',
         reviewContent: '영업목표 달성도 점검'
       }
     ];

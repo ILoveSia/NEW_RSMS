@@ -8,8 +8,8 @@
 -- 참고:
 --   - impl_inspection_plans 테이블과 N:1 관계 (impl_inspection_plan_id FK)
 --   - ledger_order 테이블과 N:1 관계 (ledger_order_id FK)
---   - 이행점검결과보고서ID 코드 생성 규칙: impl_inspection_plan_id + "R" + 순번(2자리)
---     예: 20250001A0001R01 = "20250001A0001"(이행점검ID) + "R" + "01"(순번)
+--   - 이행점검결과보고서ID 코드 생성 규칙: impl_inspection_plan_id + "R" + 순번(3자리)
+--     예: 20250001A0001R001 = "20250001A0001"(이행점검ID) + "R" + "001"(순번)
 --   - 보고서구분코드는 common_code_details의 'RPT_TYP' 그룹에서 관리
 --     예: '01' (CEO보고서), '02' (임원보고서)
 -- =====================================================
@@ -20,27 +20,27 @@
 
 -- 이행점검ID별 순번 생성을 위한 함수
 CREATE OR REPLACE FUNCTION rsms.generate_impl_inspection_report_id(p_impl_inspection_plan_id VARCHAR)
-RETURNS VARCHAR(16) AS $$
+RETURNS VARCHAR(17) AS $$
 DECLARE
-  next_seq VARCHAR(2);
-  new_id VARCHAR(16);
+  next_seq VARCHAR(3);
+  new_id VARCHAR(17);
   max_seq INTEGER;
 BEGIN
   -- 해당 이행점검ID의 최대 순번 조회
-  SELECT MAX(SUBSTRING(impl_inspection_report_id, 15, 2)::INTEGER) INTO max_seq
+  SELECT MAX(SUBSTRING(impl_inspection_report_id, 15, 3)::INTEGER) INTO max_seq
   FROM rsms.impl_inspection_reports
   WHERE SUBSTRING(impl_inspection_report_id, 1, 13) = p_impl_inspection_plan_id;
 
   -- 순번 계산
   IF max_seq IS NULL THEN
     -- 해당 이행점검ID의 첫 번째 결과보고서
-    next_seq := '01';
+    next_seq := '001';
   ELSE
     -- 기존 순번에서 1 증가
-    next_seq := LPAD((max_seq + 1)::TEXT, 2, '0');
+    next_seq := LPAD((max_seq + 1)::TEXT, 3, '0');
   END IF;
 
-  -- 새 ID 생성: impl_inspection_plan_id + "R" + 순번(2자리)
+  -- 새 ID 생성: impl_inspection_plan_id + "R" + 순번(3자리)
   new_id := p_impl_inspection_plan_id || 'R' || next_seq;
 
   RETURN new_id;
@@ -55,9 +55,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE TABLE rsms.impl_inspection_reports (
   -- 기본키
-  -- 코드 생성 규칙: impl_inspection_plan_id + "R" + 순번(2자리)
-  -- 예시: "20250001A0001R01" = "20250001A0001"(이행점검ID) + "R" + "01"(순번)
-  impl_inspection_report_id VARCHAR(16) PRIMARY KEY,  -- 이행점검결과보고서ID (PK, 업무 코드)
+  -- 코드 생성 규칙: impl_inspection_plan_id + "R" + 순번(3자리)
+  -- 예시: "20250001A0001R001" = "20250001A0001"(이행점검ID) + "R" + "001"(순번)
+  impl_inspection_report_id VARCHAR(17) PRIMARY KEY,  -- 이행점검결과보고서ID (PK, 업무 코드)
 
   -- 외래키
   ledger_order_id VARCHAR(8) NOT NULL,                -- 원장차수ID (FK → ledger_order)
@@ -80,9 +80,9 @@ CREATE TABLE rsms.impl_inspection_reports (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 수정일시
   updated_by VARCHAR(50) NOT NULL,                    -- 수정자
 
-  -- 제약조건: 이행점검결과보고서ID 형식 검증 (13자리 이행점검ID + "R" + 2자리 숫자)
+  -- 제약조건: 이행점검결과보고서ID 형식 검증 (13자리 이행점검ID + "R" + 3자리 숫자)
   CONSTRAINT chk_impl_inspection_report_id_format CHECK (
-    impl_inspection_report_id ~ '^[0-9]{8}A[0-9]{4}R[0-9]{2}$' AND LENGTH(impl_inspection_report_id) = 16
+    impl_inspection_report_id ~ '^[0-9]{8}A[0-9]{4}R[0-9]{3}$' AND LENGTH(impl_inspection_report_id) = 17
   ),
 
   -- 제약조건: 보고서구분은 '01' 또는 '02'만 가능
@@ -152,7 +152,7 @@ CREATE INDEX idx_impl_inspection_reports_type_active
 COMMENT ON TABLE rsms.impl_inspection_reports IS '이행점검결과보고서 테이블 - 이행점검결과보고서 정보를 관리 (코드 체계: 이행점검ID+R+순번)';
 
 -- 컬럼 코멘트
-COMMENT ON COLUMN rsms.impl_inspection_reports.impl_inspection_report_id IS '이행점검결과보고서ID (PK, 업무코드 - 형식: 이행점검ID + R + 순번2자리, 예: 20250001A0001R01)';
+COMMENT ON COLUMN rsms.impl_inspection_reports.impl_inspection_report_id IS '이행점검결과보고서ID (PK, 업무코드 - 형식: 이행점검ID + R + 순번3자리, 예: 20250001A0001R001)';
 COMMENT ON COLUMN rsms.impl_inspection_reports.ledger_order_id IS '원장차수ID (FK → ledger_order.ledger_order_id)';
 COMMENT ON COLUMN rsms.impl_inspection_reports.impl_inspection_plan_id IS '이행점검ID (FK → impl_inspection_plans.impl_inspection_plan_id)';
 COMMENT ON COLUMN rsms.impl_inspection_reports.report_type_cd IS '보고서구분 (01:CEO보고서, 02:임원보고서)';
@@ -198,7 +198,7 @@ INSERT INTO rsms.impl_inspection_reports (
 ) VALUES
   -- 이행점검계획 20250001A0001의 보고서들
   (
-    '20250001A0001R01',
+    '20250001A0001R001',
     '20250001',
     '20250001A0001',
     '01',
@@ -212,7 +212,7 @@ INSERT INTO rsms.impl_inspection_reports (
     'system'
   ),
   (
-    '20250001A0001R02',
+    '20250001A0001R002',
     '20250001',
     '20250001A0001',
     '02',
@@ -234,11 +234,11 @@ INSERT INTO rsms.impl_inspection_reports (
 --
 -- 예시 1) 이행점검ID "20250001A0001"의 첫 번째 결과보고서 생성:
 --   → rsms.generate_impl_inspection_report_id('20250001A0001') 함수 호출
---   → 반환값: "20250001A0001R01"
+--   → 반환값: "20250001A0001R001"
 --
 -- 예시 2) 이행점검ID "20250001A0001"의 두 번째 결과보고서 생성:
 --   → rsms.generate_impl_inspection_report_id('20250001A0001') 함수 호출
---   → 반환값: "20250001A0001R02"
+--   → 반환값: "20250001A0001R002"
 --
 -- Java/Spring Boot 예시:
 --   @PrePersist

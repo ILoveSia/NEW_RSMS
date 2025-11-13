@@ -1,207 +1,217 @@
 /**
  * 제출보고서 등록/수정/상세 모달
- * - ReportFormModal.tsx와 100% 동일한 구조
- * - impl_inspection_reports 테이블 구조 반영
- * - PositionFormModal.tsx 표준 스타일 적용
- * - BaseModalWrapper 미사용 (Dialog 직접 사용)
+ * PositionFormModal 표준 템플릿 기반
+ *
+ * 주요 기능:
+ * 1. 등록 모드: 새로운 제출보고서 작성 및 첨부파일 업로드
+ * 2. 상세 모드: 기존 제출보고서 조회, 수정, 첨부파일 다운로드/삭제
+ * 3. submit_reports 테이블 구조 기반
  */
 
 import { Button } from '@/shared/components/atoms/Button';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { FileUpload, type UploadedFile } from '@/shared/components/molecules/FileUpload';
 import {
   Box,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   TextField,
-  MenuItem
+  Typography
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import * as yup from 'yup';
+import type { SubmitReport, SubmitReportFormData } from '../../types/submitReportList.types';
 
 // Domain Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+import { SubmittingAgencyComboBox } from '@/domains/submitreport/components/molecules/SubmittingAgencyComboBox';
+import { ReportTypeComboBox } from '@/domains/submitreport/components/molecules/ReportTypeComboBox';
 
-/**
- * 제출보고서 폼 데이터 타입
- */
-interface SubmitReportFormData {
-  ledgerOrderId: string;              // 원장차수ID
-  implInspectionPlanId: string;       // 이행점검ID
-  reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서, 03:부서별보고서)
-  reviewContent: string;              // 검토내용
-  reviewDate: string | null;          // 검토일자
-  result: string;                     // 결과
-  improvementAction: string;          // 개선조치
-  remarks: string;                    // 비고
-}
-
-/**
- * 모달 Props
- */
 interface SubmitReportFormModalProps {
   open: boolean;
-  mode?: 'create' | 'detail';
-  reportType?: 'CEO' | 'EXECUTIVE' | 'DEPARTMENT';
-  reportData?: any | null;
+  mode: 'create' | 'detail';
+  report: SubmitReport | null;
   onClose: () => void;
-  onSubmit?: (formData: SubmitReportFormData) => Promise<void>;
+  onSave: (formData: SubmitReportFormData) => Promise<void>;
+  onUpdate: (id: string, formData: SubmitReportFormData) => Promise<void>;
   onRefresh?: () => Promise<void>;
   loading?: boolean;
-  title?: string;
 }
 
 /**
- * 폼 검증 스키마
+ * 제출보고서 등록/상세 모달 컴포넌트
+ * - 등록 모드: 신규 제출보고서 작성
+ * - 상세 모드: 기존 제출보고서 조회 및 수정
  */
-const schema = yup.object().shape({
-  ledgerOrderId: yup
-    .string()
-    .required('원장차수는 필수입니다'),
-  implInspectionPlanId: yup
-    .string()
-    .required('이행점검ID는 필수입니다')
-    .max(13, '이행점검ID는 13자리입니다'),
-  reportTypeCd: yup
-    .string()
-    .required('보고서구분은 필수입니다')
-    .oneOf(['01', '02', '03'], '보고서구분은 01, 02, 03만 가능합니다'),
-  reviewContent: yup
-    .string()
-    .default('')
-    .max(2000, '검토내용은 2000자 이내로 입력해주세요'),
-  reviewDate: yup
-    .string()
-    .nullable()
-    .default(null),
-  result: yup
-    .string()
-    .default('')
-    .max(2000, '결과는 2000자 이내로 입력해주세요'),
-  improvementAction: yup
-    .string()
-    .default('')
-    .max(2000, '개선조치는 2000자 이내로 입력해주세요'),
-  remarks: yup
-    .string()
-    .default('')
-    .max(500, '비고는 500자 이내로 입력해주세요')
-});
-
 const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
   open,
-  mode = 'create',
-  reportType = 'DEPARTMENT',
-  reportData,
+  mode,
+  report,
   onClose,
-  onSubmit,
+  onSave,
+  onUpdate,
   onRefresh,
-  loading = false,
-  title
+  loading = false
 }) => {
+  // 폼 데이터 상태
+  const [formData, setFormData] = useState<SubmitReportFormData>({
+    ledgerOrderId: '',
+    submittingAgencyCd: '',
+    reportTypeCd: '',
+    subReportTitle: '',
+    targetExecutiveEmpNo: '',
+    positionId: '',
+    submissionDate: new Date().toISOString().split('T')[0], // 오늘 날짜 기본값
+    remarks: ''
+  });
+
+  // 첨부파일 상태
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [fileError, setFileError] = useState<string>('');
+
   // 수정 모드 상태
   const [isEditing, setIsEditing] = useState(false);
 
-  // reportType을 reportTypeCd로 변환
-  const getReportTypeCd = (type: string): string => {
-    switch (type) {
-      case 'CEO':
-        return '01';
-      case 'EXECUTIVE':
-        return '02';
-      case 'DEPARTMENT':
-        return '03';
-      default:
-        return '03';
-    }
-  };
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<SubmitReportFormData>({
-    resolver: yupResolver(schema),
-    mode: 'onChange',
-    defaultValues: {
-      ledgerOrderId: '',
-      implInspectionPlanId: '',
-      reportTypeCd: getReportTypeCd(reportType),
-      reviewContent: '',
-      reviewDate: dayjs().format('YYYY-MM-DD'),
-      result: '',
-      improvementAction: '',
-      remarks: ''
-    }
-  });
+  // 에러 상태
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   /**
-   * 폼 초기화
-   * - mode와 report 데이터에 따라 폼 데이터 설정
+   * 모달 열릴 때 초기화
    */
   useEffect(() => {
     if (mode === 'create') {
-      reset({
+      // 등록 모드: 폼 초기화
+      setFormData({
         ledgerOrderId: '',
-        implInspectionPlanId: '',
-        reportTypeCd: getReportTypeCd(reportType),
-        reviewContent: '',
-        reviewDate: dayjs().format('YYYY-MM-DD'),
-        result: '',
-        improvementAction: '',
+        submittingAgencyCd: '',
+        reportTypeCd: '',
+        subReportTitle: '',
+        targetExecutiveEmpNo: '',
+        positionId: '',
+        submissionDate: new Date().toISOString().split('T')[0],
         remarks: ''
       });
+      setUploadedFiles([]);
       setIsEditing(true);
-    } else if (reportData) {
-      reset({
-        ledgerOrderId: reportData.ledgerOrderId || '',
-        implInspectionPlanId: reportData.implInspectionPlanId || '',
-        reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
-        reviewContent: reportData.reviewContent || '',
-        reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
-        result: reportData.result || '',
-        improvementAction: reportData.improvementAction || '',
-        remarks: reportData.remarks || ''
+      setErrors({});
+      setFileError('');
+    } else if (report) {
+      // 상세 모드: 기존 데이터 로드
+      setFormData({
+        ledgerOrderId: report.ledgerOrderId,
+        submittingAgencyCd: report.submittingAgencyCd,
+        reportTypeCd: report.reportTypeCd,
+        subReportTitle: report.subReportTitle || '',
+        targetExecutiveEmpNo: report.targetExecutiveEmpNo || '',
+        positionId: report.positionId || '',
+        submissionDate: report.submissionDate,
+        remarks: report.remarks || ''
       });
+
+      // TODO: 서버에서 첨부파일 목록 조회 (attachments API 연동 시)
+      // const attachments = await fetchAttachments(report.reportId);
+      // setUploadedFiles(attachments);
+      setUploadedFiles([]);
+
       setIsEditing(false);
+      setErrors({});
+      setFileError('');
     }
-  }, [mode, reportData, reportType, reset]);
+  }, [mode, report]);
 
   /**
-   * 폼 제출 핸들러
+   * 폼 필드 값 변경 핸들러
    */
-  const onFormSubmit = useCallback(async (formData: SubmitReportFormData) => {
+  const handleChange = useCallback((field: keyof SubmitReportFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // 에러 메시지 제거
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  }, [errors]);
+
+  /**
+   * 첨부파일 변경 핸들러
+   */
+  const handleFilesChange = useCallback((files: UploadedFile[]) => {
+    setUploadedFiles(files);
+    setFileError('');
+  }, []);
+
+  /**
+   * 첨부파일 에러 핸들러
+   */
+  const handleFileError = useCallback((error: string) => {
+    setFileError(error);
+  }, []);
+
+  /**
+   * 폼 유효성 검증
+   */
+  const validateForm = useCallback((): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.ledgerOrderId?.trim()) {
+      newErrors.ledgerOrderId = '원장차수를 선택해주세요.';
+    }
+    if (!formData.submittingAgencyCd?.trim()) {
+      newErrors.submittingAgencyCd = '제출기관코드를 입력해주세요.';
+    }
+    if (!formData.reportTypeCd?.trim()) {
+      newErrors.reportTypeCd = '제출보고서구분코드를 입력해주세요.';
+    }
+    if (!formData.submissionDate?.trim()) {
+      newErrors.submissionDate = '제출일을 선택해주세요.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData]);
+
+  /**
+   * 등록/수정 제출 핸들러
+   */
+  const handleSubmit = useCallback(async () => {
+    // 폼 검증
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       if (mode === 'create') {
-        // TODO: API 호출 - 보고서 등록
-        console.log('제출보고서 등록:', formData);
+        // 등록 모드
+        await onSave({
+          ...formData,
+          attachments: uploadedFiles.map(f => f.file) // File 객체 배열 전달
+        });
+
         alert('제출보고서가 성공적으로 등록되었습니다.');
 
-        if (onSubmit) {
-          await onSubmit(formData);
-        }
-
+        // 목록 새로고침
         if (onRefresh) {
           await onRefresh();
         }
 
         onClose();
-      } else if (reportData && isEditing) {
-        // TODO: API 호출 - 보고서 수정
-        console.log('제출보고서 수정:', reportData.id, formData);
+      } else if (report && isEditing) {
+        // 수정 모드
+        await onUpdate(report.reportId, {
+          ...formData,
+          attachments: uploadedFiles.map(f => f.file)
+        });
+
         alert('제출보고서가 성공적으로 수정되었습니다.');
 
-        if (onSubmit) {
-          await onSubmit(formData);
-        }
-
+        // 목록 새로고침
         if (onRefresh) {
           await onRefresh();
         }
@@ -212,31 +222,41 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
       console.error('제출보고서 저장 실패:', error);
       alert(error instanceof Error ? error.message : '제출보고서 저장에 실패했습니다.');
     }
-  }, [mode, reportData, isEditing, onClose, onRefresh, onSubmit]);
+  }, [mode, formData, uploadedFiles, report, isEditing, onClose, onSave, onUpdate, onRefresh, validateForm]);
 
+  /**
+   * 수정 모드 전환 핸들러
+   */
   const handleEdit = useCallback(() => {
     setIsEditing(true);
   }, []);
 
+  /**
+   * 취소 핸들러
+   */
   const handleCancel = useCallback(() => {
-    if (mode === 'detail' && reportData) {
-      reset({
-        ledgerOrderId: reportData.ledgerOrderId || '',
-        implInspectionPlanId: reportData.implInspectionPlanId || '',
-        reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
-        reviewContent: reportData.reviewContent || '',
-        reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
-        result: reportData.result || '',
-        improvementAction: reportData.improvementAction || '',
-        remarks: reportData.remarks || ''
+    if (mode === 'detail' && report) {
+      // 상세 모드에서 수정 취소: 원래 데이터로 복원
+      setFormData({
+        ledgerOrderId: report.ledgerOrderId,
+        submittingAgencyCd: report.submittingAgencyCd,
+        reportTypeCd: report.reportTypeCd,
+        subReportTitle: report.subReportTitle || '',
+        targetExecutiveEmpNo: report.targetExecutiveEmpNo || '',
+        positionId: report.positionId || '',
+        submissionDate: report.submissionDate,
+        remarks: report.remarks || ''
       });
       setIsEditing(false);
+      setErrors({});
+      setFileError('');
     } else {
+      // 등록 모드: 모달 닫기
       onClose();
     }
-  }, [mode, reportData, onClose, reset, reportType]);
+  }, [mode, report, onClose]);
 
-  const modalTitle = title || (mode === 'create' ? '제출보고서 등록' : '제출보고서 상세');
+  const title = mode === 'create' ? '제출보고서 등록' : '제출보고서 상세';
   const isReadOnly = mode === 'detail' && !isEditing;
 
   return (
@@ -260,187 +280,171 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
           fontWeight: 600
         }}
       >
-        {modalTitle}
+        {title}
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {/* 원장차수 + 이행점검ID */}
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Box sx={{ flex: 1 }}>
-              <LedgerOrderComboBox
-                value={undefined}
-                onChange={() => {}}
-                label="원장차수"
-                required
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* 기본 정보 섹션 */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, fontSize: '0.95rem' }}>
+              기본 정보
+            </Typography>
+            <Grid container spacing={2}>
+              {/* 원장차수 + 제출기관 (한 줄) */}
+              <Grid item xs={12} sm={6}>
+                <LedgerOrderComboBox
+                  value={formData.ledgerOrderId || undefined}
+                  onChange={(value: string | null) => handleChange('ledgerOrderId', value || '')}
+                  label="원장차수"
+                  required
+                  disabled={isReadOnly}
+                  error={!!errors.ledgerOrderId}
+                  helperText={errors.ledgerOrderId}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <SubmittingAgencyComboBox
+                  value={formData.submittingAgencyCd || undefined}
+                  onChange={(value: string | null) => handleChange('submittingAgencyCd', value || '')}
+                  label="제출기관"
+                  required
+                  disabled={isReadOnly}
+                  error={!!errors.submittingAgencyCd}
+                  helperText={errors.submittingAgencyCd}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+
+              {/* 제출보고서구분 + 제출일 (한 줄) */}
+              <Grid item xs={12} sm={6}>
+                <ReportTypeComboBox
+                  value={formData.reportTypeCd || undefined}
+                  onChange={(value: string | null) => handleChange('reportTypeCd', value || '')}
+                  label="제출보고서구분"
+                  required
+                  disabled={isReadOnly}
+                  error={!!errors.reportTypeCd}
+                  helperText={errors.reportTypeCd}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="제출일"
+                  type="date"
+                  value={formData.submissionDate}
+                  onChange={(e) => handleChange('submissionDate', e.target.value)}
+                  required
+                  disabled={isReadOnly}
+                  error={!!errors.submissionDate}
+                  helperText={errors.submissionDate}
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+
+              {/* 제출보고서 제목 (전체 너비) */}
+              <Grid item xs={12}>
+                <TextField
+                  label="제출보고서 제목"
+                  value={formData.subReportTitle}
+                  onChange={(e) => handleChange('subReportTitle', e.target.value)}
+                  placeholder="제출보고서의 제목을 입력하세요"
+                  disabled={isReadOnly}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* 대상 임원 정보 섹션 */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, fontSize: '0.95rem' }}>
+              대상 임원 정보 (선택)
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {/* 제출 대상 임원 사번 */}
+              <TextField
+                label="제출 대상 임원 사번"
+                value={formData.targetExecutiveEmpNo}
+                onChange={(e) => handleChange('targetExecutiveEmpNo', e.target.value)}
+                placeholder="임원 사번을 입력하세요"
                 disabled={isReadOnly}
-                error={!!errors.ledgerOrderId}
-                helperText={errors.ledgerOrderId?.message}
                 fullWidth
                 size="small"
               />
-            </Box>
 
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="implInspectionPlanId"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="이행점검ID"
-                    required
-                    fullWidth
-                    size="small"
-                    disabled={isReadOnly}
-                    error={!!errors.implInspectionPlanId}
-                    helperText={errors.implInspectionPlanId?.message}
-                    placeholder="예: 20250001A0001"
-                  />
-                )}
+              {/* 직책ID */}
+              <TextField
+                label="직책ID"
+                value={formData.positionId}
+                onChange={(e) => handleChange('positionId', e.target.value)}
+                placeholder="직책ID를 입력하세요"
+                disabled={isReadOnly}
+                fullWidth
+                size="small"
+                helperText="positions 테이블의 positions_id 참조"
               />
             </Box>
           </Box>
 
-          {/* 보고서구분 + 검토일자 */}
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="reportTypeCd"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    select
-                    label="보고서구분"
-                    required
-                    fullWidth
-                    size="small"
-                    disabled={isReadOnly}
-                    error={!!errors.reportTypeCd}
-                    helperText={errors.reportTypeCd?.message}
-                  >
-                    <MenuItem value="01">CEO보고서</MenuItem>
-                    <MenuItem value="02">임원보고서</MenuItem>
-                    <MenuItem value="03">부서별보고서</MenuItem>
-                  </TextField>
-                )}
-              />
-            </Box>
-
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="reviewDate"
-                control={control}
-                render={({ field }) => (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      {...field}
-                      label="검토일자"
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                      format="YYYY/MM/DD"
-                      disabled={isReadOnly}
-                      slotProps={{
-                        textField: {
-                          size: 'small',
-                          fullWidth: true,
-                          error: !!errors.reviewDate,
-                          helperText: errors.reviewDate?.message
-                        }
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-            </Box>
+          {/* 비고 섹션 */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, fontSize: '0.95rem' }}>
+              비고
+            </Typography>
+            <TextField
+              label="비고"
+              value={formData.remarks}
+              onChange={(e) => handleChange('remarks', e.target.value)}
+              placeholder="특이사항이나 추가 설명을 입력하세요"
+              disabled={isReadOnly}
+              fullWidth
+              multiline
+              rows={3}
+              size="small"
+            />
           </Box>
 
-          {/* 검토내용 */}
-          <Controller
-            name="reviewContent"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="검토내용"
-                fullWidth
-                multiline
-                rows={4}
-                disabled={isReadOnly}
-                error={!!errors.reviewContent}
-                helperText={errors.reviewContent?.message}
-                placeholder="검토 내용을 입력하세요"
-              />
+          {/* 첨부파일 섹션 */}
+          <Box>
+            <FileUpload
+              value={uploadedFiles}
+              onChange={handleFilesChange}
+              onError={handleFileError}
+              label="첨부파일"
+              placeholder="제출보고서 관련 파일을 드래그하거나 클릭하여 업로드하세요"
+              maxFiles={10}
+              maxSize={20 * 1024 * 1024} // 20MB
+              accept=".pdf,.doc,.docx,.xlsx,.xls,.hwp,.txt"
+              disabled={isReadOnly}
+              readOnly={isReadOnly}
+              error={fileError}
+              showFileList={true}
+            />
+            {!isReadOnly && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                * PDF, Word, Excel, 한글, 텍스트 파일만 업로드 가능합니다. (최대 10개, 파일당 20MB)
+              </Typography>
             )}
-          />
-
-          {/* 결과 */}
-          <Controller
-            name="result"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="결과"
-                fullWidth
-                multiline
-                rows={4}
-                disabled={isReadOnly}
-                error={!!errors.result}
-                helperText={errors.result?.message}
-                placeholder="점검 결과를 입력하세요"
-              />
-            )}
-          />
-
-          {/* 개선조치 */}
-          <Controller
-            name="improvementAction"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="개선조치"
-                fullWidth
-                multiline
-                rows={4}
-                disabled={isReadOnly}
-                error={!!errors.improvementAction}
-                helperText={errors.improvementAction?.message}
-                placeholder="개선조치 내용을 입력하세요"
-              />
-            )}
-          />
-
-          {/* 비고 */}
-          <Controller
-            name="remarks"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="비고"
-                fullWidth
-                multiline
-                rows={2}
-                disabled={isReadOnly}
-                error={!!errors.remarks}
-                helperText={errors.remarks?.message}
-                placeholder="비고 사항을 입력하세요"
-              />
-            )}
-          />
+          </Box>
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 1, gap: 1 }}>
+      <DialogActions sx={{ p: 1.5, gap: 1 }}>
         {mode === 'create' ? (
           <>
             <Button variant="outlined" onClick={onClose} disabled={loading}>
               취소
             </Button>
-            <Button variant="contained" onClick={handleSubmit(onFormSubmit)} disabled={loading}>
+            <Button variant="contained" onClick={handleSubmit} disabled={loading}>
               {loading ? '등록 중...' : '등록'}
             </Button>
           </>
@@ -451,7 +455,7 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
                 <Button variant="outlined" onClick={handleCancel} disabled={loading}>
                   취소
                 </Button>
-                <Button variant="contained" onClick={handleSubmit(onFormSubmit)} disabled={loading}>
+                <Button variant="contained" onClick={handleSubmit} disabled={loading}>
                   {loading ? '저장 중...' : '저장'}
                 </Button>
               </>

@@ -1,6 +1,40 @@
 import { ColDef } from 'ag-grid-community';
 import { Report } from '../../types/reportList.types';
 
+/**
+ * 보고서번호 렌더러 컴포넌트
+ * - PositionMgmt의 직책 컬럼과 동일한 스타일 적용
+ * - 파란색 글자에 hover 시 underline 표시
+ */
+const ReportNumberRenderer = ({ value, data, onCellClicked }: any) => {
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (onCellClicked) {
+      onCellClicked(data);
+    }
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={handleClick}
+      style={{
+        color: '#1976d2',
+        textDecoration: 'none',
+        fontWeight: '500'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {value}
+    </a>
+  );
+};
+
 // ReportList AG-Grid 컬럼 정의 (9개 컬럼) - PositionMgmt 표준 준수
 export const reportColumns: ColDef<Report>[] = [
   {
@@ -33,6 +67,7 @@ export const reportColumns: ColDef<Report>[] = [
     sortable: true,
     filter: true,
     width: 150,
+    cellRenderer: ReportNumberRenderer,
     cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }
   },
   {

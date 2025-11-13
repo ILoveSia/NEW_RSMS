@@ -6,9 +6,9 @@
 
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
 import toast from '@/shared/utils/toast';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './SubmitReportList.module.scss';
@@ -22,12 +22,15 @@ import type {
 } from './types/submitReportList.types';
 
 // Shared Components
+import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
 // SubmitReport specific components
 import { submitReportColumns } from './components/SubmitReportDataGrid/submitReportColumns';
+import SubmitReportFormModal from './components/SubmitReportFormModal';
+import type { SubmitReportFormData } from './types/submitReportList.types';
 
 interface SubmitReportListProps {
   className?: string;
@@ -49,8 +52,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
   });
 
   const [filters, setFilters] = useState<SubmitReportListFilters>({
-    reportType: '',
-    submittingAgency: '',
+    ledgerOrderId: '',
+    reportTypeCd: '',
+    submittingAgencyCd: '',
     submissionDateFrom: '',
     submissionDateTo: ''
   });
@@ -132,6 +136,85 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     }));
   }, []);
 
+  /**
+   * 제출보고서 등록 핸들러
+   */
+  const handleSave = useCallback(async (formData: SubmitReportFormData) => {
+    try {
+      // TODO: 실제 API 호출로 교체
+      console.log('제출보고서 등록:', formData);
+      await new Promise(resolve => setTimeout(resolve, 500)); // 시뮬레이션
+
+      // Mock 데이터에 추가
+      const newReport: SubmitReport = {
+        reportId: String(reports.length + 1),
+        sequence: reports.length + 1,
+        ledgerOrderId: formData.ledgerOrderId,
+        submittingAgencyCd: formData.submittingAgencyCd,
+        submittingAgencyName: '', // TODO: 코드명 조회
+        reportTypeCd: formData.reportTypeCd,
+        reportTypeName: '', // TODO: 코드명 조회
+        subReportTitle: formData.subReportTitle,
+        targetExecutiveEmpNo: formData.targetExecutiveEmpNo,
+        targetExecutiveName: '', // TODO: 임원명 조회
+        positionId: formData.positionId,
+        positionName: '', // TODO: 직책명 조회
+        submissionDate: formData.submissionDate,
+        remarks: formData.remarks,
+        attachmentCount: formData.attachments?.length || 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: 'admin',
+        updatedBy: 'admin',
+        version: 1
+      };
+
+      setReports(prev => [...prev, newReport]);
+      setPagination(prev => ({
+        ...prev,
+        total: prev.total + 1,
+        totalPages: Math.ceil((prev.total + 1) / prev.size)
+      }));
+    } catch (error) {
+      console.error('제출보고서 등록 실패:', error);
+      throw error;
+    }
+  }, [reports]);
+
+  /**
+   * 제출보고서 수정 핸들러
+   */
+  const handleUpdate = useCallback(async (id: string, formData: SubmitReportFormData) => {
+    try {
+      // TODO: 실제 API 호출로 교체
+      console.log('제출보고서 수정:', id, formData);
+      await new Promise(resolve => setTimeout(resolve, 500)); // 시뮬레이션
+
+      // Mock 데이터 업데이트
+      setReports(prev => prev.map(report =>
+        report.reportId === id
+          ? {
+              ...report,
+              ledgerOrderId: formData.ledgerOrderId,
+              submittingAgencyCd: formData.submittingAgencyCd,
+              reportTypeCd: formData.reportTypeCd,
+              subReportTitle: formData.subReportTitle,
+              targetExecutiveEmpNo: formData.targetExecutiveEmpNo,
+              positionId: formData.positionId,
+              submissionDate: formData.submissionDate,
+              remarks: formData.remarks,
+              attachmentCount: formData.attachments?.length || report.attachmentCount,
+              updatedAt: new Date().toISOString(),
+              updatedBy: 'admin'
+            }
+          : report
+      ));
+    } catch (error) {
+      console.error('제출보고서 수정 실패:', error);
+      throw error;
+    }
+  }, []);
+
   const handleSearch = useCallback(async () => {
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
@@ -160,8 +243,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
 
   const handleClearFilters = useCallback(() => {
     setFilters({
-      reportType: '',
-      submittingAgency: '',
+      ledgerOrderId: '',
+      reportTypeCd: '',
+      submittingAgencyCd: '',
       submissionDateFrom: '',
       submissionDateTo: ''
     });
@@ -196,18 +280,31 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
   // BaseSearchFilter용 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'submittingAgency',
-      type: 'text',
-      label: '제출기관',
-      placeholder: '제출기관을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      key: 'ledgerOrderId',
+      type: 'custom',
+      label: '책무이행차수',
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      customComponent: (
+        <LedgerOrderComboBox
+          value={filters.ledgerOrderId}
+          onChange={(value: string | null) => handleFiltersChange({ ledgerOrderId: value || '' })}
+          placeholder="선택"
+        />
+      )
     },
     {
-      key: 'reportType',
+      key: 'submittingAgencyCd',
+      type: 'text',
+      label: '제출기관',
+      placeholder: '제출기관코드를 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 2 }
+    },
+    {
+      key: 'reportTypeCd',
       type: 'text',
       label: '제출보고서구분',
-      placeholder: '제출보고서구분을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 3 }
+      placeholder: '제출보고서구분코드를 입력하세요',
+      gridSize: { xs: 12, sm: 6, md: 2 }
     },
     {
       key: 'submissionDateFrom',
@@ -223,7 +320,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       placeholder: '종료일을 선택하세요',
       gridSize: { xs: 12, sm: 6, md: 1.5 }
     }
-  ], [handleFiltersChange]);
+  ], [filters.ledgerOrderId, handleFiltersChange]);
 
   // 엑셀 다운로드 핸들러
   const handleExcelDownload = useCallback(async () => {
@@ -286,18 +383,21 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       {
         reportId: '1',
         sequence: 1,
-        ledgerOrderId: '2024Q1',
-        submittingAgency: '금융감독원',
-        reportType: '책무기재내용 변경 보고서',
+        ledgerOrderId: '20250001',
+        submittingAgencyCd: 'FSS',
+        submittingAgencyName: '금융감독원',
+        reportTypeCd: 'RESP_CHG',
+        reportTypeName: '책무기재내용 변경 보고서',
+        subReportTitle: '2025년 1분기 책무기재내용 변경 보고서',
         targetExecutiveEmpNo: 'EMP001',
         targetExecutiveName: '홍길동',
         positionId: '1',
         positionName: 'CEO',
-        submissionDate: '2024-03-15',
-        remarks: '2024년 1분기 책무 변경사항 반영',
+        submissionDate: '2025-03-15',
+        remarks: '2025년 1분기 책무 변경사항 반영',
         attachmentCount: 2,
-        createdAt: '2024-03-15',
-        updatedAt: '2024-03-15',
+        createdAt: '2025-03-15',
+        updatedAt: '2025-03-15',
         createdBy: 'admin',
         updatedBy: 'admin',
         version: 1
@@ -305,18 +405,21 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       {
         reportId: '2',
         sequence: 2,
-        ledgerOrderId: '2024Q1',
-        submittingAgency: '금융위원회',
-        reportType: '임원 변경 보고서',
+        ledgerOrderId: '20250001',
+        submittingAgencyCd: 'FSC',
+        submittingAgencyName: '금융위원회',
+        reportTypeCd: 'EXEC_CHG',
+        reportTypeName: '임원 변경 보고서',
+        subReportTitle: 'CFO 직책 변경 보고서',
         targetExecutiveEmpNo: 'EMP002',
         targetExecutiveName: '김철수',
         positionId: '2',
         positionName: 'CFO',
-        submissionDate: '2024-02-28',
+        submissionDate: '2025-02-28',
         remarks: 'CFO 직책 변경 보고',
         attachmentCount: 1,
-        createdAt: '2024-02-28',
-        updatedAt: '2024-02-28',
+        createdAt: '2025-02-28',
+        updatedAt: '2025-02-28',
         createdBy: 'admin',
         updatedBy: 'admin',
         version: 1
@@ -324,18 +427,21 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       {
         reportId: '3',
         sequence: 3,
-        ledgerOrderId: '2024Q1',
-        submittingAgency: '금융감독원',
-        reportType: '조직 변경 보고서',
+        ledgerOrderId: '20250001',
+        submittingAgencyCd: 'FSS',
+        submittingAgencyName: '금융감독원',
+        reportTypeCd: 'ORG_CHG',
+        reportTypeName: '조직 변경 보고서',
+        subReportTitle: '조직구조 개편 보고서',
         targetExecutiveEmpNo: 'EMP003',
         targetExecutiveName: '박영희',
         positionId: '3',
         positionName: 'CTO',
-        submissionDate: '2024-02-15',
+        submissionDate: '2025-02-15',
         remarks: '조직구조 개편 보고',
         attachmentCount: 3,
-        createdAt: '2024-02-15',
-        updatedAt: '2024-02-15',
+        createdAt: '2025-02-15',
+        updatedAt: '2025-02-15',
         createdBy: 'admin',
         updatedBy: 'admin',
         version: 1
@@ -432,6 +538,28 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
           headerCheckboxSelection={true}
         />
       </div>
+
+      {/* 📝 제출보고서 등록 모달 */}
+      <SubmitReportFormModal
+        open={modalState.newReportModal}
+        mode="create"
+        report={null}
+        onClose={handleModalClose}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+        onRefresh={handleSearch}
+      />
+
+      {/* 📄 제출보고서 상세 모달 */}
+      <SubmitReportFormModal
+        open={modalState.detailModal}
+        mode="detail"
+        report={modalState.selectedReport}
+        onClose={handleModalClose}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+        onRefresh={handleSearch}
+      />
     </div>
   );
 };

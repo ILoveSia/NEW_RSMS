@@ -12,8 +12,9 @@ CREATE TABLE rsms.submit_reports (
     ledger_order_id BIGINT NOT NULL,
 
     -- 기본정보
-    submitting_agency VARCHAR(200) NOT NULL COMMENT '제출기관 (예: 금융감독원)',
-    report_type VARCHAR(200) NOT NULL COMMENT '제출보고서구분 (책무기재내용 변경 보고서, 임원 변경 보고서 등)',
+    submitting_agency_cd VARCHAR(20) NOT NULL COMMENT '제출기관코드 (common_code_details=SUB_AGENCY_CD)',
+    report_type_cd VARCHAR(20) NOT NULL COMMENT '제출보고서구분코드 (common_code_details=SUB_REPORT_TYCD)',
+    sub_report_title VARCHAR(100) COMMENT '제출보고서 제목',
     target_executive_emp_no VARCHAR(20) COMMENT '제출 대상 임원 사번',
     target_executive_name VARCHAR(100) COMMENT '제출 대상 임원명 (비정규화)',
     position_id BIGINT COMMENT '임원 직책ID',
@@ -48,8 +49,9 @@ COMMENT ON TABLE rsms.submit_reports IS '제출보고서 관리 - 금융감독�
 -- 컬럼 코멘트
 COMMENT ON COLUMN rsms.submit_reports.report_id IS '보고서ID (PK)';
 COMMENT ON COLUMN rsms.submit_reports.ledger_order_id IS '원장차수ID (FK)';
-COMMENT ON COLUMN rsms.submit_reports.submitting_agency IS '제출기관 (예: 금융감독원, 금융위원회)';
-COMMENT ON COLUMN rsms.submit_reports.report_type IS '제출보고서구분 (책무기재내용 변경 보고서, 임원 변경 보고서, 조직 변경 보고서 등)';
+COMMENT ON COLUMN rsms.submit_reports.submitting_agency_cd IS '제출기관코드 (common_code_details 테이블 참조: SUB_AGENCY_CD)';
+COMMENT ON COLUMN rsms.submit_reports.report_type_cd IS '제출보고서구분코드 (common_code_details 테이블 참조: SUB_REPORT_TYCD)';
+COMMENT ON COLUMN rsms.submit_reports.sub_report_title IS '제출보고서 제목';
 COMMENT ON COLUMN rsms.submit_reports.target_executive_emp_no IS '제출 대상 임원 사번';
 COMMENT ON COLUMN rsms.submit_reports.target_executive_name IS '제출 대상 임원명 (조회 성능 최적화를 위한 비정규화)';
 COMMENT ON COLUMN rsms.submit_reports.position_id IS '임원 직책ID (FK)';
@@ -73,7 +75,7 @@ CREATE INDEX idx_submit_reports_submission_date
 
 -- 3. 보고서 유형별 조회
 CREATE INDEX idx_submit_reports_type
-    ON rsms.submit_reports(report_type);
+    ON rsms.submit_reports(report_type_cd);
 
 -- 4. 대상 임원별 조회
 CREATE INDEX idx_submit_reports_executive
@@ -89,7 +91,11 @@ CREATE INDEX idx_submit_reports_ledger_date
 
 -- 7. 복합 인덱스: 원장차수 + 보고서유형
 CREATE INDEX idx_submit_reports_ledger_type
-    ON rsms.submit_reports(ledger_order_id, report_type);
+    ON rsms.submit_reports(ledger_order_id, report_type_cd);
+
+-- 8. 제출기관별 조회
+CREATE INDEX idx_submit_reports_agency
+    ON rsms.submit_reports(submitting_agency_cd);
 
 -- updated_at 자동 업데이트 트리거
 CREATE TRIGGER trigger_submit_reports_updated_at
@@ -100,8 +106,9 @@ CREATE TRIGGER trigger_submit_reports_updated_at
 -- 샘플 데이터 (테스트용)
 -- INSERT INTO rsms.submit_reports (
 --     ledger_order_id,
---     submitting_agency,
---     report_type,
+--     submitting_agency_cd,
+--     report_type_cd,
+--     sub_report_title,
 --     target_executive_emp_no,
 --     target_executive_name,
 --     position_id,
@@ -112,8 +119,9 @@ CREATE TRIGGER trigger_submit_reports_updated_at
 --     updated_by
 -- ) VALUES (
 --     1,
---     '금융감독원',
---     '책무기재내용 변경 보고서',
+--     'FSS',
+--     'RESP_CHG',
+--     '2024년 1분기 책무기재내용 변경 보고서',
 --     'EMP001',
 --     '홍길동',
 --     1,

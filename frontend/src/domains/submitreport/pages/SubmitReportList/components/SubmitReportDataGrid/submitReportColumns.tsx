@@ -1,10 +1,36 @@
+import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { SubmitReport } from '../../types/submitReportList.types';
 
+// 제출보고서제목 링크 렌더러 (상세조회용)
+// Row 더블클릭으로 상세 모달이 열리므로, 여기서는 스타일만 적용
+const ReportTitleRenderer = ({ value }: any) => {
+  return (
+    <a
+      href="#"
+      onClick={(e) => e.preventDefault()}
+      style={{
+        color: '#1976d2',
+        textDecoration: 'none',
+        fontWeight: '500',
+        cursor: 'pointer'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.textDecoration = 'underline';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.textDecoration = 'none';
+      }}
+    >
+      {value || '-'}
+    </a>
+  );
+};
+
 /**
- * 제출보고서목록 AG-Grid 컬럼 정의 (8개 컬럼)
+ * 제출보고서목록 AG-Grid 컬럼 정의 (9개 컬럼)
  * submit_reports 테이블 구조 기반
- * 순번, 책무이행차수, 제출기관, 제출보고서, 직책, 제출대상임원, 제출일, 첨부파일
+ * 순번, 책무이행차수, 제출기관, 제출보고서구분, 제출보고서제목, 직책, 제출대상임원, 제출일, 첨부파일
  */
 export const submitReportColumns: ColDef<SubmitReport>[] = [
   {
@@ -25,20 +51,31 @@ export const submitReportColumns: ColDef<SubmitReport>[] = [
   },
   {
     headerName: '제출기관',
-    field: 'submittingAgency',
+    field: 'submittingAgencyName',
     sortable: true,
     filter: true,
     width: 150,
-    cellStyle: { display: 'flex', alignItems: 'center' }
+    cellStyle: { display: 'flex', alignItems: 'center' },
+    valueGetter: (params) => params.data?.submittingAgencyName || params.data?.submittingAgencyCd || '-'
   },
   {
-    headerName: '제출보고서',
-    field: 'reportType',
+    headerName: '제출보고서구분',
+    field: 'reportTypeName',
+    sortable: true,
+    filter: true,
+    width: 180,
+    cellStyle: { display: 'flex', alignItems: 'center' },
+    valueGetter: (params) => params.data?.reportTypeName || params.data?.reportTypeCd || '-'
+  },
+  {
+    headerName: '제출보고서제목',
+    field: 'subReportTitle',
     sortable: true,
     filter: true,
     flex: 1,
     minWidth: 200,
-    cellStyle: { display: 'flex', alignItems: 'center' }
+    cellRenderer: ReportTitleRenderer,
+    cellStyle: { fontWeight: '500' }
   },
   {
     headerName: '직책',
@@ -46,7 +83,8 @@ export const submitReportColumns: ColDef<SubmitReport>[] = [
     sortable: true,
     filter: true,
     width: 120,
-    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    valueGetter: (params) => params.data?.positionName || '-'
   },
   {
     headerName: '제출대상임원',
@@ -54,7 +92,8 @@ export const submitReportColumns: ColDef<SubmitReport>[] = [
     sortable: true,
     filter: true,
     width: 120,
-    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    valueGetter: (params) => params.data?.targetExecutiveName || '-'
   },
   {
     headerName: '제출일',

@@ -8,10 +8,13 @@ export interface SubmitReport {
   reportId: string;                      // report_id (PK)
   sequence: number;                      // 순번 (UI용)
   ledgerOrderId: string;                 // ledger_order_id (FK)
-  submittingAgency: string;              // submitting_agency (제출기관)
-  reportType: string;                    // report_type (제출보고서구분)
-  targetExecutiveEmpNo: string;          // target_executive_emp_no (제출 대상 임원 사번)
-  targetExecutiveName: string;           // target_executive_name (제출 대상 임원명)
+  submittingAgencyCd: string;            // submitting_agency_cd (제출기관코드)
+  submittingAgencyName?: string;         // 제출기관명 (common_code 조인용)
+  reportTypeCd: string;                  // report_type_cd (제출보고서구분코드)
+  reportTypeName?: string;               // 제출보고서구분명 (common_code 조인용)
+  subReportTitle?: string;               // sub_report_title (제출보고서 제목)
+  targetExecutiveEmpNo?: string;         // target_executive_emp_no (제출 대상 임원 사번)
+  targetExecutiveName?: string;          // target_executive_name (제출 대상 임원명)
   positionId?: string;                   // position_id (FK)
   positionName?: string;                 // position_name (직책명)
   submissionDate: string;                // submission_date (제출일)
@@ -26,8 +29,9 @@ export interface SubmitReport {
 
 // 🔍 제출보고서 목록 필터 인터페이스
 export interface SubmitReportListFilters {
-  reportType: string;                    // 제출보고서구분
-  submittingAgency: string;              // 제출기관
+  ledgerOrderId: string;                 // 원장차수ID
+  reportTypeCd: string;                  // 제출보고서구분코드
+  submittingAgencyCd: string;            // 제출기관코드
   submissionDateFrom: string;            // 제출일 시작
   submissionDateTo: string;              // 제출일 종료
 }
@@ -51,9 +55,10 @@ export interface SubmitReportListModalState {
 // 📄 제출보고서 작성/수정 폼 데이터
 export interface SubmitReportFormData {
   ledgerOrderId: string;                 // 원장차수ID
-  submittingAgency: string;              // 제출기관
-  reportType: string;                    // 제출보고서구분
-  targetExecutiveEmpNo: string;          // 제출 대상 임원 사번
+  submittingAgencyCd: string;            // 제출기관코드
+  reportTypeCd: string;                  // 제출보고서구분코드
+  subReportTitle?: string;               // 제출보고서 제목
+  targetExecutiveEmpNo?: string;         // 제출 대상 임원 사번
   positionId?: string;                   // 직책ID
   submissionDate: string;                // 제출일
   remarks?: string;                      // 비고
