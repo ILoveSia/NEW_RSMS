@@ -291,6 +291,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
           hqName: dto.hqName,                           // 본부명
           orgName: dto.orgNames?.[0] || '-',            // 부점명 (첫번째 값, 호환성 유지)
           orgNames: dto.orgNames || [],                 // 부점명 배열 (Grid valueGetter 사용)
+          executiveEmpNo: dto.executiveEmpNo,           // 임원사번
+          executiveName: dto.executiveName,             // 임원성명 (employees 조인)
           registrationDate: dto.createdAt.split('T')[0],
           registrar: dto.createdBy,
           registrarPosition: '-',
@@ -524,6 +526,8 @@ const PositionMgmt: React.FC<PositionMgmtProps> = ({ className }) => {
               hqName: dto.hqName,
               orgName: dto.orgNames?.[0] || dto.orgName || '-',  // 부점명 (첫번째 값)
               orgNames: dto.orgNames || [],                      // 부점명 배열
+              executiveEmpNo: dto.executiveEmpNo,                // 임원사번
+              executiveName: dto.executiveName,                  // 임원성명 (employees 조인)
               registrationDate: dto.createdAt.split('T')[0],
               registrar: dto.createdBy,
               registrarPosition: '-',

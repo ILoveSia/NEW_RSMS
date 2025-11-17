@@ -301,7 +301,7 @@ export const responsibilityGridOptions = {
       return { backgroundColor: '#f5f5f5', opacity: 0.8 };
     }
 
-    // 점검결과가 부작성인 경우 연한 빨간색 배경
+    // 점검결과가 부적성인 경우 연한 빨간색 배경
     if (params.data?.inspectionResult === 'NOT_STARTED') {
       return { backgroundColor: '#ffebee' };
     }

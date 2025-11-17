@@ -84,7 +84,7 @@ export interface ExecutiveDashboardStats {
   totalActivities: number; // 총 관리활동 건수
   inspectionResults: {
     completed: number; // 작성완료
-    notCompleted: number; // 부작성
+    notCompleted: number; // 부적성
   }; // 이행점검결과
   improvementActions: {
     completed: number; // 완료
@@ -158,7 +158,7 @@ export interface ExcelDownloadParams {
 export const INSPECTION_STATUS_COLORS: Record<InspectionStatus, string> = {
   DRAFT: '#ffa726', // 주황색 - 작성중
   COMPLETED: '#66bb6a', // 초록색 - 작성완료
-  NOT_STARTED: '#ef5350', // 빨간색 - 부작성
+  NOT_STARTED: '#ef5350', // 빨간색 - 부적성
   IN_PROGRESS: '#42a5f5', // 파란색 - 진행중
   INCOMPLETE: '#ff7043' // 주황-빨강 - 미완성
 };
@@ -174,7 +174,7 @@ export const IMPROVEMENT_STATUS_COLORS: Record<ImprovementStatus, string> = {
 export const INSPECTION_STATUS_LABELS: Record<InspectionStatus, string> = {
   DRAFT: '작성중',
   COMPLETED: '작성완료',
-  NOT_STARTED: '부작성',
+  NOT_STARTED: '부적성',
   IN_PROGRESS: '진행중',
   INCOMPLETE: '미완성'
 };

@@ -6,18 +6,25 @@
  * 1. LedgerOrderComboBox 추가 (직책명 위에, 진행중 상태만)
  * 2. 원장차수 + 직책명 + 본부명 선택하여 등록
  * 3. 본부 선택 시 해당 본부의 모든 부서를 자동으로 조회하여 저장 (선택 없음)
+ * 4. 임원성명 필드 추가 (사원검색 팝업 연동)
  */
 
 import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import { EmployeeLookupModal, type Employee } from '@/shared/components/organisms/EmployeeLookupModal';
 import {
   Box,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import type { ColDef } from 'ag-grid-community';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DepartmentDto } from '../../../../api/organizationsApi';
@@ -65,6 +72,13 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
 
   // 직책코드 상태 (PositionNameComboBox에서 받아온 detailCode)
   const [positionCode, setPositionCode] = useState<string | null>(null);
+
+  // 임원 정보 상태
+  const [executiveName, setExecutiveName] = useState<string>('');
+  const [executiveEmpNo, setExecutiveEmpNo] = useState<string>('');
+
+  // 사원검색 모달 상태
+  const [employeeModalOpen, setEmployeeModalOpen] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({
@@ -129,6 +143,15 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
     }
   ], []);
 
+  // 사원 선택 핸들러
+  const handleEmployeeSelect = useCallback((employee: Employee | Employee[]) => {
+    if (!Array.isArray(employee)) {
+      setExecutiveName(employee.name);
+      setExecutiveEmpNo(employee.employeeId);
+      setEmployeeModalOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (mode === 'create') {
       setFormData({
@@ -137,6 +160,8 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       });
       setLedgerOrderId(null);
       setPositionCode(null); // 직책코드 초기화
+      setExecutiveName(''); // 임원성명 초기화
+      setExecutiveEmpNo(''); // 임원사번 초기화
       setIsEditing(true);
       setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
       setDetailDepartments([]);
@@ -152,6 +177,8 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
             headquarters: positionDetail.hqName
           });
           setLedgerOrderId(positionDetail.ledgerOrderId);
+          setExecutiveName(''); // TODO: API에서 임원성명 로드
+          setExecutiveEmpNo(positionDetail.executiveEmpNo || ''); // 임원사번 로드
           setIsEditing(false);
           setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
 
@@ -173,6 +200,8 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
             headquarters: position.headquarters
           });
           setLedgerOrderId(null);
+          setExecutiveName('');
+          setExecutiveEmpNo('');
           setIsEditing(false);
           setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
           setDetailDepartments([]);
@@ -225,6 +254,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           positionsName: formData.positionName,
           hqCode: selectedHqCode || '',
           hqName: formData.headquarters,
+          executiveEmpNo: executiveEmpNo || undefined, // 임원사번 추가
           orgCodes: allOrgCodes, // 조회된 모든 부점의 org_code 배열 전송
           isActive: 'Y',
           isConcurrent: 'N'
@@ -249,6 +279,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           positionsName: formData.positionName,
           hqCode: selectedHqCode || '',
           hqName: formData.headquarters,
+          executiveEmpNo: executiveEmpNo || undefined, // 임원사번 추가
           orgCodes: allOrgCodes.length > 0 ? allOrgCodes : undefined
         };
 
@@ -266,7 +297,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       console.error('직책 저장 실패:', error);
       alert(error instanceof Error ? error.message : '직책 저장에 실패했습니다.');
     }
-  }, [mode, formData, position, isEditing, onClose, errors, ledgerOrderId, selectedHqCode, positionCode, allOrgCodes, onRefresh]);
+  }, [mode, formData, position, isEditing, onClose, errors, ledgerOrderId, selectedHqCode, positionCode, executiveEmpNo, allOrgCodes, onRefresh]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -308,7 +339,17 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           fontWeight: 600
         }}
       >
-        {title}
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <span>{title}</span>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            size="small"
+            sx={{ color: 'var(--theme-page-header-text)' }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: 2 }}>
@@ -353,6 +394,40 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
             helperText={errors.headquarters}
             fullWidth
             size="small"
+          />
+
+          {/* 임원성명 - 사원검색 팝업 연동 */}
+          <TextField
+            label="임원성명"
+            value={executiveName}
+            size="small"
+            fullWidth
+            disabled={isReadOnly}
+            placeholder="검색 버튼을 클릭하여 선택하세요"
+            InputProps={{
+              readOnly: true,
+              endAdornment: !isReadOnly && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setEmployeeModalOpen(true)}
+                    edge="end"
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+            sx={{
+              '& .MuiInputBase-input': {
+                cursor: isReadOnly ? 'default' : 'pointer'
+              }
+            }}
+            onClick={() => {
+              if (!isReadOnly) {
+                setEmployeeModalOpen(true);
+              }
+            }}
           />
 
           {/* 부점 목록 DataGrid (등록 모드에서만 표시) */}
@@ -434,6 +509,14 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           </>
         )}
       </DialogActions>
+
+      {/* 사원검색 모달 */}
+      <EmployeeLookupModal
+        open={employeeModalOpen}
+        onClose={() => setEmployeeModalOpen(false)}
+        onSelect={handleEmployeeSelect}
+        title="임원 조회"
+      />
     </Dialog>
   );
 };

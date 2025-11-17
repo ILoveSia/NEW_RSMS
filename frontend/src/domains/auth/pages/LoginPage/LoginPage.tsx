@@ -163,15 +163,17 @@ export const LoginPage: React.FC = () => {
         <Paper className={styles.loginPaper} elevation={3}>
           {/* 로고 및 헤더 */}
           <Box className={styles.loginHeader}>
-            <div className={styles.logo}>🏙️</div>
+            <img src="/src/assets/images/gjtec.jpg" alt="GJTEC Logo" className={styles.logoImage} />
             <Typography variant="h4" component="h1" className={styles.title}>
-              ITCEN ENTEC
+              THE HI (GJTEC)
             </Typography>
             <Typography variant="subtitle1" className={styles.subtitle}>
               책무구조도 관리시스템
             </Typography>
             <Typography variant="body2" className={styles.description}>
               Manhattan Financial Center · Wall Street Digital Excellence
+              Financial Investment Service
+              Business Consulting
             </Typography>
           </Box>
 
@@ -254,12 +256,11 @@ export const LoginPage: React.FC = () => {
 
           {/* 개발 안내 */}
           <Box className={styles.devInfo}>
-            <Typography variant="caption" color="textSecondary">
-              개발 테스트용 로그인
+            <Typography variant="body2" className={styles.prototypeWarning}>
+              ⚠️ 이 시스템은 현재 프로토타입 단계입니다.
             </Typography>
-            <Typography variant="body2" color="textSecondary">
-              • <strong>admin</strong> / <strong>admin123!</strong> → 관리자 권한<br />
-              • 비밀번호: <strong style={{ color: '#e74c3c' }}>admin123!</strong> (초기 비밀번호)
+            <Typography variant="body2" className={styles.prototypeSubtext}>
+              실제 운영 환경에서는 사용하지 마세요.
             </Typography>
           </Box>
         </Paper>

@@ -82,4 +82,9 @@ public class CreatePositionRequest {
      * 겸직여부 (선택, 기본값: N)
      */
     private String isConcurrent;
+
+    /**
+     * 임원사번 (선택)
+     */
+    private String executiveEmpNo;
 }

@@ -37,7 +37,7 @@ export const isLastRowInGroup = (params: any): boolean => {
 
 /**
  * 책무관리 Grid 컬럼 생성
- * - 컬럼 순서: 순번, 직책명, 책무코드, 책무카테고리, 책무내용, 책무관련근거, 사용여부, 등록일자, 등록자
+ * - 컬럼 순서: 순번, 책무코드, 책무구분, 직책명, 책무, 관련 법령 및 내규, 사용여부, 등록일자, 등록자
  * - 책무이행차수 컬럼 삭제
  */
 export const createResponsibilityColumns = (
@@ -48,12 +48,6 @@ export const createResponsibilityColumns = (
     field: '순번',
     width: 80,
     cellStyle: { textAlign: 'center' },
-  },
-  {
-    headerName: '직책명',
-    field: '직책명',
-    width: 150,
-    cellStyle: { textAlign: 'center' }
   },
   {
     headerName: '책무코드',
@@ -73,13 +67,19 @@ export const createResponsibilityColumns = (
     cellClass: 'responsibility-clickable-cell'
   },
   {
-    headerName: '책무카테고리',
+    headerName: '책무구분',
     field: '책무카테고리',
     width: 150,
     cellStyle: { textAlign: 'center' }
   },
   {
-    headerName: '책무내용',
+    headerName: '직책명',
+    field: '직책명',
+    width: 150,
+    cellStyle: { textAlign: 'center' }
+  },
+  {
+    headerName: '책무',
     field: '책무내용',
     width: 300,
     flex: 1,
@@ -87,7 +87,7 @@ export const createResponsibilityColumns = (
     tooltipField: '책무내용'
   },
   {
-    headerName: '책무관련근거',
+    headerName: '관련 법령 및 내규',
     field: '책무관련근거',
     width: 250,
     cellStyle: { textAlign: 'left', paddingLeft: '12px' },
@@ -106,8 +106,25 @@ export const createResponsibilityColumns = (
     valueFormatter: (params) => {
       const value = params.value;
       if (!value) return '';
-      // ISO 형식(YYYY-MM-DDTHH:mm:ss) 또는 YYYY-MM-DD 형식 모두 처리
-      return value.split('T')[0];
+
+      // 문자열인 경우
+      if (typeof value === 'string') {
+        // ISO 형식(YYYY-MM-DDTHH:mm:ss) 또는 공백 포함 형식 처리
+        if (value.includes('T')) {
+          return value.split('T')[0];
+        } else if (value.includes(' ')) {
+          return value.split(' ')[0];
+        }
+        // 이미 YYYY-MM-DD 형식이면 그대로 반환
+        return value;
+      }
+
+      // Date 객체인 경우
+      if (value instanceof Date) {
+        return value.toISOString().split('T')[0];
+      }
+
+      return String(value).split('T')[0].split(' ')[0];
     },
     cellStyle: { textAlign: 'center' }
   },

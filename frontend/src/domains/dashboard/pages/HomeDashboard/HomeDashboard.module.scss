@@ -242,6 +242,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    position: relative;
 
     .headerControls {
       display: flex;
@@ -281,6 +282,17 @@
       margin: 0;
       letter-spacing: -0.5px;
       color: white;
+    }
+
+    .centerTitle {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.5px;
+      color: white;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .addButton {

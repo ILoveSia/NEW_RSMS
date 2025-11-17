@@ -250,6 +250,8 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
                 WHEN COUNT(CASE WHEN pc.is_representative = 'Y' THEN 1 END) > 0 THEN 'Y'
                 ELSE 'N'
                END as is_concurrent
+              ,a.executive_emp_no
+              ,e.emp_name as executive_name
               ,a.created_by
               ,a.created_at
               ,a.updated_by
@@ -263,9 +265,10 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
           ON a.ledger_order_id = pc.ledger_order_id
           AND a.positions_cd = pc.positions_cd
           AND pc.is_active = 'Y'
+        LEFT JOIN rsms.employees e ON a.executive_emp_no = e.emp_no
         GROUP BY a.positions_id, a.ledger_order_id, a.positions_cd, a.positions_name,
                  a.hq_code, a.hq_name, a.expiration_date, a.positions_status,
-                 a.is_active, a.created_by, a.created_at,
+                 a.is_active, a.executive_emp_no, e.emp_name, a.created_by, a.created_at,
                  a.updated_by, a.updated_at
         ORDER BY a.positions_id
         """, nativeQuery = true)

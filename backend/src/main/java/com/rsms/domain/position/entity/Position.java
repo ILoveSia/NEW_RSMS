@@ -85,6 +85,12 @@ public class Position {
     private String isConcurrent;
 
     /**
+     * 임원사번
+     */
+    @Column(name = "executive_emp_no", length = 50)
+    private String executiveEmpNo;
+
+    /**
      * 생성자
      */
     @Column(name = "created_by", length = 100, nullable = false)
@@ -115,7 +121,7 @@ public class Position {
     /**
      * 직책 정보 수정
      */
-    public void update(String positionsName, String hqName, String updatedBy) {
+    public void update(String positionsName, String hqName, String executiveEmpNo, String updatedBy) {
         if (positionsName != null && !positionsName.isBlank()) {
             this.positionsName = positionsName;
         }
@@ -123,6 +129,9 @@ public class Position {
         if (hqName != null && !hqName.isBlank()) {
             this.hqName = hqName;
         }
+
+        // 임원사번 업데이트 (null 허용)
+        this.executiveEmpNo = executiveEmpNo;
 
         this.updatedBy = updatedBy;
         this.updatedAt = LocalDateTime.now();

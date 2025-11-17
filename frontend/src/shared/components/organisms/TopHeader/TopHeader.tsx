@@ -58,14 +58,14 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       >
         <div className={styles.logo}>
           <img
-            src="/src/assets/images/itcen.jpg"
+            src="/src/assets/images/gjtec.jpg"
             alt="ITCEN ENTEC Logo"
             className={styles.logoImage}
           />
         </div>
         <div className={styles.brandInfo}>
           <div className={styles.title}>
-            아이티센 엔텍
+            THE HI (GJTEC)
           </div>
           <div className={styles.subtitle}>
             책무구조도 관리시스템

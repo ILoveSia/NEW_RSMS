@@ -149,7 +149,6 @@ const implementationData = {
 const HomeDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('2026년 07월');
-  const [selectedOrg, setSelectedOrg] = useState('대표이사');
   const [showOrgModal, setShowOrgModal] = useState(false);
   const [showSpecModal, setShowSpecModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -840,7 +839,7 @@ const HomeDashboard: React.FC = () => {
 
             <button
               className={`${styles.accessButton} ${styles.responsibilitySpec}`}
-              onClick={() => setShowSpecModal(true)}
+              onClick={() => navigate('/app/resps/responsibilitydocmgmt')}
             >
               <div className={styles.buttonContent}>
                 <FileText size={24} className={styles.buttonIcon} />
@@ -848,8 +847,8 @@ const HomeDashboard: React.FC = () => {
                   <span className={styles.buttonTitle}>책무기술서</span>
                   <span className={styles.buttonDescription}>
                     책무기술서를 클릭하셔서<br />
-                    전체 책무기술서를 크게<br />
-                    볼 수 있어요!
+                    책무기술서 관리 페이지로<br />
+                    이동할 수 있어요!
                   </span>
                 </div>
               </div>
@@ -867,12 +866,8 @@ const HomeDashboard: React.FC = () => {
                   <option value="2026년 07월">2026년 07월</option>
                   <option value="2026년 06월">2026년 06월</option>
                 </select>
-                <select className={styles.positionSelect} value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)}>
-                  <option value="대표이사">대표이사</option>
-                  <option value="상무">상무</option>
-                </select>
               </div>
-              <h3>책무 현황</h3>
+              <h3 className={styles.centerTitle}>책무 현황</h3>
               <button className={styles.addButton}>+</button>
             </div>
 
@@ -1063,7 +1058,7 @@ const HomeDashboard: React.FC = () => {
         <div className={styles.rightColumn}>
           {/* ITCEN ENTEC 책무현황 */}
           <div className={styles.vanguardTeamStatus}>
-            <h3>ITCEN ENTEC 책무현황</h3>
+            <h3>준법감시인 책무현황</h3>
             <div className={styles.statusBoxesHorizontal}>
               <div className={styles.statusBox}>
                 <div className={styles.boxNumber}>9</div>

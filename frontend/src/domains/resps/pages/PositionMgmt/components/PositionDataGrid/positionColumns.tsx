@@ -1,6 +1,6 @@
-import React from 'react';
 import { Chip } from '@mui/material';
 import type { ColDef } from 'ag-grid-community';
+import React from 'react';
 import type { Position } from '../../types/position.types';
 
 // 사용여부별 색상 매핑
@@ -48,13 +48,6 @@ export const positionColumns: ColDef<Position>[] = [
     width: 80,
   },
   {
-    headerName: '직책코드',
-    field: 'positionsCd',
-    sortable: true,
-    filter: true,
-    width: 120,
-  },
-  {
     headerName: '직책',
     field: 'positionName',
     sortable: true,
@@ -64,6 +57,13 @@ export const positionColumns: ColDef<Position>[] = [
     cellStyle: { fontWeight: '500' },
     // @ts-ignore - AG-Grid Community spanRows 기능
     spanRows: true // 같은 값을 가진 연속된 셀 자동 병합
+  },
+  {
+    headerName: '임원성명',
+    field: 'executiveName',
+    sortable: true,
+    filter: true,
+    width: 120
   },
   {
     headerName: '본부명',

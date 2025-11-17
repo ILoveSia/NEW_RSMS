@@ -11,6 +11,8 @@ export interface Position {
   hqName: string;            // 본부명
   orgName: string;           // 부점명 (단일 값, 호환성 유지)
   orgNames?: string[];       // 부점명 배열 (positions 기준 조회 시 사용)
+  executiveEmpNo?: string;   // 임원사번
+  executiveName?: string;    // 임원성명 (employees 조인)
   registrationDate: string;  // 등록일자
   registrar: string;         // 등록자
   registrarPosition: string; // 등록자직책

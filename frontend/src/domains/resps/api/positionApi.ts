@@ -46,6 +46,8 @@ export interface PositionDto {
   orgName?: string;             // 부점명 (단일 값 - 각 행마다)
   orgCodes?: string[];          // positions_details 조인 결과 (조직코드 리스트 - 그룹핑용)
   orgNames?: string[];          // organizations 조인 결과 (조직명/부점명 리스트 - 그룹핑용)
+  executiveEmpNo?: string;      // 임원사번
+  executiveName?: string;       // 임원성명 (employees 조인)
   expirationDate: string;
   positionsStatus?: string;
   isActive: string;

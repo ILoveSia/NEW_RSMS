@@ -12,13 +12,13 @@ import styles from './CeoReport.module.scss';
 
 // Types
 import type {
-  CeoComplianceOpinionStatus,
-  CeoDashboardStats,
-  CeoOverallDutyInspection,
-  CeoReportFilters,
-  CeoReportLoadingStates,
-  CeoReportModalState,
-  CeoSummaryStats
+    CeoComplianceOpinionStatus,
+    CeoDashboardStats,
+    CeoOverallDutyInspection,
+    CeoReportFilters,
+    CeoReportLoadingStates,
+    CeoReportModalState,
+    CeoSummaryStats
 } from './types/ceoReport.types';
 
 // Shared Components
@@ -437,7 +437,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
               <div className={styles.simpleTableHeaderCell}>책무</div>
               <div className={styles.simpleTableHeaderCell}>최종결과</div>
               <div className={styles.simpleTableHeaderCell}>점검결과<br />작성</div>
-              <div className={styles.simpleTableHeaderCell}>점검결과<br />부작성</div>
+              <div className={styles.simpleTableHeaderCell}>점검결과<br /></div>
               <div className={styles.simpleTableHeaderCell}>미이행</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />완료</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />진행중</div>

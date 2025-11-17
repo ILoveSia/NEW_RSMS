@@ -8,7 +8,7 @@
 -- 변경사항:
 --   - PK: responsibility_id (BIGSERIAL) → responsibility_cd (VARCHAR, 업무 코드)
 --   - 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
---   - 예시: "20250001M0001" (20250001원장차수 + M카테고리 + 0001순번)
+--   - 예시: "20250001R0001" (20250001원장차수 + R카테고리 + 0001순번)
 --   - 기존 responsibility_cd 컬럼 삭제 (PK로 대체되어 중복 제거)
 -- =====================================================================================
 
@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS rsms.responsibilities CASCADE;
 CREATE TABLE rsms.responsibilities (
   -- 기본키 (업무 코드)
   -- 코드 생성 규칙: ledger_order_id + responsibility_cat + 순번(4자리)
-  -- 예시: "20250001RM0001" = "20250001"(원장차수) + "M"(리스크관리) + "0001"(순번)
+  -- 예시: "20250001R0001" = "20250001"(원장차수) + "R"(지정책임자) + "0001"(순번)
   responsibility_cd VARCHAR(20) PRIMARY KEY,              -- 책무코드 (PK, 업무 코드)
 
   -- 외래키
@@ -110,97 +110,3 @@ CREATE TRIGGER trigger_responsibilities_updated_at
   BEFORE UPDATE ON rsms.responsibilities
   FOR EACH ROW
   EXECUTE FUNCTION rsms.update_updated_at_column();
-
--- =====================================================================================
--- 샘플 데이터 삽입 (개발/테스트용)
--- =====================================================================================
--- 운영 환경에서는 이 섹션을 주석 처리하거나 제거하세요
-/*
-INSERT INTO rsms.responsibilities (
-  responsibility_cd,
-  ledger_order_id,
-  positions_id,
-  responsibility_cat,
-  responsibility_info,
-  responsibility_legal,
-  expiration_date,
-  responsibility_status,
-  is_active,
-  created_by,
-  updated_by
-) VALUES
-  -- 샘플 데이터 1: 리스크 관리 책무
-  (
-    '20250001RM0001',
-    '20250001',
-    1,
-    'RM',
-    '리스크 식별 및 평가 수행',
-    '은행업감독규정 제00조',
-    '9999-12-31',
-    'ACTIVE',
-    'Y',
-    'system',
-    'system'
-  ),
-  -- 샘플 데이터 2: 내부통제 책무
-  (
-    '20250001IC0001',
-    '20250001',
-    2,
-    'IC',
-    '내부통제 활동 수행 및 모니터링',
-    '내부통제운영규정 제00조',
-    '9999-12-31',
-    'ACTIVE',
-    'Y',
-    'system',
-    'system'
-  ),
-  -- 샘플 데이터 3: 준법 감시 책무
-  (
-    '20250001CP0001',
-    '20250001',
-    3,
-    'CP',
-    '준법감시 활동 수행',
-    '준법감시규정 제00조',
-    '9999-12-31',
-    'ACTIVE',
-    'Y',
-    'system',
-    'system'
-  );
-*/
-
--- =====================================================================================
--- 책무코드 생성 예시 및 설명
--- =====================================================================================
--- Backend에서 코드를 자동 생성하는 로직:
---
--- 1. 최대 순번 조회 쿼리:
---    SELECT MAX(SUBSTRING(responsibility_cd, 9, 4)::INTEGER)
---    FROM rsms.responsibilities
---    WHERE ledger_order_id = '20250001'
---      AND responsibility_cat = 'RM';
---
--- 2. 코드 생성 로직:
---    String nextSeq = String.format("%04d", maxSeq + 1);
---    String code = ledgerOrderId + responsibilityCat + nextSeq;
---    // 예: "20250001" + "RM" + "0001" = "20250001RM0001"
---
--- 3. 코드 형식 검증:
---    - 길이: 12-20자
---    - 패턴: 8자리 원장차수 + 2-10자리 카테고리 + 4자리 순번
---    - 예: "20250001RM0001", "20250001RISK_MGT0001"
--- =====================================================================================
-
--- =====================================================================================
--- 권한 설정
--- =====================================================================================
--- rsms_app 역할에 테이블 권한 부여
---GRANT SELECT, INSERT, UPDATE, DELETE ON rsms.responsibilities TO rsms_app;
-
--- =====================================================================================
--- 스크립트 완료
--- =====================================================================================

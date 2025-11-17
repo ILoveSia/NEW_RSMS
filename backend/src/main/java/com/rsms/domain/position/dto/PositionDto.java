@@ -75,6 +75,17 @@ public class PositionDto {
     private String isConcurrent;
 
     /**
+     * 임원사번
+     */
+    private String executiveEmpNo;
+
+    /**
+     * 임원성명
+     * - employees 테이블 조인으로 조회
+     */
+    private String executiveName;
+
+    /**
      * 부점코드 (단일 값)
      * - positions_details 조인으로 각 행마다 하나의 org_code
      */
@@ -143,6 +154,7 @@ public class PositionDto {
             .positionsStatus(entity.getPositionsStatus())
             .isActive(entity.getIsActive())
             .isConcurrent(entity.getIsConcurrent())
+            .executiveEmpNo(entity.getExecutiveEmpNo())
             .createdBy(entity.getCreatedBy())
             .createdAt(entity.getCreatedAt())
             .updatedBy(entity.getUpdatedBy())
@@ -168,6 +180,7 @@ public class PositionDto {
             .positionsStatus(this.positionsStatus)
             .isActive(this.isActive)
             .isConcurrent(this.isConcurrent)
+            .executiveEmpNo(this.executiveEmpNo)
             .createdBy(this.createdBy)
             .createdAt(this.createdAt)
             .updatedBy(this.updatedBy)

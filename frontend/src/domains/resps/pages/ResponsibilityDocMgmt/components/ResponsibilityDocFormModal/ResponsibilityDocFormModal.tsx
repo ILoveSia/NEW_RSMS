@@ -32,7 +32,8 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Print as PrintIcon
 } from '@mui/icons-material';
 import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
@@ -52,6 +53,7 @@ import toast from '@/shared/utils/toast';
 import LedgerOrderComboBox from '@/domains/resps/components/molecules/LedgerOrderComboBox/LedgerOrderComboBox';
 import { useCommonCode } from '@/shared/hooks/useCommonCode';
 import { useOrganization } from '@/shared/hooks/useOrganization';
+import ResponsibilityDocPrintModal from '../ResponsibilityDocPrintModal/ResponsibilityDocPrintModal';
 
 // 직책 선택 모달용 타입
 interface PositionSelectData {
@@ -154,12 +156,13 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     { id: '1', seq: 1, duty: '' }
   ]);
   const [isEditing, setIsEditing] = useState(false);
+  const [printModalOpen, setPrintModalOpen] = useState(false);
 
   // 읽기 전용 모드 계산 (컬럼 정의보다 먼저 선언)
   const isReadOnly = mode === 'detail' && !isEditing;
 
   // React Hook Form 초기화
-  const { control, handleSubmit, reset, setValue } = useForm({
+  const { control, handleSubmit, reset, setValue, getValues } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       positionName: '',
@@ -533,6 +536,36 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       onClose();
     }
   }, [mode, onClose, reset]);
+
+  // 출력 데이터 생성 - 폼의 현재 값 사용
+  const getPrintData = useCallback(() => {
+    const formValues = getValues();
+    return {
+      positionName: formValues.positionName || '',
+      employeeName: formValues.employeeName || '',
+      positionAssignedDate: formValues.currentPositionDate || '',
+      isConcurrent: formValues.isDual ? 'Y' : 'N',
+      concurrentDetails: formValues.dualPositionDetails || '',
+      responsibleDepts: formValues.responsibleDepts || '',
+      responsibilityOverview: formValues.responsibilityOverview || '',
+      responsibilityDistributionDate: formValues.responsibilityDistributionDate || '',
+      committees: committees.map(c => ({
+        committeeName: c.committeeName,
+        chairperson: c.chairperson,
+        frequency: holdingPeriodCode.getCodeName(c.frequency) || c.frequency
+      })),
+      responsibilities: responsibilities.map(r => ({
+        seq: r.seq,
+        responsibility: r.responsibility,
+        responsibilityDetail: r.responsibilityDetail,
+        relatedBasis: r.relatedBasis
+      })),
+      managementDuties: managementDuties.map(m => ({
+        seq: m.seq,
+        duty: m.duty
+      }))
+    };
+  }, [getValues, committees, responsibilities, managementDuties, holdingPeriodCode]);
 
   const onSubmit = useCallback(async (data: any) => {
     try {
@@ -1007,6 +1040,13 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                   <Button variant="outlined" onClick={onClose}>
                     닫기
                   </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => setPrintModalOpen(true)}
+                    startIcon={<PrintIcon />}
+                  >
+                    책무기술서 출력
+                  </Button>
                   <Button variant="contained" onClick={handleEdit}>
                     수정
                   </Button>
@@ -1030,6 +1070,15 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
         onClose={() => setEmployeeSelectOpen(false)}
         onSelect={handleEmployeeSelectFromDialog}
       />
+
+      {/* 책무기술서 출력 모달 */}
+      {printModalOpen && (
+        <ResponsibilityDocPrintModal
+          open={printModalOpen}
+          onClose={() => setPrintModalOpen(false)}
+          data={getPrintData()}
+        />
+      )}
     </>
   );
 };

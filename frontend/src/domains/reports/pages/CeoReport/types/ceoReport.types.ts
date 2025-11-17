@@ -11,7 +11,7 @@ export interface CeoOverallDutyInspection {
   finalResult: string; // 최종결과
   inspectionResult: {
     written: number; // 점검결과(작성)
-    notWritten: number; // 점검결과(부작성)
+    notWritten: number; // 점검결과(부적성)
   };
   nonCompliance: number; // 미이행
   improvementOpinion: {
@@ -27,7 +27,7 @@ export interface CeoComplianceOpinionStatus {
   responsibility: string; // 책무
   written: number; // 작성
   dutyCount: number; // 관리의무 수
-  notWritten: number; // 부작성
+  notWritten: number; // 부적성
   nonCompliance: number; // 미이행
   improvementOpinion: {
     completed: number; // 개선의견(완료)
@@ -129,7 +129,7 @@ export type CeoReportActionType =
 // 📋 상태 코드 정의 (요구사항 문서 기준)
 export enum CeoInspectionStatus {
   DRAFTED = 'DRAFTED', // 작성
-  NOT_STARTED = 'NOT_STARTED', // 부작성
+  NOT_STARTED = 'NOT_STARTED', // 부적성
   COMPLETED = 'COMPLETED', // 완료
   IN_PROGRESS = 'IN_PROGRESS', // 진행중
   NON_COMPLIANCE = 'NON_COMPLIANCE' // 미이행

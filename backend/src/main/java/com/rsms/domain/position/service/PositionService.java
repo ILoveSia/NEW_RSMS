@@ -71,6 +71,8 @@ public class PositionService {
                     .positionsStatus((String) row.get("positions_status"))
                     .isActive(convertToString(row.get("is_active")))
                     .isConcurrent(convertToString(row.get("is_concurrent")))
+                    .executiveEmpNo((String) row.get("executive_emp_no"))
+                    .executiveName((String) row.get("executive_name"))  // 임원성명 추가
                     .orgNames(orgNames)  // 부점명 리스트
                     .createdBy((String) row.get("created_by"))
                     .createdAt(row.get("created_at") != null
@@ -235,6 +237,7 @@ public class PositionService {
             .positionsStatus(request.getPositionsStatus())
             .isActive(request.getIsActive() != null ? request.getIsActive() : "Y")
             .isConcurrent(request.getIsConcurrent() != null ? request.getIsConcurrent() : "N")
+            .executiveEmpNo(request.getExecutiveEmpNo())
             .createdBy(username)
             .updatedBy(username)
             .build();
@@ -289,6 +292,7 @@ public class PositionService {
         position.update(
             request.getPositionsName(),
             request.getHqName(),
+            request.getExecutiveEmpNo(),
             username
         );
 

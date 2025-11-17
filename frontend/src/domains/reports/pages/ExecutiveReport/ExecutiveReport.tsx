@@ -24,8 +24,8 @@ import type {
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
-import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
 
@@ -332,7 +332,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
       icon: <SecurityIcon />
     },
     {
-      label: '부작성',
+      label: '부적성',
       value: statistics.inspectionResults.notCompleted,
       color: 'error',
       icon: <SecurityIcon />
@@ -467,7 +467,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
       {
         id: '2',
         managementDuty: '경영진단 업무수행 관련 책무 세부 내용 1',
-        inspectionResult: '부작성 상태로 조치 필요',
+        inspectionResult: '부적성 상태로 조치 필요',
         responsibilityCategory: '경영진단',
         dutyCode: 'MD002',
         priority: 'MEDIUM',
@@ -587,7 +587,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
                   <div className={styles.summaryCell}>8개</div>
                   <div className={styles.summaryCell}>
                     <span className={styles.completed}>작성 : 0건</span>
-                    <span className={styles.notCompleted}>부작성 : 0건</span>
+                    <span className={styles.notCompleted}>부적성 : 0건</span>
                   </div>
                   <div className={styles.summaryCell}>
                     <span className={styles.completed}>완료 : 0건</span>
@@ -616,7 +616,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
                 </div>
                 <div className={styles.simpleTableRow}>
                   <div className={styles.simpleTableCell}>경영진단 업무와 관련된 책무</div>
-                  <div className={styles.simpleTableCell}>부작성</div>
+                  <div className={styles.simpleTableCell}>부적성</div>
                 </div>
                 <div className={styles.simpleTableRow}>
                   <div className={styles.simpleTableCell}>온법감시 업무와 관련된 책무</div>
@@ -652,7 +652,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
                 </div>
                 <div className={styles.simpleTableRow}>
                   <div className={styles.simpleTableCell}>경영진단 업무와 관련된 책무에 대한 세부내용 1</div>
-                  <div className={styles.simpleTableCell}>부작성</div>
+                  <div className={styles.simpleTableCell}>부적성</div>
                   <div className={styles.simpleTableCell}>온법감시 업무와 관련된 책무 세부내용에 대한 관리의무</div>
                   <div className={styles.simpleTableCell}>미점검</div>
                 </div>

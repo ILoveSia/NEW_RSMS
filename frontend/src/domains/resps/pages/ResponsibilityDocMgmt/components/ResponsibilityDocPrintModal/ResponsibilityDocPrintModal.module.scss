@@ -1,0 +1,280 @@
+@import '@/styles/variables';
+
+/**
+ * 책무기술서 PDF 출력 스타일
+ * - A4 용지 기준 인쇄 최적화
+ * - 테이블 중심의 공문서 스타일
+ */
+
+.printArea {
+  width: 100%;
+  max-width: 210mm; // A4 width
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.4;
+  color: #000;
+
+  // 인쇄 시 스타일
+  @media print {
+    padding: 10mm;
+    page-break-inside: avoid;
+  }
+}
+
+.title {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 2px solid #000;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  font-size: 9pt;
+
+  // 모든 셀 기본 스타일
+  th,
+  td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    vertical-align: middle;
+    word-break: keep-all;
+  }
+
+  // 헤더 셀 (진한 회색 배경)
+  thead th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  // 섹션 제목 (1.임원 및 직책 정보, 2.책무 등)
+  .sectionTitle {
+    background-color: #d0d0d0 !important;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 8px;
+    text-align: left;
+  }
+}
+
+// 독립된 섹션 제목 (테이블 외부)
+.sectionTitleStandalone {
+  font-size: 11pt;
+  font-weight: bold;
+  padding: 4px 0;
+  text-align: left;
+  margin-bottom: 0px;
+
+  @media print {
+    page-break-inside: avoid;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  font-size: 9pt;
+
+  // margin-bottom 제거용 클래스
+  &.tableNoMargin {
+    margin-bottom: 0;
+  }
+
+  // 상단 border 제거용 클래스 (테이블이 연속될 때)
+  &.tableNoBorderTop {
+    tbody tr:first-child th {
+      border-top: none;
+    }
+  }
+
+  // border 제거용 클래스 (관리의무 항목들 사이 가로 라인만 제거)
+  tbody .noBorderRow {
+    td {
+      border-bottom: none !important;
+    }
+
+    &:last-child td {
+      border-bottom: 1px solid #000 !important; // 마지막 행은 하단 라인 유지
+    }
+  }
+
+  // 모든 셀 기본 스타일
+  th,
+  td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    vertical-align: middle;
+    word-break: keep-all;
+  }
+
+  // 헤더 셀 (진한 회색 배경)
+  thead th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  // 섹션 제목 (1.임원 및 직책 정보, 2.책무 등)
+  .sectionTitle {
+    background-color: #d0d0d0 !important;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 8px;
+    text-align: left;
+  }
+
+  // 일반 헤더 셀 (라벨)
+  tbody th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+    width: auto;
+  }
+
+  // 데이터 셀
+  tbody td {
+    text-align: left;
+    background-color: #fff;
+
+    &:empty::before {
+      content: '\00a0'; // 빈 셀 공백 유지
+    }
+  }
+
+  // 인쇄 시 스타일
+  @media print {
+    page-break-inside: avoid;
+
+    th,
+    td {
+      padding: 4px 6px;
+    }
+  }
+}
+
+.notes {
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background-color: #f9f9f9;
+  font-size: 8pt;
+  line-height: 1.5;
+
+  p {
+    margin: 3px 0;
+    text-indent: 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @media print {
+    background-color: #fff;
+    font-size: 7pt;
+  }
+}
+
+// 인쇄 전용 스타일
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+    // 브라우저 헤더/푸터 제거 시도 (브라우저 설정에서 완전히 제거 가능)
+    @top-left { content: ""; }
+    @top-center { content: ""; }
+    @top-right { content: ""; }
+    @bottom-left { content: ""; }
+    @bottom-center { content: ""; }
+    @bottom-right { content: ""; }
+  }
+
+  // body와 html 설정
+  :global(html),
+  :global(body) {
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  // 모든 Dialog 숨김
+  :global(body .MuiDialog-root) {
+    display: none !important;
+  }
+
+  // PrintModal이 있는 Dialog만 표시
+  :global(body .MuiDialog-root:last-of-type) {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    z-index: 9999 !important;
+  }
+
+  // PrintModal Dialog 내부 설정
+  :global(body .MuiDialog-root:last-of-type .MuiDialog-container) {
+    position: static !important;
+    height: auto !important;
+  }
+
+  :global(body .MuiDialog-root:last-of-type .MuiBackdrop-root) {
+    display: none !important;
+  }
+
+  :global(body .MuiDialog-root:last-of-type .MuiPaper-root) {
+    box-shadow: none !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  :global(body .MuiDialog-root:last-of-type .MuiDialogTitle-root),
+  :global(body .MuiDialog-root:last-of-type .MuiDialogActions-root),
+  :global(body .MuiDialog-root:last-of-type .MuiDivider-root) {
+    display: none !important;
+  }
+
+  :global(body .MuiDialog-root:last-of-type .MuiDialogContent-root) {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  // PrintArea 설정
+  .printArea {
+    max-width: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    page-break-after: avoid;
+    height: auto !important;
+  }
+
+  // 불필요한 요소 숨김
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  // 다른 모든 body 직계 자식 숨김
+  :global(body > *:not(.MuiDialog-root)) {
+    display: none !important;
+  }
+}

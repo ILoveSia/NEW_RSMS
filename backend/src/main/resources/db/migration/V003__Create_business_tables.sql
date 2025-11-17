@@ -132,6 +132,7 @@ CREATE TABLE rsms.positions (
   positions_name VARCHAR(200) NOT NULL,                -- 직책명
   hq_code VARCHAR(20) NOT NULL,                        -- 본부코드 (common_code_details의 DPRM_CD 그룹 참조)
   hq_name VARCHAR(200) NOT NULL,                       -- 본부명
+  executive_emp_no VARCHAR(100) NULL,                  -- 임원사번
 
   -- 만료 정보
   expiration_date DATE NOT NULL DEFAULT '9999-12-31',  -- 만료일 (기본값: 9999-12-31)
@@ -172,6 +173,7 @@ CREATE INDEX idx_positions_ledger_order_id ON rsms.positions(ledger_order_id);
 CREATE INDEX idx_positions_positions_cd ON rsms.positions(positions_cd);
 CREATE INDEX idx_positions_positions_name ON rsms.positions(positions_name);
 CREATE INDEX idx_positions_hq_code ON rsms.positions(hq_code);
+CREATE INDEX idx_positions_executive_emp_no ON rsms.positions(executive_emp_no);
 CREATE INDEX idx_positions_expiration_date ON rsms.positions(expiration_date);
 CREATE INDEX idx_positions_positions_status ON rsms.positions(positions_status);
 CREATE INDEX idx_positions_is_active ON rsms.positions(is_active);
@@ -191,6 +193,7 @@ COMMENT ON COLUMN rsms.positions.positions_cd IS '직책코드 (common_code_deta
 COMMENT ON COLUMN rsms.positions.positions_name IS '직책명';
 COMMENT ON COLUMN rsms.positions.hq_code IS '본부코드 (common_code_details의 DPRM_CD 그룹 참조)';
 COMMENT ON COLUMN rsms.positions.hq_name IS '본부명';
+COMMENT ON COLUMN rsms.positions.executive_emp_no IS '임원사번';
 COMMENT ON COLUMN rsms.positions.expiration_date IS '만료일 (기본값: 9999-12-31)';
 COMMENT ON COLUMN rsms.positions.positions_status IS '상태 (나중에 사용 예정)';
 COMMENT ON COLUMN rsms.positions.is_active IS '사용여부 (Y: 사용, N: 미사용)';
