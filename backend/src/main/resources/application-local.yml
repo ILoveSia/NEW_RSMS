@@ -32,11 +32,13 @@ spring:
       
   # Flyway Configuration
   flyway:
-    enabled: false  # 임시로 비활성화 (테이블이 이미 존재)
+    enabled: false  # Flyway 임시 비활성화 (is_active 컬럼 타입을 수동으로 수정 후 재활성화)
     baseline-on-migrate: true  # 기존 스키마에 flyway_schema_history 자동 생성
+    baseline-version: 7  # V001-V007은 이미 적용된 것으로 간주
     locations: classpath:db/migration
     sql-migration-prefix: V
     sql-migration-suffixes: .sql
+    clean-disabled: true  # clean 명령 비활성화 (안전성)
       
 # Logging Configuration (개발용 상세 로그)
 logging:

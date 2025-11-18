@@ -42,6 +42,7 @@ interface ResponsibilityDocPrintData {
     committeeName: string;
     chairperson: string;
     frequency: string;
+    resolutionMatters: string; // 주요 안건·의결사항
   }>;
 
   // 4. 책무 목록
@@ -56,6 +57,9 @@ interface ResponsibilityDocPrintData {
   managementDuties: Array<{
     seq: number;
     duty: string;
+    responsibilityDetailInfo?: string; // 책무세부내용
+    responsibilityDetailCd?: string; // 책무세부코드
+    obligationCd?: string; // 관리의무코드
   }>;
 }
 
@@ -75,6 +79,130 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
   // 브라우저 인쇄 기능 사용
   const handlePrint = () => {
     window.print();
+  };
+
+  /**
+   * 책무 셀 병합을 위한 rowspan 계산
+   * - 같은 "책무" 값을 가진 연속된 행들을 그룹화
+   * - 각 그룹의 첫 번째 행에만 셀을 표시하고 rowspan 적용
+   */
+  const getResponsibilityRowSpan = (index: number): number | null => {
+    if (index === 0) {
+      // 첫 번째 행: 동일한 책무를 가진 다음 행들의 개수 세기
+      let count = 1;
+      const currentResp = data.responsibilities[index].responsibility;
+      for (let i = index + 1; i < data.responsibilities.length; i++) {
+        if (data.responsibilities[i].responsibility === currentResp) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    } else {
+      // 이전 행과 같은 책무인지 확인
+      const currentResp = data.responsibilities[index].responsibility;
+      const prevResp = data.responsibilities[index - 1].responsibility;
+
+      if (currentResp === prevResp) {
+        // 같으면 null 반환 (셀을 렌더링하지 않음)
+        return null;
+      } else {
+        // 다르면 새로운 그룹의 시작: rowspan 계산
+        let count = 1;
+        for (let i = index + 1; i < data.responsibilities.length; i++) {
+          if (data.responsibilities[i].responsibility === currentResp) {
+            count++;
+          } else {
+            break;
+          }
+        }
+        return count;
+      }
+    }
+  };
+
+  /**
+   * 관련 법령 및 내규 셀 병합을 위한 rowspan 계산
+   * - 같은 "관련 법령 및 내규" 값을 가진 연속된 행들을 그룹화
+   * - 각 그룹의 첫 번째 행에만 셀을 표시하고 rowspan 적용
+   */
+  const getRelatedBasisRowSpan = (index: number): number | null => {
+    if (index === 0) {
+      // 첫 번째 행: 동일한 관련 법령을 가진 다음 행들의 개수 세기
+      let count = 1;
+      const currentBasis = data.responsibilities[index].relatedBasis;
+      for (let i = index + 1; i < data.responsibilities.length; i++) {
+        if (data.responsibilities[i].relatedBasis === currentBasis) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    } else {
+      // 이전 행과 같은 관련 법령인지 확인
+      const currentBasis = data.responsibilities[index].relatedBasis;
+      const prevBasis = data.responsibilities[index - 1].relatedBasis;
+
+      if (currentBasis === prevBasis) {
+        // 같으면 null 반환 (셀을 렌더링하지 않음)
+        return null;
+      } else {
+        // 다르면 새로운 그룹의 시작: rowspan 계산
+        let count = 1;
+        for (let i = index + 1; i < data.responsibilities.length; i++) {
+          if (data.responsibilities[i].relatedBasis === currentBasis) {
+            count++;
+          } else {
+            break;
+          }
+        }
+        return count;
+      }
+    }
+  };
+
+  /**
+   * 관리의무를 책무상세별로 그룹화
+   * - 책무상세(responsibilityDetailInfo)가 같은 관리의무들을 하나의 그룹으로 묶음
+   * - 책무세부코드와 관리의무코드를 포함
+   */
+  const groupManagementDutiesByResponsibility = () => {
+    const grouped: {
+      responsibilityDetailInfo: string;
+      responsibilityDetailCd: string;
+      seq: number;
+      duties: Array<{ seq: number; duty: string; obligationCd: string }>;
+    }[] = [];
+
+    data.managementDuties.forEach((duty) => {
+      const groupKey = duty.responsibilityDetailInfo || '';
+      const existingGroup = grouped.find(
+        (g) => g.responsibilityDetailInfo === groupKey
+      );
+
+      if (existingGroup) {
+        existingGroup.duties.push({
+          seq: duty.seq,
+          duty: duty.duty,
+          obligationCd: duty.obligationCd || ''
+        });
+      } else {
+        grouped.push({
+          responsibilityDetailInfo: groupKey,
+          responsibilityDetailCd: duty.responsibilityDetailCd || '',
+          seq: grouped.length + 1,
+          duties: [{
+            seq: duty.seq,
+            duty: duty.duty,
+            obligationCd: duty.obligationCd || ''
+          }]
+        });
+      }
+    });
+
+    return grouped;
   };
 
   return (
@@ -126,10 +254,10 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
           <table className={styles.table}>
             <colgroup>
               <col width="14.00%" />
-              <col width="26.00%" />
-              <col width="18.00%" />
-              <col width="10.00%" />
-              <col width="30.00%" />
+              <col width="22.00%" />
+              <col width="12.00%" />
+              <col width="8.00%" />
+              <col width="42.00%" />
             </colgroup>
             <tbody>
               {/* 첫 번째 행: 직책, 성명, 홍길동 */}
@@ -176,10 +304,10 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
               {/* 주관회의체 데이터 행들 */}
               {data.committees.map((committee, index) => (
                 <tr key={index}>
-                  <td>{committee.committeeName || '보안감사 위원회'}</td>
-                  <td colSpan={1}>{committee.chairperson || '감사본부장/경영전략본부장'}</td>
-                  <td>{committee.frequency || '분기'}</td>
-                  <td>{`보안관리 심의`}</td>
+                  <td className={styles.textCenter}>{committee.committeeName || '보안감사 위원회'}</td>
+                  <td className={styles.textCenter} colSpan={1}>{committee.chairperson || '감사본부장/경영전략본부장'}</td>
+                  <td className={styles.textCenter}>{committee.frequency || '분기'}</td>
+                  <td className={styles.preWrap}>{committee.resolutionMatters || '보안관리 심의'}</td>
                 </tr>
               ))}
             </tbody>
@@ -200,8 +328,8 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
           {/* 2-1. 책무 개요 및 배분일자 테이블 */}
           <table className={`${styles.table} ${styles.tableNoMargin}`}>
             <colgroup>
-              <col width="70%" />
-              <col width="30%" />
+              <col width="80%" />
+              <col width="20%" />
             </colgroup>
             <tbody>
               <tr>
@@ -209,8 +337,8 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
                 <th>책무 배분일자</th>
               </tr>
               <tr>
-                <td>{data.responsibilityOverview || '감사본부장 관련 책무'}</td>
-                <td>{data.responsibilityDistributionDate || '2022-09-01'}</td>
+                <td className={styles.preWrap}>{data.responsibilityOverview || '감사본부장 관련 책무'}</td>
+                <td className={styles.textCenter}>{data.responsibilityDistributionDate || '2022-09-01'}</td>
               </tr>
             </tbody>
           </table>
@@ -233,13 +361,28 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
               </tr>
 
               {/* 책무 데이터 */}
-              {data.responsibilities.map((resp) => (
-                <tr key={resp.seq}>
-                  <td>{resp.responsibility || `준법감시 업무와 관련된 책무`}</td>
-                  <td>{resp.responsibilityDetail || `준법감시 업무와 관련된 책무 세부내용 ${String(resp.seq).padStart(2, '0')}`}</td>
-                  <td>{resp.relatedBasis || '금융회사의 준법감시 관련 법 제 00조'}</td>
-                </tr>
-              ))}
+              {data.responsibilities.map((resp, index) => {
+                const rowSpan = getResponsibilityRowSpan(index);
+                const basisRowSpan = getRelatedBasisRowSpan(index);
+
+                return (
+                  <tr key={resp.seq}>
+                    {/* 책무 셀: rowspan이 null이면 렌더링하지 않음 (병합된 셀) */}
+                    {rowSpan !== null && (
+                      <td rowSpan={rowSpan}>
+                        {resp.responsibility || `준법감시 업무와 관련된 책무`}
+                      </td>
+                    )}
+                    <td>{resp.responsibilityDetail || `준법감시 업무와 관련된 책무 세부내용 ${String(resp.seq).padStart(2, '0')}`}</td>
+                    {/* 관련 법령 및 내규 셀: rowspan이 null이면 렌더링하지 않음 (병합된 셀) */}
+                    {basisRowSpan !== null && (
+                      <td rowSpan={basisRowSpan}>
+                        {resp.relatedBasis || '금융회사의 준법감시 관련 법 제 00조'}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 
@@ -261,10 +404,23 @@ const ResponsibilityDocPrintModal: React.FC<ResponsibilityDocPrintModalProps> = 
               <col width="100%" />
             </colgroup>
             <tbody>
-              {data.managementDuties.map((duty) => (
-                <tr key={duty.seq} className={styles.noBorderRow}>
-                  <td>{`${duty.seq}. ${duty.duty}`}</td>
-                </tr>
+              {groupManagementDutiesByResponsibility().map((group) => (
+                <React.Fragment key={group.seq}>
+                  {/* 책무상세 행 */}
+                  <tr className={styles.noBorderRow}>
+                    <td className={styles.responsibilityDetailRow}>
+                      {`${group.seq}. ${group.responsibilityDetailInfo}`}
+                    </td>
+                  </tr>
+                  {/* 관리의무 행들 (들여쓰기) */}
+                  {group.duties.map((duty, dutyIndex) => (
+                    <tr key={`${group.seq}-${dutyIndex}`} className={styles.noBorderRow}>
+                      <td className={styles.managementDutyRow}>
+                        {`    ${group.seq}-${dutyIndex + 1}. ${duty.duty}`}
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

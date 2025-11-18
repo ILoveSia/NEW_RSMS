@@ -7,7 +7,7 @@
 -- 작성일: 2025-11-08
 -- 참고:
 --   - impl_inspection_plans 테이블과 N:1 관계 (impl_inspection_plan_id FK)
---   - dept_manager_manuals 테이블과 N:1 관계 (manual_id FK)
+--   - dept_manager_manuals 테이블과 N:1 관계 (manual_cd FK)
 --   - 이행점검항목ID 코드 생성 규칙: impl_inspection_plan_id + "I" + 순번(6자리)
 --     예: 20250001A0001I000001 = "20250001A0001"(이행점검ID) + "I" + "000001"(순번)
 --   - 3단계 상태코드 분리 방식:
@@ -67,7 +67,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- 외래키
   -- ============================================
   impl_inspection_plan_id VARCHAR(13) NOT NULL,       -- 이행점검ID (FK → impl_inspection_plans)
-  manual_id BIGINT NOT NULL,                          -- 부서장업무메뉴얼ID (FK → dept_manager_manuals)
+  manual_cd VARCHAR(50) NOT NULL,                     -- 부서장업무메뉴얼CD (FK → dept_manager_manuals)
 
   -- ============================================
   -- 1단계: 점검 정보
@@ -173,8 +173,8 @@ ALTER TABLE rsms.impl_inspection_items
 -- dept_manager_manuals 테이블 참조
 ALTER TABLE rsms.impl_inspection_items
   ADD CONSTRAINT fk_impl_inspection_items_manual
-  FOREIGN KEY (manual_id)
-  REFERENCES rsms.dept_manager_manuals(manual_id)
+  FOREIGN KEY (manual_cd)
+  REFERENCES rsms.dept_manager_manuals(manual_cd)
   ON DELETE RESTRICT
   ON UPDATE CASCADE;
 
@@ -186,9 +186,9 @@ ALTER TABLE rsms.impl_inspection_items
 CREATE INDEX idx_impl_inspection_items_plan_id
   ON rsms.impl_inspection_items(impl_inspection_plan_id);
 
--- 부서장업무메뉴얼ID 인덱스
-CREATE INDEX idx_impl_inspection_items_manual_id
-  ON rsms.impl_inspection_items(manual_id);
+-- 부서장업무메뉴얼CD 인덱스
+CREATE INDEX idx_impl_inspection_items_manual_cd
+  ON rsms.impl_inspection_items(manual_cd);
 
 -- 점검자ID 인덱스
 CREATE INDEX idx_impl_inspection_items_inspector
@@ -248,7 +248,7 @@ COMMENT ON TABLE rsms.impl_inspection_items IS '이행점검항목 테이블 - �
 -- 컬럼 코멘트 (기본키/외래키)
 COMMENT ON COLUMN rsms.impl_inspection_items.impl_inspection_item_id IS '이행점검항목ID (PK, 업무코드 - 형식: 이행점검ID + I + 순번6자리, 예: 20250001A0001I000001)';
 COMMENT ON COLUMN rsms.impl_inspection_items.impl_inspection_plan_id IS '이행점검ID (FK → impl_inspection_plans.impl_inspection_plan_id)';
-COMMENT ON COLUMN rsms.impl_inspection_items.manual_id IS '부서장업무메뉴얼ID (FK → dept_manager_manuals.manual_id)';
+COMMENT ON COLUMN rsms.impl_inspection_items.manual_cd IS '부서장업무메뉴얼CD (FK → dept_manager_manuals.manual_cd)';
 
 -- 1단계: 점검 정보
 COMMENT ON COLUMN rsms.impl_inspection_items.inspector_id IS '점검자ID (최초 점검자 및 최종 점검자 겸임)';
@@ -323,7 +323,7 @@ CREATE TRIGGER trigger_increment_rejection_count
 INSERT INTO rsms.impl_inspection_items (
   impl_inspection_item_id,
   impl_inspection_plan_id,
-  manual_id,
+  manual_cd,
   inspector_id,
   inspection_status_cd,
   inspection_result_content,
@@ -346,7 +346,7 @@ INSERT INTO rsms.impl_inspection_items (
   (
     '20250001A0001I000001',
     '20250001A0001',
-    1,
+    '20250001R0001D0001O0001A0001',
     'inspector001',
     '02',  -- 적정
     '점검 결과 문제 없음',
@@ -369,7 +369,7 @@ INSERT INTO rsms.impl_inspection_items (
   (
     '20250001A0001I000002',
     '20250001A0001',
-    2,
+    '20250001R0001D0001O0001A0002',
     'inspector001',
     '03',  -- 부적정
     '개선 필요: 증빙자료 미흡',
@@ -392,7 +392,7 @@ INSERT INTO rsms.impl_inspection_items (
   (
     '20250001A0001I000003',
     '20250001A0001',
-    3,
+    '20250001R0001D0001O0001A0003',
     'inspector002',
     '03',  -- 부적정
     '개선 필요: 프로세스 미준수',
@@ -415,7 +415,7 @@ INSERT INTO rsms.impl_inspection_items (
   (
     '20250001A0001I000004',
     '20250001A0001',
-    4,
+    '20250001R0001D0001O0001A0004',
     'inspector002',
     '03',  -- 부적정
     '개선 필요: 리스크 평가 부족',

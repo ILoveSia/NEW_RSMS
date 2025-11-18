@@ -116,7 +116,6 @@ public class PositionResponsibilityDataDto {
         private String obligationCd;                  // 관리의무코드 (PK, 업무코드 - 예: "RM0001D0001MO0001")
         private String responsibilityDetailCd;        // 책무세부코드 (FK)
         private String obligationMajorCatCd;          // 관리의무 대분류
-        private String obligationMiddleCatCd;         // 관리의무 중분류
         private String obligationInfo;                // 관리의무내용
         private String orgCode;                       // 조직코드
     }

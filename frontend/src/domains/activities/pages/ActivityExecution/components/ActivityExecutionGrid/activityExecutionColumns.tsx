@@ -1,41 +1,44 @@
 import { ColDef } from 'ag-grid-community';
+import type { UseCommonCodeReturn } from '@/shared/hooks/useCommonCode/useCommonCode';
 import { ActivityExecution } from '../../types/activityExecution.types';
 
-// 관리활동 수행 그리드 컬럼 정의
-// 컬럼 순서: 관리활동구분, 부점, 관리활동명, 관리활동수행주기, 관리활동상세, 위험평가등급, 수행자, 수행여부, 수행결과
-export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
+/**
+ * 관리활동 수행 그리드 컬럼 정의
+ * @description dept_manager_manuals 테이블 기반 컬럼 정의
+ * 컬럼 순서: 순번, 부점, 관리활동명, 책무관리항목, 수행점검항목, 수행자, 수행여부, 수행결과
+ */
+export const activityExecutionColumns = (
+  executionStatusCode: UseCommonCodeReturn,
+  executionResultCode: UseCommonCodeReturn
+): ColDef<ActivityExecution>[] => [
+  // 1. 순번
   {
-    field: 'sequence',
+    field: 'seq',
     headerName: '순번',
     width: 80,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
-    sortable: false,
+    sortable: true,
     resizable: false
   },
+
+  // 2. 부점 (orgCode)
   {
-    field: 'gnrzOblgDvcd',
-    headerName: '관리활동구분',
+    field: 'orgCode',
+    headerName: '부점',
     width: 150,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
-    resizable: true
-  },
-  {
-    field: 'responsibilityArea',
-    headerName: '부점',
-    width: 140,
-    cellStyle: { textAlign: 'left' },
-    headerClass: 'ag-header-cell-left',
-    sortable: true,
     resizable: true,
-    tooltipField: 'responsibilityArea'
+    tooltipField: 'orgName'
   },
+
+  // 3. 관리활동명 (activityName)
   {
     field: 'activityName',
     headerName: '관리활동명',
-    width: 180,
+    width: 400,
     cellStyle: { textAlign: 'left' },
     headerClass: 'ag-header-cell-left',
     sortable: true,
@@ -52,7 +55,8 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             cursor: 'pointer',
-            color: '#1976d2'
+            color: '#1976d2',
+            fontWeight: '500'
           }}
         >
           {value}
@@ -60,51 +64,34 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
       );
     }
   },
+
+  // 4. 책무관리항목 (respItem)
   {
-    field: 'cycle',
-    headerName: '관리활동수행주기',
-    width: 140,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    sortable: true,
-    resizable: true
-  },
-  {
-    field: 'activityDetail',
-    headerName: '관리활동상세',
-    width: 150,
+    field: 'respItem',
+    headerName: '책무관리항목',
+    width: 350,
     cellStyle: { textAlign: 'left' },
     headerClass: 'ag-header-cell-left',
     sortable: true,
     resizable: true,
-    tooltipField: 'activityDetail',
-    cellRenderer: (params: any) => {
-      const value = params.value || '';
-      return (
-        <div
-          title={value}
-          style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {value}
-        </div>
-      );
-    }
+    tooltipField: 'respItem'
   },
+
+  // 5. 수행점검항목 (execCheckMethod)
   {
-    field: 'regulation',
-    headerName: '위험평가등급',
-    width: 120,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
+    field: 'execCheckMethod',
+    headerName: '수행점검항목',
+    width: 350,
+    cellStyle: { textAlign: 'left' },
+    headerClass: 'ag-header-cell-left',
     sortable: true,
-    resizable: true
+    resizable: true,
+    tooltipField: 'execCheckMethod'
   },
+
+  // 6. 수행자 (executorId)
   {
-    field: 'performer',
+    field: 'executorId',
     headerName: '수행자',
     width: 120,
     cellStyle: { textAlign: 'center' },
@@ -125,16 +112,34 @@ export const activityExecutionColumns: ColDef<ActivityExecution>[] = [
       );
     }
   },
+
+  // 7. 수행여부 (executionStatus) - 공통코드 변환
   {
-    field: 'isPerformed',
+    field: 'executionStatus',
     headerName: '수행여부',
-    width: 100,
+    width: 120,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
     resizable: false,
     valueGetter: (params: any) => {
-      return params.data?.isPerformed ? '수행' : '미수행';
+      const code = params.data?.executionStatus;
+      return code ? executionStatusCode.getCodeName(code) : '-';
+    }
+  },
+
+  // 8. 수행결과 (executionResultCd) - 공통코드 변환
+  {
+    field: 'executionResultCd',
+    headerName: '수행결과',
+    width: 120,
+    cellStyle: { textAlign: 'center' },
+    headerClass: 'ag-header-cell-center',
+    sortable: true,
+    resizable: false,
+    valueGetter: (params: any) => {
+      const code = params.data?.executionResultCd;
+      return code ? executionResultCode.getCodeName(code) : '-';
     }
   }
 ];
@@ -158,14 +163,6 @@ export const activityExecutionGridOptions = {
     // 선택된 행 스타일
     if (params.node.selected) {
       return { backgroundColor: '#e3f2fd' };
-    }
-
-    // 수행 상태에 따른 행 배경색 (선택사항)
-    const data = params.data;
-    if (data?.status === 'completed') {
-      return { backgroundColor: '#f8fff8' };
-    } else if (data?.status === 'pending') {
-      return { backgroundColor: '#fffef7' };
     }
 
     return {};

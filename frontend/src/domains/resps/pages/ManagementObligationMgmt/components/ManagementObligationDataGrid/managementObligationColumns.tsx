@@ -19,7 +19,6 @@ export interface ManagementObligationGridRow {
   책무세부내용: string;
   관리의무코드: string;
   관리의무대분류: string;
-  관리의무중분류: string;
   관리의무내용: string;
   조직명: string;
   사용여부: string;
@@ -44,9 +43,6 @@ export const convertToGridRow = (
   관리의무대분류: dto.obligationMajorCatName
     ? `${dto.obligationMajorCatName}(${dto.obligationMajorCatCd})`
     : dto.obligationMajorCatCd,
-  관리의무중분류: dto.obligationMiddleCatName
-    ? `${dto.obligationMiddleCatName}(${dto.obligationMiddleCatCd})`
-    : dto.obligationMiddleCatCd,
   관리의무내용: dto.obligationInfo,
   조직명: dto.orgName && dto.orgCode ? `${dto.orgName}(${dto.orgCode})` : (dto.orgName || ''),
   사용여부: dto.isActive === 'Y' ? '사용' : '미사용',
@@ -60,7 +56,7 @@ export const convertToGridRow = (
 /**
  * 관리의무관리 Grid 컬럼 생성
  * - ResponsibilityMgmt 구조 100% 준수
- * - 컬럼 순서: 순번, 책무세부내용, 관리의무코드, 관리의무대분류, 관리의무중분류, 관리의무내용, 조직명, 사용여부, 등록일자, 등록자, 수정일자, 수정자
+ * - 컬럼 순서: 순번, 책무세부내용, 관리의무코드, 관리의무대분류, 관리의무내용, 조직명, 사용여부, 등록일자, 등록자, 수정일자, 수정자
  */
 export const createManagementObligationColumns = (
   onDetailClick?: (data: ManagementObligationGridRow) => void
@@ -98,12 +94,6 @@ export const createManagementObligationColumns = (
   {
     headerName: '관리의무 대분류',
     field: '관리의무대분류',
-    width: 140,
-    cellStyle: { textAlign: 'center' }
-  },
-  {
-    headerName: '관리의무 중분류',
-    field: '관리의무중분류',
     width: 140,
     cellStyle: { textAlign: 'center' }
   },

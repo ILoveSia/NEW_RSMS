@@ -1,17 +1,20 @@
 /**
  * 부서장업무메뉴얼 등록/상세 모달
- * - 부서별로 여러 관리의무를 Grid로 등록
- * - 원장차수 선택 → 부서 선택 → 관리의무 Grid 입력
- * - 각 행: 관리의무 + 관리활동 기본정보 + 이행점검 정보
+ * - 기본정보: 원장차수, 부점 선택
+ * - 관리활동 정보: Grid로 다중 행 추가/저장
+ * - dept_manager_manuals 테이블 구조에 맞게 재설계
  */
 
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { getManagementObligationsByOrgCode } from '@/shared/api/organizationApi';
 import { Button } from '@/shared/components/atoms/Button';
+import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
 import { useCommonCode } from '@/shared/hooks';
 import toast from '@/shared/utils/toast';
+import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
@@ -20,29 +23,39 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
   IconButton,
   InputAdornment,
-  MenuItem,
-  Select,
   TextField,
   Typography
 } from '@mui/material';
+import type { ColDef } from 'ag-grid-community';
 import React, { useCallback, useEffect, useState } from 'react';
+import './DeptOpManualsFormModal.module.scss';
 
-// 부서장업무메뉴얼 폼 데이터 타입
+/**
+ * 관리활동 Grid Row 데이터 타입
+ * - dept_manager_manuals 테이블 컬럼 기준
+ */
+export interface ManagementActivityRow {
+  id: string;                         // 임시 ID (Grid 행 구분용)
+  obligationCd: string;               // 관리의무코드 (FK)
+  obligationInfo: string;             // 관리의무내용 (표시용)
+  respItem: string;                   // 책무관리항목
+  activityName: string;               // 관리활동명
+  execCheckMethod: string;            // 점검항목 (수행점검항목)
+  execCheckDetail: string;            // 점검세부내용 (수행점검세부내용)
+  execCheckFrequencyCd: string;       // 점검주기 (수행점검주기)
+  isActive: 'Y' | 'N';                // 사용여부
+  remarks: string;                    // 비고
+}
+
+/**
+ * 폼 제출 데이터 타입
+ */
 export interface DeptOpManualFormData {
-  ledgerOrderId: string;                 // 원장차수ID
-  orgCode: string;                       // 조직코드 (부서)
-  obligationCd: string;                  // 관리의무코드
-  activityTypeCd: string;                // 관리활동구분코드
-  activityName: string;                  // 관리활동명
-  activityDetail: string;                // 관리활동상세
-  riskAssessmentLevelCd: string;         // 위험평가등급
-  implCheckFrequencyCd: string;          // 이행점검주기
-  implCheckMethod: string;               // 이행점검방법
-  isActive: 'Y' | 'N';                   // 사용여부
-  remarks: string;                       // 비고
+  ledgerOrderId: string;              // 원장차수ID
+  orgCode: string;                    // 조직코드
+  activities: ManagementActivityRow[]; // 관리활동 목록
 }
 
 interface DeptOpManualsFormModalProps {
@@ -57,7 +70,7 @@ interface DeptOpManualsFormModalProps {
 
 /**
  * 부서장업무메뉴얼 등록/상세 모달 컴포넌트
- * - Grid 기반 다중 관리의무 등록
+ * - 기본정보 + Grid 기반 관리활동 다중 등록
  */
 const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   open,
@@ -69,30 +82,24 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   loading = false
 }) => {
   // 공통코드 조회
-  const activityTypeCode = useCommonCode('MGMT_OBLG_LCCD');          // 관리활동구분코드
-  const riskLevelCode = useCommonCode('ACVT_RSK_EVAL_DVCD');         // 위험평가등급
-  const implCheckFrequencyCode = useCommonCode('FLFL_ISPC_FRCD');    // 이행점검주기
+  const execCheckFrequencyCode = useCommonCode('FLFL_ISPC_FRCD');    // 점검주기 (수행점검주기)
 
   // 관리의무 목록 (조직 선택 시 API로 조회)
-  const [obligationOptions, setObligationOptions] = useState<Array<{value: string; label: string}>>([]);
+  const [obligationOptions, setObligationOptions] = useState<Array<{
+    value: string;
+    label: string;
+  }>>([]);
 
-  // 폼 데이터 상태
-  const [formData, setFormData] = useState<DeptOpManualFormData>({
-    ledgerOrderId: '',
-    orgCode: '',
-    obligationCd: '',
-    activityTypeCd: '',
-    activityName: '',
-    activityDetail: '',
-    riskAssessmentLevelCd: '',
-    implCheckFrequencyCd: '',
-    implCheckMethod: '',
-    isActive: 'Y',
-    remarks: ''
-  });
-
-  // 선택된 조직 정보
+  // 기본 정보 상태
+  const [ledgerOrderId, setLedgerOrderId] = useState('');
+  const [orgCode, setOrgCode] = useState('');
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
+
+  // 관리활동 Grid 데이터
+  const [activities, setActivities] = useState<ManagementActivityRow[]>([]);
+
+  // 선택된 Grid 행
+  const [selectedRows, setSelectedRows] = useState<ManagementActivityRow[]>([]);
 
   // 부점 조회 팝업 상태
   const [isOrgSearchModalOpen, setIsOrgSearchModalOpen] = useState(false);
@@ -111,47 +118,43 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     if ((mode === 'view' || mode === 'edit') && manual && open) {
       console.log('🔍 [DeptOpManualsFormModal] 상세 데이터 로드:', manual);
 
-      // DeptOpManual 타입의 데이터를 폼 데이터로 변환
-      setFormData({
-        ledgerOrderId: manual.id || '',
-        orgCode: manual.irregularityName || '',
-        obligationCd: 'OBL001',
-        activityTypeCd: manual.managementActivityType === 'compliance' ? 'COMP' : 'RISK',
-        activityName: manual.managementActivity || manual.managementActivityName || '',
-        activityDetail: manual.managementActivityDetail || '',
-        riskAssessmentLevelCd: manual.riskAssessmentLevel === 'high' ? 'HIGH' : manual.riskAssessmentLevel === 'medium' ? 'MED' : 'LOW',
-        implCheckFrequencyCd: 'MONTHLY',
-        implCheckMethod: manual.implementationManager || '',
-        isActive: manual.isActive ? 'Y' : 'N',
-        remarks: manual.remarks || ''
-      });
+      // 기본 정보 복원
+      setLedgerOrderId(manual.ledgerOrderId || '');
+      setOrgCode(manual.orgCode || '');
 
-      // 선택된 조직 정보도 복원
-      if (manual.irregularityName) {
+      if (manual.orgCode && manual.orgName) {
         setSelectedOrganization({
-          orgCode: manual.irregularityName,
-          orgName: manual.irregularityName
+          orgCode: manual.orgCode,
+          orgName: manual.orgName
         });
       }
+
+      // 관리활동 데이터 복원
+      // manual 객체에서 실제 데이터를 Grid 형태로 변환
+      const activityData: ManagementActivityRow = {
+        id: manual.manualCd || manual.id || `temp_${Date.now()}`,
+        obligationCd: manual.obligationCd || '',
+        obligationInfo: manual.obligationInfo || '',
+        respItem: manual.respItem || '',
+        activityName: manual.activityName || '',
+        execCheckMethod: manual.execCheckMethod || '',
+        execCheckDetail: manual.execCheckDetail || '',
+        execCheckFrequencyCd: manual.execCheckFrequencyCd || '',
+        isActive: manual.isActive === true || manual.isActive === 'Y' ? 'Y' : 'N',
+        remarks: manual.remarks || ''
+      };
+
+      setActivities([activityData]);
     }
   }, [mode, manual, open]);
 
   // 폼 리셋
   const handleReset = useCallback(() => {
-    setFormData({
-      ledgerOrderId: '',
-      orgCode: '',
-      obligationCd: '',
-      activityTypeCd: '',
-      activityName: '',
-      activityDetail: '',
-      riskAssessmentLevelCd: '',
-      implCheckFrequencyCd: '',
-      implCheckMethod: '',
-      isActive: 'Y',
-      remarks: ''
-    });
+    setLedgerOrderId('');
+    setOrgCode('');
     setSelectedOrganization(null);
+    setActivities([]);
+    setSelectedRows([]);
     setIsEditing(false);
   }, []);
 
@@ -161,14 +164,6 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     onClose();
   }, [handleReset, onClose]);
 
-  // 입력 변경 핸들러
-  const handleChange = useCallback((field: keyof DeptOpManualFormData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
   // 수정 버튼 클릭
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -177,30 +172,8 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   // 취소 버튼 클릭
   const handleCancel = useCallback(() => {
     setIsEditing(false);
-    if (manual) {
-      setFormData({
-        ledgerOrderId: manual.id || '',
-        orgCode: manual.irregularityName || '',
-        obligationCd: 'OBL001',
-        activityTypeCd: manual.managementActivityType === 'compliance' ? 'COMP' : 'RISK',
-        activityName: manual.managementActivity || manual.managementActivityName || '',
-        activityDetail: manual.managementActivityDetail || '',
-        riskAssessmentLevelCd: manual.riskAssessmentLevel === 'high' ? 'HIGH' : manual.riskAssessmentLevel === 'medium' ? 'MED' : 'LOW',
-        implCheckFrequencyCd: 'MONTHLY',
-        implCheckMethod: manual.implementationManager || '',
-        isActive: manual.isActive ? 'Y' : 'N',
-        remarks: manual.remarks || ''
-      });
-
-      // 선택된 조직 정보도 복원
-      if (manual.irregularityName) {
-        setSelectedOrganization({
-          orgCode: manual.irregularityName,
-          orgName: manual.irregularityName
-        });
-      }
-    }
-  }, [manual]);
+    // 기존 데이터 복원 로직
+  }, []);
 
   // 부점 조회 팝업 열기
   const handleOpenOrgSearch = useCallback(() => {
@@ -217,18 +190,17 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   // 부점 선택
   const handleSelectOrganization = useCallback((organization: Organization) => {
     setSelectedOrganization(organization);
-    setFormData(prev => ({
-      ...prev,
-      orgCode: organization.orgCode
-    }));
+    setOrgCode(organization.orgCode);
+    setIsOrgSearchModalOpen(false);
+    toast.success(`부점 "${organization.orgName}" 선택되었습니다.`);
   }, []);
 
   // 조직 선택 시 관리의무 목록 조회
   useEffect(() => {
     const fetchObligations = async () => {
-      if (formData.orgCode) {
+      if (orgCode) {
         try {
-          const obligations = await getManagementObligationsByOrgCode(formData.orgCode);
+          const obligations = await getManagementObligationsByOrgCode(orgCode);
           setObligationOptions(
             obligations.map(obl => ({
               value: obl.obligationCd,
@@ -246,35 +218,214 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     };
 
     fetchObligations();
-  }, [formData.orgCode]);
+  }, [orgCode]);
+
+  // Grid 행 추가
+  const handleAddRow = useCallback(() => {
+    if (!orgCode) {
+      toast.warning('먼저 부점을 선택해주세요.');
+      return;
+    }
+
+    const newRow: ManagementActivityRow = {
+      id: `new_${Date.now()}`,
+      obligationCd: '',
+      obligationInfo: '',
+      respItem: '',
+      activityName: '',
+      execCheckMethod: '',
+      execCheckDetail: '',
+      execCheckFrequencyCd: '',
+      isActive: 'Y',
+      remarks: ''
+    };
+
+    setActivities(prev => [...prev, newRow]);
+    toast.success('새로운 행이 추가되었습니다.');
+  }, [orgCode]);
+
+  // Grid 선택 행 삭제
+  const handleDeleteSelectedRows = useCallback(() => {
+    if (selectedRows.length === 0) {
+      toast.warning('삭제할 행을 선택해주세요.');
+      return;
+    }
+
+    if (!window.confirm(`선택한 ${selectedRows.length}개의 행을 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    const selectedIds = selectedRows.map(row => row.id);
+    setActivities(prev => prev.filter(row => !selectedIds.includes(row.id)));
+    setSelectedRows([]);
+    toast.success(`${selectedIds.length}개의 행이 삭제되었습니다.`);
+  }, [selectedRows]);
+
+  // Grid 선택 변경
+  const handleSelectionChange = useCallback((selected: ManagementActivityRow[]) => {
+    setSelectedRows(selected);
+  }, []);
+
+  // Grid 셀 값 변경
+  const handleCellValueChanged = useCallback((params: any) => {
+    const { data, colDef, newValue } = params;
+
+    setActivities(prev => prev.map(row => {
+      if (row.id === data.id) {
+        return {
+          ...row,
+          [colDef.field]: newValue
+        };
+      }
+      return row;
+    }));
+  }, []);
+
+  // Grid 컬럼 정의 (고정 너비로 가로 스크롤 지원)
+  const columns: ColDef<ManagementActivityRow>[] = [
+    {
+      field: 'obligationInfo',
+      headerName: '관리의무',
+      width: 400,
+      minWidth: 400,
+      maxWidth: 400,
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: obligationOptions.map(opt => opt.label)
+      },
+      onCellValueChanged: (params) => {
+        // 관리의무 선택 시 obligationCd도 함께 업데이트
+        const selected = obligationOptions.find(opt => opt.label === params.newValue);
+        if (selected) {
+          setActivities(prev => prev.map(row => {
+            if (row.id === params.data.id) {
+              return {
+                ...row,
+                obligationInfo: params.newValue,
+                obligationCd: selected.value
+              };
+            }
+            return row;
+          }));
+        }
+      }
+    },
+    {
+      field: 'respItem',
+      headerName: '책무관리항목',
+      width: 350,
+      minWidth: 350,
+      maxWidth: 350,
+      editable: !isReadOnly,
+      cellEditor: 'agTextCellEditor'
+    },
+    {
+      field: 'activityName',
+      headerName: '관리활동명',
+      width: 300,
+      minWidth: 300,
+      maxWidth: 300,
+      editable: !isReadOnly,
+      cellEditor: 'agTextCellEditor',
+      cellClass: 'clickable-cell',
+      onCellClicked: (params) => {
+        console.log('관리활동명 클릭:', params.data);
+        // 여기에 클릭 시 동작 추가 가능
+      }
+    },
+    {
+      field: 'execCheckMethod',
+      headerName: '점검항목',
+      width: 300,
+      minWidth: 300,
+      maxWidth: 300,
+      editable: !isReadOnly,
+      cellEditor: 'agTextCellEditor'
+    },
+    {
+      field: 'execCheckDetail',
+      headerName: '점검세부내용',
+      width: 400,
+      minWidth: 400,
+      maxWidth: 400,
+      editable: !isReadOnly,
+      cellEditor: 'agLargeTextCellEditor',
+      cellEditorPopup: true
+    },
+    {
+      field: 'execCheckFrequencyCd',
+      headerName: '점검주기',
+      width: 120,
+      minWidth: 120,
+      maxWidth: 120,
+      editable: !isReadOnly,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: execCheckFrequencyCode.options.map(opt => opt.value)
+      },
+      valueFormatter: (params) => {
+        const found = execCheckFrequencyCode.options.find(opt => opt.value === params.value);
+        return found ? found.label : params.value;
+      }
+    },
+    {
+      field: 'isActive',
+      headerName: '사용여부',
+      width: 100,
+      minWidth: 100,
+      maxWidth: 100,
+      editable: !isReadOnly,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['Y', 'N']
+      },
+      cellStyle: { textAlign: 'center' },
+      headerClass: 'ag-header-cell-center'
+    },
+    {
+      field: 'remarks',
+      headerName: '비고',
+      width: 350,
+      minWidth: 350,
+      maxWidth: 350,
+      editable: !isReadOnly,
+      cellEditor: 'agLargeTextCellEditor',
+      cellEditorPopup: true
+    }
+  ];
 
   // 저장/제출 핸들러
   const handleSubmit = useCallback(async () => {
     // 필수 필드 유효성 검사
-    if (!formData.ledgerOrderId) {
+    if (!ledgerOrderId) {
       toast.warning('책무이행차수를 선택해주세요.');
       return;
     }
-    if (!formData.orgCode) {
+    if (!orgCode) {
       toast.warning('부점을 선택해주세요.');
       return;
     }
-    if (!formData.obligationCd) {
-      toast.warning('관리의무를 선택해주세요.');
+    if (activities.length === 0) {
+      toast.warning('최소 1개 이상의 관리활동을 추가해주세요.');
       return;
     }
-    if (!formData.activityTypeCd) {
-      toast.warning('관리활동구분을 선택해주세요.');
+
+    // 각 행의 필수 필드 검사
+    const invalidRows = activities.filter(row =>
+      !row.obligationCd || !row.respItem || !row.activityName
+    );
+
+    if (invalidRows.length > 0) {
+      toast.warning('관리의무, 책무관리항목, 관리활동명은 필수 입력 항목입니다.');
       return;
     }
-    if (!formData.activityName) {
-      toast.warning('관리활동명을 입력해주세요.');
-      return;
-    }
-    if (!formData.riskAssessmentLevelCd) {
-      toast.warning('위험평가등급을 선택해주세요.');
-      return;
-    }
+
+    const formData: DeptOpManualFormData = {
+      ledgerOrderId,
+      orgCode,
+      activities
+    };
 
     try {
       if (mode === 'create') {
@@ -287,21 +438,21 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     } catch (error) {
       console.error('[DeptOpManualsFormModal] 저장 실패:', error);
     }
-  }, [mode, formData, manual, onSave, onUpdate, handleClose]);
+  }, [mode, ledgerOrderId, orgCode, activities, manual, onSave, onUpdate, handleClose]);
 
   return (
     <Dialog
       open={open}
       onClose={handleClose}
-      maxWidth="md"
+      maxWidth={false}
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 1,
-          minHeight: '700px',
+          minHeight: '80vh',
           maxHeight: '90vh',
-          maxWidth: '900px',  // 명시적으로 900px로 제한
-          width: '85vw'        // 뷰포트의 85%
+          width: '95vw',
+          maxWidth: '1600px'
         }
       }}
       aria-labelledby="dept-op-manuals-modal-title"
@@ -333,7 +484,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
 
       <Divider />
 
-      <DialogContent dividers sx={{ p: 3 }}>
+      <DialogContent dividers sx={{ p: 3, overflowX: 'auto' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* 기본 정보 섹션 */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -341,13 +492,13 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
               기본 정보
             </Typography>
 
-            {/* 책무이행차수, 부점, 관리의무 한 줄 배치 */}
+            {/* 책무이행차수, 부점 */}
             <Box sx={{ display: 'flex', gap: 2 }}>
               {/* 책무이행차수 */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <LedgerOrderComboBox
-                  value={formData.ledgerOrderId}
-                  onChange={(value) => handleChange('ledgerOrderId', value || '')}
+                  value={ledgerOrderId}
+                  onChange={(value) => setLedgerOrderId(value || '')}
                   label="책무이행차수"
                   required
                   disabled={isReadOnly || mode === 'view'}
@@ -389,196 +540,68 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
                   }}
                 />
               </Box>
-
-              {/* 관리의무 */}
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  select
-                  label="관리의무"
-                  required
-                  disabled={isReadOnly || !formData.orgCode}
-                  value={formData.obligationCd}
-                  onChange={(e) => handleChange('obligationCd', e.target.value)}
-                  SelectProps={{
-                    MenuProps: {
-                      PaperProps: {
-                        sx: { maxHeight: 300 }
-                      }
-                    }
-                  }}
-                >
-                  <MenuItem value="">선택하세요</MenuItem>
-                  {obligationOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Box>
             </Box>
           </Box>
 
           <Divider />
 
-          {/* 관리의무 정보 섹션 */}
+          {/* 관리활동 정보 섹션 (Grid) */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
-              관리활동 정보
-            </Typography>
-
-            {/* 관리활동구분, 관리활동명 한 줄 배치 */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              {/* 관리활동구분 */}
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small" required disabled={isReadOnly}>
-                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                    관리활동구분 *
-                  </Typography>
-                  <Select
-                    value={formData.activityTypeCd}
-                    onChange={(e) => handleChange('activityTypeCd', e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value="">선택하세요</MenuItem>
-                    {activityTypeCode.options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-
-              {/* 관리활동명 */}
-              <Box sx={{ flex: 2 }}>
-                <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                  관리활동명 *
-                </Typography>
-                <TextField
-                  fullWidth
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                관리활동 정보
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  variant="contained"
                   size="small"
-                  required
-                  value={formData.activityName}
-                  onChange={(e) => handleChange('activityName', e.target.value)}
-                  disabled={isReadOnly}
-                  placeholder="관리활동명을 입력하세요"
-                />
+                  startIcon={<AddIcon />}
+                  onClick={handleAddRow}
+                  disabled={isReadOnly || !orgCode}
+                >
+                  행 추가
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDeleteSelectedRows}
+                  disabled={isReadOnly || selectedRows.length === 0}
+                  color="error"
+                >
+                  선택 삭제
+                </Button>
               </Box>
             </Box>
 
-            {/* 관리활동상세 */}
-            <Box>
-              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                관리활동상세
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                multiline
-                rows={3}
-                value={formData.activityDetail}
-                onChange={(e) => handleChange('activityDetail', e.target.value)}
-                disabled={isReadOnly}
-                placeholder="관리활동 상세 내용을 입력하세요"
+            {/* Grid (가로 스크롤 지원) */}
+            <Box sx={{
+              width: '100%',
+              height: '400px',
+              overflowX: 'auto'
+            }}>
+              <BaseDataGrid
+                data={activities}
+                columns={columns}
+                loading={false}
+                theme="alpine"
+                onSelectionChange={handleSelectionChange}
+                onCellValueChanged={handleCellValueChanged}
+                height="100%"
+                pagination={false}
+                rowSelection="multiple"
+                checkboxSelection={true}
+                headerCheckboxSelection={true}
+                suppressHorizontalScroll={false}
+                getRowId={(params) => params.data.id}
               />
             </Box>
 
-            {/* 위험평가등급, 이행점검주기, 사용여부 한 줄 배치 */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              {/* 위험평가등급 */}
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small" required disabled={isReadOnly}>
-                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                    위험평가등급 *
-                  </Typography>
-                  <Select
-                    value={formData.riskAssessmentLevelCd}
-                    onChange={(e) => handleChange('riskAssessmentLevelCd', e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value="">선택하세요</MenuItem>
-                    {riskLevelCode.options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-
-              {/* 이행점검주기 */}
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small" disabled={isReadOnly}>
-                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                    이행점검주기
-                  </Typography>
-                  <Select
-                    value={formData.implCheckFrequencyCd}
-                    onChange={(e) => handleChange('implCheckFrequencyCd', e.target.value)}
-                    displayEmpty
-                  >
-                    <MenuItem value="">선택하세요</MenuItem>
-                    {implCheckFrequencyCode.options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-
-              {/* 사용여부 */}
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small" disabled={isReadOnly}>
-                  <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                    사용여부
-                  </Typography>
-                  <Select
-                    value={formData.isActive}
-                    onChange={(e) => handleChange('isActive', e.target.value as 'Y' | 'N')}
-                  >
-                    <MenuItem value="Y">사용</MenuItem>
-                    <MenuItem value="N">미사용</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
-
-            {/* 이행점검방법 */}
-            <Box>
-              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                이행점검방법
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                multiline
-                rows={3}
-                value={formData.implCheckMethod}
-                onChange={(e) => handleChange('implCheckMethod', e.target.value)}
-                disabled={isReadOnly}
-                placeholder="이행점검방법을 입력하세요"
-              />
-            </Box>
-
-            {/* 비고 */}
-            <Box>
-              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                비고
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                multiline
-                rows={3}
-                value={formData.remarks}
-                onChange={(e) => handleChange('remarks', e.target.value)}
-                disabled={isReadOnly}
-                placeholder="비고를 입력하세요"
-              />
-            </Box>
+            <Typography variant="caption" color="text.secondary">
+              * 관리의무, 책무관리항목, 관리활동명은 필수 입력 항목입니다.
+              <br />
+              * 셀을 더블클릭하여 값을 입력하세요. 점검세부내용과 비고는 팝업 에디터가 열립니다.
+            </Typography>
           </Box>
         </Box>
       </DialogContent>
@@ -636,7 +659,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
         onClose={handleCloseOrgSearch}
         onSelect={handleSelectOrganization}
         title="부점 조회"
-        selectedOrgCode={formData.orgCode}
+        selectedOrgCode={orgCode}
       />
     </Dialog>
   );

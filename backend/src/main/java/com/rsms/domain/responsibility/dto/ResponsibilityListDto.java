@@ -154,16 +154,6 @@ public class ResponsibilityListDto {
     private String obligationMajorCatName;
 
     /**
-     * 관리의무 중분류 구분코드
-     */
-    private String obligationMiddleCatCd;
-
-    /**
-     * 관리의무 중분류명
-     */
-    private String obligationMiddleCatName;
-
-    /**
      * 관리의무코드
      */
     private String obligationCd;

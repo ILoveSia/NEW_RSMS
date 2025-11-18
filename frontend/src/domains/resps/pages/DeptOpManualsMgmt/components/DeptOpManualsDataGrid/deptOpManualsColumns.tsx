@@ -3,15 +3,15 @@
  * @description PositionMgmt 표준을 따라 부서장업무메뉴얼관리 그리드 컬럼을 정의
  */
 
-import React from 'react';
-import { ColDef, ValueFormatterParams } from 'ag-grid-community';
 import { Chip, Tooltip } from '@mui/material';
+import { ColDef, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import React from 'react';
+import type { UseCommonCodeReturn } from '@/shared/hooks/useCommonCode/useCommonCode';
 import {
+  ApprovalStatus,
   DeptOpManual,
   ManagementActivityStatus,
-  RiskAssessmentLevel,
-  ManagementActivityType,
-  ApprovalStatus
+  RiskAssessmentLevel
 } from '../../types/deptOpManuals.types';
 
 // 🎨 스타일 상수
@@ -101,18 +101,6 @@ const RiskLevelCellRenderer: React.FC<{ value: RiskAssessmentLevel }> = ({ value
     color={RISK_COLORS[value] || 'default'}
     size="small"
     variant="filled"
-  />
-);
-
-/**
- * 관리활동구분 셀 렌더러
- */
-const ActivityTypeCellRenderer: React.FC<{ value: ManagementActivityType }> = ({ value }) => (
-  <Chip
-    label={ACTIVITY_TYPE_LABELS[value] || value}
-    color={ACTIVITY_TYPE_COLORS[value] || 'default'}
-    size="small"
-    variant="outlined"
   />
 );
 
@@ -210,9 +198,15 @@ const dateTimeFormatter = (params: ValueFormatterParams): string => {
 };
 
 // 📊 AG-Grid 컬럼 정의
-// 사용자 요청 순서: 관리의무, 부점명, 관리활동코드, 관리활동구분, 관리활동명, 관리활동상세, 위험평가등급, 이행점검방법, 사용여부
-export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
+// dept_manager_manuals 테이블 구조에 맞게 재정의
+// 컬럼 순서: 순번, 책무구분, 책무, 책무상세, 관리의무, 부점명, 책무관리항목, 관리활동명, 점검항목, 점검주기, 사용여부
+export const deptOpManualsColumns = (
+  responsibilityCategoryCode: UseCommonCodeReturn,
+  execCheckFrequencyCode: UseCommonCodeReturn
+): ColDef<DeptOpManual>[] => [
   // 체크박스 컬럼은 AG-Grid에서 자동으로 첫 번째에 추가됨
+
+  // 1. 순번 (사이즈 유지)
   {
     field: 'seq',
     headerName: '순번',
@@ -222,87 +216,117 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center'
   },
-  // 1. 관리의무
+
+  // 2. 책무구분 (사이즈 유지) - 공통코드로 코드명 표시
   {
-    field: 'managementObligation',
+    field: 'responsibilityCat',
+    headerName: '책무구분',
+    width: 120,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellStyle: { textAlign: 'center' },
+    headerClass: 'ag-header-cell-center',
+    valueGetter: (params: ValueGetterParams<DeptOpManual>) => {
+      const codeValue = params.data?.responsibilityCat;
+      if (!codeValue) return '';
+      // 공통코드로 코드값을 코드명으로 변환 (예: 'R' -> '고유')
+      return responsibilityCategoryCode.getCodeName(codeValue) || codeValue;
+    }
+  },
+
+  // 3. 책무 (200 → 350 → 550 → 275)
+  {
+    field: 'responsibilityInfo',
+    headerName: '책무',
+    width: 275,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer,
+    tooltipField: 'responsibilityInfo'
+  },
+
+  // 4. 책무상세 (220 → 400 → 650 → 325)
+  {
+    field: 'responsibilityDetailInfo',
+    headerName: '책무상세',
+    width: 325,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer,
+    tooltipField: 'responsibilityDetailInfo'
+  },
+
+  // 5. 관리의무 (220 → 350 → 550) - 클릭 가능 스타일 제거
+  {
+    field: 'obligationInfo',
     headerName: '관리의무',
-    width: 200,
+    width: 550,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer,
+    tooltipField: 'obligationInfo'
+  },
+
+  // 6. 부점명 (150 → 250 → 125)
+  {
+    field: 'orgName',
+    headerName: '부점명',
+    width: 125,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer
+  },
+
+  // 7. 책무관리항목 (200 → 350 → 550)
+  {
+    field: 'respItem',
+    headerName: '책무관리항목',
+    width: 550,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer,
+    tooltipField: 'respItem'
+  },
+
+  // 8. 관리활동명 (180 → 350 → 550) - 클릭 가능 스타일 추가
+  {
+    field: 'activityName',
+    headerName: '관리활동명',
+    width: 550,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellRenderer: ManagementObligationRenderer,
     cellStyle: { fontWeight: '500' },
-    wrapText: false,
-    autoHeight: false
+    tooltipField: 'activityName'
   },
-  // 2. 부점명 (부정명 → 부점명으로 헤더명 수정)
+
+  // 9. 점검항목 (180 → 350 → 550)
   {
-    field: 'irregularityName',
-    headerName: '부점명',
-    width: 180,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellRenderer: LongTextCellRenderer
-  },
-  // 3. 관리활동구분
-  {
-    field: 'managementActivityType',
-    headerName: '관리활동구분',
-    width: 120,
-    sortable: true,
-    filter: 'agSetColumnFilter',
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
-    valueFormatter: (params: ValueFormatterParams) => {
-      return ACTIVITY_TYPE_LABELS[params.value as ManagementActivityType] || params.value;
-    },
-    filterParams: {
-      values: Object.keys(ACTIVITY_TYPE_LABELS),
-      valueFormatter: (params: any) => ACTIVITY_TYPE_LABELS[params.value as ManagementActivityType] || params.value
-    }
-  },
-  // 5. 관리활동명
-  {
-    field: 'managementActivityName',
-    headerName: '관리활동명',
-    width: 180,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellRenderer: LongTextCellRenderer
-  },
-  // 6. 관리활동상세
-  {
-    field: 'managementActivityDetail',
-    headerName: '관리활동상세',
-    width: 200,
+    field: 'execCheckMethod',
+    headerName: '점검항목',
+    width: 550,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellRenderer: LongTextCellRenderer,
-    tooltipField: 'managementActivityDetail'
+    tooltipField: 'execCheckMethod'
   },
-  // 7. 위험평가등급
+
+  // 10. 점검주기 (사이즈 유지) - 공통코드로 코드명 표시
   {
-    field: 'riskAssessmentLevel',
-    headerName: '위험평가등급',
+    field: 'execCheckFrequencyCd',
+    headerName: '점검주기',
     width: 120,
     sortable: true,
-    filter: 'agSetColumnFilter',
-    cellRenderer: RiskLevelCellRenderer,
+    filter: 'agTextColumnFilter',
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
-    filterParams: {
-      values: Object.keys(RISK_LABELS),
-      valueFormatter: (params: any) => RISK_LABELS[params.value as RiskAssessmentLevel] || params.value
+    valueGetter: (params: ValueGetterParams<DeptOpManual>) => {
+      const code = params.data?.execCheckFrequencyCd;
+      return code ? execCheckFrequencyCode.getCodeName(code) : '';
     }
   },
-  // 8. 이행점검방법 (이행주관담당을 이행점검방법으로 헤더명 수정)
-  {
-    field: 'implementationManager',
-    headerName: '이행점검방법',
-    width: 140,
-    sortable: true,
-    filter: 'agTextColumnFilter'
-  },
-  // 9. 사용여부
+
+  // 11. 사용여부 (사이즈 유지)
   {
     field: 'isActive',
     headerName: '사용여부',
@@ -317,55 +341,100 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
       valueFormatter: (params: any) => params.value ? 'Y' : 'N'
     }
   },
-  // 이하 나머지 컬럼들 (기본적으로 숨김 또는 추가 정보)
+
+  // 이하 추가 컬럼들 (기본적으로 숨김)
+
+  // 부서업무메뉴얼CD (PK)
   {
-    field: 'managementActivity',
-    headerName: '관리활동',
-    width: 160,
+    field: 'manualCd',
+    headerName: '메뉴얼코드',
+    width: 180,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    hide: true
+  },
+
+  // 점검세부내용 (dept_manager_manuals.exec_check_detail)
+  {
+    field: 'execCheckDetail',
+    headerName: '점검세부내용',
+    width: 250,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellRenderer: LongTextCellRenderer,
+    tooltipField: 'execCheckDetail',
     hide: true
   },
+
+  // 수행자ID
   {
-    field: 'implementationDepartment',
-    headerName: '담당부서',
+    field: 'executorId',
+    headerName: '수행자ID',
     width: 120,
     sortable: true,
     filter: 'agTextColumnFilter',
-    valueFormatter: (params) => params.value || '-',
     hide: true
   },
+
+  // 수행일자
   {
-    field: 'approvalStatus',
-    headerName: '결재여부',
-    width: 110,
+    field: 'executionDate',
+    headerName: '수행일자',
+    width: 120,
     sortable: true,
-    filter: 'agSetColumnFilter',
-    cellRenderer: ApprovalStatusCellRenderer,
+    filter: 'agDateColumnFilter',
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
-    filterParams: {
-      values: Object.keys(APPROVAL_LABELS),
-      valueFormatter: (params: any) => APPROVAL_LABELS[params.value as ApprovalStatus] || params.value
-    },
     hide: true
   },
+
+  // 수행여부
   {
-    field: 'status',
-    headerName: '상태',
+    field: 'executionStatus',
+    headerName: '수행여부',
     width: 100,
     sortable: true,
-    filter: 'agSetColumnFilter',
-    cellRenderer: StatusCellRenderer,
+    filter: 'agTextColumnFilter',
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
-    filterParams: {
-      values: Object.keys(STATUS_LABELS),
-      valueFormatter: (params: any) => STATUS_LABELS[params.value as ManagementActivityStatus] || params.value
+    valueFormatter: (params: ValueFormatterParams) => {
+      if (params.value === '01') return '미수행';
+      if (params.value === '02') return '수행완료';
+      return params.value || '-';
     },
     hide: true
   },
+
+  // 수행결과코드
+  {
+    field: 'executionResultCd',
+    headerName: '수행결과',
+    width: 100,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellStyle: { textAlign: 'center' },
+    headerClass: 'ag-header-cell-center',
+    valueFormatter: (params: ValueFormatterParams) => {
+      if (params.value === '01') return '적정';
+      if (params.value === '02') return '부적정';
+      return params.value || '-';
+    },
+    hide: true
+  },
+
+  // 수행결과내용
+  {
+    field: 'executionResultContent',
+    headerName: '수행결과내용',
+    width: 200,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellRenderer: LongTextCellRenderer,
+    tooltipField: 'executionResultContent',
+    hide: true
+  },
+
+  // 등록일시
   {
     field: 'createdAt',
     headerName: '등록일시',
@@ -377,6 +446,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 등록자
   {
     field: 'createdBy',
     headerName: '등록자',
@@ -387,6 +458,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 수정일시
   {
     field: 'updatedAt',
     headerName: '수정일시',
@@ -398,6 +471,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 수정자
   {
     field: 'updatedBy',
     headerName: '수정자',
@@ -408,6 +483,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 승인일시
   {
     field: 'approvedAt',
     headerName: '승인일시',
@@ -419,6 +496,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 승인자
   {
     field: 'approvedBy',
     headerName: '승인자',
@@ -429,6 +508,8 @@ export const deptOpManualsColumns: ColDef<DeptOpManual>[] = [
     headerClass: 'ag-header-cell-center',
     hide: true
   },
+
+  // 비고
   {
     field: 'remarks',
     headerName: '비고',

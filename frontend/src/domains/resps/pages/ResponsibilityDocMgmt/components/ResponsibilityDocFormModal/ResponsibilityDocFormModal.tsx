@@ -49,6 +49,8 @@ import {
   getPositionResponsibilityData,
   type PositionResponsibilityData
 } from '@/domains/resps/api/responsibilityDocApi';
+import { getAllManagementObligations } from '@/domains/resps/api/managementObligationApi';
+import type { ManagementObligationDto } from '@/domains/resps/types/managementObligation.types';
 import toast from '@/shared/utils/toast';
 import LedgerOrderComboBox from '@/domains/resps/components/molecules/LedgerOrderComboBox/LedgerOrderComboBox';
 import { useCommonCode } from '@/shared/hooks/useCommonCode';
@@ -91,6 +93,9 @@ interface ManagementDutyData {
   id: string;
   seq: number;
   duty: string;
+  responsibilityDetailInfo?: string; // 책무세부내용
+  responsibilityDetailCd?: string; // 책무세부코드
+  obligationCd?: string; // 관리의무코드
 }
 
 // 유효성 검사 스키마
@@ -153,7 +158,14 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     { id: '1', seq: 1, responsibility: '', responsibilityDetail: '', relatedBasis: '' }
   ]);
   const [managementDuties, setManagementDuties] = useState<ManagementDutyData[]>([
-    { id: '1', seq: 1, duty: '' }
+    {
+      id: '1',
+      seq: 1,
+      duty: '',
+      responsibilityDetailInfo: '',
+      responsibilityDetailCd: '',
+      obligationCd: ''
+    }
   ]);
   const [isEditing, setIsEditing] = useState(false);
   const [printModalOpen, setPrintModalOpen] = useState(false);
@@ -185,7 +197,14 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
         { id: '1', seq: 1, responsibility: '', responsibilityDetail: '', relatedBasis: '' }
       ]);
       setManagementDuties([
-        { id: '1', seq: 1, duty: '' }
+        {
+          id: '1',
+          seq: 1,
+          duty: '',
+          responsibilityDetailInfo: '',
+          responsibilityDetailCd: '',
+          obligationCd: ''
+        }
       ]);
       reset();
     } else {
@@ -227,7 +246,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
             const committeeData = basicData.mainCommittees.map((committee) => ({
               id: committee.id,
               committeeName: committee.committeeName,
-              chairperson: committee.chairperson,
+              chairperson: committee.chairperson === 'chairman' ? '위원장' : '위원',  // 'chairman' → '위원장', 'member' → '위원'
               frequency: committee.frequency,
               mainAgenda: committee.mainAgenda
             }));
@@ -320,7 +339,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       const committeeData = data.committees.map((committee, index) => ({
         id: String(committee.committeesId),
         committeeName: committee.committeesTitle,
-        chairperson: committee.committeesType === 'chair' ? '의장' : '위원',  // 임시 매핑
+        chairperson: committee.committeesType === 'chairman' ? '위원장' : '위원',  // 'chairman' → '위원장', 'member' → '위원'
         frequency: committee.committeeFrequency,
         mainAgenda: committee.resolutionMatters
       }));
@@ -340,7 +359,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       const managementDutyData = data.managementObligations.map((obligation, index) => ({
         id: obligation.obligationCd,
         seq: index + 1,
-        duty: `[${obligation.obligationMajorCatCd}-${obligation.obligationMiddleCatCd}] ${obligation.obligationInfo} (${obligation.orgCode})`
+        duty: `[${obligation.obligationMajorCatCd}] ${obligation.obligationInfo} (${obligation.orgCode})`
       }));
       setManagementDuties(managementDutyData);
 
@@ -422,48 +441,68 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
 
   // 책무 그리드 컬럼 (삭제 컬럼 제거)
   const responsibilityColumns = useMemo<ColDef<ResponsibilityItemData>[]>(() => [
-    { field: 'seq', headerName: '순번', width: 80 },
+    {
+      field: 'seq',
+      headerName: '순번',
+      width: 80,
+      sort: 'asc', // 초기 오름차순 정렬 설정
+      cellStyle: { textAlign: 'center' }
+    },
     {
       field: 'responsibility',
       headerName: '책무',
-      flex: 1,
+      width: 300,
       editable: !isReadOnly,
       cellEditor: 'agLargeTextCellEditor',
-      cellEditorPopup: true
+      cellEditorPopup: true,
+      wrapText: true, // 텍스트 줄바꿈
+      cellStyle: { lineHeight: '1.5', whiteSpace: 'normal' }
       // responsibilityInfo는 이미 책무내용 텍스트이므로 valueFormatter 불필요
     },
     {
       field: 'responsibilityDetail',
       headerName: '책무세부내용',
-      flex: 1,
+      width: 300,
       editable: !isReadOnly,
       cellEditor: 'agLargeTextCellEditor',
-      cellEditorPopup: true
+      cellEditorPopup: true,
+      wrapText: true, // 텍스트 줄바꿈
+      cellStyle: { lineHeight: '1.5', whiteSpace: 'normal' }
       // responsibility_details 테이블의 responsibility_detail_info 표시
     },
     {
       field: 'relatedBasis',
       headerName: '관련근거',
-      flex: 1,
+      width: 300,
       editable: !isReadOnly,
       cellEditor: 'agLargeTextCellEditor',
-      cellEditorPopup: true
+      cellEditorPopup: true,
+      wrapText: true, // 텍스트 줄바꿈
+      cellStyle: { lineHeight: '1.5', whiteSpace: 'normal' }
     }
   ], [isReadOnly]);
 
   // 관리의무 그리드 컬럼 (삭제 컬럼 제거)
   const managementDutyColumns = useMemo<ColDef<ManagementDutyData>[]>(() => [
-    { field: 'seq', headerName: '순번', width: 60 }, // 4. 순번 컬럼 폭 줄임
+    {
+      field: 'seq',
+      headerName: '순번',
+      width: 60,
+      sort: 'asc', // 초기 오름차순 정렬 설정
+      cellStyle: { textAlign: 'center' }
+    },
     {
       field: 'duty',
       headerName: '관리의무',
-      flex: 1,
+      width: 400,
       editable: !isReadOnly,
       cellEditor: 'agLargeTextCellEditor',
       cellEditorPopup: true,
+      wrapText: true, // 텍스트 줄바꿈
+      cellStyle: { lineHeight: '1.5', whiteSpace: 'normal' },
       valueFormatter: (params) => {
-        // 5. 관리의무 데이터에서 조직코드를 부점명으로 변환
-        // 형식: "[대분류-중분류] 의무내용 (조직코드)" -> 조직코드를 부점명으로 변환
+        // 관리의무 데이터에서 조직코드를 부점명으로 변환
+        // 형식: "[대분류] 의무내용 (조직코드)" -> 조직코드를 부점명으로 변환
         if (!params.value) return '';
         const match = params.value.match(/^(\[.*?\]\s*.+?)\s*\(([^)]+)\)$/);
         if (match) {
@@ -537,6 +576,36 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
     }
   }, [mode, onClose, reset]);
 
+  /**
+   * 인쇄 미리보기 실행
+   * - 실제 관리의무 데이터를 백엔드에서 조회하여 표시
+   */
+  const handlePrintPreview = useCallback(async () => {
+    try {
+      // 백엔드에서 전체 관리의무 조회
+      const allObligations: ManagementObligationDto[] = await getAllManagementObligations();
+
+      // ManagementDutyData 형식으로 변환
+      const obligationsData: ManagementDutyData[] = allObligations.map((obligation, index) => ({
+        id: obligation.obligationCd,
+        seq: index + 1,
+        duty: obligation.obligationInfo,
+        responsibilityDetailInfo: obligation.responsibilityDetailInfo || '',
+        responsibilityDetailCd: obligation.responsibilityDetailCd,
+        obligationCd: obligation.obligationCd
+      }));
+
+      // managementDuties 상태 업데이트
+      setManagementDuties(obligationsData);
+
+      // 모달 열기
+      setPrintModalOpen(true);
+    } catch (error) {
+      console.error('관리의무 데이터 조회 실패:', error);
+      toast.error('관리의무 데이터를 불러오는데 실패했습니다.');
+    }
+  }, []);
+
   // 출력 데이터 생성 - 폼의 현재 값 사용
   const getPrintData = useCallback(() => {
     const formValues = getValues();
@@ -552,7 +621,8 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       committees: committees.map(c => ({
         committeeName: c.committeeName,
         chairperson: c.chairperson,
-        frequency: holdingPeriodCode.getCodeName(c.frequency) || c.frequency
+        frequency: holdingPeriodCode.getCodeName(c.frequency) || c.frequency,
+        resolutionMatters: c.mainAgenda // 주요 안건·의결사항
       })),
       responsibilities: responsibilities.map(r => ({
         seq: r.seq,
@@ -562,7 +632,10 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       })),
       managementDuties: managementDuties.map(m => ({
         seq: m.seq,
-        duty: m.duty
+        duty: m.duty,
+        responsibilityDetailInfo: m.responsibilityDetailInfo,
+        responsibilityDetailCd: m.responsibilityDetailCd,
+        obligationCd: m.obligationCd
       }))
     };
   }, [getValues, committees, responsibilities, managementDuties, holdingPeriodCode]);
@@ -976,6 +1049,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                     rowSelection="none"
                     pagination={false}
                     height="300px"
+                    rowHeight={42}
                   />
                 </Box>
               </Box>
@@ -1004,6 +1078,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                     rowSelection="none"
                     pagination={false}
                     height="250px"
+                    rowHeight={42}
                   />
                 </Box>
               </Box>
@@ -1042,7 +1117,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                   </Button>
                   <Button
                     variant="contained"
-                    onClick={() => setPrintModalOpen(true)}
+                    onClick={handlePrintPreview}
                     startIcon={<PrintIcon />}
                   >
                     책무기술서 출력

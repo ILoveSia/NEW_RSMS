@@ -1,0 +1,16 @@
+/**
+ * 부서장업무메뉴얼 폼 모달 스타일
+ */
+
+// 관리활동명 클릭 가능 셀 스타일
+:global(.ag-theme-alpine) {
+  :global(.clickable-cell) {
+    color: #1976d2 !important;
+    cursor: pointer !important;
+
+    &:hover {
+      border-bottom: 1px solid #1976d2 !important;
+      text-decoration: underline !important;
+    }
+  }
+}

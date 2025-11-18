@@ -107,6 +107,17 @@
     }
   }
 
+  // 책무상세 행 스타일
+  .responsibilityDetailRow {
+    font-weight: bold;
+    padding-top: 8px !important;
+  }
+
+  // 관리의무 행 스타일 (들여쓰기)
+  .managementDutyRow {
+    padding-left: 24px !important;
+  }
+
   // 모든 셀 기본 스타일
   th,
   td {
@@ -147,6 +158,16 @@
 
     &:empty::before {
       content: '\00a0'; // 빈 셀 공백 유지
+    }
+
+    // 개행 처리가 필요한 셀 (책무 개요 등)
+    &.preWrap {
+      white-space: pre-line; // 개행 문자(\n)를 줄바꿈으로 표시
+    }
+
+    // 센터 정렬이 필요한 셀 (날짜 등)
+    &.textCenter {
+      text-align: center;
     }
   }
 

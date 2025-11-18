@@ -94,7 +94,6 @@ RETURNING responsibility_detail_id;
 INSERT INTO rsms.management_obligations (
   responsibility_detail_id,
   obligation_major_cat_cd,
-  obligation_middle_cat_cd,
   obligation_cd,
   obligation_info,
   org_code,
@@ -102,7 +101,7 @@ INSERT INTO rsms.management_obligations (
   created_by,
   updated_by
 )
-VALUES (888, 'TEST_MAJOR', 'TEST_MIDDLE', 'TEST_CODE', '테스트 관리의무', 'HEAD1010', 'Y', 'TEST', 'TEST');
+VALUES (888, 'TEST_MAJOR', 'TEST_CODE', '테스트 관리의무', 'HEAD1010', 'Y', 'TEST', 'TEST');
 
 -- 4. 데이터 확인
 SELECT * FROM rsms.responsibilities WHERE responsibility_id = 999;

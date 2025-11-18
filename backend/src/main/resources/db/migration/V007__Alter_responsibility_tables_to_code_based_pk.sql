@@ -56,9 +56,6 @@ CREATE INDEX idx_mgmt_obligations_resp_detail_cd
 CREATE INDEX idx_mgmt_obligations_detail_active
   ON rsms.management_obligations(responsibility_detail_cd, is_active);
 
-CREATE INDEX idx_mgmt_obligations_major_middle
-  ON rsms.management_obligations(obligation_major_cat_cd, obligation_middle_cat_cd);
-
 CREATE INDEX idx_mgmt_obligations_org_active
   ON rsms.management_obligations(org_code, is_active);
 

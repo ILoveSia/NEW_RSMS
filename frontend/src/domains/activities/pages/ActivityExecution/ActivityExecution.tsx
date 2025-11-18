@@ -19,6 +19,9 @@ import type {
   ActivityExecutionStatistics
 } from './types/activityExecution.types';
 
+// API
+import { getAllDeptManagerManuals } from '@/domains/resps/api/deptManagerManualApi';
+
 // Shared Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -28,6 +31,7 @@ import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper/Bas
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+import { useCommonCode } from '@/shared/hooks';
 
 // ActivityExecution specific components
 import { activityExecutionColumns } from './components/ActivityExecutionGrid/activityExecutionColumns';
@@ -51,6 +55,10 @@ interface ActivityExecutionProps {
 
 const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   const { t } = useTranslation('resps');
+
+  // 공통코드 조회
+  const executionStatusCode = useCommonCode('EXEC_STTS_CD');      // 수행상태 (수행여부)
+  const executionResultCode = useCommonCode('EXEC_RSLT_CD');      // 수행결과코드
 
   // State Management
   const [activities, setActivities] = useState<ActivityExecution[]>([]);
@@ -226,31 +234,75 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     }));
   }, []);
 
-  const handleSearch = useCallback(async () => {
+  /**
+   * 관리활동 수행 데이터 조회
+   * @description dept_manager_manuals 테이블에서 실제 데이터 조회
+   */
+  const fetchActivities = useCallback(async () => {
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
-    setPagination(prev => ({ ...prev, page: 1 }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('관리활동 수행 정보를 검색 중입니다...');
+    const loadingToastId = toast.loading('관리활동 수행 정보를 조회 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // dept_manager_manuals 테이블에서 전체 데이터 조회
+      const data = await getAllDeptManagerManuals();
 
-      console.log('검색 필터:', filters);
+      console.log('🔍 [ActivityExecution] 조회된 데이터:', data);
 
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
+      // Backend DTO → Frontend 타입 변환
+      const converted: ActivityExecution[] = data.map((dto, index) => ({
+        id: dto.manualCd,
+        seq: index + 1,
+
+        // dept_manager_manuals 테이블 필드
+        manualCd: dto.manualCd,
+        ledgerOrderId: dto.ledgerOrderId || '',
+        obligationCd: dto.obligationCd || '',
+        orgCode: dto.orgCode || '',
+        orgName: dto.orgName || '',
+        respItem: dto.respItem || '',
+        activityName: dto.activityName || '',
+        execCheckMethod: dto.execCheckMethod || '',
+        execCheckDetail: dto.execCheckDetail || '',
+        execCheckFrequencyCd: dto.execCheckFrequencyCd || '',
+
+        // 수행 정보
+        executorId: dto.executorId || '',
+        executionDate: dto.executionDate || '',
+        executionStatus: dto.executionStatus || '',
+        executionResultCd: dto.executionResultCd || '',
+        executionResultContent: dto.executionResultContent || '',
+
+        // 메타데이터
+        isActive: dto.isActive === 'Y',
+        createdAt: dto.createdAt || '',
+        createdBy: dto.createdBy || '',
+        updatedAt: dto.updatedAt || '',
+        updatedBy: dto.updatedBy || ''
+      }));
+
+      setActivities(converted);
+      setPagination(prev => ({
+        ...prev,
+        total: converted.length,
+        totalPages: Math.ceil(converted.length / prev.size)
+      }));
+
+      toast.update(loadingToastId, 'success', `관리활동 ${converted.length}건이 조회되었습니다.`);
     } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
-      console.error('검색 실패:', error);
+      console.error('❌ [ActivityExecution] 데이터 조회 실패:', error);
+      toast.update(loadingToastId, 'error', '관리활동 수행 정보 조회에 실패했습니다.');
+      setActivities([]);
     } finally {
       setLoading(false);
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, [filters]);
+  }, []);
+
+  const handleSearch = useCallback(async () => {
+    await fetchActivities();
+  }, [fetchActivities]);
 
   const handleClearFilters = useCallback(() => {
     setFilters({
@@ -300,7 +352,8 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   // Memoized computed values (성능 최적화)
   const statistics = useMemo<ActivityExecutionStatistics>(() => {
     const total = pagination.total;
-    const completed = activities.filter(a => a.isPerformed).length;
+    // executionStatus가 있으면 수행완료로 간주 (실제 공통코드 값에 따라 조정 필요)
+    const completed = activities.filter(a => a.executionStatus && a.executionStatus !== '').length;
     const pending = total - completed;
     const systemUptime = 99.8; // TODO: 실제 시스템 가동률 API 연동
 
@@ -448,39 +501,10 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     }
   }, []);
 
-  // Mock data loading
+  // 🚀 초기 데이터 로드 (실제 API 호출)
   React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockActivities: ActivityExecution[] = [
-      {
-        id: '1',
-        sequence: 1,
-        activityName: '자금세탁방지 시스템 운영',
-        activityDetail: '상세내용 자금세탁방지 시스템 운영',
-        cycle: '분기',
-        isInternalActivity: true,
-        regulation: '상',
-        responsibilityArea: '경영전략부',
-        performer: '미지정',
-        isPerformed: false,
-        performanceResult: '적정',
-        cssConst: 'Y',
-        gnrzOblgDvcd: '고유',
-        executionDate: '2024-01-15',
-        status: 'pending',
-        createdAt: '2024-01-15',
-        updatedAt: '2024-03-20',
-        isActive: true
-      }
-    ];
-
-    setActivities(mockActivities);
-    setPagination(prev => ({
-      ...prev,
-      total: mockActivities.length,
-      totalPages: Math.ceil(mockActivities.length / prev.size)
-    }));
-  }, []);
+    fetchActivities();
+  }, [fetchActivities]);
 
   return (
     <React.Profiler id="ActivityExecution" onRender={onRenderProfiler}>
@@ -563,7 +587,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
           {/* 🎯 공통 데이터 그리드 */}
           <BaseDataGrid
             data={displayActivities}
-            columns={activityExecutionColumns}
+            columns={activityExecutionColumns(executionStatusCode, executionResultCode)}
             loading={loading}
             theme="alpine"
             onRowClick={(data) => handleRowClick(data)}

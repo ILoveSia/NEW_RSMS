@@ -46,7 +46,6 @@ export interface ManagementObligationInfo {
   obligationCd: string;             // 관리의무코드 (PK, 업무코드 - 예: "RM0001D0001MO0001")
   responsibilityDetailCd: string;   // 책무세부코드 (FK)
   obligationMajorCatCd: string;     // 관리의무 대분류
-  obligationMiddleCatCd: string;    // 관리의무 중분류
   obligationInfo: string;           // 관리의무내용
   orgCode: string;                  // 조직코드
 }

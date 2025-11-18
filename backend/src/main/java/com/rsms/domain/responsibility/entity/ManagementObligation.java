@@ -51,12 +51,6 @@ public class ManagementObligation {
     private String obligationMajorCatCd;
 
     /**
-     * 관리의무 중분류 구분코드 (MGMT_OBLG_MCCD)
-     */
-    @Column(name = "obligation_middle_cat_cd", length = 20, nullable = false)
-    private String obligationMiddleCatCd;
-
-    /**
      * 관리의무내용
      */
     @Column(name = "obligation_info", length = 1000, nullable = false)

@@ -596,6 +596,7 @@ const ResponsibilityDetailMgmt: React.FC<ResponsibilityDetailMgmtProps> = ({ cla
           loading={anyLoading}
           theme="alpine"
           onSelectionChange={handleSelectionChange}
+          getRowId={(params) => params.data.책무세부코드}
           height="calc(100vh - 370px)"
           pagination={true}
           pageSize={25}

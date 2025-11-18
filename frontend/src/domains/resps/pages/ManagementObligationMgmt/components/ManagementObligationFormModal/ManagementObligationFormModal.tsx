@@ -43,26 +43,11 @@ const OBLIGATION_MAJOR_CATEGORIES = [
 ];
 
 /**
- * 관리의무 중분류 코드 목록
- */
-const OBLIGATION_MIDDLE_CATEGORIES = [
-  { code: '01', name: '(공통1) 내부통제기준등이 적정하게 마련되고, 효과적으로 집행·운영되고 있는지 여부에 대한 점검' },
-  { code: '02', name: '(공통2) 임직원이 준수하여야 할 윤리기준 마련 및 교육' },
-  { code: '03', name: '(공통3) 준법감시인이 확인한 사항과 지적사항 및 조치결과를 이사회에 보고' },
-  { code: '04', name: '(경영기획1) 경영목표 및 계획 수립' },
-  { code: '05', name: '(경영기획2) 예산 편성 및 집행' },
-  { code: '06', name: '(리스크관리1) 리스크 식별 및 평가' },
-  { code: '07', name: '(리스크관리2) 리스크 관리 및 통제' },
-  { code: '08', name: '기타' }
-];
-
-/**
  * 관리의무 Form 데이터
  */
 export interface ManagementObligationFormData {
   responsibilityDetailCd: string;    // 책무세부코드 (FK, 필수)
   obligationMajorCatCd: string;      // 관리의무 대분류 구분코드
-  obligationMiddleCatCd: string;     // 관리의무 중분류 구분코드
   obligationInfo: string;            // 관리의무 내용
   orgCode: string;                   // 조직코드
   isActive: string;                  // 사용여부
@@ -94,7 +79,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
   const [formData, setFormData] = useState<ManagementObligationFormData>({
     responsibilityDetailCd: defaultResponsibilityDetailCd,
     obligationMajorCatCd: '',
-    obligationMiddleCatCd: '',
     obligationInfo: '',
     orgCode: '',
     isActive: 'Y'
@@ -116,7 +100,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
       setFormData({
         responsibilityDetailCd: managementObligation._original?.responsibilityDetailCd || '',
         obligationMajorCatCd: managementObligation._original?.obligationMajorCatCd || '',
-        obligationMiddleCatCd: managementObligation._original?.obligationMiddleCatCd || '',
         obligationInfo: managementObligation._original?.obligationInfo || '',
         orgCode: managementObligation._original?.orgCode || '',
         isActive: managementObligation._original?.isActive || 'Y'
@@ -139,7 +122,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
     setFormData({
       responsibilityDetailCd: defaultResponsibilityDetailCd,
       obligationMajorCatCd: '',
-      obligationMiddleCatCd: '',
       obligationInfo: '',
       orgCode: '',
       isActive: 'Y'
@@ -174,11 +156,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
       return;
     }
 
-    if (!formData.obligationMiddleCatCd) {
-      toast.error('관리의무 중분류를 선택해주세요.');
-      return;
-    }
-
     if (!formData.obligationInfo.trim()) {
       toast.error('관리의무 내용을 입력해주세요.');
       return;
@@ -196,7 +173,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
         // 수정 모드: 관리의무코드는 URL 파라미터로 전달, responsibilityDetailCd는 수정 불가
         const updateData: Omit<ManagementObligationFormData, 'responsibilityDetailCd'> = {
           obligationMajorCatCd: formData.obligationMajorCatCd,
-          obligationMiddleCatCd: formData.obligationMiddleCatCd,
           obligationInfo: formData.obligationInfo,
           orgCode: formData.orgCode,
           isActive: formData.isActive
@@ -224,7 +200,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
       setFormData({
         responsibilityDetailCd: managementObligation._original?.responsibilityDetailCd || '',
         obligationMajorCatCd: managementObligation._original?.obligationMajorCatCd || '',
-        obligationMiddleCatCd: managementObligation._original?.obligationMiddleCatCd || '',
         obligationInfo: managementObligation._original?.obligationInfo || '',
         orgCode: managementObligation._original?.orgCode || '',
         isActive: managementObligation._original?.isActive || 'Y'
@@ -303,25 +278,6 @@ const ManagementObligationFormModal: React.FC<ManagementObligationFormModalProps
               {OBLIGATION_MAJOR_CATEGORIES.map((category) => (
                 <MenuItem key={category.code} value={category.code}>
                   {category.name}({category.code})
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* 관리의무 중분류 */}
-          <FormControl fullWidth size="small" required disabled={isReadOnly}>
-            <InputLabel>관리의무 중분류 구분코드</InputLabel>
-            <Select
-              value={formData.obligationMiddleCatCd}
-              onChange={(e) => handleChange('obligationMiddleCatCd', e.target.value)}
-              label="관리의무 중분류 구분코드"
-            >
-              <MenuItem value="">
-                <em>선택하세요</em>
-              </MenuItem>
-              {OBLIGATION_MIDDLE_CATEGORIES.map((category) => (
-                <MenuItem key={category.code} value={category.code}>
-                  {category.name}
                 </MenuItem>
               ))}
             </Select>

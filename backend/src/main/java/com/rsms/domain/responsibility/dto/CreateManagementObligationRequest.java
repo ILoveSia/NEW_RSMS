@@ -31,12 +31,6 @@ public class CreateManagementObligationRequest {
     private String obligationMajorCatCd;
 
     /**
-     * 관리의무 중분류 구분코드 (필수)
-     * - common_code_details의 MGMT_OBLG_MCCD 그룹
-     */
-    private String obligationMiddleCatCd;
-
-    /**
      * 관리의무 내용 (필수)
      */
     private String obligationInfo;

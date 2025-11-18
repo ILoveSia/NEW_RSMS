@@ -52,7 +52,6 @@ import * as XLSX from 'xlsx';
 export interface ManagementObligationExcelData {
   책무세부코드: string;
   관리의무대분류코드: string;
-  관리의무중분류코드: string;
   관리의무내용: string;
   조직코드: string;
   사용여부: string;
@@ -84,7 +83,6 @@ const ManagementObligationExcelUploadModal: React.FC<ManagementObligationExcelUp
   const previewColumns: ColDef<ManagementObligationExcelData>[] = [
     { headerName: '책무세부코드', field: '책무세부코드', width: 200, sortable: true },
     { headerName: '관리의무대분류코드', field: '관리의무대분류코드', width: 150, sortable: true },
-    { headerName: '관리의무중분류코드', field: '관리의무중분류코드', width: 150, sortable: true },
     { headerName: '관리의무내용', field: '관리의무내용', flex: 1, sortable: true, minWidth: 300 },
     { headerName: '조직코드', field: '조직코드', width: 120, sortable: true },
     { headerName: '사용여부', field: '사용여부', width: 100, sortable: true, headerClass: 'ag-header-cell-center' }
@@ -156,7 +154,7 @@ const ManagementObligationExcelUploadModal: React.FC<ManagementObligationExcelUp
 
           // 헤더 추출 및 검증
           const headers = jsonData[0] as string[];
-          const requiredColumns = ['책무세부코드', '관리의무대분류코드', '관리의무중분류코드', '관리의무내용', '조직코드', '사용여부'];
+          const requiredColumns = ['책무세부코드', '관리의무대분류코드', '관리의무내용', '조직코드', '사용여부'];
 
           // 헤더 검증
           const missingColumns = requiredColumns.filter(col => !headers.includes(col));
@@ -363,10 +361,9 @@ const ManagementObligationExcelUploadModal: React.FC<ManagementObligationExcelUp
                 <Table size="small" sx={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }}>
                   <TableHead>
                     <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '15%', padding: '8px', border: '1px solid #e0e0e0' }}>책무세부코드</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '20%', padding: '8px', border: '1px solid #e0e0e0' }}>책무세부코드</TableCell>
                       <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '15%', padding: '8px', border: '1px solid #e0e0e0' }}>관리의무대분류코드</TableCell>
-                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '15%', padding: '8px', border: '1px solid #e0e0e0' }}>관리의무중분류코드</TableCell>
-                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '35%', padding: '8px', border: '1px solid #e0e0e0' }}>관리의무내용</TableCell>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '45%', padding: '8px', border: '1px solid #e0e0e0' }}>관리의무내용</TableCell>
                       <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '12%', padding: '8px', border: '1px solid #e0e0e0' }}>조직코드</TableCell>
                       <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', width: '8%', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0' }}>사용여부</TableCell>
                     </TableRow>
@@ -375,7 +372,6 @@ const ManagementObligationExcelUploadModal: React.FC<ManagementObligationExcelUp
                     <TableRow>
                       <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>20250001M0001D0001</TableCell>
                       <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>00</TableCell>
-                      <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>01</TableCell>
                       <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>소관 업무 및 소식의 대분통제기준 수립에 대한 책...</TableCell>
                       <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', border: '1px solid #e0e0e0' }}>DEPT003</TableCell>
                       <TableCell sx={{ fontSize: '0.7rem', color: 'text.secondary', padding: '8px', textAlign: 'center', border: '1px solid #e0e0e0' }}>Y</TableCell>

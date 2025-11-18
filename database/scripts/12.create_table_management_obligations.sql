@@ -27,7 +27,6 @@ CREATE TABLE rsms.management_obligations (
 
   -- 기본 정보
   obligation_major_cat_cd VARCHAR(20) NOT NULL,              -- 관리의무 대분류 구분코드 (common_code_details 의 MGMT_OBLG_LCCD 그룹 참조)
-  obligation_middle_cat_cd VARCHAR(20) NOT NULL,             -- 관리의무 중분류 구분코드 (common_code_details 의 MGMT_OBLG_MCCD 그룹 참조)
   obligation_info VARCHAR(1000) NOT NULL,                    -- 관리의무내용
   org_code VARCHAR(20) NOT NULL,                             -- 조직코드 (organizations 참조)
 
@@ -60,9 +59,6 @@ CREATE INDEX idx_mgmt_obligations_resp_detail_cd ON rsms.management_obligations(
 -- 관리의무 대분류 구분코드 조회용 인덱스
 CREATE INDEX idx_mgmt_obligations_major_cat ON rsms.management_obligations(obligation_major_cat_cd);
 
--- 관리의무 중분류 구분코드 조회용 인덱스
-CREATE INDEX idx_mgmt_obligations_middle_cat ON rsms.management_obligations(obligation_middle_cat_cd);
-
 -- 조직코드 조회용 인덱스
 CREATE INDEX idx_mgmt_obligations_org_code ON rsms.management_obligations(org_code);
 
@@ -71,9 +67,6 @@ CREATE INDEX idx_mgmt_obligations_is_active ON rsms.management_obligations(is_ac
 
 -- 복합 인덱스: 책무세부코드 + 사용여부 (자주 사용되는 조합)
 CREATE INDEX idx_mgmt_obligations_detail_active ON rsms.management_obligations(responsibility_detail_cd, is_active);
-
--- 복합 인덱스: 대분류 + 중분류 (계층 조회용)
-CREATE INDEX idx_mgmt_obligations_major_middle ON rsms.management_obligations(obligation_major_cat_cd, obligation_middle_cat_cd);
 
 -- 복합 인덱스: 조직코드 + 사용여부 (조직별 조회용)
 CREATE INDEX idx_mgmt_obligations_org_active ON rsms.management_obligations(org_code, is_active);
@@ -88,7 +81,6 @@ COMMENT ON TABLE rsms.management_obligations IS '책무세부에 대한 관리�
 COMMENT ON COLUMN rsms.management_obligations.obligation_cd IS '관리의무코드 (PK, 업무코드 - 형식: 책무세부코드 + O + 순번4자리, 예: 20250001M0002D0001O0001)';
 COMMENT ON COLUMN rsms.management_obligations.responsibility_detail_cd IS '책무세부코드 (FK → responsibility_details.responsibility_detail_cd)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_major_cat_cd IS '관리의무 대분류 구분코드 (common_code_details 참조)';
-COMMENT ON COLUMN rsms.management_obligations.obligation_middle_cat_cd IS '관리의무 중분류 구분코드 (common_code_details 참조)';
 COMMENT ON COLUMN rsms.management_obligations.obligation_info IS '관리의무내용';
 COMMENT ON COLUMN rsms.management_obligations.org_code IS '조직코드 (FK → organizations.org_code)';
 COMMENT ON COLUMN rsms.management_obligations.is_active IS '사용여부 (Y: 사용, N: 미사용)';
@@ -149,7 +141,6 @@ INSERT INTO rsms.management_obligations (
   obligation_cd,
   responsibility_detail_cd,
   obligation_major_cat_cd,
-  obligation_middle_cat_cd,
   obligation_info,
   org_code,
   is_active,
@@ -157,21 +148,21 @@ INSERT INTO rsms.management_obligations (
   updated_by
 ) VALUES
   -- 리스크 식별("RM0001D0001") 관련 관리의무
-  ('RM0001D0001MO0001', 'RM0001D0001', 'RISK_MGT', 'RISK_ID', '신용리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
-  ('RM0001D0001MO0002', 'RM0001D0001', 'RISK_MGT', 'RISK_ID', '시장리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
-  ('RM0001D0001MO0003', 'RM0001D0001', 'RISK_MGT', 'RISK_ID', '운영리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
+  ('RM0001D0001MO0001', 'RM0001D0001', 'RISK_MGT', '신용리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
+  ('RM0001D0001MO0002', 'RM0001D0001', 'RISK_MGT', '시장리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
+  ('RM0001D0001MO0003', 'RM0001D0001', 'RISK_MGT', '운영리스크 식별 및 측정', 'ORG_HQ', 'Y', 'system', 'system'),
 
   -- 리스크 평가("RM0001D0002") 관련 관리의무
-  ('RM0001D0002MO0001', 'RM0001D0002', 'RISK_MGT', 'RISK_EVAL', '리스크 영향도 평가', 'ORG_DEPT', 'Y', 'system', 'system'),
-  ('RM0001D0002MO0002', 'RM0001D0002', 'RISK_MGT', 'RISK_EVAL', '리스크 발생가능성 평가', 'ORG_DEPT', 'Y', 'system', 'system'),
+  ('RM0001D0002MO0001', 'RM0001D0002', 'RISK_MGT', '리스크 영향도 평가', 'ORG_DEPT', 'Y', 'system', 'system'),
+  ('RM0001D0002MO0002', 'RM0001D0002', 'RISK_MGT', '리스크 발생가능성 평가', 'ORG_DEPT', 'Y', 'system', 'system'),
 
   -- 통제 활동 설계("IC0001D0001") 관련 관리의무
-  ('IC0001D0001MO0001', 'IC0001D0001', 'INTERNAL_CTRL', 'CTRL_DESIGN', '통제 프로세스 설계', 'ORG_HQ', 'Y', 'system', 'system'),
-  ('IC0001D0001MO0002', 'IC0001D0001', 'INTERNAL_CTRL', 'CTRL_DESIGN', '통제 절차 문서화', 'ORG_HQ', 'Y', 'system', 'system'),
+  ('IC0001D0001MO0001', 'IC0001D0001', 'INTERNAL_CTRL', '통제 프로세스 설계', 'ORG_HQ', 'Y', 'system', 'system'),
+  ('IC0001D0001MO0002', 'IC0001D0001', 'INTERNAL_CTRL', '통제 절차 문서화', 'ORG_HQ', 'Y', 'system', 'system'),
 
   -- 법규 모니터링("CP0001D0001") 관련 관리의무
-  ('CP0001D0001MO0001', 'CP0001D0001', 'COMPLIANCE', 'COMP_MONITOR', '법규 변경사항 모니터링', 'ORG_BRANCH', 'Y', 'system', 'system'),
-  ('CP0001D0001MO0002', 'CP0001D0001', 'COMPLIANCE', 'COMP_MONITOR', '규정 준수 여부 점검', 'ORG_BRANCH', 'Y', 'system', 'system');
+  ('CP0001D0001MO0001', 'CP0001D0001', 'COMPLIANCE', '법규 변경사항 모니터링', 'ORG_BRANCH', 'Y', 'system', 'system'),
+  ('CP0001D0001MO0002', 'CP0001D0001', 'COMPLIANCE', '규정 준수 여부 점검', 'ORG_BRANCH', 'Y', 'system', 'system');
 */
 
 -- =====================================================================================

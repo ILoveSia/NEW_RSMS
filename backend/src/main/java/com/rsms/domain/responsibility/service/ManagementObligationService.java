@@ -96,7 +96,6 @@ public class ManagementObligationService {
             .obligationCd(generatedCode)  // 자동 생성된 코드 사용
             .responsibilityDetail(responsibilityDetail)  // 연관관계 설정 (responsibilityDetailCd는 여기서 자동 설정됨)
             .obligationMajorCatCd(request.getObligationMajorCatCd())
-            .obligationMiddleCatCd(request.getObligationMiddleCatCd())
             .obligationInfo(request.getObligationInfo())
             .orgCode(request.getOrgCode())
             .isActive(request.getIsActive() != null ? request.getIsActive() : "Y")
@@ -228,7 +227,6 @@ public class ManagementObligationService {
 
         // 수정 가능한 필드만 업데이트
         obligation.setObligationMajorCatCd(request.getObligationMajorCatCd());
-        obligation.setObligationMiddleCatCd(request.getObligationMiddleCatCd());
         obligation.setObligationInfo(request.getObligationInfo());
         obligation.setOrgCode(request.getOrgCode());
         obligation.setIsActive(request.getIsActive());
@@ -279,16 +277,6 @@ public class ManagementObligationService {
             log.warn("관리의무 대분류 코드명 조회 실패 - code: {}", obligation.getObligationMajorCatCd());
         }
 
-        // 관리의무 중분류 코드명 조회
-        String obligationMiddleCatName = "";
-        try {
-            CommonCodeDetailDto middleCatCode = commonCodeService.getCodeDetail(
-                "MGMT_OBLG_MCCD", obligation.getObligationMiddleCatCd());
-            obligationMiddleCatName = middleCatCode.getDetailName();
-        } catch (Exception e) {
-            log.warn("관리의무 중분류 코드명 조회 실패 - code: {}", obligation.getObligationMiddleCatCd());
-        }
-
         // 책무세부내용 조회
         String responsibilityDetailInfo = "";
         if (obligation.getResponsibilityDetail() != null) {
@@ -301,8 +289,6 @@ public class ManagementObligationService {
             .responsibilityDetailInfo(responsibilityDetailInfo)  // 책무세부내용 추가
             .obligationMajorCatCd(obligation.getObligationMajorCatCd())
             .obligationMajorCatName(obligationMajorCatName)  // 대분류 코드명 추가
-            .obligationMiddleCatCd(obligation.getObligationMiddleCatCd())
-            .obligationMiddleCatName(obligationMiddleCatName)  // 중분류 코드명 추가
             .obligationInfo(obligation.getObligationInfo())
             .orgCode(obligation.getOrgCode())
             .orgName(orgName)  // 조직명 추가
@@ -325,7 +311,6 @@ public class ManagementObligationService {
             .obligationCd(obligation.getObligationCd())
             .responsibilityDetailCd(obligation.getResponsibilityDetailCd())
             .obligationMajorCatCd(obligation.getObligationMajorCatCd())
-            .obligationMiddleCatCd(obligation.getObligationMiddleCatCd())
             .obligationInfo(obligation.getObligationInfo())
             .orgCode(obligation.getOrgCode())
             .isActive(obligation.getIsActive())

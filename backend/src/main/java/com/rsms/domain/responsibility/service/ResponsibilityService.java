@@ -355,7 +355,6 @@ public class ResponsibilityService {
                             .obligationCd(generatedObligationCode)  // 자동 생성된 코드 사용
                             .responsibilityDetailCd(savedDetail.getResponsibilityDetailCd())
                             .obligationMajorCatCd(obligationDto.getObligationMajorCatCd())
-                            .obligationMiddleCatCd(obligationDto.getObligationMiddleCatCd())
                             .obligationInfo(obligationDto.getObligationInfo())
                             .orgCode(obligationDto.getOrgCode())
                             .isActive(obligationDto.getIsActive() != null ? obligationDto.getIsActive() : "Y")

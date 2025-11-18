@@ -22,11 +22,6 @@ public class UpdateManagementObligationRequest {
     private String obligationMajorCatCd;
 
     /**
-     * 관리의무 중분류 구분코드 (수정 가능)
-     */
-    private String obligationMiddleCatCd;
-
-    /**
      * 관리의무 내용 (수정 가능)
      */
     private String obligationInfo;

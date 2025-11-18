@@ -35,6 +35,15 @@ spring:
   main:
     banner-mode: console
     
+  # Flyway Configuration - 공통 (Database Migration)
+  flyway:
+    enabled: true  # Flyway 활성화
+    baseline-on-migrate: true  # 기존 스키마가 있을 경우 베이스라인 생성
+    baseline-version: 0  # 베이스라인 버전
+    locations: classpath:db/migration  # 마이그레이션 스크립트 위치
+    validate-on-migrate: true  # 마이그레이션 검증
+    out-of-order: false  # 순서 외 마이그레이션 금지
+
   # JPA Configuration - 공통
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

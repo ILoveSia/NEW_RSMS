@@ -105,12 +105,10 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
   // 관리의무 섹션 - 공통코드 및 행 데이터
   const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null); // 선택된 책무세부 ID
   const [obligationMajorOptions, setObligationMajorOptions] = useState<CodeDetail[]>([]); // 관리의무 대분류
-  const [obligationMiddleOptions, setObligationMiddleOptions] = useState<CodeDetail[]>([]); // 관리의무 중분류
   const [obligationRows, setObligationRows] = useState<Array<{
     id: string;
     detailId: string;
     majorCat: string;
-    middleCat: string;
     obligationInfo: string;
     orgName: string; // "공통"일 때는 자동 설정, "고유"일 때는 선택한 부점명
     selectedOrgCode: string; // "고유"일 때 선택한 부점 코드 (저장용)
@@ -126,7 +124,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
   const isReadOnly = false;
 
   /**
-   * 공통코드 조회 (책무카테고리, 책무, 관리의무 대분류, 관리의무 중분류)
+   * 공통코드 조회 (책무카테고리, 책무, 관리의무 대분류)
    */
   useEffect(() => {
     const fetchCommonCodes = async () => {
@@ -142,10 +140,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         // 관리의무 대분류 조회 (MGMT_OBLG_LCCD)
         const obligationMajor = await getActiveCodeDetailsByGroup('MGMT_OBLG_LCCD');
         setObligationMajorOptions(obligationMajor);
-
-        // 관리의무 중분류 조회 (MGMT_OBLG_MCCD)
-        const obligationMiddle = await getActiveCodeDetailsByGroup('MGMT_OBLG_MCCD');
-        setObligationMiddleOptions(obligationMiddle);
       } catch (error) {
         console.error('[ResponsibilityFormModal] 공통코드 조회 실패:', error);
         toast.error('공통코드를 불러오는데 실패했습니다.');
@@ -294,7 +288,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
           id: string;
           detailId: string;
           majorCat: string;
-          middleCat: string;
           obligationInfo: string;
           orgName: string;
           selectedOrgCode: string;
@@ -310,7 +303,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
               id: String(obl.managementObligationId),
               detailId: String(obl.responsibilityDetailId),
               majorCat: obl.obligationMajorCatCd,
-              middleCat: obl.obligationMiddleCatCd,
               obligationInfo: obl.obligationInfo,
               orgName: obl.orgName || '',
               selectedOrgCode: obl.orgCode,
@@ -634,7 +626,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
       id: `obligation-temp-${Date.now()}`,
       detailId: selectedDetailId,
       majorCat: '',
-      middleCat: '',
       obligationInfo: '',
       orgName: '',
       selectedOrgCode: '',
@@ -673,8 +664,8 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         return;
       }
 
-      if (!row.majorCat || !row.middleCat || !row.obligationInfo) {
-        toast.warning('대분류, 중분류, 관리의무는 필수 입력 항목입니다.');
+      if (!row.majorCat || !row.obligationInfo) {
+        toast.warning('대분류, 관리의무는 필수 입력 항목입니다.');
         return;
       }
 
@@ -695,7 +686,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
       const obligationsToSave: Array<{
         detailId: string;
         majorCat: string;
-        middleCat: string;
         obligationInfo: string;
         orgCode: string;
         orgName: string;
@@ -716,7 +706,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
             obligationsToSave.push({
               detailId: row.detailId,
               majorCat: row.majorCat,
-              middleCat: row.middleCat,
               obligationInfo: row.obligationInfo,
               orgCode: dept.org_code,
               orgName: dept.org_name,
@@ -728,7 +717,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
           obligationsToSave.push({
             detailId: row.detailId,
             majorCat: row.majorCat,
-            middleCat: row.middleCat,
             obligationInfo: row.obligationInfo,
             orgCode: row.selectedOrgCode,
             orgName: row.orgName,
@@ -753,10 +741,8 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         const obligationCd = `R${dateStr}${sequence}`;
 
         const request: CreateManagementObligationRequest = {
-          responsibilityDetailId: Number(obligation.detailId),
+          responsibilityDetailCd: obligation.detailId,
           obligationMajorCatCd: obligation.majorCat,
-          obligationMiddleCatCd: obligation.middleCat,
-          obligationCd: obligationCd,
           obligationInfo: obligation.obligationInfo,
           orgCode: obligation.orgCode,
           isActive: obligation.isActive
@@ -773,10 +759,9 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
 
       // 저장 후 저장된 데이터를 화면에 표시
       const savedRows = savedObligations.map(saved => ({
-        id: String(saved.managementObligationId),
-        detailId: String(saved.responsibilityDetailId),
+        id: saved.obligationCd,
+        detailId: saved.responsibilityDetailCd,
         majorCat: saved.obligationMajorCatCd,
-        middleCat: saved.obligationMiddleCatCd,
         obligationInfo: saved.obligationInfo,
         orgName: saved.orgName || '',
         selectedOrgCode: saved.orgCode,
@@ -1045,8 +1030,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
   const obligationColumns = useMemo<ColDef<any>[]>(() => {
     // 대분류 옵션 (코드명)
     const majorNames = obligationMajorOptions.map(o => o.detailName);
-    // 중분류 옵션 (코드명)
-    const middleNames = obligationMiddleOptions.map(o => o.detailName);
 
     return [
       {
@@ -1079,29 +1062,6 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
           const selected = obligationMajorOptions.find(o => o.detailName === params.newValue);
           if (selected && params.data) {
             params.data.majorCat = selected.detailCode;
-            return true;
-          }
-          return false;
-        }
-      },
-      {
-        field: 'middleCat',
-        headerName: '중분류',
-        width: 150,
-        sortable: false,
-        editable: !isReadOnly,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: middleNames
-        },
-        valueGetter: (params) => {
-          if (!params.data?.middleCat) return '';
-          return obligationMiddleOptions.find(o => o.detailCode === params.data.middleCat)?.detailName || '';
-        },
-        valueSetter: (params) => {
-          const selected = obligationMiddleOptions.find(o => o.detailName === params.newValue);
-          if (selected && params.data) {
-            params.data.middleCat = selected.detailCode;
             return true;
           }
           return false;
@@ -1203,7 +1163,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         }
       }
     ];
-  }, [obligationMajorOptions, obligationMiddleOptions, detailRows, positionDepartments, isReadOnly, handleDeleteObligation]);
+  }, [obligationMajorOptions, detailRows, positionDepartments, isReadOnly, handleDeleteObligation]);
 
   return (
     <Dialog

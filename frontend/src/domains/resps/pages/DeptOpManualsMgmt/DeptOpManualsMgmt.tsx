@@ -22,6 +22,19 @@ import type {
   DeptOpManualsPagination,
   DeptOpManualsStatistics
 } from './types/deptOpManuals.types';
+import type {
+  CreateDeptManagerManualRequest,
+  UpdateDeptManagerManualRequest
+} from '../../types/deptManagerManual.types';
+
+// API
+import {
+  createDeptManagerManual,
+  deleteDeptManagerManuals,
+  getAllDeptManagerManuals,
+  getDeptManagerManualsByLedgerOrderIdAndOrgCode,
+  updateDeptManagerManual
+} from '../../api/deptManagerManualApi';
 
 // Shared Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
@@ -31,6 +44,7 @@ import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 import OrganizationSearchModal from '@/shared/components/organisms/OrganizationSearchModal/OrganizationSearchModal';
 import type { Organization } from '@/shared/components/organisms/OrganizationSearchModal/types/organizationSearch.types';
+import { useCommonCode } from '@/shared/hooks';
 
 // DeptOpManuals specific components
 import { deptOpManualsColumns } from './components/DeptOpManualsDataGrid/deptOpManualsColumns';
@@ -46,6 +60,11 @@ interface DeptOpManualsMgmtProps {
 
 const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   const { t } = useTranslation('resps');
+
+  // 공통코드 조회 - 책무구분 (책무카테고리)
+  const responsibilityCategoryCode = useCommonCode('RSBT_OBLG_CLCD');
+  // 공통코드 조회 - 점검주기 (수행점검주기)
+  const execCheckFrequencyCode = useCommonCode('FLFL_ISPC_FRCD');
 
   // State Management
   const [deptOpManuals, setDeptOpManuals] = useState<DeptOpManual[]>([]);
@@ -90,106 +109,119 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   // 조직조회팝업 상태
   const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
-  // 📊 Mock 데이터 (useState로 관리하여 등록/수정/삭제 시 실시간 반영)
-  const [mockDeptOpManuals, setMockDeptOpManuals] = useState<DeptOpManual[]>([
-    {
-      id: '1',
-      seq: 1,
-      managementObligation: '준법감시 업무와 관련된 책무 세부내용에 대한 관리의무',
-      irregularityName: '경영전략부',
-      managementActivityCode: 'M201300001',
-      managementActivity: '준법감시 업무와 관련된 관리활동',
-      managementActivityName: '경영전략 수립의 적정성 점검',
-      managementActivityDetail: '부서별 준법감시담당자 점검 보고',
-      managementActivityType: 'compliance',
-      riskAssessmentLevel: 'medium',
-      implementationManager: '경영전략 수립의 적정성 점검',
-      implementationDepartment: '준법감시부',
-      isActive: true,
-      status: 'active',
-      approvalStatus: 'approved',
-      createdAt: '2025-08-01T09:00:00.000Z',
-      createdBy: '관리자',
-      updatedAt: '2025-09-18T14:30:00.000Z',
-      updatedBy: '준법감시부',
-      approvedAt: '2025-08-02T10:00:00.000Z',
-      approvedBy: '본부장',
-      remarks: '월간 정기 점검 실시'
-    },
-    {
-      id: '2',
-      seq: 2,
-      managementObligation: '리스크관리 업무와 관련된 책무',
-      irregularityName: '준법지원부',
-      managementActivityCode: 'M201300002',
-      managementActivity: '리스크 식별 및 평가',
-      managementActivityName: '준법감시 업무와 관련된 관리활동',
-      managementActivityDetail: '운영리스크 식별 및 평가 절차',
-      managementActivityType: 'risk',
-      riskAssessmentLevel: 'high',
-      implementationManager: '준법감시 업무와 관련된 관리활동',
-      implementationDepartment: '리스크관리부',
-      isActive: true,
-      status: 'active',
-      approvalStatus: 'pending',
-      createdAt: '2025-08-15T10:30:00.000Z',
-      createdBy: '리스크관리부',
-      remarks: '분기별 리스크 평가 실시'
-    },
-    {
-      id: '3',
-      seq: 3,
-      managementObligation: '내부감사 업무 관련 관리의무',
-      irregularityName: '리스크관리부',
-      managementActivityCode: 'M201300003',
-      managementActivity: '내부감사 품질관리',
-      managementActivityName: '내부감사 품질관리',
-      managementActivityDetail: '내부감사 품질 보증 및 개선',
-      managementActivityType: 'compliance',
-      riskAssessmentLevel: 'medium',
-      implementationManager: '내부감사 품질 보증 및 개선',
-      implementationDepartment: '내부감사부',
-      isActive: true,
-      status: 'pending',
-      approvalStatus: 'draft',
-      createdAt: '2025-09-01T11:00:00.000Z',
-      createdBy: '내부감사부',
-      remarks: '반기별 품질평가 수행'
-    },
-    {
-      id: '4',
-      seq: 4,
-      managementObligation: '재무관리 업무 관련 책무',
-      irregularityName: '여신관리부',
-      managementActivityCode: 'M201300004',
-      managementActivity: '재무보고서 작성 및 검토',
-      managementActivityName: '재무보고서 작성 및 검토',
-      managementActivityDetail: '월간/분기별 재무보고서 작성',
-      managementActivityType: 'compliance',
-      riskAssessmentLevel: 'low',
-      implementationManager: '월간/분기별 재무보고서 작성',
-      implementationDepartment: '재무부',
-      isActive: false,
-      status: 'inactive',
-      approvalStatus: 'rejected',
-      createdAt: '2025-07-20T09:30:00.000Z',
-      createdBy: '재무부',
-      updatedAt: '2025-08-10T16:00:00.000Z',
-      updatedBy: '재무부',
-      remarks: '프로세스 개선 필요'
-    }
-  ]);
+  // ===============================
+  // 📊 데이터 로드 함수
+  // ===============================
 
+  /**
+   * 데이터 조회 함수
+   * - 원장차수와 부점코드로 필터링하여 조회
+   */
+  const fetchDeptOpManuals = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      let data: any[];
+
+      // 원장차수와 부점코드 둘 다 있으면 특정 조회
+      if (filters.ledgerOrder && filters.irregularityName) {
+        data = await getDeptManagerManualsByLedgerOrderIdAndOrgCode(
+          filters.ledgerOrder,
+          filters.irregularityName
+        );
+      } else {
+        // 그 외에는 전체 조회
+        data = await getAllDeptManagerManuals();
+      }
+
+      // Backend DTO → Frontend 타입 변환
+      const converted: DeptOpManual[] = data.map((dto, index) => ({
+        id: dto.manualCd,
+        seq: index + 1,
+
+        // JOIN 데이터 (책무구조 관련)
+        // 책무구분: 코드값 그대로 표시 (공통코드 변환은 Grid의 valueFormatter에서 처리)
+        responsibilityCat: dto.responsibilityCat || '',
+        responsibilityInfo: dto.responsibilityInfo || '',
+        responsibilityDetailInfo: dto.responsibilityDetailInfo || '',
+        obligationInfo: dto.obligationInfo || '',  // ✅ 관리의무 추가
+        orgName: dto.orgName || '',                 // ✅ 부점명 추가
+
+        // dept_manager_manuals 직접 필드
+        manualCd: dto.manualCd,                    // ✅ 메뉴얼코드 추가
+        ledgerOrderId: dto.ledgerOrderId || '',    // ✅ 원장차수ID 추가
+        obligationCd: dto.obligationCd || '',      // ✅ 관리의무코드 추가
+        orgCode: dto.orgCode || '',                // ✅ 조직코드 추가
+        respItem: dto.respItem,                    // ✅ 책무관리항목 추가
+        activityName: dto.activityName,            // ✅ 관리활동명 추가
+        execCheckMethod: dto.execCheckMethod || '', // ✅ 점검항목 추가
+        execCheckDetail: dto.execCheckDetail || '', // 점검세부내용
+        execCheckFrequencyCd: dto.execCheckFrequencyCd || '', // ✅ 점검주기 추가
+
+        // 수행 정보
+        executorId: dto.executorId || '',
+        executionDate: dto.executionDate,
+        executionStatus: dto.executionStatus,
+        executionResultCd: dto.executionResultCd,
+        executionResultContent: dto.executionResultContent,
+
+        // 레거시 필드 (호환성 유지)
+        managementObligation: dto.obligationInfo || '',
+        irregularityName: dto.orgName || '',
+        managementActivityCode: dto.manualCd,
+        managementActivity: dto.respItem,
+        managementActivityName: dto.activityName,
+        managementActivityDetail: dto.execCheckDetail || '',
+        managementActivityType: 'compliance',
+        riskAssessmentLevel: 'medium',
+        implementationManager: dto.executorId || '',
+        implementationDepartment: dto.orgName || '',
+
+        // 상태 관리
+        isActive: dto.isActive === 'Y',
+        status: dto.status || 'active',
+        approvalStatus: dto.approvedAt ? 'approved' : 'draft',
+
+        // 감사 필드
+        createdAt: dto.createdAt || '',
+        createdBy: dto.createdBy || '',
+        updatedAt: dto.updatedAt,
+        updatedBy: dto.updatedBy,
+        approvedAt: dto.approvedAt,
+        approvedBy: dto.approvedBy,
+        remarks: dto.remarks || ''
+      }));
+
+      setDeptOpManuals(converted);
+
+      // 페이지네이션 업데이트
+      setPagination(prev => ({
+        ...prev,
+        total: converted.length,
+        totalPages: Math.ceil(converted.length / prev.pageSize)
+      }));
+
+      console.log('✅ [DeptOpManualsMgmt] 데이터 로드 완료:', converted.length);
+    } catch (error) {
+      console.error('❌ [DeptOpManualsMgmt] 데이터 로드 실패:', error);
+      toast.error('데이터 조회 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [filters.ledgerOrder, filters.irregularityName]);
+
+  // ===============================
   // 📊 통계 계산
+  // ===============================
   const statistics: DeptOpManualsStatistics = useMemo(() => {
-    const total = mockDeptOpManuals.length;
-    const active = mockDeptOpManuals.filter(item => item.isActive).length;
+    const total = deptOpManuals.length;
+    const active = deptOpManuals.filter(item => item.isActive).length;
     const inactive = total - active;
-    const pendingApprovals = mockDeptOpManuals.filter(item => item.approvalStatus === 'pending').length;
-    const highRisk = mockDeptOpManuals.filter(item =>
+    const pendingApprovals = deptOpManuals.filter(item => item.approvalStatus === 'pending').length;
+    const highRisk = deptOpManuals.filter(item =>
       ['very_high', 'high'].includes(item.riskAssessmentLevel)
     ).length;
-    const recent = mockDeptOpManuals.filter(item => {
+    const recent = deptOpManuals.filter(item => {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
       return new Date(item.createdAt) >= weekAgo;
@@ -203,11 +235,13 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       highRiskActivities: highRisk,
       recentlyCreated: recent
     };
-  }, [mockDeptOpManuals]);
+  }, [deptOpManuals]);
 
+  // ===============================
   // 🔍 필터링된 데이터
+  // ===============================
   const displayData = useMemo(() => {
-    let filtered = [...mockDeptOpManuals];
+    let filtered = [...deptOpManuals];
 
     // 관리의무 필터
     if (filters.managementObligation) {
@@ -216,12 +250,9 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       );
     }
 
-    // 부정명 필터
-    if (filters.irregularityName) {
-      filtered = filtered.filter(item =>
-        item.irregularityName.toLowerCase().includes(filters.irregularityName!.toLowerCase())
-      );
-    }
+    // 부정명 필터 (orgName으로 검색)
+    // 주의: irregularityName 필터는 orgCode이지만, 실제 검색은 orgName으로 수행
+    // API 호출 시에는 orgCode로 조회하고, 프론트엔드에서는 orgName으로 필터링
 
     // 관리활동구분 필터
     if (filters.managementActivityType && filters.managementActivityType !== 'all') {
@@ -258,17 +289,14 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     }
 
     return filtered;
-  }, [mockDeptOpManuals, filters]);
+  }, [deptOpManuals, filters]);
 
-  // 초기 데이터 로드
+  // ===============================
+  // 초기 데이터 로드 및 필터 변경 시 재조회
+  // ===============================
   React.useEffect(() => {
-    setDeptOpManuals(displayData);
-    setPagination(prev => ({
-      ...prev,
-      total: displayData.length,
-      totalPages: Math.ceil(displayData.length / prev.pageSize)
-    }));
-  }, [displayData]);
+    fetchDeptOpManuals();
+  }, [fetchDeptOpManuals]);
 
   // 조직조회 핸들러
   const handleOrganizationSearch = useCallback(() => {
@@ -349,7 +377,8 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, search: true }));
 
     try {
-      // 검색 로직 (현재는 필터가 이미 적용됨)
+      // 데이터 재조회
+      await fetchDeptOpManuals();
       toast.success('검색이 완료되었습니다.');
     } catch (error) {
       console.error('Search error:', error);
@@ -357,7 +386,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     } finally {
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, []);
+  }, [fetchDeptOpManuals]);
 
   const handleClearFilters = useCallback(() => {
     const clearedFilters: DeptOpManualsFilters = {
@@ -434,14 +463,17 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     setLoadingStates(prev => ({ ...prev, delete: true }));
 
     try {
-      // State 업데이트: 선택된 항목 삭제
+      // 선택된 항목의 ID(manual_cd) 추출
       const selectedIds = selectedItems.map(item => item.id);
-      setMockDeptOpManuals(prev => prev.filter(item => !selectedIds.includes(item.id)));
+
+      // API 호출: 일괄 삭제
+      await deleteDeptManagerManuals(selectedIds);
+
+      // 삭제 후 데이터 재조회
+      await fetchDeptOpManuals();
 
       setSelectedItems([]);
       toast.success('선택한 관리활동이 삭제되었습니다.');
-
-      // 실제 API 연동 시: await deleteDeptOpManuals(selectedIds);
     } catch (error) {
       console.error('Delete error:', error);
       toast.error('삭제 중 오류가 발생했습니다.');
@@ -452,90 +484,102 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
 
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({ ...prev, isOpen: false }));
-  }, []);
+    // 모달 닫힐 때 데이터 재조회
+    fetchDeptOpManuals();
+  }, [fetchDeptOpManuals]);
 
-  // 등록 핸들러
+  // 등록 핸들러 - activities 배열의 각 항목을 개별 등록
   const handleSave = useCallback(async (formData: any) => {
+    console.log('💾 [DeptOpManualsMgmt] Save 요청 - formData:', formData);
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
-      // 목업 데이터 생성
-      const newManual: DeptOpManual = {
-        id: String(Date.now()),
-        seq: mockDeptOpManuals.length + 1,
-        managementObligation: formData.obligationCd || '새로운 관리의무',
-        irregularityName: formData.orgCode,
-        managementActivityCode: `M${Date.now()}`,
-        managementActivity: formData.activityName || '새로운 관리활동',
-        managementActivityName: formData.activityName || '',
-        managementActivityDetail: formData.activityDetail || '',
-        managementActivityType: formData.activityTypeCd === 'COMP' ? 'compliance' : 'risk',
-        riskAssessmentLevel: formData.riskAssessmentLevelCd === 'HIGH' ? 'high' : formData.riskAssessmentLevelCd === 'MED' ? 'medium' : 'low',
-        implementationManager: formData.implCheckMethod || '담당자',
-        implementationDepartment: '담당부서',
-        isActive: formData.isActive === 'Y',
-        status: 'active',
-        approvalStatus: 'draft',
-        createdAt: new Date().toISOString(),
-        createdBy: '관리자',
-        remarks: formData.remarks || ''
-      };
+      // activities 배열에서 각 항목을 개별 등록
+      const activities = formData.activities || [];
 
-      // State 업데이트: 새 데이터를 목록에 추가
-      setMockDeptOpManuals(prev => [...prev, newManual]);
+      if (activities.length === 0) {
+        toast.warning('등록할 활동이 없습니다.');
+        return;
+      }
 
-      console.log('✅ [DeptOpManualsMgmt] 등록 완료:', newManual);
-      toast.success(`업무메뉴얼 "${newManual.managementActivity}"이(가) 등록되었습니다.`, { autoClose: 2000 });
+      console.log(`📋 [DeptOpManualsMgmt] ${activities.length}개 활동 등록 시작`);
+
+      // 각 활동을 개별 등록
+      for (const activity of activities) {
+        const createRequest: CreateDeptManagerManualRequest = {
+          ledgerOrderId: formData.ledgerOrderId || filters.ledgerOrder || '20250001',
+          obligationCd: activity.obligationCd,
+          orgCode: formData.orgCode,
+          respItem: activity.respItem || '',
+          activityName: activity.activityName,
+          executorId: activity.executorId,
+          executionDate: activity.executionDate,
+          executionStatus: activity.executionStatus || '01',
+          executionResultCd: activity.executionResultCd,
+          executionResultContent: activity.executionResultContent,
+          execCheckMethod: activity.execCheckMethod,
+          execCheckDetail: activity.execCheckDetail,
+          execCheckFrequencyCd: activity.execCheckFrequencyCd,
+          isActive: activity.isActive || 'Y',
+          status: activity.status || 'active',
+          remarks: activity.remarks
+        };
+
+        console.log('📤 [DeptOpManualsMgmt] API 요청:', createRequest);
+        await createDeptManagerManual(createRequest);
+      }
+
+      console.log(`✅ [DeptOpManualsMgmt] ${activities.length}개 활동 등록 완료`);
+      toast.success(`${activities.length}개 활동이 등록되었습니다.`, { autoClose: 2000 });
+
+      // 데이터 새로고침
+      await fetchDeptOpManuals();
       handleModalClose();
-
-      // 실제 API 연동 시: await createDeptOpManual(formData);
     } catch (error) {
       console.error('❌ [DeptOpManualsMgmt] Save error:', error);
       toast.error('등록 중 오류가 발생했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, create: false }));
     }
-  }, [mockDeptOpManuals.length, handleModalClose]);
+  }, [filters.ledgerOrder, fetchDeptOpManuals, handleModalClose]);
 
   // 수정 핸들러
   const handleUpdate = useCallback(async (id: string, formData: any) => {
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
-      // State 업데이트: 기존 데이터 수정
-      setMockDeptOpManuals(prev => prev.map(item => {
-        if (item.id === id) {
-          return {
-            ...item,
-            managementObligation: formData.obligationCd || item.managementObligation,
-            irregularityName: formData.orgCode || item.irregularityName,
-            managementActivity: formData.activityName || item.managementActivity,
-            managementActivityName: formData.activityName || item.managementActivityName,
-            managementActivityDetail: formData.activityDetail || item.managementActivityDetail,
-            managementActivityType: formData.activityTypeCd === 'COMP' ? 'compliance' : 'risk',
-            riskAssessmentLevel: formData.riskAssessmentLevelCd === 'HIGH' ? 'high' : formData.riskAssessmentLevelCd === 'MED' ? 'medium' : 'low',
-            implementationManager: formData.implCheckMethod || item.implementationManager,
-            isActive: formData.isActive === 'Y',
-            updatedAt: new Date().toISOString(),
-            updatedBy: '관리자',
-            remarks: formData.remarks || item.remarks
-          };
-        }
-        return item;
-      }));
+      // 실제 API 호출: 부서장업무메뉴얼 수정
+      const updateRequest: UpdateDeptManagerManualRequest = {
+        respItem: formData.respItem,
+        activityName: formData.activityName,
+        executorId: formData.executorId,
+        executionDate: formData.executionDate,
+        executionStatus: formData.executionStatus,
+        executionResultCd: formData.executionResultCd,
+        executionResultContent: formData.executionResultContent,
+        execCheckMethod: formData.execCheckMethod,
+        execCheckDetail: formData.execCheckDetail,
+        execCheckFrequencyCd: formData.execCheckFrequencyCd,
+        isActive: formData.isActive || 'Y',
+        status: formData.status,
+        remarks: formData.remarks
+      };
 
-      console.log('✅ [DeptOpManualsMgmt] 수정 완료:', id, formData);
-      toast.success('업무메뉴얼이 수정되었습니다.', { autoClose: 2000 });
+      await updateDeptManagerManual(id, updateRequest);
+
+      console.log('✅ [DeptOpManualsMgmt] 수정 완료:', id);
+      toast.success('부서장업무메뉴얼이 수정되었습니다.', { autoClose: 2000 });
+
+      // 데이터 새로고침
+      await fetchDeptOpManuals();
       handleModalClose();
-
-      // 실제 API 연동 시: await updateDeptOpManual(id, formData);
     } catch (error) {
       console.error('❌ [DeptOpManualsMgmt] Update error:', error);
       toast.error('수정 중 오류가 발생했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, create: false }));
     }
-  }, [handleModalClose]);
+  }, [fetchDeptOpManuals, handleModalClose]);
 
   // 📊 통계 카드 정의
   const statsCards = [
@@ -674,7 +718,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         {/* 🎯 공통 데이터 그리드 */}
         <BaseDataGrid
           data={displayData}
-          columns={deptOpManualsColumns}
+          columns={deptOpManualsColumns(responsibilityCategoryCode, execCheckFrequencyCode)}
           loading={loading}
           theme="alpine"
           onRowClick={(data) => handleRowClick(data)}

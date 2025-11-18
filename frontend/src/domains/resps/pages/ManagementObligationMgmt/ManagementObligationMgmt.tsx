@@ -25,11 +25,11 @@ import {
   getAllManagementObligations,
   getManagementObligation,
   getManagementObligationsByDetailCd,
-  updateManagementObligation,
-  type ManagementObligationDto
+  updateManagementObligation
 } from '../../api/managementObligationApi';
 
 // Types
+import type { ManagementObligationDto } from '../../types/managementObligation.types';
 import type {
   ManagementObligationGridRow
 } from './components/ManagementObligationDataGrid/managementObligationColumns';
@@ -219,7 +219,6 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
   const handleExcelUploadSubmit = useCallback(async (excelData: Array<{
     책무세부코드: string;
     관리의무대분류코드: string;
-    관리의무중분류코드: string;
     관리의무내용: string;
     조직코드: string;
     사용여부: string;
@@ -234,7 +233,6 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
             await createManagementObligation({
               responsibilityDetailCd: row.책무세부코드,
               obligationMajorCatCd: row.관리의무대분류코드,
-              obligationMiddleCatCd: row.관리의무중분류코드,
               obligationInfo: row.관리의무내용,
               orgCode: row.조직코드,
               isActive: row.사용여부 || 'Y'
@@ -320,7 +318,6 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
         await createManagementObligation({
           responsibilityDetailCd: formData.responsibilityDetailCd,
           obligationMajorCatCd: formData.obligationMajorCatCd,
-          obligationMiddleCatCd: formData.obligationMiddleCatCd,
           obligationInfo: formData.obligationInfo,
           orgCode: formData.orgCode,
           isActive: formData.isActive
@@ -343,7 +340,6 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
       async () => {
         await updateManagementObligation(cd, {
           obligationMajorCatCd: formData.obligationMajorCatCd,
-          obligationMiddleCatCd: formData.obligationMiddleCatCd,
           obligationInfo: formData.obligationInfo,
           orgCode: formData.orgCode,
           isActive: formData.isActive
@@ -389,6 +385,8 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
         });
       },
       {
+        loading: '',
+        success: '',
         error: '관리의무 조회에 실패했습니다.'
       }
     );
@@ -569,10 +567,29 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
     }
   ], [statistics]);
 
-  // 페이지 마운트 시 자동 조회 (LeftMenu에서 열릴 때)
+  // 페이지 로드 시 초기 데이터 조회
   useEffect(() => {
-    handleSearch();
-  }, []); // 빈 배열 = 컴포넌트 마운트 시 한 번만 실행
+    const fetchInitialData = async () => {
+      await handlers.search.execute(
+        async () => {
+          const data = await getAllManagementObligations();
+          const gridData: ManagementObligationGridRow[] = data.map((dto: ManagementObligationDto, index: number) =>
+            convertToGridRow(dto, index)
+          );
+          setManagementObligations(gridData);
+          updateTotal(gridData.length);
+        },
+        {
+          loading: '관리의무 정보를 불러오는 중입니다...',
+          success: '', // 페이지 로드 시 성공 메시지 비활성화
+          error: '관리의무 정보를 불러오는데 실패했습니다.'
+        }
+      );
+    };
+
+    fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 빈 배열: 페이지 로드 시 한 번만 실행
 
   // AG-Grid 컬럼 정의
   const columns = useMemo(() => createManagementObligationColumns(handleManagementObligationDetail), [handleManagementObligationDetail]);
@@ -619,6 +636,7 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
           theme="alpine"
           onSelectionChange={handleSelectionChange}
           onRowClick={handleManagementObligationDetail}
+          getRowId={(params) => params.data.관리의무코드}
           height="calc(100vh - 370px)"
           pagination={true}
           pageSize={25}

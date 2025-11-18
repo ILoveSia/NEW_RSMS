@@ -265,7 +265,6 @@ export interface ResponsibilityDetailDto {
  */
 export interface ManagementObligationDto {
   obligationMajorCatCd: string;
-  obligationMiddleCatCd: string;
   obligationCd: string;
   obligationInfo: string;
   orgCode: string;
@@ -301,7 +300,6 @@ export const createResponsibilityWithDetails = async (
 export interface CreateManagementObligationRequest {
   responsibilityDetailId: number;
   obligationMajorCatCd: string;
-  obligationMiddleCatCd: string;
   obligationCd: string;
   obligationInfo: string;
   orgCode: string;
@@ -316,8 +314,6 @@ export interface ManagementObligationDto {
   responsibilityDetailId: number;
   obligationMajorCatCd: string;
   obligationMajorCatName?: string;
-  obligationMiddleCatCd: string;
-  obligationMiddleCatName?: string;
   obligationCd: string;
   obligationInfo: string;
   orgCode: string;

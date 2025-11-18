@@ -54,6 +54,75 @@ export interface DeptOpManual {
   /** 순번 */
   seq: number;
 
+  // ===============================
+  // JOIN 데이터 (책무구조 관련)
+  // ===============================
+  /** 책무구분 */
+  responsibilityCat?: string;
+
+  /** 책무 */
+  responsibilityInfo?: string;
+
+  /** 책무상세 */
+  responsibilityDetailInfo?: string;
+
+  /** 관리의무 (JOIN) */
+  obligationInfo?: string;
+
+  /** 부점명 (JOIN) */
+  orgName?: string;
+
+  // ===============================
+  // dept_manager_manuals 직접 필드
+  // ===============================
+  /** 메뉴얼코드 (PK) */
+  manualCd?: string;
+
+  /** 원장차수ID (FK) */
+  ledgerOrderId?: string;
+
+  /** 관리의무코드 (FK) */
+  obligationCd?: string;
+
+  /** 조직코드 (FK) */
+  orgCode?: string;
+
+  /** 책무관리항목 */
+  respItem?: string;
+
+  /** 관리활동명 */
+  activityName?: string;
+
+  /** 점검항목 */
+  execCheckMethod?: string;
+
+  /** 점검세부내용 */
+  execCheckDetail?: string;
+
+  /** 점검주기 */
+  execCheckFrequencyCd?: string;
+
+  // ===============================
+  // 수행 정보
+  // ===============================
+  /** 수행자ID */
+  executorId?: string;
+
+  /** 수행일자 */
+  executionDate?: string;
+
+  /** 수행상태 */
+  executionStatus?: string;
+
+  /** 수행결과코드 */
+  executionResultCd?: string;
+
+  /** 수행결과내용 */
+  executionResultContent?: string;
+
+  // ===============================
+  // 레거시 필드 (호환성 유지)
+  // ===============================
   /** 관리의무 */
   managementObligation: string;
 
@@ -84,6 +153,9 @@ export interface DeptOpManual {
   /** 이행주관담당부서 */
   implementationDepartment?: string;
 
+  // ===============================
+  // 상태 관리
+  // ===============================
   /** 사용여부 */
   isActive: boolean;
 
@@ -93,6 +165,9 @@ export interface DeptOpManual {
   /** 결재여부 */
   approvalStatus: ApprovalStatus;
 
+  // ===============================
+  // 감사 필드
+  // ===============================
   /** 등록일시 */
   createdAt: string;
 

@@ -1,27 +1,86 @@
-// ActivityExecution 관련 타입 정의
-// 이미지 기반으로 정확한 컬럼 구조 반영
+/**
+ * 관리활동 수행 타입 정의
+ * @description dept_manager_manuals 테이블 기반 관리활동 수행 정보
+ */
 
+/**
+ * 관리활동 수행 엔티티
+ */
 export interface ActivityExecution {
+  /** 고유 ID (manual_cd) */
   id: string;
-  sequence: number;                    // 순번
-  activityName: string;               // 관리활동명
-  activityDetail: string;             // 활동상세
-  cycle: string;                      // 주기 (분기, 월별, 년별 등)
-  isInternalActivity: boolean;        // 내부활동 (체크박스)
-  regulation: string;                 // 규율
-  responsibilityArea: string;         // 내부활동책임영역
-  performer: string;                  // 수행자
-  isPerformed: boolean;              // 수행여부 (완료/미완료)
-  performanceResult: string;          // 수행결과 (적정/부적정 등)
-  cssConst: string;                  // CSS_CONST (Y/N)
-  gnrzOblgDvcd: string;              // GNRZ_OBLG_DVCD (02 등)
 
-  // 추가 메타데이터
-  executionDate?: string;            // 수행일시
-  status: 'pending' | 'in_progress' | 'completed' | 'approved';
+  /** 순번 */
+  seq: number;
+
+  // ===============================
+  // dept_manager_manuals 테이블 필드
+  // ===============================
+  /** 메뉴얼코드 (PK) */
+  manualCd?: string;
+
+  /** 원장차수ID (FK) */
+  ledgerOrderId?: string;
+
+  /** 관리의무코드 (FK) */
+  obligationCd?: string;
+
+  /** 조직코드 (FK) - 부점 */
+  orgCode?: string;
+
+  /** 부점명 */
+  orgName?: string;
+
+  /** 책무관리항목 */
+  respItem?: string;
+
+  /** 관리활동명 */
+  activityName?: string;
+
+  /** 점검항목 - 수행점검항목으로 표시 */
+  execCheckMethod?: string;
+
+  /** 점검세부내용 */
+  execCheckDetail?: string;
+
+  /** 점검주기 */
+  execCheckFrequencyCd?: string;
+
+  // ===============================
+  // 수행 정보
+  // ===============================
+  /** 수행자ID */
+  executorId?: string;
+
+  /** 수행일자 */
+  executionDate?: string;
+
+  /** 수행상태 (수행여부) */
+  executionStatus?: string;
+
+  /** 수행결과코드 */
+  executionResultCd?: string;
+
+  /** 수행결과내용 */
+  executionResultContent?: string;
+
+  // ===============================
+  // 메타데이터
+  // ===============================
+  /** 사용여부 */
+  isActive?: boolean;
+
+  /** 등록일시 */
   createdAt?: string;
+
+  /** 등록자 */
+  createdBy?: string;
+
+  /** 수정일시 */
   updatedAt?: string;
-  isActive: boolean;
+
+  /** 수정자 */
+  updatedBy?: string;
 }
 
 // 관리활동 수행 상세 정보 (모달에서 사용)

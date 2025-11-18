@@ -15,8 +15,6 @@ export interface ManagementObligationDto {
   responsibilityDetailInfo?: string; // 책무세부내용
   obligationMajorCatCd: string;      // 관리의무 대분류 구분코드
   obligationMajorCatName?: string;   // 관리의무 대분류 구분명
-  obligationMiddleCatCd: string;     // 관리의무 중분류 구분코드
-  obligationMiddleCatName?: string;  // 관리의무 중분류 구분명
   obligationInfo: string;            // 관리의무 내용
   orgCode: string;                   // 조직코드
   orgName?: string;                  // 조직명
@@ -33,7 +31,6 @@ export interface ManagementObligationDto {
 export interface CreateManagementObligationRequest {
   responsibilityDetailCd: string;    // 책무세부코드 (필수)
   obligationMajorCatCd: string;      // 관리의무 대분류 구분코드 (필수)
-  obligationMiddleCatCd: string;     // 관리의무 중분류 구분코드 (필수)
   obligationInfo: string;            // 관리의무 내용 (필수)
   orgCode: string;                   // 조직코드 (필수)
   isActive?: string;                 // 사용여부 (기본값 'Y')
@@ -44,7 +41,6 @@ export interface CreateManagementObligationRequest {
  */
 export interface UpdateManagementObligationRequest {
   obligationMajorCatCd: string;      // 관리의무 대분류 구분코드
-  obligationMiddleCatCd: string;     // 관리의무 중분류 구분코드
   obligationInfo: string;            // 관리의무 내용
   orgCode: string;                   // 조직코드
   isActive: string;                  // 사용여부

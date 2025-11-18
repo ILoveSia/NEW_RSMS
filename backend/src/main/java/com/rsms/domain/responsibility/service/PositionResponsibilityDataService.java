@@ -209,7 +209,6 @@ public class PositionResponsibilityDataService {
                         .obligationCd(obligation.getObligationCd())
                         .responsibilityDetailCd(obligation.getResponsibilityDetailCd())
                         .obligationMajorCatCd(obligation.getObligationMajorCatCd())
-                        .obligationMiddleCatCd(obligation.getObligationMiddleCatCd())
                         .obligationInfo(obligation.getObligationInfo())
                         .orgCode(obligation.getOrgCode())
                         .build())

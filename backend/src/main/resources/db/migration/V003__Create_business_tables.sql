@@ -634,7 +634,6 @@ CREATE TABLE rsms.management_obligations (
 
   -- 기본 정보
   obligation_major_cat_cd VARCHAR(20) NOT NULL,               -- 관리의무 대분류 구분코드 (common_code_details 의 MGMT_OBLG_LCCD 그룹 참조)
-  obligation_middle_cat_cd VARCHAR(20) NOT NULL,              -- 관리의무 중분류 구분코드 (common_code_details 의 MGMT_OBLG_MCCD 그룹 참조)
   obligation_cd VARCHAR(20) NOT NULL,                         -- 관리의무코드 신규생성
   obligation_info VARCHAR(1000) NOT NULL,                     -- 관리의무내용
   org_code VARCHAR(20) NOT NULL,                              -- 조직코드 (organizations 참조)
