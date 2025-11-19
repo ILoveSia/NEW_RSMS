@@ -301,6 +301,7 @@ public class DeptManagerManualService {
     /**
      * Native Query 결과 → DTO 변환
      * - Object[] 배열을 DeptManagerManualDto로 변환
+     * - employees, organizations, 책무구조 테이블 조인 결과 포함
      *
      * @param row Native Query 결과 행 (Object[])
      * @return 메뉴얼 DTO
@@ -334,6 +335,11 @@ public class DeptManagerManualService {
             .approvedAt(row[i++] != null ? ((java.sql.Timestamp) row[i - 1]).toLocalDateTime() : null)
             .approvedBy(safeToString(row[i++]))
             .remarks(safeToString(row[i++]))
+            // 책무구조 관련 정보 (JOIN 결과)
+            .responsibilityCat(safeToString(row[i++]))        // responsibilities.responsibility_cat
+            .responsibilityInfo(safeToString(row[i++]))       // responsibilities.responsibility_info
+            .responsibilityDetailInfo(safeToString(row[i++])) // responsibility_details.responsibility_detail_info
+            .obligationInfo(safeToString(row[i++]))           // management_obligations.obligation_info
             .build();
     }
 

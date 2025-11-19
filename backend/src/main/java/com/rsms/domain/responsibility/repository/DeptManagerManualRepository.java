@@ -89,10 +89,13 @@ public interface DeptManagerManualRepository extends JpaRepository<DeptManagerMa
     boolean existsByOrgCode(String orgCode);
 
     /**
-     * 전체 조회 (employees 테이블 조인 포함)
+     * 전체 조회 (employees, organizations, 책무구조 테이블 조인 포함)
      * - executor_id로 employees 테이블 조인하여 수행자 이름(emp_name) 조회
      * - org_code로 organizations 테이블 조인하여 조직명(org_name) 조회
-     * - LEFT JOIN으로 수행자가 없는 경우에도 조회 가능
+     * - obligation_cd로 management_obligations 테이블 조인하여 관리의무(obligation_info) 조회
+     * - responsibility_detail_cd로 responsibility_details 테이블 조인하여 책무상세(responsibility_detail_info) 조회
+     * - responsibility_cd로 responsibilities 테이블 조인하여 책무구분(responsibility_cat), 책무(responsibility_info) 조회
+     * - LEFT JOIN으로 데이터가 없는 경우에도 조회 가능
      */
     @Query(value = """
         SELECT dmm.manual_cd as manualCd,
@@ -119,10 +122,17 @@ public interface DeptManagerManualRepository extends JpaRepository<DeptManagerMa
                dmm.updated_by as updatedBy,
                dmm.approved_at as approvedAt,
                dmm.approved_by as approvedBy,
-               dmm.remarks as remarks
+               dmm.remarks as remarks,
+               r.responsibility_cat as responsibilityCat,
+               r.responsibility_info as responsibilityInfo,
+               rd.responsibility_detail_info as responsibilityDetailInfo,
+               mo.obligation_info as obligationInfo
         FROM rsms.dept_manager_manuals dmm
         LEFT JOIN rsms.employees e ON dmm.executor_id = e.emp_no
         LEFT JOIN rsms.organizations o ON dmm.org_code = o.org_code
+        LEFT JOIN rsms.management_obligations mo ON dmm.obligation_cd = mo.obligation_cd
+        LEFT JOIN rsms.responsibility_details rd ON mo.responsibility_detail_cd = rd.responsibility_detail_cd
+        LEFT JOIN rsms.responsibilities r ON rd.responsibility_cd = r.responsibility_cd
         ORDER BY dmm.created_at DESC
         """, nativeQuery = true)
     List<Object[]> findAllWithEmployeesNative();

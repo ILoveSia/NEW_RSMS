@@ -16,13 +16,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-  Typography,
   FormControl,
+  FormHelperText,
   InputLabel,
-  Select,
   MenuItem,
-  FormHelperText
+  Select,
+  TextField,
+  Typography
 } from '@mui/material';
 import type { ColDef } from 'ag-grid-community';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -107,14 +107,14 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
     {
       headerCheckboxSelection: mode === 'create',
       checkboxSelection: mode === 'create',
-      width: 50,
+      width: 10,
       headerClass: 'ag-header-center',
       cellClass: 'ag-cell-center'
     },
     {
       field: 'orgName',
-      headerName: '조직명',
-      width: 150,
+      headerName: '부서명',
+      width: 60,
       sortable: true
     },
     {
@@ -128,24 +128,9 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
       }
     },
     {
-      field: 'riskAssessmentLevelCd',
-      headerName: '위험등급',
-      width: 100,
-      sortable: true,
-      cellClass: 'ag-cell-center',
-      cellRenderer: (params: any) => {
-        const levelMap: Record<string, string> = {
-          '01': '상',
-          '02': '중',
-          '03': '하'
-        };
-        return levelMap[params.value] || params.value;
-      }
-    },
-    {
       field: 'implCheckFrequencyCd',
       headerName: '점검주기',
-      width: 100,
+      width: 50,
       sortable: true,
       cellClass: 'ag-cell-center'
     }
@@ -221,14 +206,14 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           ledgerOrderId: ledgerOrderId,
           obligationCd: 'OBL001',
           orgCode: 'ORG001',
-          orgName: '경영기획본부',
+          orgName: '준법지원팀',
           activityTypeCd: '01',
-          activityName: '내부통제 정기 점검',
+          activityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
           activityDetail: '분기별 내부통제 시스템 점검 및 보고',
           riskAssessmentLevelCd: '01',
           activityFrequencyCd: '03',
           evidenceTypeCd: '01',
-          implCheckFrequencyCd: '03',
+          implCheckFrequencyCd: '월간',
           isConditionalCheck: 'N',
           implCheckMethod: '문서검토 및 담당자 인터뷰',
           isActive: 'Y',
@@ -239,14 +224,14 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           ledgerOrderId: ledgerOrderId,
           obligationCd: 'OBL002',
           orgCode: 'ORG002',
-          orgName: '리스크관리본부',
+          orgName: '준법지원팀',
           activityTypeCd: '02',
-          activityName: '리스크 평가 및 보고',
+          activityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
           activityDetail: '월별 리스크 평가 및 경영진 보고',
           riskAssessmentLevelCd: '01',
           activityFrequencyCd: '02',
           evidenceTypeCd: '02',
-          implCheckFrequencyCd: '02',
+          implCheckFrequencyCd: '월간',
           isConditionalCheck: 'N',
           implCheckMethod: '리스크 평가 보고서 검토',
           isActive: 'Y',
@@ -257,14 +242,50 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           ledgerOrderId: ledgerOrderId,
           obligationCd: 'OBL003',
           orgCode: 'ORG003',
-          orgName: '준법감시본부',
+          orgName: '준법지원팀',
           activityTypeCd: '01',
-          activityName: '컴플라이언스 교육 실시',
+          activityName: '소송관련 업무 전반에 대한 지원 점검',
           activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
           riskAssessmentLevelCd: '02',
           activityFrequencyCd: '03',
           evidenceTypeCd: '03',
-          implCheckFrequencyCd: '03',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'Y',
+          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 4,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL003',
+          orgCode: 'ORG003',
+          orgName: '준법지원팀',
+          activityTypeCd: '01',
+          activityName: '외부위임 소송사건의 업무 처리 적정성 점검',
+          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
+          riskAssessmentLevelCd: '02',
+          activityFrequencyCd: '03',
+          evidenceTypeCd: '03',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'Y',
+          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 5,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL003',
+          orgCode: 'ORG003',
+          orgName: '준법지원팀',
+          activityTypeCd: '01',
+          activityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
+          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
+          riskAssessmentLevelCd: '02',
+          activityFrequencyCd: '03',
+          evidenceTypeCd: '03',
+          implCheckFrequencyCd: '월간',
           isConditionalCheck: 'Y',
           implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
           isActive: 'Y',
@@ -289,19 +310,91 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
       const mockItems: DeptManagerManual[] = [
         {
           manualId: 1,
-          ledgerOrderId: '20240001',
+          ledgerOrderId: ledgerOrderId,
           obligationCd: 'OBL001',
           orgCode: 'ORG001',
-          orgName: '경영기획본부',
+          orgName: '준법지원팀',
           activityTypeCd: '01',
-          activityName: '내부통제 정기 점검',
+          activityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
           activityDetail: '분기별 내부통제 시스템 점검 및 보고',
           riskAssessmentLevelCd: '01',
           activityFrequencyCd: '03',
           evidenceTypeCd: '01',
-          implCheckFrequencyCd: '03',
+          implCheckFrequencyCd: '월간',
           isConditionalCheck: 'N',
           implCheckMethod: '문서검토 및 담당자 인터뷰',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 2,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL002',
+          orgCode: 'ORG002',
+          orgName: '준법지원팀',
+          activityTypeCd: '02',
+          activityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
+          activityDetail: '월별 리스크 평가 및 경영진 보고',
+          riskAssessmentLevelCd: '01',
+          activityFrequencyCd: '02',
+          evidenceTypeCd: '02',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'N',
+          implCheckMethod: '리스크 평가 보고서 검토',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 3,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL003',
+          orgCode: 'ORG003',
+          orgName: '준법지원팀',
+          activityTypeCd: '01',
+          activityName: '소송관련 업무 전반에 대한 지원 점검',
+          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
+          riskAssessmentLevelCd: '02',
+          activityFrequencyCd: '03',
+          evidenceTypeCd: '03',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'Y',
+          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 4,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL003',
+          orgCode: 'ORG003',
+          orgName: '준법지원팀',
+          activityTypeCd: '01',
+          activityName: '외부위임 소송사건의 업무 처리 적정성 점검',
+          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
+          riskAssessmentLevelCd: '02',
+          activityFrequencyCd: '03',
+          evidenceTypeCd: '03',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'Y',
+          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
+          isActive: 'Y',
+          status: 'active'
+        },
+        {
+          manualId: 5,
+          ledgerOrderId: ledgerOrderId,
+          obligationCd: 'OBL003',
+          orgCode: 'ORG003',
+          orgName: '준법지원팀',
+          activityTypeCd: '01',
+          activityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
+          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
+          riskAssessmentLevelCd: '02',
+          activityFrequencyCd: '03',
+          evidenceTypeCd: '03',
+          implCheckFrequencyCd: '월간',
+          isConditionalCheck: 'Y',
+          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
           isActive: 'Y',
           status: 'active'
         }
@@ -371,7 +464,7 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
         // 2. 선택된 부서장업무메뉴얼로 impl_inspection_items 생성
 
         if (selectedManuals.length === 0) {
-          alert('점검할 부서장업무메뉴얼을 선택해주세요');
+          alert('점검할 업무메뉴얼을 선택해주세요');
           return;
         }
 
@@ -581,7 +674,7 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
                 ✅ 점검대상 선택 ({selectedManuals.length}/{manuals.length}개 선택됨)
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                점검할 부서장업무메뉴얼을 선택하세요. 선택된 항목은 이행점검항목으로 등록됩니다.
+                점검할 업무메뉴얼을 선택하세요. 선택된 항목은 이행점검항목으로 등록됩니다.
               </Typography>
               <Box sx={{ width: '100%', height: '300px' }}>
                 <BaseDataGrid

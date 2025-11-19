@@ -47,7 +47,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'sequence',
       headerName: '순번',
-      width: 80,
+      width: 60,
       minWidth: 60,
       maxWidth: 100,
       sortable: true,
@@ -58,7 +58,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspectionName',
       headerName: '점검명',
-      width: 200,
+      width: 150,
       minWidth: 150,
       sortable: true,
       filter: 'agTextColumnFilter',
@@ -72,21 +72,21 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'obligationInfo',
       headerName: '관리의무',
-      width: 150,
-      minWidth: 120,
+      width: 300,
+      minWidth: 300,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
       headerClass: 'ag-header-center',
       cellRenderer: (params: any) => {
         const value = params.value;
-        return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
+        return value && value.length > 50 ? `${value.substring(0, 50)}...` : (value || '');
       }
     },
     {
       field: 'activityName',
       headerName: '관리활동명',
-      width: 200,
+      width: 150,
       minWidth: 150,
       sortable: true,
       filter: 'agTextColumnFilter',
@@ -99,9 +99,9 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     },
     {
       field: 'activityFrequencyCd',
-      headerName: '관리활동수행주기',
-      width: 150,
-      minWidth: 120,
+      headerName: '점검주기',
+      width: 80,
+      minWidth: 80,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -110,7 +110,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'orgCode',
       headerName: '부서',
-      width: 120,
+      width: 100,
       minWidth: 100,
       sortable: true,
       filter: 'agTextColumnFilter',
@@ -120,8 +120,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspector',
       headerName: '점검자',
-      width: 150,
-      minWidth: 120,
+      width: 80,
+      minWidth: 80,
       sortable: false,
       filter: false,
       cellClass: 'ag-cell-center',
@@ -131,7 +131,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
         const inspector = assignment?.inspector;
 
         if (inspector) {
-          return `${inspector.name} (${inspector.department})`;
+          return inspector.name;
         } else {
           return '미지정';
         }
@@ -140,8 +140,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspectionDate',
       headerName: '점검일자',
-      width: 120,
-      minWidth: 100,
+      width: 80,
+      minWidth: 80,
       sortable: true,
       filter: 'agDateColumnFilter',
       cellClass: 'ag-cell-center',
@@ -158,7 +158,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'assignmentStatus',
       headerName: '상태',
-      width: 100,
+      width: 80,
       minWidth: 80,
       sortable: true,
       filter: 'agSetColumnFilter',
@@ -218,14 +218,22 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       id: 'ASG_001',
       sequence: 1,
-      inspectionName: '2025년 1분기 정기점검',
-      obligationInfo: '자금세탁방지 의무',
+      inspectionName: '2025년 하반기 정기점검',
+      obligationInfo: '중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토',
       activityName: '자금세탁방지 시스템 운영',
       activityFrequencyCd: '분기별',
-      orgCode: '경영전략부',
-      inspector: null,
-      inspectionDate: null,
-      assignmentStatus: 'UNASSIGNED',
+      orgCode: '준법지원팀',
+      inspector: {
+        id: 'EMP_001',
+        name: '김철수',
+        empNo: 'E2024001',
+        department: '준법지원팀',
+        position: '선임',
+        email: 'kim.cs@company.com',
+        phone: '02-1234-5678'
+      },
+      inspectionDate: '2025-11-24',
+      assignmentStatus: 'ASSIGNED',
       createdAt: '2025-09-22',
       updatedAt: '2025-09-22',
       createdBy: 'admin',
@@ -234,14 +242,22 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       id: 'ASG_002',
       sequence: 2,
-      inspectionName: '2025년 1분기 정기점검',
-      obligationInfo: '정보보호 관리 의무',
+      inspectionName: '2025년 하반기 정기점검',
+      obligationInfo: '중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토',
       activityName: '개인정보 보호 점검',
       activityFrequencyCd: '월별',
-      orgCode: '준법지원부',
-      inspector: null,
-      inspectionDate: null,
-      assignmentStatus: 'UNASSIGNED',
+      orgCode: '준법지원팀',
+      inspector: {
+        id: 'EMP_001',
+        name: '김철수',
+        empNo: 'E2024001',
+        department: '준법지원팀',
+        position: '선임',
+        email: 'kim.cs@company.com',
+        phone: '02-1234-5678'
+      },
+      inspectionDate: '2025-11-24',
+      assignmentStatus: 'ASSIGNED',
       createdAt: '2025-09-22',
       updatedAt: '2025-09-22',
       createdBy: 'admin',
@@ -250,14 +266,70 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       id: 'ASG_003',
       sequence: 3,
-      inspectionName: '2025년 상반기 특별점검',
-      obligationInfo: '리스크 관리 의무',
+      inspectionName: '2025년 하반기 정기점검',
+      obligationInfo: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독',
       activityName: '신용리스크 평가',
       activityFrequencyCd: '반기별',
-      orgCode: '리스크관리부',
-      inspector: null,
-      inspectionDate: null,
-      assignmentStatus: 'UNASSIGNED',
+      orgCode: '준법지원팀',
+      inspector: {
+        id: 'EMP_001',
+        name: '김철수',
+        empNo: 'E2024001',
+        department: '준법지원팀',
+        position: '선임',
+        email: 'kim.cs@company.com',
+        phone: '02-1234-5678'
+      },
+      inspectionDate: '2025-11-24',
+      assignmentStatus: 'ASSIGNED',
+      createdAt: '2025-09-22',
+      updatedAt: '2025-09-22',
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    },
+    {
+      id: 'ASG_004',
+      sequence: 4,
+      inspectionName: '2025년 하반기 정기점검',
+      obligationInfo: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독',
+      activityName: '신용리스크 평가',
+      activityFrequencyCd: '반기별',
+      orgCode: '준법지원팀',
+      inspector: {
+        id: 'EMP_001',
+        name: '김철수',
+        empNo: 'E2024001',
+        department: '준법지원팀',
+        position: '선임',
+        email: 'kim.cs@company.com',
+        phone: '02-1234-5678'
+      },
+      inspectionDate: '2025-11-24',
+      assignmentStatus: 'ASSIGNED',
+      createdAt: '2025-09-22',
+      updatedAt: '2025-09-22',
+      createdBy: 'admin',
+      updatedBy: 'admin'
+    },
+    {
+      id: 'ASG_005',
+      sequence: 5,
+      inspectionName: '2025년 하반기 정기점검',
+      obligationInfo: '정관 변경 업무 및 내규 제정·개정·폐지안의 사전심의 업무 관리',
+      activityName: '신용리스크 평가',
+      activityFrequencyCd: '반기별',
+      orgCode: '준법지원팀',
+      inspector: {
+        id: 'EMP_001',
+        name: '김철수',
+        empNo: 'E2024001',
+        department: '준법지원팀',
+        position: '선임',
+        email: 'kim.cs@company.com',
+        phone: '02-1234-5678'
+      },
+      inspectionDate: '2025-11-24',
+      assignmentStatus: 'ASSIGNED',
       createdAt: '2025-09-22',
       updatedAt: '2025-09-22',
       createdBy: 'admin',

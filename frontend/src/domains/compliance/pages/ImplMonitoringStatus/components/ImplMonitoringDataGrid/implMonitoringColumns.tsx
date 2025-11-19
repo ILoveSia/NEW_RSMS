@@ -66,7 +66,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   },
   {
     field: 'obligationInfo',
-    headerName: '관리의무',
+    headerName: '책무관리항목',
     width: 150,
     minWidth: 120,
     sortable: true,
@@ -91,8 +91,22 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     cellStyle: { fontWeight: '500' }
   },
   {
+    field: 'inspectionMethod',
+    headerName: '수행점검항목',
+    width: 150,
+    minWidth: 120,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
+    }
+  },
+  {
     field: 'activityFrequencyCd',
-    headerName: '관리활동수행주기',
+    headerName: '점검주기',
     width: 150,
     minWidth: 120,
     sortable: true,
@@ -109,20 +123,6 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
-  },
-  {
-    field: 'inspectionMethod',
-    headerName: '이행점검방법',
-    width: 150,
-    minWidth: 120,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellClass: 'ag-cell-left',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
-    }
   },
   {
     field: 'inspector',
@@ -150,7 +150,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   },
   {
     field: 'inspectionDetail',
-    headerName: '점검세부내용',
+    headerName: '점검결과내용',
     flex: 1,
     minWidth: 200,
     sortable: true,

@@ -2595,3 +2595,585 @@
 2025-11-19 17:00:24.450 INFO  [http-nio-8090-exec-3] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
 2025-11-19 17:00:24.453 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
 2025-11-19 17:00:45.409 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:05:49.475 INFO  [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 17:05:49.477 INFO  [http-nio-8090-exec-1] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 17:05:49.482 DEBUG [http-nio-8090-exec-1] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 17:05:49.497 DEBUG [http-nio-8090-exec-1] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 17:05:49.874 INFO  [http-nio-8090-exec-1] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 17:05:49.882 INFO  [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=57fe775d-be60-4560-98ec-11c21016bd5d
+2025-11-19 17:05:49.931 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:05:49.932 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:05:49.934 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 17:05:49.934 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 17:05:49.935 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:05:49.941 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:05:49.948 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:05:49.948 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:05:52.896 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:05:52.897 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:05:52.898 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:06:43.743 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:06:43.743 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:06:43.744 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:06:43.748 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:06:43.748 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:06:43.766 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:06:43.773 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:06:43.774 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:06:43.783 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:06:43.783 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:06:44.308 INFO  [http-nio-8090-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:06:44.309 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:06:44.310 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:08:30.947 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:08:30.947 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:08:30.948 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:08:30.953 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:08:30.953 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:08:30.970 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:08:30.970 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:08:30.971 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:08:30.979 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:08:30.980 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:08:31.428 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:08:31.428 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:08:31.430 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:13:30.908 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:13:34.969 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:13:34.971 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:13:34.974 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:17:56.066 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:17:56.086 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:17:56.189 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:17:56.189 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:17:56.195 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:17:56.196 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:17:56.211 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:17:56.212 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:17:56.216 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:17:56.216 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:17:58.531 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:17:58.532 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:17:58.535 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:18:02.332 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:02.333 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:18:02.354 INFO  [http-nio-8090-exec-1] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:02.355 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:18:17.525 INFO  [http-nio-8090-exec-9] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:17.525 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:18:17.542 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:17.542 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:18:26.863 INFO  [http-nio-8090-exec-7] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-11-19 17:18:26.863 DEBUG [http-nio-8090-exec-7] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-11-19 17:18:26.905 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders - 모든 원장차수 조회
+2025-11-19 17:18:26.906 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 모든 원장차수 조회
+2025-11-19 17:18:28.923 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 17:18:28.923 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 17:18:28.935 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 17:18:28.949 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 17:18:28.950 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 17:18:28.956 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 17:18:30.924 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:18:33.857 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 요청: ledgerOrderId=20250001
+2025-11-19 17:18:33.858 DEBUG [http-nio-8090-exec-4] c.r.d.p.s.PositionConcurrentService - 겸직 목록 조회 (positions 조인): ledgerOrderId=20250001
+2025-11-19 17:18:33.861 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 완료: 2 건
+2025-11-19 17:18:35.675 INFO  [http-nio-8090-exec-5] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 17:18:35.676 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 17:18:35.679 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 17:18:35.713 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 17:18:35.713 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 17:18:35.717 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 17:18:37.650 INFO  [http-nio-8090-exec-9] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 17:18:37.650 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 17:18:37.662 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 17:18:37.679 INFO  [http-nio-8090-exec-10] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 17:18:37.679 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 17:18:37.686 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 17:18:41.752 INFO  [http-nio-8090-exec-7] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 17:18:41.752 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 17:18:41.773 INFO  [http-nio-8090-exec-2] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 17:18:41.773 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 17:18:46.274 INFO  [http-nio-8090-exec-8] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:18:46.275 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:18:46.281 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.286 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.287 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.288 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.288 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.289 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.289 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.290 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.290 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.293 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.297 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.298 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.299 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.299 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.300 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.300 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.301 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.301 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.301 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.302 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.302 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.303 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.303 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.303 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.303 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.304 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.304 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.305 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.305 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.306 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.327 INFO  [http-nio-8090-exec-3] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:18:46.328 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:18:46.336 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.340 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.340 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.340 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.340 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.341 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.341 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.341 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.342 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.342 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.342 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.342 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.343 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.343 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.343 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.343 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.343 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.344 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.344 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.344 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.345 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.346 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.346 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.346 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.346 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.346 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.347 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.347 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.347 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:46.347 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:18:52.392 INFO  [http-nio-8090-exec-6] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:18:52.393 INFO  [http-nio-8090-exec-6] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:18:52.508 INFO  [http-nio-8090-exec-6] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:18:52.541 INFO  [http-nio-8090-exec-4] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:18:52.541 INFO  [http-nio-8090-exec-4] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:18:52.548 INFO  [http-nio-8090-exec-4] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:18:56.270 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:56.270 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:18:56.293 INFO  [http-nio-8090-exec-1] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:18:56.293 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:22:30.073 INFO  [http-nio-8090-exec-7] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:22:30.074 INFO  [http-nio-8090-exec-7] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:22:30.085 INFO  [http-nio-8090-exec-7] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:22:30.126 INFO  [http-nio-8090-exec-2] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:22:30.127 INFO  [http-nio-8090-exec-2] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:22:30.144 INFO  [http-nio-8090-exec-2] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:22:30.886 INFO  [http-nio-8090-exec-8] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:22:30.886 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:22:30.895 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.909 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.910 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.912 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.918 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.921 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.923 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.924 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.926 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.927 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.930 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.932 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.934 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.937 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.938 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.939 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.940 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.941 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.941 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.942 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.942 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.942 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.942 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.943 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.944 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.971 INFO  [http-nio-8090-exec-3] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:22:30.972 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:22:30.979 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.989 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.990 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.991 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.992 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.994 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.995 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.995 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.996 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.997 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:30.998 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.003 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.004 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.005 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.005 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.005 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.006 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.006 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.006 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.007 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.007 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.007 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.008 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.008 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.008 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.009 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.009 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.009 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.010 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.011 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:22:31.426 INFO  [http-nio-8090-exec-6] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 17:22:31.427 DEBUG [http-nio-8090-exec-6] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 17:22:31.452 INFO  [http-nio-8090-exec-4] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 17:22:31.452 DEBUG [http-nio-8090-exec-4] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 17:22:33.205 INFO  [http-nio-8090-exec-5] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 17:22:33.206 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 17:22:33.210 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 17:22:33.258 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 17:22:33.259 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 17:22:33.265 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 17:22:56.142 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:23:30.956 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:25:42.051 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 246457 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-11-19 17:25:42.052 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-11-19 17:25:42.052 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-11-19 17:25:47.081 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 5.124 seconds (process running for 6948.349)
+2025-11-19 17:26:54.814 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 292741 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-11-19 17:26:54.815 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-11-19 17:26:54.815 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-11-19 17:27:04.437 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 10.272 seconds (process running for 10.806)
+2025-11-19 17:27:56.269 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:28:30.952 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:28:46.706 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그아웃 API 호출
+2025-11-19 17:28:46.707 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그아웃: username=admin
+2025-11-19 17:28:48.566 INFO  [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 17:28:48.574 INFO  [http-nio-8090-exec-4] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 17:28:49.076 DEBUG [http-nio-8090-exec-4] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 17:28:49.120 DEBUG [http-nio-8090-exec-4] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 17:28:49.445 INFO  [http-nio-8090-exec-4] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 17:28:49.483 INFO  [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=c0d162c1-297d-428e-9316-c67ff1060f5e
+2025-11-19 17:28:49.580 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:28:49.581 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:28:49.592 INFO  [http-nio-8090-exec-6] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 17:28:49.598 DEBUG [http-nio-8090-exec-6] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 17:28:49.604 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:28:49.656 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:28:49.683 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:28:49.693 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:28:50.094 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:28:50.096 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:28:50.105 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:28:56.160 INFO  [http-nio-8090-exec-9] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:28:56.162 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:28:56.239 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:28:56.240 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:29:52.297 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:29:52.299 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:29:52.333 INFO  [http-nio-8090-exec-3] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:29:52.334 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:30:12.294 INFO  [http-nio-8090-exec-4] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:30:12.295 DEBUG [http-nio-8090-exec-4] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:30:12.336 INFO  [http-nio-8090-exec-6] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:30:12.337 DEBUG [http-nio-8090-exec-6] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:31:31.308 INFO  [http-nio-8090-exec-8] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:31:31.312 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:31:31.340 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.372 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.374 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.381 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.383 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.385 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.387 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.389 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.390 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.391 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.394 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.396 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.398 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.399 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.399 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.400 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.400 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.401 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.401 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.402 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.402 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.403 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.403 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.404 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.404 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.405 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.405 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.405 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.406 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.406 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.447 INFO  [http-nio-8090-exec-9] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 17:31:31.448 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 17:31:31.468 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.484 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.485 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.487 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.505 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.506 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.507 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.508 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.511 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.512 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.514 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.518 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.519 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.522 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.524 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.526 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.528 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.529 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.531 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.537 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.540 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.542 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.544 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.546 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.551 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.553 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.555 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.557 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.559 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:31.562 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 17:31:34.132 INFO  [http-nio-8090-exec-10] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:31:34.133 INFO  [http-nio-8090-exec-10] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:31:34.153 INFO  [http-nio-8090-exec-10] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:31:34.193 INFO  [http-nio-8090-exec-1] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:31:34.197 INFO  [http-nio-8090-exec-1] c.r.d.r.service.RespStatementService - [RespStatementService] 책무기술서 목록 조회 - page: 0, size: 20
+2025-11-19 17:31:34.204 INFO  [http-nio-8090-exec-1] c.r.d.r.c.RespStatementController - [RespStatementController] 책무기술서 목록 조회 완료 - 총 1건
+2025-11-19 17:31:36.260 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:31:36.261 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:31:36.290 INFO  [http-nio-8090-exec-3] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:31:36.292 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:32:11.370 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/search?keyword= - 조직 검색
+2025-11-19 17:32:11.370 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 조직 검색 - searchKeyword: 
+2025-11-19 17:33:30.950 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:33:50.036 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:35:25.686 INFO  [http-nio-8090-exec-10] c.r.d.o.c.OrganizationController - GET /api/organizations/search?keyword= - 조직 검색
+2025-11-19 17:35:25.695 DEBUG [http-nio-8090-exec-10] c.r.d.o.service.OrganizationService - 조직 검색 - searchKeyword: 
+2025-11-19 17:35:51.614 INFO  [http-nio-8090-exec-1] c.r.d.o.c.OrganizationController - GET /api/organizations/DEPT003/management-obligations - 조직별 관리의무 조회
+2025-11-19 17:35:51.615 DEBUG [http-nio-8090-exec-1] c.r.d.o.service.OrganizationService - 조직별 관리의무 조회 - orgCode: DEPT003
+2025-11-19 17:38:30.936 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:38:50.040 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:39:31.720 INFO  [http-nio-8090-exec-7] c.r.d.r.c.DeptManagerManualController - POST /api/resps/dept-manager-manuals - 메뉴얼 생성: ledgerOrderId=20250001, obligationCd=20250001M0002D0001O0001, orgCode=DEPT003
+2025-11-19 17:39:31.724 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 요청 - ledgerOrderId: 20250001, obligationCd: 20250001M0002D0001O0001, orgCode: DEPT003, username: admin
+2025-11-19 17:39:31.731 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 시작 - obligationCd: 20250001M0002D0001O0001
+2025-11-19 17:39:31.768 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 완료 - obligationCd: 20250001M0002D0001O0001, seq: 1 -> code: 20250001M0002D0001O0001A0001
+2025-11-19 17:39:31.788 INFO  [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 완료 - manualCd: 20250001M0002D0001O0001A0001
+2025-11-19 17:39:31.797 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 17:39:31.878 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - POST /api/resps/dept-manager-manuals - 메뉴얼 생성: ledgerOrderId=20250001, obligationCd=20250001M0002D0001O0001, orgCode=DEPT003
+2025-11-19 17:39:31.879 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 요청 - ledgerOrderId: 20250001, obligationCd: 20250001M0002D0001O0001, orgCode: DEPT003, username: admin
+2025-11-19 17:39:31.884 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 시작 - obligationCd: 20250001M0002D0001O0001
+2025-11-19 17:39:31.890 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 완료 - obligationCd: 20250001M0002D0001O0001, seq: 2 -> code: 20250001M0002D0001O0001A0002
+2025-11-19 17:39:31.899 INFO  [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 완료 - manualCd: 20250001M0002D0001O0001A0002
+2025-11-19 17:39:31.910 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 17:39:31.944 INFO  [http-nio-8090-exec-8] c.r.d.r.c.DeptManagerManualController - POST /api/resps/dept-manager-manuals - 메뉴얼 생성: ledgerOrderId=20250001, obligationCd=20250001M0002D0002O0001, orgCode=DEPT003
+2025-11-19 17:39:31.945 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 요청 - ledgerOrderId: 20250001, obligationCd: 20250001M0002D0002O0001, orgCode: DEPT003, username: admin
+2025-11-19 17:39:31.947 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 시작 - obligationCd: 20250001M0002D0002O0001
+2025-11-19 17:39:31.950 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 완료 - obligationCd: 20250001M0002D0002O0001, seq: 1 -> code: 20250001M0002D0002O0001A0001
+2025-11-19 17:39:31.952 INFO  [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 완료 - manualCd: 20250001M0002D0002O0001A0001
+2025-11-19 17:39:31.959 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 17:39:32.022 INFO  [http-nio-8090-exec-9] c.r.d.r.c.DeptManagerManualController - POST /api/resps/dept-manager-manuals - 메뉴얼 생성: ledgerOrderId=20250001, obligationCd=20250001M0002D0002O0001, orgCode=DEPT003
+2025-11-19 17:39:32.023 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 요청 - ledgerOrderId: 20250001, obligationCd: 20250001M0002D0002O0001, orgCode: DEPT003, username: admin
+2025-11-19 17:39:32.026 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 시작 - obligationCd: 20250001M0002D0002O0001
+2025-11-19 17:39:32.029 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 완료 - obligationCd: 20250001M0002D0002O0001, seq: 2 -> code: 20250001M0002D0002O0001A0002
+2025-11-19 17:39:32.031 INFO  [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 완료 - manualCd: 20250001M0002D0002O0001A0002
+2025-11-19 17:39:32.037 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 17:39:32.076 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - POST /api/resps/dept-manager-manuals - 메뉴얼 생성: ledgerOrderId=20250001, obligationCd=20250001M0002D0003O0001, orgCode=DEPT003
+2025-11-19 17:39:32.077 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 요청 - ledgerOrderId: 20250001, obligationCd: 20250001M0002D0003O0001, orgCode: DEPT003, username: admin
+2025-11-19 17:39:32.081 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 시작 - obligationCd: 20250001M0002D0003O0001
+2025-11-19 17:39:32.085 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼코드 생성 완료 - obligationCd: 20250001M0002D0003O0001, seq: 1 -> code: 20250001M0002D0003O0001A0001
+2025-11-19 17:39:32.089 INFO  [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 메뉴얼 생성 완료 - manualCd: 20250001M0002D0003O0001A0001
+2025-11-19 17:39:32.098 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 17:39:32.137 INFO  [http-nio-8090-exec-1] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:39:32.139 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:39:32.189 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:39:32.190 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:39:32.219 INFO  [http-nio-8090-exec-3] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:39:32.219 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:39:32.412 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:39:32.412 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:39:32.415 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:40:02.308 INFO  [http-nio-8090-exec-6] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:40:02.310 DEBUG [http-nio-8090-exec-6] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:40:02.345 INFO  [http-nio-8090-exec-7] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:40:02.345 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:41:28.059 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:41:28.060 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:43:48.877 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:43:50.064 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:48:48.900 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:48:50.083 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:49:28.382 INFO  [http-nio-8090-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:49:28.382 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:49:28.387 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:53:51.844 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 17:53:51.845 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 17:53:51.850 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 17:53:51.883 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 17:53:52.313 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 17:53:52.333 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=c0d162c1-297d-428e-9316-c67ff1060f5e
+2025-11-19 17:53:52.408 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:53:52.409 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 17:53:52.409 INFO  [http-nio-8090-exec-2] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 17:53:52.409 DEBUG [http-nio-8090-exec-2] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 17:53:52.411 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:53:52.416 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:53:52.427 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:53:52.428 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:53:53.158 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:53:53.159 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:53:53.161 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:54:39.211 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 17:54:39.212 DEBUG [http-nio-8090-exec-6] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 17:54:39.226 DEBUG [http-nio-8090-exec-6] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 17:54:39.256 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 17:54:39.257 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 17:54:39.270 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 17:55:18.655 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:55:18.655 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:55:18.656 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:55:18.659 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:55:18.659 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:55:18.701 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 17:55:18.701 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 17:55:18.704 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 17:55:18.720 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 17:55:18.721 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 17:55:19.567 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:55:19.567 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:55:19.569 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:00:21.808 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 18:00:21.810 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 18:00:21.818 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 18:00:21.831 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 18:00:22.237 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 18:00:22.249 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=22ec14f5-088c-47ad-8744-6e51de3fd9f2
+2025-11-19 18:00:22.305 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:00:22.306 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:00:22.307 INFO  [http-nio-8090-exec-8] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 18:00:22.314 DEBUG [http-nio-8090-exec-8] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 18:00:22.315 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 18:00:22.325 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 18:00:22.351 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 18:00:22.352 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 18:00:24.940 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:00:24.940 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:00:24.943 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:05:22.511 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:05:36.938 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:05:36.939 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:05:36.942 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:08:06.321 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 18:08:06.321 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 18:08:06.328 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 18:08:06.342 DEBUG [http-nio-8090-exec-3] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 18:08:06.663 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 18:08:06.680 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=22ec14f5-088c-47ad-8744-6e51de3fd9f2
+2025-11-19 18:08:06.724 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:08:06.726 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:08:06.729 INFO  [http-nio-8090-exec-1] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 18:08:06.729 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 18:08:06.730 DEBUG [http-nio-8090-exec-1] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 18:08:06.735 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 18:08:06.742 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 18:08:06.742 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 18:08:11.302 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:08:11.303 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:08:11.305 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:08:17.471 INFO  [http-nio-8090-exec-5] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 18:08:17.472 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 18:08:17.538 INFO  [http-nio-8090-exec-7] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 18:08:17.539 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 18:08:30.612 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 18:08:30.634 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 18:08:47.988 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 18:08:47.989 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 18:08:47.991 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 18:08:47.993 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 18:08:47.993 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 18:08:48.033 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 18:08:48.036 DEBUG [http-nio-8090-exec-1] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 18:08:48.045 DEBUG [http-nio-8090-exec-1] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 18:08:48.058 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 18:08:48.059 DEBUG [http-nio-8090-exec-1] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 18:08:49.146 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:08:49.146 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:08:49.149 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:13:47.814 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:14:19.841 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:14:19.842 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:14:19.845 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:18:47.820 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:19:55.840 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:19:55.841 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:19:55.844 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:23:47.846 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:25:03.611 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:25:03.612 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:25:03.616 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:28:47.871 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:30:54.921 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 18:30:54.922 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 18:30:54.927 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 18:30:54.936 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 18:30:55.311 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 18:30:55.333 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=d93fdf7f-7e38-4be3-a25d-8453a6d5d804
+2025-11-19 18:30:55.385 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:30:55.387 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 18:30:55.390 INFO  [http-nio-8090-exec-7] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 18:30:55.393 DEBUG [http-nio-8090-exec-7] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 18:30:55.396 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 18:30:55.405 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 18:30:55.412 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 18:30:55.413 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 18:31:26.662 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:31:26.664 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:31:26.669 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:35:55.572 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:40:55.603 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:45:55.630 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:50:55.691 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 18:51:01.770 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:51:01.771 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 18:51:01.786 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 18:55:55.694 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 19:00:34.247 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 19:00:34.248 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 19:00:34.253 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 19:00:57.971 INFO  [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 19:00:57.973 INFO  [http-nio-8090-exec-4] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 19:00:57.977 DEBUG [http-nio-8090-exec-4] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 19:00:57.996 DEBUG [http-nio-8090-exec-4] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 19:00:58.307 INFO  [http-nio-8090-exec-4] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 19:00:58.326 INFO  [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=1ad4624a-5f3c-42e3-8463-28b9732b0199
+2025-11-19 19:00:58.371 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 19:00:58.373 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 19:00:58.374 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 19:00:58.374 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 19:00:58.375 INFO  [http-nio-8090-exec-9] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 19:00:58.380 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 19:00:58.380 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 19:00:58.382 DEBUG [http-nio-8090-exec-9] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 19:01:00.725 INFO  [http-nio-8090-exec-2] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 19:01:00.729 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 19:01:00.732 DEBUG [http-nio-8090-exec-2] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
