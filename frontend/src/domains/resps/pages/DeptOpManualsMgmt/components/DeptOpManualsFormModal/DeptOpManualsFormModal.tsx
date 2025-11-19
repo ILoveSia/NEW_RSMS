@@ -1,6 +1,6 @@
 /**
  * 부서장업무메뉴얼 등록/상세 모달
- * - 기본정보: 원장차수, 부점 선택
+ * - 기본정보: 원장차수, 부서 선택
  * - 관리활동 정보: Grid로 다중 행 추가/저장
  * - dept_manager_manuals 테이블 구조에 맞게 재설계
  */
@@ -101,7 +101,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   // 선택된 Grid 행
   const [selectedRows, setSelectedRows] = useState<ManagementActivityRow[]>([]);
 
-  // 부점 조회 팝업 상태
+  // 부서 조회 팝업 상태
   const [isOrgSearchModalOpen, setIsOrgSearchModalOpen] = useState(false);
 
   // 수정 모드 상태
@@ -175,24 +175,24 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
     // 기존 데이터 복원 로직
   }, []);
 
-  // 부점 조회 팝업 열기
+  // 부서 조회 팝업 열기
   const handleOpenOrgSearch = useCallback(() => {
     if (!isReadOnly && mode !== 'view') {
       setIsOrgSearchModalOpen(true);
     }
   }, [isReadOnly, mode]);
 
-  // 부점 조회 팝업 닫기
+  // 부서 조회 팝업 닫기
   const handleCloseOrgSearch = useCallback(() => {
     setIsOrgSearchModalOpen(false);
   }, []);
 
-  // 부점 선택
+  // 부서 선택
   const handleSelectOrganization = useCallback((organization: Organization) => {
     setSelectedOrganization(organization);
     setOrgCode(organization.orgCode);
     setIsOrgSearchModalOpen(false);
-    toast.success(`부점 "${organization.orgName}" 선택되었습니다.`);
+    toast.success(`부서 "${organization.orgName}" 선택되었습니다.`);
   }, []);
 
   // 조직 선택 시 관리의무 목록 조회
@@ -223,7 +223,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
   // Grid 행 추가
   const handleAddRow = useCallback(() => {
     if (!orgCode) {
-      toast.warning('먼저 부점을 선택해주세요.');
+      toast.warning('먼저 부서을 선택해주세요.');
       return;
     }
 
@@ -403,7 +403,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       return;
     }
     if (!orgCode) {
-      toast.warning('부점을 선택해주세요.');
+      toast.warning('부서을 선택해주세요.');
       return;
     }
     if (activities.length === 0) {
@@ -492,7 +492,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
               기본 정보
             </Typography>
 
-            {/* 책무이행차수, 부점 */}
+            {/* 책무이행차수, 부서 */}
             <Box sx={{ display: 'flex', gap: 2 }}>
               {/* 책무이행차수 */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -506,16 +506,16 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
                 />
               </Box>
 
-              {/* 부점 */}
+              {/* 부서 */}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <TextField
                   fullWidth
                   size="small"
-                  label="부점"
+                  label="부서"
                   required
                   disabled={isReadOnly || mode === 'view'}
                   value={selectedOrganization ? `${selectedOrganization.orgName} (${selectedOrganization.orgCode})` : ''}
-                  placeholder="돋보기 버튼을 클릭하여 부점을 선택하세요"
+                  placeholder="돋보기 버튼을 클릭하여 부서을 선택하세요"
                   InputProps={{
                     readOnly: true,
                     endAdornment: (
@@ -653,12 +653,12 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
         )}
       </DialogActions>
 
-      {/* 부점 조회 팝업 */}
+      {/* 부서 조회 팝업 */}
       <OrganizationSearchModal
         open={isOrgSearchModalOpen}
         onClose={handleCloseOrgSearch}
         onSelect={handleSelectOrganization}
-        title="부점 조회"
+        title="부서 조회"
         selectedOrgCode={orgCode}
       />
     </Dialog>

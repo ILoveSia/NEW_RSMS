@@ -77,7 +77,7 @@ const ReportImprovement: React.FC<ReportImprovementProps> = ({ className }) => {
     status: ''
   });
 
-  // 부점조회 모달 상태
+  // 부서조회 모달 상태
   const [branchModalOpen, setBranchModalOpen] = useState<boolean>(false);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
@@ -323,7 +323,7 @@ const ReportImprovement: React.FC<ReportImprovementProps> = ({ className }) => {
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
   }, []);
 
-  // 부점조회 핸들러
+  // 부서조회 핸들러
   const handleBranchSearchClick = useCallback(() => {
     setBranchModalOpen(true);
   }, []);
@@ -341,7 +341,7 @@ const ReportImprovement: React.FC<ReportImprovementProps> = ({ className }) => {
         ...prev,
         branchCode: branch.branchCode
       }));
-      toast.success(`부점이 선택되었습니다: ${branch.branchName}`);
+      toast.success(`부서이 선택되었습니다: ${branch.branchName}`);
     }
     setBranchModalOpen(false);
   }, []);
@@ -400,13 +400,13 @@ const ReportImprovement: React.FC<ReportImprovementProps> = ({ className }) => {
     {
       key: 'branchCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       endAdornment: {
         type: 'icon',
         icon: 'Search',
         onClick: handleBranchSearchClick,
-        tooltip: '부점 조회'
+        tooltip: '부서 조회'
       },
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
@@ -733,10 +733,10 @@ const ReportImprovement: React.FC<ReportImprovementProps> = ({ className }) => {
         </React.Suspense>
       </div>
 
-      {/* 부점조회 팝업 */}
+      {/* 부서조회 팝업 */}
       <BranchLookupModal
         open={branchModalOpen}
-        title="부점조회팝업"
+        title="부서조회팝업"
         multiple={false}
         onClose={handleBranchModalClose}
         onSelect={handleBranchSelect}

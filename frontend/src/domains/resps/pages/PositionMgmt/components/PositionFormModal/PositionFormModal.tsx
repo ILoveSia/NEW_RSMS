@@ -98,13 +98,13 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
     return selectedHq?.detailCode || null;
   }, [formData.headquarters, headquarters]);
 
-  // 본부 선택 시 해당 본부의 모든 부점 조회 (등록 모드 또는 수정 모드에서 본부 변경 시)
+  // 본부 선택 시 해당 본부의 모든 부서 조회 (등록 모드 또는 수정 모드에서 본부 변경 시)
   const { data: departments } = useDepartmentsByHqCode(selectedHqCode);
 
-  // 직책상세 모달일 때 해당 직책의 부점 목록
+  // 직책상세 모달일 때 해당 직책의 부서 목록
   const [detailDepartments, setDetailDepartments] = useState<DepartmentDto[]>([]);
 
-  // 조회된 모든 부점의 org_code 배열 추출
+  // 조회된 모든 부서의 org_code 배열 추출
   const allOrgCodes = useMemo(() => {
     if (!departments || departments.length === 0) return [];
     return departments.map(dept => dept.orgCode);
@@ -113,7 +113,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
   // 직책코드는 이제 positionCode 상태에서 직접 관리
   // (PositionNameComboBox의 onChange에서 직접 설정됨)
 
-  // 부점 목록 DataGrid 컬럼 정의 (조회 전용)
+  // 부서 목록 DataGrid 컬럼 정의 (조회 전용)
   const departmentColumns = useMemo<ColDef<DepartmentDto>[]>(() => [
     {
       field: 'orgCode',
@@ -135,7 +135,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
       valueFormatter: (params) => {
         const typeMap: Record<string, string> = {
           'head': '본부',
-          'dept': '부점',
+          'dept': '부서',
           'branch': '영업점'
         };
         return typeMap[params.value] || params.value;
@@ -182,7 +182,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           setIsEditing(false);
           setErrors({ ledgerOrderId: '', positionName: '', headquarters: '' });
 
-          // 부점 목록 조회
+          // 부서 목록 조회
           const depts = await getPositionDepartments(Number(position.id));
           const convertedDepts: DepartmentDto[] = depts.map(dept => ({
             hqCode: '',
@@ -212,7 +212,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
     }
   }, [mode, position]);
 
-  // 수정 모드에서 본부 변경 시 부점 목록 업데이트
+  // 수정 모드에서 본부 변경 시 부서 목록 업데이트
   useEffect(() => {
     if (mode === 'detail' && isEditing && departments) {
       setDetailDepartments(departments);
@@ -255,7 +255,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
           hqCode: selectedHqCode || '',
           hqName: formData.headquarters,
           executiveEmpNo: executiveEmpNo || undefined, // 임원사번 추가
-          orgCodes: allOrgCodes, // 조회된 모든 부점의 org_code 배열 전송
+          orgCodes: allOrgCodes, // 조회된 모든 부서의 org_code 배열 전송
           isActive: 'Y',
           isConcurrent: 'N'
         };
@@ -430,11 +430,11 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
             }}
           />
 
-          {/* 부점 목록 DataGrid (등록 모드에서만 표시) */}
+          {/* 부서 목록 DataGrid (등록 모드에서만 표시) */}
           {mode === 'create' && departments && departments.length > 0 && (
             <Box sx={{ mt: 1 }}>
               <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
-                조회된 부점 목록 ({departments.length}개) - 등록 시 모두 저장됩니다
+                조회된 부서 목록 ({departments.length}개) - 등록 시 모두 저장됩니다
               </Typography>
               <Box sx={{ width: '100%', height: '200px' }}>
                 <BaseDataGrid
@@ -448,11 +448,11 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
             </Box>
           )}
 
-          {/* 상세 모드에서도 부점 목록 Grid 표시 */}
+          {/* 상세 모드에서도 부서 목록 Grid 표시 */}
           {mode === 'detail' && (
             <Box sx={{ mt: 1 }}>
               <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.875rem' }}>
-                부점 목록 ({detailDepartments.length}개)
+                부서 목록 ({detailDepartments.length}개)
               </Typography>
               {detailDepartments.length > 0 ? (
                 <Box sx={{ width: '100%', height: '200px' }}>
@@ -466,7 +466,7 @@ const PositionFormModal: React.FC<PositionFormModalProps> = ({
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                  부점 목록을 불러오는 중...
+                  부서 목록을 불러오는 중...
                 </Typography>
               )}
             </Box>

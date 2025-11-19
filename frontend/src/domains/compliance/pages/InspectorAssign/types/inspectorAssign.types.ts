@@ -11,7 +11,7 @@ export interface InspectorAssignment {
   obligationInfo: string;               // 관리의무 (management_obligations.obligation_info)
   activityName: string;                 // 관리활동명 (dept_manager_manuals.activity_name)
   activityFrequencyCd: string;          // 관리활동수행주기 (dept_manager_manuals.activity_frequency_cd)
-  orgCode: string;                      // 부점 (dept_manager_manuals.org_code)
+  orgCode: string;                      // 부서 (dept_manager_manuals.org_code)
   inspector: Inspector | null;          // 지정된 점검자
   inspectionDate?: string;              // 점검일자 (초회/날짜 정보)
   assignmentStatus: 'ASSIGNED' | 'UNASSIGNED' | 'COMPLETED';  // 점검자 지정상태
@@ -48,7 +48,7 @@ export interface InspectorAssignFilters {
   inspectionName?: string;              // 점검명
   periodId?: string;                    // 점검명 (기간) 선택
   assignmentStatus?: string;            // 점검자 지정상태 (전체/지정완료/미지정)
-  boolCode?: string;                    // 부점코드
+  boolCode?: string;                    // 부서코드
 }
 
 // 폼 데이터 타입 (점검자 지정용)

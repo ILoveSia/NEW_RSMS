@@ -109,7 +109,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     },
     {
       field: 'orgCode',
-      headerName: '부점',
+      headerName: '부서',
       width: 120,
       minWidth: 100,
       sortable: true,
@@ -551,14 +551,14 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       key: 'boolCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrganizationSearch,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     }
   ], [filters.ledgerOrderId, handleLedgerOrderChange, handleOrganizationSearch]);
@@ -781,7 +781,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
           open={organizationSearchOpen}
           onClose={handleOrganizationSearchClose}
           onSelect={handleOrganizationSelect}
-          title="부점 조회"
+          title="부서 조회"
           multiple={false}
         />
       </div>

@@ -267,6 +267,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
 
         // 수행 정보
         executorId: dto.executorId || '',
+        executorName: dto.executorName || '',  // employees 테이블 조인 결과
         executionDate: dto.executionDate || '',
         executionStatus: dto.executionStatus || '',
         executionResultCd: dto.executionResultCd || '',
@@ -324,7 +325,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       departmentCode: organization.orgCode || ''
     }));
     setOrganizationSearchOpen(false);
-    console.log(`✅ [ActivityExecution] 부점 선택: ${organization.orgCode}`);
+    console.log(`✅ [ActivityExecution] 부서 선택: ${organization.orgCode}`);
   }, []);
 
   const handleOrganizationSearchClose = useCallback(() => {
@@ -333,8 +334,9 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
 
   // Grid Event Handlers
   const handleRowClick = useCallback((activity: ActivityExecution) => {
-    console.log('행 클릭:', activity);
-  }, []);
+    console.log('✅ [ActivityExecution] 행 클릭 - 상세조회 모달 열기:', activity.id);
+    handleActivityDetail(activity);
+  }, [handleActivityDetail]);
 
   const handleRowDoubleClick = useCallback((activity: ActivityExecution) => {
     handleActivityDetail(activity);
@@ -397,14 +399,14 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     {
       key: 'departmentCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrganizationSearch,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     }
   ], [filters.ledgerOrderId, handleOrganizationSearch]);
@@ -633,7 +635,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
           open={organizationSearchOpen}
           onClose={handleOrganizationSearchClose}
           onSelect={handleOrganizationSelect}
-          title="부점조회"
+          title="부서조회"
         />
 
         {/* 수행자 지정 모달 */}

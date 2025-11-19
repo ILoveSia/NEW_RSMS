@@ -1,5 +1,5 @@
 /**
- * 조직(부점) 관련 API
+ * 조직(부서) 관련 API
  * - GET /api/organizations/search - 조직 검색 (본부명 포함)
  */
 

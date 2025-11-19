@@ -4,7 +4,7 @@
  *
  * 주요 기능:
  * - 직원 목록 조회 및 검색
- * - AG-Grid를 통한 직원 표시 (직번, 직원명, 부점, 직급, 상태)
+ * - AG-Grid를 통한 직원 표시 (직번, 직원명, 부서, 직급, 상태)
  * - 행 선택 및 선택 버튼 클릭으로 직원 선택
  * - 행 더블클릭으로 빠른 선택
  * - 단일 선택 모드 지원
@@ -103,7 +103,7 @@ const EmployeeLookupModal: React.FC<EmployeeLookupModalProps> = ({
       headerClass: 'ag-header-center'
     },
     {
-      headerName: '부점명',
+      headerName: '부서명',
       field: 'branchName',
       flex: 1,
       minWidth: 130,

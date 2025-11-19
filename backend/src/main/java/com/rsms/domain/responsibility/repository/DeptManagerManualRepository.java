@@ -87,4 +87,43 @@ public interface DeptManagerManualRepository extends JpaRepository<DeptManagerMa
      * 조직코드 존재 여부 확인
      */
     boolean existsByOrgCode(String orgCode);
+
+    /**
+     * 전체 조회 (employees 테이블 조인 포함)
+     * - executor_id로 employees 테이블 조인하여 수행자 이름(emp_name) 조회
+     * - org_code로 organizations 테이블 조인하여 조직명(org_name) 조회
+     * - LEFT JOIN으로 수행자가 없는 경우에도 조회 가능
+     */
+    @Query(value = """
+        SELECT dmm.manual_cd as manualCd,
+               dmm.ledger_order_id as ledgerOrderId,
+               dmm.obligation_cd as obligationCd,
+               dmm.org_code as orgCode,
+               o.org_name as orgName,
+               dmm.resp_item as respItem,
+               dmm.activity_name as activityName,
+               dmm.executor_id as executorId,
+               e.emp_name as executorName,
+               dmm.execution_date as executionDate,
+               dmm.execution_status as executionStatus,
+               dmm.execution_result_cd as executionResultCd,
+               dmm.execution_result_content as executionResultContent,
+               dmm.exec_check_method as execCheckMethod,
+               dmm.exec_check_detail as execCheckDetail,
+               dmm.exec_check_frequency_cd as execCheckFrequencyCd,
+               dmm.is_active as isActive,
+               dmm.status as status,
+               dmm.created_at as createdAt,
+               dmm.created_by as createdBy,
+               dmm.updated_at as updatedAt,
+               dmm.updated_by as updatedBy,
+               dmm.approved_at as approvedAt,
+               dmm.approved_by as approvedBy,
+               dmm.remarks as remarks
+        FROM rsms.dept_manager_manuals dmm
+        LEFT JOIN rsms.employees e ON dmm.executor_id = e.emp_no
+        LEFT JOIN rsms.organizations o ON dmm.org_code = o.org_code
+        ORDER BY dmm.created_at DESC
+        """, nativeQuery = true)
+    List<Object[]> findAllWithEmployeesNative();
 }

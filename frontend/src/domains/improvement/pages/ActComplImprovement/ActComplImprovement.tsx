@@ -322,7 +322,7 @@ const ActComplImprovement: React.FC<ActComplImprovementProps> = ({ className }) 
     console.log('선택된 행:', selected.length);
   }, []);
 
-  // 부점 조회 핸들러
+  // 부서 조회 핸들러
   const handleBranchSearchClick = useCallback(() => {
     setBranchModalOpen(true);
   }, []);
@@ -332,7 +332,7 @@ const ActComplImprovement: React.FC<ActComplImprovementProps> = ({ className }) 
     if (branch) {
       handleFiltersChange({ branchCode: branch.branchCode });
       setBranchModalOpen(false);
-      console.log('부점 선택:', branch.branchCode, branch.branchName);
+      console.log('부서 선택:', branch.branchCode, branch.branchName);
     }
   }, [handleFiltersChange]);
 
@@ -365,13 +365,13 @@ const ActComplImprovement: React.FC<ActComplImprovementProps> = ({ className }) 
     {
       key: 'branchCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       endAdornment: {
         type: 'icon',
         icon: 'Search',
         onClick: handleBranchSearchClick,
-        tooltip: '부점 조회'
+        tooltip: '부서 조회'
       },
       gridSize: { xs: 12, sm: 6, md: 2 }
     },
@@ -701,7 +701,7 @@ const ActComplImprovement: React.FC<ActComplImprovementProps> = ({ className }) 
           />
         </React.Suspense>
 
-        {/* 부점 조회 모달 */}
+        {/* 부서 조회 모달 */}
         <BranchLookupModal
           open={branchModalOpen}
           onClose={handleBranchModalClose}

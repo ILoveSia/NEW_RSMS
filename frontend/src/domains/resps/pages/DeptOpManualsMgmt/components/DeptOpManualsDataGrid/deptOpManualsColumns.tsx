@@ -199,7 +199,7 @@ const dateTimeFormatter = (params: ValueFormatterParams): string => {
 
 // 📊 AG-Grid 컬럼 정의
 // dept_manager_manuals 테이블 구조에 맞게 재정의
-// 컬럼 순서: 순번, 책무구분, 책무, 책무상세, 관리의무, 부점명, 책무관리항목, 관리활동명, 점검항목, 점검주기, 사용여부
+// 컬럼 순서: 순번, 책무구분, 책무, 책무상세, 관리의무, 부서명, 책무관리항목, 관리활동명, 점검항목, 점검주기, 사용여부
 export const deptOpManualsColumns = (
   responsibilityCategoryCode: UseCommonCodeReturn,
   execCheckFrequencyCode: UseCommonCodeReturn
@@ -267,10 +267,10 @@ export const deptOpManualsColumns = (
     tooltipField: 'obligationInfo'
   },
 
-  // 6. 부점명 (150 → 250 → 125)
+  // 6. 부서명 (150 → 250 → 125)
   {
     field: 'orgName',
-    headerName: '부점명',
+    headerName: '부서명',
     width: 125,
     sortable: true,
     filter: 'agTextColumnFilter',

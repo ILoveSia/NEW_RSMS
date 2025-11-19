@@ -42,10 +42,10 @@ export interface PositionDto {
   positionsName: string;
   hqCode: string;
   hqName: string;
-  orgCode?: string;             // 부점코드 (단일 값 - 각 행마다)
-  orgName?: string;             // 부점명 (단일 값 - 각 행마다)
+  orgCode?: string;             // 부서코드 (단일 값 - 각 행마다)
+  orgName?: string;             // 부서명 (단일 값 - 각 행마다)
   orgCodes?: string[];          // positions_details 조인 결과 (조직코드 리스트 - 그룹핑용)
-  orgNames?: string[];          // organizations 조인 결과 (조직명/부점명 리스트 - 그룹핑용)
+  orgNames?: string[];          // organizations 조인 결과 (조직명/부서명 리스트 - 그룹핑용)
   executiveEmpNo?: string;      // 임원사번
   executiveName?: string;       // 임원성명 (employees 조인)
   expirationDate: string;
@@ -208,20 +208,20 @@ export const deletePositions = async (positionsIds: number[]): Promise<void> => 
 };
 
 /**
- * 직책별 부점 목록 조회
+ * 직책별 부서 목록 조회
  * - positions_details + organizations 조인
  * - GET /positions/{positionsId}/departments
  *
  * @param positionsId 직책ID
- * @returns Promise<Array<{org_code: string, org_name: string}>> 부점 목록
+ * @returns Promise<Array<{org_code: string, org_name: string}>> 부서 목록
  */
 export const getPositionDepartments = async (positionsId: number): Promise<Array<{org_code: string; org_name: string}>> => {
   try {
     const response = await apiClient.get(`/positions/${positionsId}/departments`);
     return response.data;
   } catch (error) {
-    console.error('부점 목록 조회 실패:', error);
-    throw new Error('부점 목록 조회에 실패했습니다.');
+    console.error('부서 목록 조회 실패:', error);
+    throw new Error('부서 목록 조회에 실패했습니다.');
   }
 };
 

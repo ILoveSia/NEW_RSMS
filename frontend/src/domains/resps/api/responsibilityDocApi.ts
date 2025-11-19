@@ -59,7 +59,7 @@ export interface PositionResponsibilityData {
   concurrentPosition: string | null;                 // 3. 겸직사항
   employeeNo: string | null;                         // 3-1. 직원번호 (사번)
   employeeName: string | null;                       // 3-2. 직원명
-  departments: string;                               // 4. 소관부점 (콤마 구분, 한줄)
+  departments: string;                               // 4. 소관부서 (콤마 구분, 한줄)
   committees: CommitteeInfo[];                       // 5. 주관회의체 목록
   responsibilities: ResponsibilityInfo[];            // 6. 책무목록
   managementObligations: ManagementObligationInfo[]; // 7. 관리의무 목록
@@ -96,7 +96,7 @@ export interface CreateResponsibilityDocRequest {
     userId?: string;                  // 사용자ID (로그인자ID)
     currentPositionDate: string;      // 현 직책 부여일
     dualPositionDetails?: string;     // 겸직사항
-    responsibleDepts: string;         // 소관부점
+    responsibleDepts: string;         // 소관부서
   };
   mainCommittees: Array<{
     committeeName: string;            // 회의체명

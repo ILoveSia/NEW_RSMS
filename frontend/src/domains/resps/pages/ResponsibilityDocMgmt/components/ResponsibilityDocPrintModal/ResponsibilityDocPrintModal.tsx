@@ -31,7 +31,7 @@ interface ResponsibilityDocPrintData {
   positionAssignedDate: string; // 현 직책 부여일
   isConcurrent: string; // 겸직여부 (Y/N)
   concurrentDetails: string; // 겸직사항
-  responsibleDepts: string; // 소관부점
+  responsibleDepts: string; // 소관부서
 
   // 2. 책무 정보
   responsibilityOverview: string; // 책무 개요

@@ -142,6 +142,23 @@ public class DeptManagerManualService {
     }
 
     /**
+     * 전체 메뉴얼 목록 조회 (employees 테이블 조인 포함)
+     * - executor_id로 employees 테이블 조인하여 수행자 이름 조회
+     * - org_code로 organizations 테이블 조인하여 조직명 조회
+     *
+     * @return 전체 메뉴얼 DTO 리스트 (수행자명, 조직명 포함)
+     */
+    public List<DeptManagerManualDto> findAllWithEmployees() {
+        log.debug("[DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)");
+
+        List<Object[]> results = deptManagerManualRepository.findAllWithEmployeesNative();
+
+        return results.stream()
+            .map(this::convertFromNativeQuery)
+            .collect(Collectors.toList());
+    }
+
+    /**
      * 원장차수ID로 메뉴얼 목록 조회
      *
      * @param ledgerOrderId 원장차수ID
@@ -280,6 +297,58 @@ public class DeptManagerManualService {
     // ===============================
     // DTO 변환 메서드
     // ===============================
+
+    /**
+     * Native Query 결과 → DTO 변환
+     * - Object[] 배열을 DeptManagerManualDto로 변환
+     *
+     * @param row Native Query 결과 행 (Object[])
+     * @return 메뉴얼 DTO
+     */
+    private DeptManagerManualDto convertFromNativeQuery(Object[] row) {
+        int i = 0;
+
+        return DeptManagerManualDto.builder()
+            .manualCd(safeToString(row[i++]))
+            .ledgerOrderId(safeToString(row[i++]))
+            .obligationCd(safeToString(row[i++]))
+            .orgCode(safeToString(row[i++]))
+            .orgName(safeToString(row[i++]))
+            .respItem(safeToString(row[i++]))
+            .activityName(safeToString(row[i++]))
+            .executorId(safeToString(row[i++]))
+            .executorName(safeToString(row[i++]))  // employees 테이블 조인 결과
+            .executionDate(row[i++] != null ? ((java.sql.Date) row[i - 1]).toLocalDate() : null)
+            .executionStatus(safeToString(row[i++]))
+            .executionResultCd(safeToString(row[i++]))
+            .executionResultContent(safeToString(row[i++]))
+            .execCheckMethod(safeToString(row[i++]))
+            .execCheckDetail(safeToString(row[i++]))
+            .execCheckFrequencyCd(safeToString(row[i++]))
+            .isActive(safeToString(row[i++]))  // CHAR(1) → String 변환
+            .status(safeToString(row[i++]))
+            .createdAt(row[i++] != null ? ((java.sql.Timestamp) row[i - 1]).toLocalDateTime() : null)
+            .createdBy(safeToString(row[i++]))
+            .updatedAt(row[i++] != null ? ((java.sql.Timestamp) row[i - 1]).toLocalDateTime() : null)
+            .updatedBy(safeToString(row[i++]))
+            .approvedAt(row[i++] != null ? ((java.sql.Timestamp) row[i - 1]).toLocalDateTime() : null)
+            .approvedBy(safeToString(row[i++]))
+            .remarks(safeToString(row[i++]))
+            .build();
+    }
+
+    /**
+     * Object를 안전하게 String으로 변환
+     * - Character 타입도 처리 (PostgreSQL CHAR(1) 컬럼 대응)
+     *
+     * @param obj 변환할 객체
+     * @return String 또는 null
+     */
+    private String safeToString(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Character) return String.valueOf(obj);
+        return (String) obj;
+    }
 
     /**
      * Entity → DTO 변환 (관계 테이블 정보 포함)

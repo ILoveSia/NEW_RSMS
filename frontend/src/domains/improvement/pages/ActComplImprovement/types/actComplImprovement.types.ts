@@ -18,7 +18,7 @@ export interface ActComplImprovement {
   result?: string; // 개선결과
 
   // 추가 필드들
-  branchCode?: string; // 부점코드
+  branchCode?: string; // 부서코드
   round?: string; // 회차
   priority?: ImprovementPriority; // 우선순위
   description?: string; // 상세설명
@@ -32,7 +32,7 @@ export interface ActComplImprovement {
 
 // 🔍 개선이행 목록 필터 인터페이스
 export interface ActComplImprovementFilters {
-  branchCode: string; // 부점코드
+  branchCode: string; // 부서코드
   category: string; // 구분
   requestDateFrom: string; // 개선요청일자 시작
   requestDateTo: string; // 개선요청일자 종료
@@ -57,7 +57,7 @@ export interface ActComplImprovementStats {
 // 📄 개선이행 등록/수정 폼 데이터
 export interface ActComplImprovementFormData {
   category: ImprovementCategory; // 구분
-  branchCode: string; // 부점코드
+  branchCode: string; // 부서코드
   departmentName: string; // 부품명
   categoryDetail?: string; // 구분상세
   activityName: string; // 관리활동명

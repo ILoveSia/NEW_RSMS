@@ -90,7 +90,7 @@ export interface ApprovalLineItem {
   sequence: number; // 순번
   stepName: string; // 결재단계명
   type: ApprovalLineType; // 구분 (기안, 결재, 합의, 참조 등)
-  department?: string; // 부점
+  department?: string; // 부서
   employeeId?: string; // 직원번호
   employeeName: string; // 직원명
   position?: string; // 직책

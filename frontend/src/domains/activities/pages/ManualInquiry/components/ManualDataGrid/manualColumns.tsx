@@ -212,7 +212,7 @@ export const manualColumns: ColDef<ManualInquiry>[] = [
   },
   {
     field: 'departmentName',
-    headerName: '부점명',
+    headerName: '부서명',
     width: 120,
     cellStyle: { textAlign: 'center', fontWeight: '600', color: '#1976d2' },
     headerClass: 'ag-header-cell-center',

@@ -102,7 +102,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   },
   {
     field: 'orgCode',
-    headerName: '부점',
+    headerName: '부서',
     width: 120,
     minWidth: 100,
     sortable: true,

@@ -92,7 +92,7 @@ export interface ReportImprovement {
 // 검색 필터 타입
 export interface ReportImprovementFilters {
   inspectionName: string;                       // 점검명
-  branchCode: string;                          // 부점코드
+  branchCode: string;                          // 부서코드
   requestDateFrom: string;                     // 개선요청시작일자
   requestDateTo: string;                       // 개선요청종료일자
   status: string;                              // 진행상태

@@ -211,7 +211,7 @@ export const responsibilityColumns: ColDef<ResponsibilityInspection>[] = [
     }
   },
   {
-    headerName: '부점명',
+    headerName: '부서명',
     field: 'branchName',
     width: 120,
     cellStyle: { textAlign: 'center' },

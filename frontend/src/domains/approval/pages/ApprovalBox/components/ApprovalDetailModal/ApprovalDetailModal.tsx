@@ -379,7 +379,7 @@ const ApprovalDetailModal: React.FC<ApprovalDetailModalProps> = ({
                         <TableCell>결재단계명</TableCell>
                         <TableCell>구분</TableCell>
                         <TableCell>결재일시</TableCell>
-                        <TableCell>부점</TableCell>
+                        <TableCell>부서</TableCell>
                         <TableCell>직원번호</TableCell>
                         <TableCell>직원명</TableCell>
                         <TableCell>상태</TableCell>

@@ -10,7 +10,7 @@ export interface Responsibility {
   책무: string;
   책무세부내용: string; // "세부내용1 외 2건" 형식으로 표시
   관리의무: string; // "관리의무1 외 5건" 형식으로 표시
-  부점명: string;
+  부서명: string;
   등록일자: string;
   등록자: string;
   등록자직책: string;
@@ -75,7 +75,7 @@ export interface ResponsibilityFormData {
   직책: string;
   본부구분: string;
   부서명: string;
-  부점명: string;
+  부서명: string;
   책무테고리: string;
   책무: string;
   책무세부내용: string;
@@ -136,6 +136,6 @@ export interface ManagementInfo {
   관리의무중본부구분: string;
   관리의무코드: string;
   관리의무: string;
-  부점명: string;
+  부서명: string;
   사용여부: string;
 }

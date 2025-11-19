@@ -79,6 +79,12 @@ public class DeptManagerManualDto {
     private String executorId;
 
     /**
+     * 수행자명 (employees.emp_name)
+     * - employees 테이블 조인하여 조회
+     */
+    private String executorName;
+
+    /**
      * 수행일자
      */
     private LocalDate executionDate;

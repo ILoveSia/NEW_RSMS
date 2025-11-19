@@ -1746,3 +1746,852 @@
 2025-11-19 14:29:25.392 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
 2025-11-19 14:29:25.392 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
 2025-11-19 14:29:25.392 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:33:50.080 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 224774 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-11-19 14:33:50.081 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-11-19 14:33:50.082 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-11-19 14:33:58.075 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 8.611 seconds (process running for 8.966)
+2025-11-19 14:34:20.107 INFO  [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 14:34:20.119 INFO  [http-nio-8090-exec-1] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 14:34:20.523 DEBUG [http-nio-8090-exec-1] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 14:34:20.559 DEBUG [http-nio-8090-exec-1] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 14:34:20.874 INFO  [http-nio-8090-exec-1] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 14:34:20.909 INFO  [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=6e440a85-7747-438c-a921-46c4246f453b
+2025-11-19 14:34:21.059 INFO  [http-nio-8090-exec-3] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 14:34:21.060 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 14:34:21.061 DEBUG [http-nio-8090-exec-3] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 14:34:21.061 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 14:34:21.062 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 14:34:21.094 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 14:34:21.110 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 14:34:21.112 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 14:34:24.830 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 14:34:24.830 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 14:34:24.831 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 14:34:24.831 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 14:34:24.840 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 14:34:24.894 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 14:34:24.903 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.907 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.913 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.915 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.917 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.918 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.920 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.921 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.922 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.924 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.925 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.930 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.936 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:24.938 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.005 INFO  [http-nio-8090-exec-7] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 14:34:25.007 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 14:34:25.035 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 14:34:25.044 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.049 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.050 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.051 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.053 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.055 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.056 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.057 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.057 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.060 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.062 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.062 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.063 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:34:25.064 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:39:21.348 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 14:44:21.353 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 14:49:21.339 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 14:54:21.347 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 14:58:12.415 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 14:58:12.416 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 14:58:12.417 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 14:58:12.419 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 14:58:12.421 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 14:58:12.449 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.458 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.461 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.462 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.463 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.463 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.464 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 14:58:12.467 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.468 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.469 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.470 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.471 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.472 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.472 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.472 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.497 INFO  [http-nio-8090-exec-1] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 14:58:12.498 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 14:58:12.538 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.545 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.547 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.548 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.551 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.551 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.552 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 14:58:12.557 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.560 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.563 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.565 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.567 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.570 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.573 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:58:12.574 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 14:59:21.345 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:01:04.321 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 15:01:04.322 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 15:01:04.337 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.340 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.341 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.342 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.343 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.344 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.344 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 15:01:04.349 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.350 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.350 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.351 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.352 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.353 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.354 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:04.355 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.722 INFO  [http-nio-8090-exec-8] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회
+2025-11-19 15:01:20.723 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회
+2025-11-19 15:01:20.748 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.753 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.755 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.757 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.760 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.762 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.765 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: Y
+2025-11-19 15:01:20.771 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.773 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.776 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.780 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.782 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.784 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.784 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:01:20.785 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD, detailCode: M
+2025-11-19 15:13:01.451 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 240596 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-11-19 15:13:01.452 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-11-19 15:13:01.452 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-11-19 15:13:09.100 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 8.071 seconds (process running for 8.387)
+2025-11-19 15:13:30.329 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 15:13:30.338 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 15:13:30.748 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 15:13:30.800 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 15:13:31.107 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 15:13:31.144 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=22c6f667-906c-4477-a52b-bc813931753d
+2025-11-19 15:13:31.274 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 15:13:31.275 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 15:13:31.277 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 15:13:31.277 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 15:13:31.277 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:13:31.294 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:13:31.295 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 15:13:31.296 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 15:13:52.744 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 15:13:52.744 INFO  [http-nio-8090-exec-7] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:13:52.746 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 15:13:52.746 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:13:52.760 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 15:13:52.779 ERROR [http-nio-8090-exec-7] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:13:52.871 INFO  [http-nio-8090-exec-8] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:13:52.878 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:13:52.907 ERROR [http-nio-8090-exec-8] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:14:18.546 INFO  [http-nio-8090-exec-9] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:14:18.548 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:14:18.555 ERROR [http-nio-8090-exec-9] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:14:18.591 INFO  [http-nio-8090-exec-10] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:14:18.593 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:14:18.602 ERROR [http-nio-8090-exec-10] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:16:49.841 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:16:49.843 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:16:49.894 ERROR [http-nio-8090-exec-2] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:16:49.929 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:16:49.930 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:16:49.937 ERROR [http-nio-8090-exec-5] c.r.g.e.GlobalExceptionHandler - [ClassCastException] class java.lang.Character cannot be cast to class java.lang.String (java.lang.Character and java.lang.String are in module java.base of loader 'bootstrap') - Cause: Unknown
+2025-11-19 15:18:31.605 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:29:45.331 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.8 with PID 246457 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-11-19 15:29:45.332 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-11-19 15:29:45.332 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-11-19 15:29:53.878 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 8.958 seconds (process running for 9.375)
+2025-11-19 15:30:01.935 INFO  [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 로그아웃 API 호출
+2025-11-19 15:30:01.936 INFO  [http-nio-8090-exec-1] c.r.domain.auth.service.AuthService - 로그아웃: username=anonymousUser
+2025-11-19 15:30:06.705 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 15:30:06.710 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 15:30:07.099 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 15:30:07.133 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 15:30:07.423 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 15:30:07.452 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=170ad0dc-94d7-4a7b-b3ac-9943725a3d38
+2025-11-19 15:30:07.607 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 15:30:07.607 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:30:07.608 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:30:07.609 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 15:30:07.613 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 15:30:07.636 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 15:30:07.639 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 15:30:07.642 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 15:30:08.549 INFO  [http-nio-8090-exec-7] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:30:08.549 INFO  [http-nio-8090-exec-6] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 15:30:08.550 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:30:08.550 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 15:30:08.557 DEBUG [http-nio-8090-exec-6] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 15:30:08.614 INFO  [http-nio-8090-exec-8] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:30:08.616 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:31:13.331 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 15:31:13.332 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 15:35:07.928 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:38:38.789 INFO  [http-nio-8090-exec-6] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 15:38:38.790 DEBUG [http-nio-8090-exec-6] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 15:38:38.818 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.838 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.838 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.839 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.839 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.840 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.840 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.841 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.842 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.843 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.844 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.845 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.846 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.846 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.847 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.848 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.848 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.848 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.849 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.849 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.850 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.850 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.851 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.851 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.852 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.853 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.854 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.854 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.854 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.855 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.890 INFO  [http-nio-8090-exec-7] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations - 전체 관리의무 목록 조회
+2025-11-19 15:38:38.890 DEBUG [http-nio-8090-exec-7] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 전체 관리의무 조회
+2025-11-19 15:38:38.906 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.925 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.929 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.930 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.931 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.932 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.933 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.934 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.935 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.936 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.938 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.940 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.942 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.943 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.944 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.944 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.945 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.946 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.946 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.946 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.947 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.947 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.947 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.948 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.949 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.949 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.951 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.951 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.952 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:38.952 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:40.320 INFO  [http-nio-8090-exec-8] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations/20250001M0001D0001O0001 - 관리의무 단일 조회
+2025-11-19 15:38:40.322 DEBUG [http-nio-8090-exec-8] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 관리의무 단일 조회 - obligationCd: 20250001M0001D0001O0001
+2025-11-19 15:38:40.332 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:38:40.430 INFO  [http-nio-8090-exec-9] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations/20250001M0001D0001O0001 - 관리의무 단일 조회
+2025-11-19 15:38:40.431 DEBUG [http-nio-8090-exec-9] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 관리의무 단일 조회 - obligationCd: 20250001M0001D0001O0001
+2025-11-19 15:38:40.444 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:39:10.138 INFO  [http-nio-8090-exec-1] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations/20250001M0002D0001O0001 - 관리의무 단일 조회
+2025-11-19 15:39:10.138 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 관리의무 단일 조회 - obligationCd: 20250001M0002D0001O0001
+2025-11-19 15:39:10.144 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:39:10.171 INFO  [http-nio-8090-exec-10] c.r.d.r.c.ManagementObligationController - GET /api/resps/management-obligations/20250001M0002D0001O0001 - 관리의무 단일 조회
+2025-11-19 15:39:10.172 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.ManagementObligationService - [ManagementObligationService] 관리의무 단일 조회 - obligationCd: 20250001M0002D0001O0001
+2025-11-19 15:39:10.181 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD, detailCode: 03
+2025-11-19 15:40:07.906 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:45:07.929 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:50:07.941 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 15:52:39.552 INFO  [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 로그아웃 API 호출
+2025-11-19 15:52:39.552 INFO  [http-nio-8090-exec-9] c.r.domain.auth.service.AuthService - 로그아웃: username=admin
+2025-11-19 15:54:17.037 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 15:54:17.039 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 15:54:17.046 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 15:54:17.064 DEBUG [http-nio-8090-exec-10] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 15:54:17.404 INFO  [http-nio-8090-exec-10] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 15:54:17.418 INFO  [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=c936edb4-d321-459b-81a9-5ba353ff108e
+2025-11-19 15:54:17.466 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:54:17.466 INFO  [http-nio-8090-exec-5] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 15:54:17.467 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 15:54:17.467 DEBUG [http-nio-8090-exec-5] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 15:54:17.469 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 15:54:17.475 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 15:54:17.484 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 15:54:17.485 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 15:54:23.748 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 15:54:23.749 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 15:54:23.784 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 15:54:23.785 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 15:54:23.895 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:54:23.896 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 15:54:25.975 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:54:25.976 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 15:54:31.850 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CLCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:54:31.851 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CLCD
+2025-11-19 15:54:33.279 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:54:33.280 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CD
+2025-11-19 15:55:35.712 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_LCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:35.712 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD
+2025-11-19 15:55:36.600 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_MCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:36.601 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_MCCD
+2025-11-19 15:55:37.364 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/HQ_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:37.365 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: HQ_DVCD
+2025-11-19 15:55:38.116 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:38.117 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:55:41.835 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CFRN_CYCL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:41.836 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CFRN_CYCL_DVCD
+2025-11-19 15:55:43.093 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CMITE_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:43.094 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CMITE_DVCD
+2025-11-19 15:55:43.798 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_RSK_EVAL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:43.799 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_RSK_EVAL_DVCD
+2025-11-19 15:55:44.996 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_BZWK_KNCE/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:44.996 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_BZWK_KNCE
+2025-11-19 15:55:46.580 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_EVDN_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:46.580 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_EVDN_TYP_DVCD
+2025-11-19 15:55:47.999 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:48.000 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_FRCD
+2025-11-19 15:55:49.304 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_ISPC_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:49.304 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD
+2025-11-19 15:55:50.622 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/EXC_RSLT_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:50.622 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: EXC_RSLT_CD
+2025-11-19 15:55:51.258 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ISPC_APRV_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:51.259 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ISPC_APRV_DVCD
+2025-11-19 15:55:52.005 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_STCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:52.006 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_STCD
+2025-11-19 15:55:53.149 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:53.150 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_TYP_DVCD
+2025-11-19 15:55:53.848 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/SUB_AGENCY_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:53.849 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: SUB_AGENCY_CD
+2025-11-19 15:55:54.583 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/SUB_REPORT_TYCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:54.585 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: SUB_REPORT_TYCD
+2025-11-19 15:55:56.572 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:55:56.574 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 15:56:05.798 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CLCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:05.799 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CLCD
+2025-11-19 15:56:07.082 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_LCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:07.083 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD
+2025-11-19 15:56:08.011 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:08.011 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CD
+2025-11-19 15:56:09.324 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_LCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:09.325 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD
+2025-11-19 15:56:09.951 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_MCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:09.952 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_MCCD
+2025-11-19 15:56:11.012 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/HQ_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:11.012 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: HQ_DVCD
+2025-11-19 15:56:11.723 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:11.724 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:56:18.394 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CFRN_CYCL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:18.394 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CFRN_CYCL_DVCD
+2025-11-19 15:56:19.666 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CMITE_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:19.667 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CMITE_DVCD
+2025-11-19 15:56:20.339 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_RSK_EVAL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:20.339 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_RSK_EVAL_DVCD
+2025-11-19 15:56:21.493 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_BZWK_KNCE/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:21.496 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_BZWK_KNCE
+2025-11-19 15:56:23.450 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_EVDN_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:23.450 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_EVDN_TYP_DVCD
+2025-11-19 15:56:24.706 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:24.706 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_FRCD
+2025-11-19 15:56:26.021 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_ISPC_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:26.022 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD
+2025-11-19 15:56:26.587 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/EXC_RSLT_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:26.587 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: EXC_RSLT_CD
+2025-11-19 15:56:27.211 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ISPC_APRV_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:27.212 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ISPC_APRV_DVCD
+2025-11-19 15:56:28.287 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_STCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:28.288 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_STCD
+2025-11-19 15:56:29.089 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:29.090 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_TYP_DVCD
+2025-11-19 15:56:54.717 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/SUB_REPORT_TYCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:54.718 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: SUB_REPORT_TYCD
+2025-11-19 15:56:55.965 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/SUB_AGENCY_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:55.966 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: SUB_AGENCY_CD
+2025-11-19 15:56:57.099 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:57.099 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_TYP_DVCD
+2025-11-19 15:56:58.249 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_STCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:58.249 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_STCD
+2025-11-19 15:56:58.938 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ISPC_APRV_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:58.938 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ISPC_APRV_DVCD
+2025-11-19 15:56:59.956 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/EXC_RSLT_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:56:59.956 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: EXC_RSLT_CD
+2025-11-19 15:57:00.965 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/FLFL_ISPC_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:00.965 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: FLFL_ISPC_FRCD
+2025-11-19 15:57:01.711 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_FRCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:01.712 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_FRCD
+2025-11-19 15:57:02.582 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_EVDN_TYP_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:02.583 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_EVDN_TYP_DVCD
+2025-11-19 15:57:04.339 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_BZWK_KNCE/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:04.339 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_BZWK_KNCE
+2025-11-19 15:57:05.463 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/ACVT_RSK_EVAL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:05.464 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: ACVT_RSK_EVAL_DVCD
+2025-11-19 15:57:06.657 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CMITE_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:06.658 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CMITE_DVCD
+2025-11-19 15:57:07.231 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/CFRN_CYCL_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:07.232 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: CFRN_CYCL_DVCD
+2025-11-19 15:57:08.576 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:08.577 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:57:09.529 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/HQ_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:09.530 DEBUG [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: HQ_DVCD
+2025-11-19 15:57:10.152 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_MCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:10.153 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_MCCD
+2025-11-19 15:57:11.371 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/MGMT_OBLG_LCCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:11.371 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: MGMT_OBLG_LCCD
+2025-11-19 15:57:12.137 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:12.138 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CD
+2025-11-19 15:57:16.668 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_OBLG_CLCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:16.669 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_OBLG_CLCD
+2025-11-19 15:57:18.430 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:18.430 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 15:57:51.581 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:57:51.583 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:58:28.626 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - PUT /api/system/codes/groups/DPRM_CD/details/0000 - 상세 코드 수정
+2025-11-19 15:58:28.627 INFO  [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 상세 코드 수정 - groupCode: DPRM_CD, detailCode: 0000, user: admin
+2025-11-19 15:58:28.675 INFO  [http-nio-8090-exec-2] c.r.d.s.c.c.CommonCodeController - PUT /api/system/codes/groups/DPRM_CD/details/1002 - 상세 코드 수정
+2025-11-19 15:58:28.676 INFO  [http-nio-8090-exec-2] c.r.d.s.c.service.CommonCodeService - 상세 코드 수정 - groupCode: DPRM_CD, detailCode: 1002, user: admin
+2025-11-19 15:58:28.700 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:58:28.701 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:58:42.176 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - PUT /api/system/codes/groups/DPRM_CD/details/1013 - 상세 코드 수정
+2025-11-19 15:58:42.176 INFO  [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 상세 코드 수정 - groupCode: DPRM_CD, detailCode: 1013, user: admin
+2025-11-19 15:58:42.205 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:58:42.205 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:59:16.794 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - PUT /api/system/codes/groups/DPRM_CD/details/1111 - 상세 코드 수정
+2025-11-19 15:59:16.795 INFO  [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 상세 코드 수정 - groupCode: DPRM_CD, detailCode: 1111, user: admin
+2025-11-19 15:59:16.830 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 15:59:16.831 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 15:59:18.242 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:03:14.863 INFO  [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 로그아웃 API 호출
+2025-11-19 16:03:14.863 INFO  [http-nio-8090-exec-3] c.r.domain.auth.service.AuthService - 로그아웃: username=admin
+2025-11-19 16:03:30.804 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 16:03:30.805 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 16:03:30.809 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 16:03:30.818 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 16:03:31.093 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 16:03:31.112 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=ed1d6455-c085-40dd-9d05-7460c4b8577b
+2025-11-19 16:03:31.147 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 16:03:31.149 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 16:03:31.156 INFO  [http-nio-8090-exec-8] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 16:03:31.157 DEBUG [http-nio-8090-exec-8] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 16:03:31.186 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:03:31.186 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:03:31.196 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:03:31.199 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:03:31.336 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:03:31.337 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:03:31.357 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:03:31.357 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:03:31.458 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 16:03:31.459 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 16:03:41.730 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:03:41.732 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:03:41.733 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:03:41.735 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:03:41.741 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:03:41.783 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:03:41.893 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:03:41.894 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:03:41.925 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:04:49.179 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:04:49.179 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:04:49.219 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:04:49.220 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:04:49.371 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 16:04:49.372 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 16:05:29.603 INFO  [http-nio-8090-exec-5] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 16:05:29.604 DEBUG [http-nio-8090-exec-5] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 16:06:28.408 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:06:28.409 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:06:28.412 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:06:28.437 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:06:28.437 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:06:28.443 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:07:04.638 INFO  [http-nio-8090-exec-6] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:07:04.640 DEBUG [http-nio-8090-exec-6] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:07:04.675 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups - 모든 코드 그룹 조회
+2025-11-19 16:07:04.675 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 모든 코드 그룹 조회
+2025-11-19 16:07:04.796 INFO  [http-nio-8090-exec-7] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details - 그룹별 상세 코드 조회
+2025-11-19 16:07:04.797 DEBUG [http-nio-8090-exec-7] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 16:07:08.337 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details - 그룹별 상세 코드 조회
+2025-11-19 16:07:08.338 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 그룹별 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 16:08:31.315 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:08:34.825 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:08:34.826 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:08:34.831 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:08:34.860 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:08:34.860 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:08:34.866 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:09:45.320 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:09:45.321 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:09:45.321 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:09:45.321 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:09:45.323 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:09:45.325 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:09:45.347 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:09:45.348 DEBUG [http-nio-8090-exec-9] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:09:45.352 DEBUG [http-nio-8090-exec-9] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:09:51.260 INFO  [http-nio-8090-exec-1] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details/active - 활성화된 상세 코드 조회
+2025-11-19 16:09:51.260 DEBUG [http-nio-8090-exec-1] c.r.d.s.c.service.CommonCodeService - 그룹별 활성화된 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 16:09:51.297 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details/active - 활성화된 상세 코드 조회
+2025-11-19 16:09:51.298 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 활성화된 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 16:09:51.324 INFO  [http-nio-8090-exec-5] c.r.d.p.c.PositionController - GET /api/positions/5 - 직책 조회
+2025-11-19 16:09:51.337 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 5
+2025-11-19 16:09:51.382 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionController - GET /api/positions/5 - 직책 조회
+2025-11-19 16:09:51.383 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 5
+2025-11-19 16:09:51.391 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/5/departments - 직책별 부점 목록 조회
+2025-11-19 16:09:51.392 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 5
+2025-11-19 16:09:51.448 INFO  [http-nio-8090-exec-6] c.r.d.o.c.OrganizationController - GET /api/organizations/by-hq/1111 - 본부별 부점 목록 조회
+2025-11-19 16:09:51.450 DEBUG [http-nio-8090-exec-6] c.r.d.o.service.OrganizationService - 본부코드별 조직 목록 조회 - hqCode: 1111
+2025-11-19 16:09:51.457 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions/5/departments - 직책별 부점 목록 조회
+2025-11-19 16:09:51.457 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 5
+2025-11-19 16:11:00.449 INFO  [http-nio-8090-exec-1] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:11:00.451 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:11:00.470 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 16:11:00.491 INFO  [http-nio-8090-exec-10] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:11:00.492 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:11:00.500 DEBUG [http-nio-8090-exec-10] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 16:11:02.045 INFO  [http-nio-8090-exec-5] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 16:11:02.045 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 16:11:02.074 INFO  [http-nio-8090-exec-4] c.r.d.r.c.ResponsibilityDetailController - GET /api/resps/responsibility-details - 전체 책무세부 목록 조회
+2025-11-19 16:11:02.074 DEBUG [http-nio-8090-exec-4] c.r.d.r.s.ResponsibilityDetailService - [ResponsibilityDetailService] 전체 책무세부 목록 조회
+2025-11-19 16:11:52.997 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:11:52.998 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:11:53.004 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:11:53.037 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:11:53.038 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:11:53.043 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:12:35.874 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:12:35.875 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:12:35.880 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:12:38.240 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionController - GET /api/positions/7 - 직책 조회
+2025-11-19 16:12:38.241 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 7
+2025-11-19 16:12:38.273 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionController - GET /api/positions/7 - 직책 조회
+2025-11-19 16:12:38.274 INFO  [http-nio-8090-exec-1] c.r.d.p.c.PositionController - GET /api/positions/7/departments - 직책별 부점 목록 조회
+2025-11-19 16:12:38.274 DEBUG [http-nio-8090-exec-9] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 7
+2025-11-19 16:12:38.274 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 7
+2025-11-19 16:12:38.305 INFO  [http-nio-8090-exec-5] c.r.d.p.c.PositionController - GET /api/positions/7/departments - 직책별 부점 목록 조회
+2025-11-19 16:12:38.306 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 7
+2025-11-19 16:12:38.307 INFO  [http-nio-8090-exec-10] c.r.d.o.c.OrganizationController - GET /api/organizations/by-hq/1024 - 본부별 부점 목록 조회
+2025-11-19 16:12:38.307 DEBUG [http-nio-8090-exec-10] c.r.d.o.service.OrganizationService - 본부코드별 조직 목록 조회 - hqCode: 1024
+2025-11-19 16:13:31.308 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:13:54.152 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:13:54.153 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:13:54.156 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:13:54.159 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:13:54.159 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:13:54.176 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:13:54.182 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:13:54.183 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:13:54.187 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:13:54.187 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:13:54.830 INFO  [http-nio-8090-exec-1] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:13:54.830 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:13:54.831 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:13:54.831 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:13:54.835 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:13:54.835 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:13:54.865 INFO  [http-nio-8090-exec-5] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:13:54.866 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:13:54.869 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:14:16.135 INFO  [http-nio-8090-exec-10] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/DPRM_CD/details/active - 활성화된 상세 코드 조회
+2025-11-19 16:14:16.135 DEBUG [http-nio-8090-exec-10] c.r.d.s.c.service.CommonCodeService - 그룹별 활성화된 상세 코드 조회 - groupCode: DPRM_CD
+2025-11-19 16:14:16.199 INFO  [http-nio-8090-exec-4] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/RSBT_RSOF_DVCD/details/active - 활성화된 상세 코드 조회
+2025-11-19 16:14:16.199 DEBUG [http-nio-8090-exec-4] c.r.d.s.c.service.CommonCodeService - 그룹별 활성화된 상세 코드 조회 - groupCode: RSBT_RSOF_DVCD
+2025-11-19 16:14:16.215 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/7 - 직책 조회
+2025-11-19 16:14:16.216 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 7
+2025-11-19 16:14:16.236 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionController - GET /api/positions/7 - 직책 조회
+2025-11-19 16:14:16.237 DEBUG [http-nio-8090-exec-6] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 7
+2025-11-19 16:14:16.246 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions/7/departments - 직책별 부점 목록 조회
+2025-11-19 16:14:16.247 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 7
+2025-11-19 16:14:16.319 INFO  [http-nio-8090-exec-8] c.r.d.o.c.OrganizationController - GET /api/organizations/by-hq/1024 - 본부별 부점 목록 조회
+2025-11-19 16:14:16.320 DEBUG [http-nio-8090-exec-8] c.r.d.o.service.OrganizationService - 본부코드별 조직 목록 조회 - hqCode: 1024
+2025-11-19 16:14:16.326 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionController - GET /api/positions/7/departments - 직책별 부점 목록 조회
+2025-11-19 16:14:16.327 DEBUG [http-nio-8090-exec-7] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 7
+2025-11-19 16:14:18.374 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionController - GET /api/positions/6 - 직책 조회
+2025-11-19 16:14:18.374 DEBUG [http-nio-8090-exec-9] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 6
+2025-11-19 16:14:18.397 INFO  [http-nio-8090-exec-1] c.r.d.p.c.PositionController - GET /api/positions/6 - 직책 조회
+2025-11-19 16:14:18.397 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 직책 조회 - positionsId: 6
+2025-11-19 16:14:18.399 INFO  [http-nio-8090-exec-5] c.r.d.p.c.PositionController - GET /api/positions/6/departments - 직책별 부점 목록 조회
+2025-11-19 16:14:18.400 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 6
+2025-11-19 16:14:18.427 INFO  [http-nio-8090-exec-10] c.r.d.o.c.OrganizationController - GET /api/organizations/by-hq/1101 - 본부별 부점 목록 조회
+2025-11-19 16:14:18.428 DEBUG [http-nio-8090-exec-10] c.r.d.o.service.OrganizationService - 본부코드별 조직 목록 조회 - hqCode: 1101
+2025-11-19 16:14:18.431 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionController - GET /api/positions/6/departments - 직책별 부점 목록 조회
+2025-11-19 16:14:18.431 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 직책별 부점 목록 조회 - positionsId: 6
+2025-11-19 16:15:49.147 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:15:49.148 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:15:49.149 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:15:49.152 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:15:49.153 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:15:49.177 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:15:49.178 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:15:49.178 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:15:49.182 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:15:49.182 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:15:50.160 INFO  [http-nio-8090-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:15:50.160 INFO  [http-nio-8090-exec-10] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:15:50.160 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:15:50.160 DEBUG [http-nio-8090-exec-10] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:15:50.162 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:15:50.163 DEBUG [http-nio-8090-exec-10] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:15:50.180 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionController - GET /api/positions - 모든 직책 조회
+2025-11-19 16:15:50.181 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 모든 직책 조회 (positions 기준 그룹화)
+2025-11-19 16:15:50.184 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 조회된 직책 수: 6
+2025-11-19 16:16:09.478 INFO  [http-nio-8090-exec-2] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:16:09.479 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:16:09.494 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 16:16:09.509 INFO  [http-nio-8090-exec-3] c.r.d.r.c.ResponsibilityController - GET /api/resps/responsibilities/list-with-join - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:16:09.510 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 - ledgerOrderId: null, responsibilityInfo: null, responsibilityCd: null
+2025-11-19 16:16:09.515 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.ResponsibilityService - 2테이블 조인 책무 목록 조회 완료 - 결과 수: 7
+2025-11-19 16:16:16.132 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 요청: ledgerOrderId=20250001
+2025-11-19 16:16:16.133 DEBUG [http-nio-8090-exec-6] c.r.d.p.s.PositionConcurrentService - 겸직 목록 조회 (positions 조인): ledgerOrderId=20250001
+2025-11-19 16:16:16.147 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 완료: 2 건
+2025-11-19 16:16:26.318 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:16:26.318 DEBUG [http-nio-8090-exec-7] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:16:26.323 INFO  [http-nio-8090-exec-7] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:16:26.597 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:16:26.598 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:17:34.595 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:17:34.595 DEBUG [http-nio-8090-exec-4] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:17:34.599 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:17:34.789 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:17:34.790 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:17:37.191 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:17:37.192 DEBUG [http-nio-8090-exec-3] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:17:37.194 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:17:37.337 INFO  [http-nio-8090-exec-6] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:17:37.338 DEBUG [http-nio-8090-exec-6] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:18:45.527 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:18:45.527 DEBUG [http-nio-8090-exec-8] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:18:45.531 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:18:45.737 INFO  [http-nio-8090-exec-1] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:18:45.738 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:19:00.397 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:19:00.397 DEBUG [http-nio-8090-exec-9] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:19:00.400 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:19:00.558 INFO  [http-nio-8090-exec-5] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:19:00.560 DEBUG [http-nio-8090-exec-5] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:19:04.215 INFO  [http-nio-8090-exec-10] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:19:04.215 DEBUG [http-nio-8090-exec-10] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:19:04.218 INFO  [http-nio-8090-exec-10] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:19:04.347 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:19:04.347 DEBUG [http-nio-8090-exec-4] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:19:27.269 INFO  [http-nio-8090-exec-2] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:19:27.270 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:19:27.276 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:19:27.321 INFO  [http-nio-8090-exec-3] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:19:27.321 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:19:27.323 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:20:49.044 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:21:05.546 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - GET /api/committees/8 - 회의체 상세 조회
+2025-11-19 16:21:05.546 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 8
+2025-11-19 16:21:05.550 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:21:05.551 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:21:05.552 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:21:05.585 INFO  [http-nio-8090-exec-5] c.r.d.c.c.CommitteeController - GET /api/committees/8 - 회의체 상세 조회
+2025-11-19 16:21:05.586 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 8
+2025-11-19 16:21:05.706 INFO  [http-nio-8090-exec-10] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:21:05.707 DEBUG [http-nio-8090-exec-10] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:21:47.089 INFO  [http-nio-8090-exec-2] c.r.d.c.c.CommitteeController - PUT /api/committees/8 - 회의체 수정
+2025-11-19 16:21:47.090 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 회의체 수정: ID=8
+2025-11-19 16:21:47.093 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=8
+2025-11-19 16:21:47.110 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:21:47.174 ERROR [http-nio-8090-exec-2] c.r.g.e.GlobalExceptionHandler - [DataIntegrityViolationException] could not execute statement [ERROR: duplicate key value violates unique constraint "uk_committee_details_committees_positions"
+  Detail: Key (committees_id, positions_id)=(8, 1) already exists.] [/* insert for com.rsms.domain.committee.entity.CommitteeDetail */insert into rsms.committee_details (committees_id,committees_type,created_at,created_by,positions_id,updated_at,updated_by) values (?,?,?,?,?,?,?) returning committee_details_id]; SQL [/* insert for com.rsms.domain.committee.entity.CommitteeDetail */insert into rsms.committee_details (committees_id,committees_type,created_at,created_by,positions_id,updated_at,updated_by) values (?,?,?,?,?,?,?) returning committee_details_id]; constraint [uk_committee_details_committees_positions] - Cause: ConstraintViolationException
+2025-11-19 16:22:02.827 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:22:02.828 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:22:02.830 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:22:02.837 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:22:02.838 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:22:02.863 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-11-19 16:22:02.876 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:22:02.877 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:22:02.887 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:22:02.888 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:22:05.476 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:22:05.477 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:22:05.477 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:22:05.477 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:22:05.479 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:22:05.481 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:22:05.510 INFO  [http-nio-8090-exec-5] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:22:05.510 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:22:05.514 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:22:07.835 INFO  [http-nio-8090-exec-10] c.r.d.c.c.CommitteeController - GET /api/committees/8 - 회의체 상세 조회
+2025-11-19 16:22:07.835 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 8
+2025-11-19 16:22:07.855 INFO  [http-nio-8090-exec-4] c.r.d.c.c.CommitteeController - GET /api/committees/8 - 회의체 상세 조회
+2025-11-19 16:22:07.855 DEBUG [http-nio-8090-exec-4] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 8
+2025-11-19 16:22:07.933 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:22:07.934 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:22:26.149 INFO  [http-nio-8090-exec-6] c.r.d.c.c.CommitteeController - PUT /api/committees/8 - 회의체 수정
+2025-11-19 16:22:26.149 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 회의체 수정: ID=8
+2025-11-19 16:22:26.152 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=8
+2025-11-19 16:22:26.157 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:22:26.163 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 4명
+2025-11-19 16:22:26.164 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 8
+2025-11-19 16:22:26.201 INFO  [http-nio-8090-exec-3] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:22:26.201 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:22:26.205 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:22:40.081 INFO  [http-nio-8090-exec-7] c.r.d.c.c.CommitteeController - GET /api/committees/12 - 회의체 상세 조회
+2025-11-19 16:22:40.081 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 12
+2025-11-19 16:22:40.096 INFO  [http-nio-8090-exec-8] c.r.d.c.c.CommitteeController - GET /api/committees/12 - 회의체 상세 조회
+2025-11-19 16:22:40.097 DEBUG [http-nio-8090-exec-8] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 12
+2025-11-19 16:22:40.187 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:22:40.187 DEBUG [http-nio-8090-exec-9] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:23:37.156 INFO  [http-nio-8090-exec-10] c.r.d.c.c.CommitteeController - GET /api/committees/11 - 회의체 상세 조회
+2025-11-19 16:23:37.156 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 11
+2025-11-19 16:23:37.190 INFO  [http-nio-8090-exec-4] c.r.d.c.c.CommitteeController - GET /api/committees/11 - 회의체 상세 조회
+2025-11-19 16:23:37.190 DEBUG [http-nio-8090-exec-4] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 11
+2025-11-19 16:23:37.273 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:23:37.273 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:23:49.504 INFO  [http-nio-8090-exec-3] c.r.d.c.c.CommitteeController - PUT /api/committees/11 - 회의체 수정
+2025-11-19 16:23:49.504 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 수정: ID=11
+2025-11-19 16:23:49.506 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=11
+2025-11-19 16:23:49.508 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:23:49.517 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 3명
+2025-11-19 16:23:49.517 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 11
+2025-11-19 16:23:49.546 INFO  [http-nio-8090-exec-7] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:23:49.547 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:23:49.551 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:24:45.416 INFO  [http-nio-8090-exec-9] c.r.d.c.c.CommitteeController - PUT /api/committees/11 - 회의체 수정
+2025-11-19 16:24:45.417 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 회의체 수정: ID=11
+2025-11-19 16:24:45.425 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=11
+2025-11-19 16:24:45.432 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:24:45.447 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 4명
+2025-11-19 16:24:45.447 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 11
+2025-11-19 16:24:45.485 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:24:45.485 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:24:45.489 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:24:53.297 INFO  [http-nio-8090-exec-10] c.r.d.c.c.CommitteeController - GET /api/committees/9 - 회의체 상세 조회
+2025-11-19 16:24:53.298 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 9
+2025-11-19 16:24:53.339 INFO  [http-nio-8090-exec-4] c.r.d.c.c.CommitteeController - GET /api/committees/9 - 회의체 상세 조회
+2025-11-19 16:24:53.340 DEBUG [http-nio-8090-exec-4] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 9
+2025-11-19 16:24:53.424 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:24:53.424 DEBUG [http-nio-8090-exec-2] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:25:03.363 INFO  [http-nio-8090-exec-3] c.r.d.c.c.CommitteeController - PUT /api/committees/9 - 회의체 수정
+2025-11-19 16:25:03.364 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 수정: ID=9
+2025-11-19 16:25:03.366 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=9
+2025-11-19 16:25:03.367 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:25:03.377 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 4명
+2025-11-19 16:25:03.377 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 9
+2025-11-19 16:25:03.399 INFO  [http-nio-8090-exec-7] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:25:03.400 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:25:03.401 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:25:12.250 INFO  [http-nio-8090-exec-8] c.r.d.c.c.CommitteeController - GET /api/committees/4 - 회의체 상세 조회
+2025-11-19 16:25:12.250 DEBUG [http-nio-8090-exec-8] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 4
+2025-11-19 16:25:12.267 INFO  [http-nio-8090-exec-9] c.r.d.c.c.CommitteeController - GET /api/committees/4 - 회의체 상세 조회
+2025-11-19 16:25:12.267 DEBUG [http-nio-8090-exec-9] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 4
+2025-11-19 16:25:12.361 INFO  [http-nio-8090-exec-1] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:25:12.361 DEBUG [http-nio-8090-exec-1] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:25:24.465 INFO  [http-nio-8090-exec-10] c.r.d.c.c.CommitteeController - PUT /api/committees/4 - 회의체 수정
+2025-11-19 16:25:24.467 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 수정: ID=4
+2025-11-19 16:25:24.471 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=4
+2025-11-19 16:25:24.474 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:25:24.484 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 3명
+2025-11-19 16:25:24.485 DEBUG [http-nio-8090-exec-10] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 4
+2025-11-19 16:25:24.506 INFO  [http-nio-8090-exec-4] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:25:24.507 DEBUG [http-nio-8090-exec-4] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:25:24.508 DEBUG [http-nio-8090-exec-4] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:25:30.498 INFO  [http-nio-8090-exec-2] c.r.d.c.c.CommitteeController - PUT /api/committees/4 - 회의체 수정
+2025-11-19 16:25:30.498 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 회의체 수정: ID=4
+2025-11-19 16:25:30.502 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=4
+2025-11-19 16:25:30.503 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:25:30.508 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 4명
+2025-11-19 16:25:30.508 DEBUG [http-nio-8090-exec-2] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 4
+2025-11-19 16:25:30.536 INFO  [http-nio-8090-exec-6] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:25:30.536 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:25:30.538 DEBUG [http-nio-8090-exec-6] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:25:38.211 INFO  [http-nio-8090-exec-3] c.r.d.c.c.CommitteeController - GET /api/committees/5 - 회의체 상세 조회
+2025-11-19 16:25:38.212 DEBUG [http-nio-8090-exec-3] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 5
+2025-11-19 16:25:38.265 INFO  [http-nio-8090-exec-7] c.r.d.c.c.CommitteeController - GET /api/committees/5 - 회의체 상세 조회
+2025-11-19 16:25:38.267 DEBUG [http-nio-8090-exec-7] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 5
+2025-11-19 16:25:38.419 INFO  [http-nio-8090-exec-8] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:25:38.420 DEBUG [http-nio-8090-exec-8] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:25:45.318 INFO  [http-nio-8090-exec-1] c.r.d.c.c.CommitteeController - PUT /api/committees/5 - 회의체 수정
+2025-11-19 16:25:45.319 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 회의체 수정: ID=5
+2025-11-19 16:25:45.322 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 회의체 수정 완료: ID=5
+2025-11-19 16:25:45.325 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 기존 위원 정보 삭제 완료
+2025-11-19 16:25:45.332 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 새로운 위원 정보 저장 완료: 4명
+2025-11-19 16:25:45.332 DEBUG [http-nio-8090-exec-1] c.r.d.c.service.CommitteeService - 회의체 상세 조회: 5
+2025-11-19 16:25:45.371 INFO  [http-nio-8090-exec-5] c.r.d.c.c.CommitteeController - GET /api/committees - 모든 회의체 조회
+2025-11-19 16:25:45.371 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 모든 회의체 조회
+2025-11-19 16:25:45.373 DEBUG [http-nio-8090-exec-5] c.r.d.c.service.CommitteeService - 조회된 회의체 수: 7
+2025-11-19 16:27:02.740 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:32:02.753 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:33:10.014 INFO  [http-nio-8090-exec-9] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:33:10.015 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:33:10.016 INFO  [http-nio-8090-exec-1] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 16:33:10.016 DEBUG [http-nio-8090-exec-1] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 16:33:10.020 DEBUG [http-nio-8090-exec-9] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:33:10.054 INFO  [http-nio-8090-exec-5] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 16:33:10.054 DEBUG [http-nio-8090-exec-5] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 16:35:44.758 INFO  [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-11-19 16:35:44.760 INFO  [http-nio-8090-exec-8] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-11-19 16:35:44.770 DEBUG [http-nio-8090-exec-8] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-11-19 16:35:44.794 DEBUG [http-nio-8090-exec-8] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-11-19 16:35:45.134 INFO  [http-nio-8090-exec-8] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-11-19 16:35:45.148 INFO  [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=909d688c-f6eb-4a01-a3ac-e8eaa4091046
+2025-11-19 16:35:45.189 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-11-19 16:35:45.191 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-11-19 16:35:45.195 INFO  [http-nio-8090-exec-1] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-11-19 16:35:45.196 DEBUG [http-nio-8090-exec-1] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-11-19 16:35:45.197 INFO  [http-nio-8090-exec-9] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 16:35:45.209 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-11-19 16:35:45.213 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-11-19 16:35:45.217 DEBUG [http-nio-8090-exec-9] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-11-19 16:35:46.054 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:35:46.054 INFO  [http-nio-8090-exec-4] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 16:35:46.054 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:35:46.054 DEBUG [http-nio-8090-exec-4] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 16:35:46.056 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:35:46.075 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 16:35:46.075 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 16:40:45.409 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:41:04.307 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:41:04.308 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 16:41:04.311 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 16:41:06.865 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 요청: ledgerOrderId=20250001
+2025-11-19 16:41:06.866 DEBUG [http-nio-8090-exec-9] c.r.d.p.s.PositionConcurrentService - 겸직 목록 조회 (positions 조인): ledgerOrderId=20250001
+2025-11-19 16:41:06.870 INFO  [http-nio-8090-exec-9] c.r.d.p.c.PositionConcurrentController - 겸직 목록 조회 완료: 2 건
+2025-11-19 16:41:10.130 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:41:10.130 DEBUG [http-nio-8090-exec-4] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:41:10.134 INFO  [http-nio-8090-exec-4] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:41:10.353 INFO  [http-nio-8090-exec-10] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:41:10.353 DEBUG [http-nio-8090-exec-10] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:41:13.408 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 요청: concurrentGroupCd=G0001
+2025-11-19 16:41:13.409 DEBUG [http-nio-8090-exec-2] c.r.d.p.s.PositionConcurrentService - 겸직 그룹 조회 (positions 조인): concurrentGroupCd=G0001
+2025-11-19 16:41:13.414 INFO  [http-nio-8090-exec-2] c.r.d.p.c.PositionConcurrentController - 겸직 그룹 조회 완료: 2 건
+2025-11-19 16:41:13.677 INFO  [http-nio-8090-exec-3] c.r.d.p.c.PositionController - GET /api/positions/ledger/20250001 - 원장차수별 조회
+2025-11-19 16:41:13.678 DEBUG [http-nio-8090-exec-3] c.r.d.p.service.PositionService - 원장차수별 조회 - ledgerOrderId: 20250001
+2025-11-19 16:45:45.429 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:50:45.396 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 16:55:45.417 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-11-19 17:00:24.407 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:00:24.407 INFO  [http-nio-8090-exec-2] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:00:24.410 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-11-19 17:00:24.410 DEBUG [http-nio-8090-exec-2] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:00:24.420 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-11-19 17:00:24.450 INFO  [http-nio-8090-exec-3] c.r.d.r.c.DeptManagerManualController - GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)
+2025-11-19 17:00:24.453 DEBUG [http-nio-8090-exec-3] c.r.d.r.s.DeptManagerManualService - [DeptManagerManualService] 전체 메뉴얼 조회 (employees 조인)
+2025-11-19 17:00:45.409 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.AuthController - 세션 확인 API 호출

@@ -3,7 +3,7 @@
  * PositionFormModal 표준 템플릿 기반
  *
  * 주요 기능:
- * 1. 직책 선택 시 관련 정보 자동 설정 (겸직여부, 현직책부여일, 겸직사항, 소관부점, 주관회의체)
+ * 1. 직책 선택 시 관련 정보 자동 설정 (겸직여부, 현직책부여일, 겸직사항, 소관부서, 주관회의체)
  * 2. 임원 및 직책 정보 입력
  * 3. 책무정보 입력 (책무개요, 책무분배일자)
  * 4. 책무목록 및 관리의무 동적 추가/삭제
@@ -271,7 +271,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
             // 직원명
             setValue('employeeName', detailData.employeeName || '');
 
-            // 소관부점
+            // 소관부서
             setValue('responsibleDepts', detailData.departments || '');
 
             // 책무 데이터 변환 및 설정
@@ -332,7 +332,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       // 3. 겸직사항
       setValue('dualPositionDetails', data.concurrentPosition || '');
 
-      // 4. 소관부점 (comma-separated string)
+      // 4. 소관부서 (comma-separated string)
       setValue('responsibleDepts', data.departments);
 
       // 5. 주관회의체 (Grid 데이터 변환 - CommitteeData 타입에 맞게)
@@ -501,8 +501,8 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
       wrapText: true, // 텍스트 줄바꿈
       cellStyle: { lineHeight: '1.5', whiteSpace: 'normal' },
       valueFormatter: (params) => {
-        // 관리의무 데이터에서 조직코드를 부점명으로 변환
-        // 형식: "[대분류] 의무내용 (조직코드)" -> 조직코드를 부점명으로 변환
+        // 관리의무 데이터에서 조직코드를 부서명으로 변환
+        // 형식: "[대분류] 의무내용 (조직코드)" -> 조직코드를 부서명으로 변환
         if (!params.value) return '';
         const match = params.value.match(/^(\[.*?\]\s*.+?)\s*\(([^)]+)\)$/);
         if (match) {
@@ -912,7 +912,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                     </Box>
                   </Grid>
 
-                  {/* 세 번째 행: 소관부점 */}
+                  {/* 세 번째 행: 소관부서 */}
                   <Grid item xs={12}>
                     <Controller
                       name="responsibleDepts"
@@ -920,7 +920,7 @@ const ResponsibilityDocFormModal: React.FC<ResponsibilityDocFormModalProps> = ({
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="소관부점"
+                          label="소관부서"
                           fullWidth
                           size="small"
                           disabled={isReadOnly}

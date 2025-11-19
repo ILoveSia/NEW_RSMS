@@ -1,5 +1,5 @@
 /**
- * 공통 조직(부점)조회팝업 컴포넌트
+ * 공통 조직(부서)조회팝업 컴포넌트
  * 여러 도메인에서 공통으로 사용하는 조직 선택 팝업
  *
  * 주요 기능:
@@ -39,13 +39,13 @@ import type {
 import styles from './OrganizationSearchModal.module.scss';
 
 /**
- * 공통 조직(부점)조회팝업 컴포넌트
+ * 공통 조직(부서)조회팝업 컴포넌트
  */
 const OrganizationSearchModal: React.FC<OrganizationSearchModalProps> = ({
   open,
   onClose,
   onSelect,
-  title = '부점 조회',
+  title = '부서 조회',
   initialFilters = {}
 }) => {
   // ===== Custom Hook =====

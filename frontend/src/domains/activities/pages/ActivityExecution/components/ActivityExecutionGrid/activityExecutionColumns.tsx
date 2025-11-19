@@ -5,7 +5,7 @@ import { ActivityExecution } from '../../types/activityExecution.types';
 /**
  * 관리활동 수행 그리드 컬럼 정의
  * @description dept_manager_manuals 테이블 기반 컬럼 정의
- * 컬럼 순서: 순번, 부점, 관리활동명, 책무관리항목, 수행점검항목, 수행자, 수행여부, 수행결과
+ * 컬럼 순서: 순번, 부서, 관리활동명, 책무관리항목, 수행점검항목, 수행자, 수행여부, 수행결과
  */
 export const activityExecutionColumns = (
   executionStatusCode: UseCommonCodeReturn,
@@ -22,10 +22,10 @@ export const activityExecutionColumns = (
     resizable: false
   },
 
-  // 2. 부점 (orgName 표시, orgCode는 tooltip)
+  // 2. 부서 (orgName 표시, orgCode는 tooltip)
   {
     field: 'orgName',
-    headerName: '부점',
+    headerName: '부서',
     width: 200,
     cellStyle: { textAlign: 'left' },
     headerClass: 'ag-header-cell-left',
@@ -95,31 +95,40 @@ export const activityExecutionColumns = (
     tooltipField: 'execCheckMethod'
   },
 
-  // 6. 수행자 (executorId)
+  // 6. 수행자 (이름 표시, 사번은 tooltip)
   {
-    field: 'executorId',
     headerName: '수행자',
     width: 120,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
     resizable: true,
+    valueGetter: (params: any) => {
+      const executorName = params.data?.executorName || '';
+      const executorId = params.data?.executorId || '';
+      // executorName이 있으면 표시, 없으면 executorId 표시
+      return executorName || executorId || '미지정';
+    },
+    tooltipValueGetter: (params: any) => {
+      return params.data?.executorId || '';
+    },
     cellRenderer: (params: any) => {
-      const value = params.value || '';
+      const value = params.value || '미지정';
+      const hasValue = value !== '미지정';
       return (
         <div
           style={{
             fontWeight: '500',
-            color: value ? '#2e7d32' : '#9e9e9e'
+            color: hasValue ? '#2e7d32' : '#9e9e9e'
           }}
         >
-          {value || '미지정'}
+          {value}
         </div>
       );
     }
   },
 
-  // 7. 수행여부 (executionStatus) - 공통코드 변환
+  // 7. 수행여부 (01:미수행, 02:수행완료)
   {
     field: 'executionStatus',
     headerName: '수행여부',
@@ -130,7 +139,14 @@ export const activityExecutionColumns = (
     resizable: false,
     valueGetter: (params: any) => {
       const code = params.data?.executionStatus;
-      return code ? executionStatusCode.getCodeName(code) : '-';
+      if (!code) return '-';
+
+      // 01:미수행, 02:수행완료
+      if (code === '01') return '미수행';
+      if (code === '02') return '수행완료';
+
+      // 공통코드 fallback
+      return executionStatusCode.getCodeName(code) || code;
     }
   },
 

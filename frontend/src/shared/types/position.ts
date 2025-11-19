@@ -16,7 +16,7 @@ export interface Position {
   concurrentDetails?: string;      // 겸직사항
   currentPositionDate?: string;    // 현직책부여일
   employeeName?: string;           // 직원명
-  departmentName?: string;         // 소관부점
+  departmentName?: string;         // 소관부서
   committeeNames?: string;         // 주관회의체
   isActive?: string;               // 활성화 여부
   createdBy?: string;              // 생성자

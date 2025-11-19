@@ -27,12 +27,12 @@ import type {
 import styles from './BranchLookupModal.module.scss';
 
 /**
- * 부점조회팝업 컴포넌트
- * 여러 도메인에서 공통으로 사용하는 부점 선택 팝업
+ * 부서조회팝업 컴포넌트
+ * 여러 도메인에서 공통으로 사용하는 부서 선택 팝업
  */
 const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
   open,
-  title = '부점 조회 팝업',
+  title = '부서 조회 팝업',
   multiple = false,
   onClose,
   onSelect,
@@ -80,7 +80,7 @@ const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
   const columns = useMemo<ColDef<Branch>[]>(() => [
     {
       field: 'branchCode',
-      headerName: '부점코드',
+      headerName: '부서코드',
       width: 100,
       minWidth: 80,
       sortable: true,
@@ -91,7 +91,7 @@ const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
     },
     {
       field: 'branchName',
-      headerName: '부점명',
+      headerName: '부서명',
       width: 150,
       minWidth: 120,
       sortable: true,
@@ -162,15 +162,15 @@ const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
     {
       key: 'branchCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
       key: 'branchName',
       type: 'text',
-      label: '부점명',
-      placeholder: '부점명을 입력하세요',
+      label: '부서명',
+      placeholder: '부서명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -190,12 +190,12 @@ const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
         type: 'button',
         icon: 'Search',
         onClick: handleSearch,
-        tooltip: '부점 검색'
+        tooltip: '부서 검색'
       }
     }
   ], [branchTypeOptions, managerOptions]);
 
-  // 필터된 부점 목록 (제외할 부점 ID 제거)
+  // 필터된 부서 목록 (제외할 부서 ID 제거)
   const filteredBranches = useMemo(() => {
     if (excludeBranchIds.length === 0) return branches;
     return branches.filter(branch => !excludeBranchIds.includes(branch.id));
@@ -316,7 +316,7 @@ const BranchLookupModal: React.FC<BranchLookupModalProps> = ({
         <div className={styles.resultInfo}>
           <Typography variant="body2" className={styles.resultText}>
             <SearchIcon className={styles.resultIcon} />
-            부점 목록 ({totalCount}건)
+            부서 목록 ({totalCount}건)
           </Typography>
         </div>
 

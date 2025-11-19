@@ -265,28 +265,29 @@
   border-radius: $border-radius-lg;
   border: 1px solid $color-border-light;
 
-  .prototypeWarning {
+  .systemInfoTitle {
     font-weight: $font-weight-bold;
-    color: #ff9800; // 오렌지색 경고
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%);
+    color: #1976d2; // 파란색 제목
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(25, 118, 210, 0.05) 100%);
     padding: $spacing-sm $spacing-md;
     border-radius: $border-radius-md;
     margin-bottom: $spacing-xs;
-    border-left: 4px solid #ff9800;
+    border-left: 4px solid #1976d2;
     text-align: left;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
   }
 
-  .prototypeSubtext {
-    font-weight: $font-weight-semibold;
-    color: #e65100; // 진한 오렌지색
+  .systemInfoDesc {
+    font-weight: $font-weight-normal;
+    color: #424242; // 진한 회색
     font-size: $font-size-sm;
     margin-bottom: $spacing-md;
     text-align: center;
     opacity: 0.9;
+    line-height: 1.6;
   }
 
   .devDivider {

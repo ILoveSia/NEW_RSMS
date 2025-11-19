@@ -47,7 +47,7 @@ const RoleCountRenderer = (params: any) => {
 
 /**
  * 사용자관리 AG-Grid 컬럼 정의 - 수정된 11개 컬럼
- * 수정사항: 직번→사용자ID, 부정→부점명, 근무상태(텍스트), 로그인시간→로그인차단(체크박스), 활성화(체크박스)
+ * 수정사항: 직번→사용자ID, 부정→부서명, 근무상태(텍스트), 로그인시간→로그인차단(체크박스), 활성화(체크박스)
  */
 export const userColumns: ColDef<User>[] = [
   {
@@ -69,7 +69,7 @@ export const userColumns: ColDef<User>[] = [
     headerClass: 'user-header'
   },
   {
-    headerName: '부점명',
+    headerName: '부서명',
     field: 'deptName',
     width: 140,
     sortable: true,

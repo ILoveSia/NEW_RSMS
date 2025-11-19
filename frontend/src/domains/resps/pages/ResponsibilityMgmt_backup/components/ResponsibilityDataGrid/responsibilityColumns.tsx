@@ -106,8 +106,8 @@ export const createResponsibilityColumns = (
     cellClass: 'ag-cell-center'
   },
   {
-    headerName: '부점명',
-    field: '부점명',
+    headerName: '부서명',
+    field: '부서명',
     width: 150,
     sortable: true,
     filter: 'agTextColumnFilter',

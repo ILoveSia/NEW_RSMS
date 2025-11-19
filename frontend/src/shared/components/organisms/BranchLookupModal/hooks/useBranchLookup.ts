@@ -7,8 +7,8 @@ import type {
 } from '../types/branchLookup.types';
 
 /**
- * 부점조회 커스텀 훅
- * 부점 검색 및 데이터 관리 로직을 캡슐화
+ * 부서조회 커스텀 훅
+ * 부서 검색 및 데이터 관리 로직을 캡슐화
  */
 export const useBranchLookup = (): UseBranchLookupReturn => {
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -91,7 +91,7 @@ export const useBranchLookup = (): UseBranchLookupReturn => {
   ];
 
   /**
-   * 부점 검색 함수
+   * 부서 검색 함수
    */
   const searchBranches = useCallback(async (filters: BranchLookupFilters) => {
     setLoading(true);
@@ -133,7 +133,7 @@ export const useBranchLookup = (): UseBranchLookupReturn => {
       setTotalCount(filteredBranches.length);
 
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '부점 검색 중 오류가 발생했습니다.';
+      const errorMessage = err instanceof Error ? err.message : '부서 검색 중 오류가 발생했습니다.';
       setError(errorMessage);
       setBranches([]);
       setTotalCount(0);

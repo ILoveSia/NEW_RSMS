@@ -53,14 +53,16 @@ public class DeptManagerManualController {
     /**
      * 전체 메뉴얼 목록 조회 API
      * GET /api/resps/dept-manager-manuals
+     * - employees 테이블 조인하여 수행자명 포함
+     * - organizations 테이블 조인하여 조직명 포함
      *
-     * @return 전체 메뉴얼 DTO 리스트
+     * @return 전체 메뉴얼 DTO 리스트 (수행자명, 조직명 포함)
      */
     @GetMapping
     public ResponseEntity<List<DeptManagerManualDto>> getAllManuals() {
-        log.info("GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회");
+        log.info("GET /api/resps/dept-manager-manuals - 전체 메뉴얼 목록 조회 (employees 조인)");
 
-        List<DeptManagerManualDto> manuals = deptManagerManualService.findAll();
+        List<DeptManagerManualDto> manuals = deptManagerManualService.findAllWithEmployees();
 
         return ResponseEntity.ok(manuals);
     }

@@ -1,5 +1,5 @@
 /**
- * 조직(부점)조회팝업 관련 타입 정의
+ * 조직(부서)조회팝업 관련 타입 정의
  * 여러 도메인에서 공통으로 사용하는 조직조회 팝업
  */
 
@@ -10,7 +10,7 @@ export interface Organization {
   hqCode?: string;              // 본부코드
   hqName?: string;              // 본부명
   orgName: string;              // 조직명
-  orgType?: string;             // 조직유형 (부점/본점/지점 등)
+  orgType?: string;             // 조직유형 (부서/본점/지점 등)
   parentOrgCode?: string;       // 상위조직코드
   parentOrgName?: string;       // 상위조직명
   level?: number;               // 조직레벨
@@ -44,7 +44,7 @@ export interface OrganizationSearchResult {
 // 조직조회 모달 Props 타입
 export interface OrganizationSearchModalProps {
   open: boolean;
-  title?: string;               // 모달 제목 (기본: "부점 조회")
+  title?: string;               // 모달 제목 (기본: "부서 조회")
   multiple?: boolean;           // 다중 선택 가능 여부 (기본: false)
   onClose: () => void;
   onSelect: (selected: Organization | Organization[]) => void;

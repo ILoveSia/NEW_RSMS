@@ -69,7 +69,7 @@ export interface DeptOpManual {
   /** 관리의무 (JOIN) */
   obligationInfo?: string;
 
-  /** 부점명 (JOIN) */
+  /** 부서명 (JOIN) */
   orgName?: string;
 
   // ===============================

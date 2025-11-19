@@ -68,7 +68,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     orgCode: ''
   });
 
-  // 부점 조회 팝업 상태
+  // 부서 조회 팝업 상태
   const [isOrgSearchModalOpen, setIsOrgSearchModalOpen] = useState(false);
 
   const [pagination, setPagination] = useState<ReportListPagination>({
@@ -269,7 +269,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     setPagination(prev => ({ ...prev, page: 1 }));
   }, []);
 
-  // 부점 조회 팝업 핸들러
+  // 부서 조회 팝업 핸들러
   const handleOrgSearchOpen = useCallback(() => {
     setIsOrgSearchModalOpen(true);
   }, []);
@@ -284,7 +284,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       orgCode: organization.orgCode || ''
     }));
     setIsOrgSearchModalOpen(false);
-    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
+    toast.success(`부서코드 "${organization.orgCode}" 선택되었습니다.`);
   }, []);
 
   // Grid Event Handlers
@@ -347,14 +347,14 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     {
       key: 'orgCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrgSearchOpen,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     }
   ], [filters.ledgerOrderId, handleFiltersChange, handleOrgSearchOpen]);
@@ -629,7 +629,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
           />
         </BaseModalWrapper>
 
-        {/* 부점 조회 팝업 */}
+        {/* 부서 조회 팝업 */}
         <OrganizationSearchModal
           open={isOrgSearchModalOpen}
           onClose={handleOrgSearchClose}

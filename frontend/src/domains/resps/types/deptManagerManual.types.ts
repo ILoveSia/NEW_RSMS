@@ -68,7 +68,7 @@ export interface DeptManagerManualDto {
   responsibilityInfo?: string;      // 책무 (responsibilities.responsibility_info)
   responsibilityDetailInfo?: string;// 책무상세 (responsibility_details.responsibility_detail_info)
   obligationInfo?: string;          // 관리의무 (management_obligations.obligation_info)
-  orgName?: string;                 // 부점명 (organizations.org_name)
+  orgName?: string;                 // 부서명 (organizations.org_name)
 }
 
 /**

@@ -25,10 +25,10 @@ export interface ActivityExecution {
   /** 관리의무코드 (FK) */
   obligationCd?: string;
 
-  /** 조직코드 (FK) - 부점 */
+  /** 조직코드 (FK) - 부서 */
   orgCode?: string;
 
-  /** 부점명 */
+  /** 부서명 */
   orgName?: string;
 
   /** 책무관리항목 */
@@ -51,6 +51,9 @@ export interface ActivityExecution {
   // ===============================
   /** 수행자ID */
   executorId?: string;
+
+  /** 수행자명 (employees 테이블 조인) */
+  executorName?: string;
 
   /** 수행일자 */
   executionDate?: string;

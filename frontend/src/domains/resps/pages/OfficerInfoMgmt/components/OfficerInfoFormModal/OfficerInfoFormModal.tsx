@@ -429,12 +429,12 @@ const OfficerInfoFormModal: React.FC<OfficerInfoFormModalProps> = ({
 
           <Divider  />
 
-          {/* 📋 Section 2: 소관부점 회의체 정보 */}
+          {/* 📋 Section 2: 소관부서 회의체 정보 */}
           <div >
             <div >
               <Typography variant="h6" >
                 <BusinessIcon />
-                소관부점 정보
+                소관부서 정보
               </Typography>
               {!isReadonly && (
                 <Button

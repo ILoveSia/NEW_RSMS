@@ -73,7 +73,7 @@ export const positionColumns: ColDef<Position>[] = [
     width: 150
   },
   {
-    headerName: '부점명',
+    headerName: '부서명',
     field: 'orgName',
     sortable: true,
     filter: true,
@@ -88,12 +88,12 @@ export const positionColumns: ColDef<Position>[] = [
         return '';
       }
 
-      // 부점이 1개인 경우
+      // 부서이 1개인 경우
       if (orgNames.length === 1) {
         return orgNames[0];
       }
 
-      // 부점이 2개 이상인 경우: "첫번째부점명 외 N"
+      // 부서이 2개 이상인 경우: "첫번째부서명 외 N"
       const firstOrgName = orgNames[0];
       const remainingCount = orgNames.length - 1;
       return `${firstOrgName} 외 ${remainingCount}`;

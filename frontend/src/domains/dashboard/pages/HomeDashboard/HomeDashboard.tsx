@@ -870,7 +870,7 @@ const HomeDashboard: React.FC = () => {
           <div className={styles.chartsHorizontal}>
             {/* 이행점검차트 */}
             <div className={styles.chartCard}>
-              <h4>주요부점별 이행점검 현황</h4>
+              <h4>주요부서별 이행점검 현황</h4>
               <div className={styles.lineChart}>
                 <svg viewBox="0 0 300 120" className={styles.chartSvg}>
                   <defs>
@@ -904,7 +904,7 @@ const HomeDashboard: React.FC = () => {
 
             {/* 배분현황차트 */}
             <div className={styles.chartCard}>
-              <h4>부점별 배분 현황</h4>
+              <h4>부서별 배분 현황</h4>
               <div className={styles.pieChart}>
                 <svg viewBox="0 0 120 120" className={styles.chartSvg}>
                   <defs>

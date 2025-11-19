@@ -1,11 +1,11 @@
 /**
  * 관리활동 수행 상세 모달
- * - ImplMonitoringDetailModal 2-column Grid 레이아웃 패턴 적용
- * - 좌측: 관리활동 영역 (읽기 전용)
+ * - 좌측: 관리활동 영역 (읽기 전용, 카드 섹션)
  * - 우측: 수행정보 영역 (편집 가능)
  */
 
 import { Button } from '@/shared/components/atoms/Button';
+import styles from './ActivityExecutionModal.module.scss';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Dialog,
@@ -83,57 +83,61 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      performanceDate: dayjs().format('YYYY-MM-DD'), // 오늘 날짜
+      performanceDate: dayjs().format('YYYY-MM-DD'),
       performer: '',
-      activityResult: '01', // 01:미수행, 02:수행완료
-      performanceAssessment: '01', // 01:적정, 02:부적정
+      activityResult: '01',
+      performanceAssessment: '01',
       activityOpinion: ''
     }
   });
 
-  /**
-   * 폼 초기화
-   * - mode와 activity 데이터에 따라 폼 데이터 설정
-   */
   useEffect(() => {
-    if (open && activity && mode === 'edit') {
-      reset({
-        performanceDate: dayjs().format('YYYY-MM-DD'), // 오늘 날짜
-        performer: activity.performer || '',
-        activityResult: '01', // 01:미수행
-        performanceAssessment: '01', // 01:적정
-        activityOpinion: ''
-      });
+    if (open && activity) {
+      if (mode === 'edit') {
+        reset({
+          performanceDate: activity.executionDate || dayjs().format('YYYY-MM-DD'),
+          performer: activity.executorName || activity.executorId || '',
+          activityResult: activity.executionResultCd || '01',
+          performanceAssessment: activity.executionStatus || '01',
+          activityOpinion: activity.executionResultContent || ''
+        });
+      } else {
+        // detail 모드: 읽기 전용으로 실제 데이터 표시
+        reset({
+          performanceDate: activity.executionDate || '',
+          performer: activity.executorName || activity.executorId || '',
+          activityResult: activity.executionResultCd || '',
+          performanceAssessment: activity.executionStatus || '',
+          activityOpinion: activity.executionResultContent || ''
+        });
+      }
     } else if (open && !activity) {
       reset();
     }
   }, [open, activity, mode, reset]);
 
-  /**
-   * 폼 제출 핸들러
-   */
   const handleFormSubmit = useCallback((data: ActivityExecutionFormData) => {
-    if (mode === 'edit' && activity) {
+    if (activity) {
       onUpdate(activity.id, data);
     } else {
       onSave(data);
     }
-  }, [mode, activity, onSave, onUpdate]);
+  }, [activity, onSave, onUpdate]);
 
-  const modalTitle = mode === 'detail' ? '관리활동 수행 상세 조회' : '관리활동 수행 등록';
+  const modalTitle = activity ? '관리활동 수행 상세 / 수정' : '관리활동 수행 등록';
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="xl"
+        maxWidth="lg"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 1,
-            maxHeight: '90vh',
-            width: '95%'
+            maxHeight: '85vh',
+            width: '85%'
           }
         }}
       >
@@ -153,245 +157,199 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
             <Grid container spacing={3}>
               {/* 왼쪽: 관리활동 영역 (읽기 전용) */}
               <Grid item xs={12} md={7}>
-                <div >
-                  <Typography >
-                    관리활동 영역
-                  </Typography>
+                <Typography className={styles.sectionTitle}>
+                  관리활동 영역
+                </Typography>
 
-                  {/* 책무명 + 책무세부내용 */}
-                  <div >
-                    <div >
-                      <Typography >책무명</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value={activity?.responsibilityName || '고객정보보호 관리체계 구축'}
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                    <div >
-                      <Typography >책무세부내용</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value={activity?.responsibilityDetail || '고객정보보호를 위한 관리체계 구축 및 운영'}
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                  </div>
+                {/* 카드 섹션 1: 기본 정보 */}
+                <div className={styles.cardSection}>
+                  <div className={styles.cardTitle}>📋 기본 정보</div>
 
-                  {/* 관리의무 */}
-                  <div >
-                    <Typography >관리의무</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>부서명</Typography>
                     <TextField
                       fullWidth
                       size="small"
                       variant="outlined"
-                      value={activity?.obligation || '자금세탁방지 의무'}
+                      value={activity?.orgName || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 관리활동구분코드 + 관리활동명 */}
-                  <div >
-                    <div >
-                      <Typography >관리활동구분코드</Typography>
-                      <FormControl fullWidth size="small">
-                        <Select
-                          value={activity?.gnrzOblgDvcd || '고유'}
-                          disabled
-                        >
-                          <MenuItem value="고유">고유</MenuItem>
-                          <MenuItem value="공통">공통</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <div >
-                      <Typography >관리활동명</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value={activity?.activityName || '자금세탁방지 시스템 운영'}
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                  </div>
-
-                  {/* 관리활동증빙자료 */}
-                  <div >
-                    <Typography >관리활동증빙자료</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>책무관리항목</Typography>
                     <TextField
                       fullWidth
                       size="small"
                       variant="outlined"
-                      value="자금세탁방지 점검보고서, 시스템 운영 로그"
+                      multiline
+                      rows={2}
+                      value={activity?.respItem || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 이행점검방법 */}
-                  <div >
-                    <Typography >이행점검방법</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>관리활동명</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={activity?.activityName || '-'}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </div>
+                </div>
+
+                {/* 카드 섹션 2: 점검 정보 */}
+                <div className={styles.cardSection}>
+                  <div className={styles.cardTitle}>📝 점검 정보</div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>수행점검항목</Typography>
                     <TextField
                       fullWidth
                       multiline
                       rows={3}
                       size="small"
                       variant="outlined"
-                      value="문서검토 + 실사"
+                      value={activity?.execCheckMethod || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 이행점검세부내용 */}
-                  <div >
-                    <Typography >이행점검세부내용</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>점검세부내용</Typography>
                     <TextField
                       fullWidth
                       multiline
-                      rows={3}
+                      rows={4}
                       size="small"
                       variant="outlined"
-                      value="자금세탁방지 시스템 운영 점검 및 관련 문서 검토"
+                      value={activity?.execCheckDetail || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 증빙 자료 */}
-                  <div >
-                    <Typography >증빙 자료</Typography>
-                    <div >
-                      <Typography variant="body2" color="textSecondary">
-                        첨부파일 기능은 추후 구현 예정입니다.
-                      </Typography>
-                    </div>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>점검주기</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={activity?.execCheckFrequencyCd || '-'}
+                      InputProps={{ readOnly: true }}
+                    />
                   </div>
                 </div>
               </Grid>
 
               {/* 오른쪽: 수행정보 영역 (편집 가능) */}
               <Grid item xs={12} md={5}>
-                <div >
-                  {/* 1. 수행정보 */}
-                  <div >
-                    <Typography >
-                      1. 수행정보
-                    </Typography>
+                <Typography className={styles.sectionTitle}>
+                  수행정보 영역
+                </Typography>
 
-                    <div >
-                      <div >
-                        <Typography >수행자</Typography>
-                        <Controller
-                          name="performer"
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              fullWidth
-                              size="small"
-                              error={!!errors.performer}
-                              helperText={errors.performer?.message}
-                            />
-                          )}
+                <div className={styles.cardSection}>
+                  <div className={styles.cardTitle}>✏️ 수행정보 입력</div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>수행자</Typography>
+                    <Controller
+                      name="performer"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          size="small"
+                          error={!!errors.performer}
+                          helperText={errors.performer?.message}
                         />
-                      </div>
+                      )}
+                    />
+                  </div>
 
-                      <div >
-                        <Typography >수행일자</Typography>
-                        <Controller
-                          name="performanceDate"
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              {...field}
-                              value={field.value ? dayjs(field.value) : null}
-                              onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                              format="YYYY/MM/DD"
-                              slotProps={{
-                                textField: {
-                                  size: 'small',
-                                  fullWidth: true,
-                                  error: !!errors.performanceDate,
-                                  helperText: errors.performanceDate?.message
-                                }
-                              }}
-                            />
-                          )}
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>수행일자</Typography>
+                    <Controller
+                      name="performanceDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                          format="YYYY/MM/DD"
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              fullWidth: true,
+                              error: !!errors.performanceDate,
+                              helperText: errors.performanceDate?.message
+                            }
+                          }}
                         />
-                      </div>
-                    </div>
+                      )}
+                    />
+                  </div>
 
-                    <div >
-                      <div >
-                        <Typography >수행여부 <span >*</span></Typography>
-                        <Controller
-                          name="activityResult"
-                          control={control}
-                          render={({ field }) => (
-                            <FormControl fullWidth size="small" error={!!errors.activityResult}>
-                              <Select
-                                {...field}
-                              >
-                                <MenuItem value="01">미수행</MenuItem>
-                                <MenuItem value="02">수행완료</MenuItem>
-                              </Select>
-                              {errors.activityResult && (
-                                <FormHelperText>{errors.activityResult.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          )}
-                        />
-                      </div>
-
-                      <div >
-                        <Typography >수행결과 <span >*</span></Typography>
-                        <Controller
-                          name="performanceAssessment"
-                          control={control}
-                          render={({ field }) => (
-                            <FormControl fullWidth size="small" error={!!errors.performanceAssessment}>
-                              <Select
-                                {...field}
-                              >
-                                <MenuItem value="01">적정</MenuItem>
-                                <MenuItem value="02">부적정</MenuItem>
-                              </Select>
-                              {errors.performanceAssessment && (
-                                <FormHelperText>{errors.performanceAssessment.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div >
-                      <Typography >수행결과 내용</Typography>
+                  <div className={styles.twoColumnGrid}>
+                    <div>
+                      <Typography className={styles.fieldLabel}>수행여부 <span style={{ color: 'red' }}>*</span></Typography>
                       <Controller
-                        name="activityOpinion"
+                        name="activityResult"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            error={!!errors.activityOpinion}
-                            helperText={errors.activityOpinion?.message}
-                          />
+                          <FormControl fullWidth size="small" error={!!errors.activityResult}>
+                            <Select {...field}>
+                              <MenuItem value="01">미수행</MenuItem>
+                              <MenuItem value="02">수행완료</MenuItem>
+                            </Select>
+                            {errors.activityResult && (
+                              <FormHelperText>{errors.activityResult.message}</FormHelperText>
+                            )}
+                          </FormControl>
                         )}
                       />
                     </div>
+
+                    <div>
+                      <Typography className={styles.fieldLabel}>수행결과 <span style={{ color: 'red' }}>*</span></Typography>
+                      <Controller
+                        name="performanceAssessment"
+                        control={control}
+                        render={({ field }) => (
+                          <FormControl fullWidth size="small" error={!!errors.performanceAssessment}>
+                            <Select {...field}>
+                              <MenuItem value="01">적정</MenuItem>
+                              <MenuItem value="02">부적정</MenuItem>
+                            </Select>
+                            {errors.performanceAssessment && (
+                              <FormHelperText>{errors.performanceAssessment.message}</FormHelperText>
+                            )}
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>수행결과 내용</Typography>
+                    <Controller
+                      name="activityOpinion"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={6}
+                          error={!!errors.activityOpinion}
+                          helperText={errors.activityOpinion?.message}
+                        />
+                      )}
+                    />
                   </div>
                 </div>
               </Grid>

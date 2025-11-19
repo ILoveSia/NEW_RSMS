@@ -8,16 +8,16 @@ import { ColDef } from 'ag-grid-community';
 
 /**
  * 개선이행 데이터 타입
- * dept_manager_manuals (순번~부점) + impl_inspection_items (점검자~최종점검결과)
+ * dept_manager_manuals (순번~부서) + impl_inspection_items (점검자~최종점검결과)
  */
 export interface ImprovementData {
   id: string;
-  // dept_manager_manuals 테이블 컬럼 (순번~부점)
+  // dept_manager_manuals 테이블 컬럼 (순번~부서)
   sequenceNumber: number;                  // 순번
   inspectionName: string;                  // 점검명
   obligationInfo: string;                  // 관리의무
   managementActivityName: string;          // 관리활동명
-  orgCode: string;                         // 부점
+  orgCode: string;                         // 부서
 
   // impl_inspection_items 테이블 컬럼 (점검자~최종점검결과)
   inspector: string;                       // 점검자 (inspector_id)
@@ -63,7 +63,7 @@ const ManagementActivityNameRenderer = ({ value, data, onCellClicked }: any) => 
 // AG-Grid 컬럼 정의
 export const improvementColumns: ColDef<ImprovementData>[] = [
   // ========================================
-  // dept_manager_manuals 테이블 컬럼 (순번~부점)
+  // dept_manager_manuals 테이블 컬럼 (순번~부서)
   // ========================================
   {
     field: 'sequenceNumber',
@@ -118,7 +118,7 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   },
   {
     field: 'orgCode',
-    headerName: '부점',
+    headerName: '부서',
     width: 150,
     minWidth: 120,
     sortable: true,

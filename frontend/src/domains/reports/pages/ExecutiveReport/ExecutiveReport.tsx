@@ -287,14 +287,14 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
     {
       key: 'branchName',
       type: 'text',
-      label: '부점명',
-      placeholder: '부점명을 입력하세요',
+      label: '부서명',
+      placeholder: '부서명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrganizationSearch,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     }
   ], [filters.ledgerOrderId, handleFiltersChange, handleOrganizationSearch]);
@@ -712,7 +712,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
           onClose={handleOrganizationSearchClose}
           onSelect={handleOrganizationSelect}
           mode="single"
-          title="부점 조회"
+          title="부서 조회"
         />
       </div>
     </React.Profiler>

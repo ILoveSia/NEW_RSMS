@@ -79,7 +79,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
   const [availablePositions, setAvailablePositions] = useState<PositionDto[]>([]);
   const [isLoadingPositions, setIsLoadingPositions] = useState(false);
 
-  // 직책별 부점 목록
+  // 직책별 부서 목록
   const [positionDepartments, setPositionDepartments] = useState<Array<{org_code: string; org_name: string}>>([]);
 
   // 책무 섹션 - 공통코드 및 행 데이터
@@ -110,8 +110,8 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
     detailId: string;
     majorCat: string;
     obligationInfo: string;
-    orgName: string; // "공통"일 때는 자동 설정, "고유"일 때는 선택한 부점명
-    selectedOrgCode: string; // "고유"일 때 선택한 부점 코드 (저장용)
+    orgName: string; // "공통"일 때는 자동 설정, "고유"일 때는 선택한 부서명
+    selectedOrgCode: string; // "고유"일 때 선택한 부서 코드 (저장용)
     isActive: string;
   }>>([]);
 
@@ -203,13 +203,13 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
           console.log('[ResponsibilityFormModal] 직책 자동 선택:', position);
           setSelectedPosition(position);
 
-          // 직책별 부점 목록 조회
+          // 직책별 부서 목록 조회
           try {
             const departments = await getPositionDepartments(position.positionsId);
-            console.log('[ResponsibilityFormModal] 부점 목록 조회 성공:', departments);
+            console.log('[ResponsibilityFormModal] 부서 목록 조회 성공:', departments);
             setPositionDepartments(departments);
           } catch (error) {
-            console.error('[ResponsibilityFormModal] 부점 목록 조회 실패:', error);
+            console.error('[ResponsibilityFormModal] 부서 목록 조회 실패:', error);
             setPositionDepartments([]);
           }
         }
@@ -349,14 +349,14 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         console.log('[ResponsibilityFormModal] 직책 선택:', position);
         setSelectedPosition(position);
 
-        // 직책별 부점 목록 조회
+        // 직책별 부서 목록 조회
         try {
           const departments = await getPositionDepartments(positionsId);
-          console.log('[ResponsibilityFormModal] 부점 목록 조회 성공:', departments);
+          console.log('[ResponsibilityFormModal] 부서 목록 조회 성공:', departments);
           setPositionDepartments(departments);
         } catch (error) {
-          console.error('[ResponsibilityFormModal] 부점 목록 조회 실패:', error);
-          toast.error('부점 목록을 불러오는데 실패했습니다.');
+          console.error('[ResponsibilityFormModal] 부서 목록 조회 실패:', error);
+          toast.error('부서 목록을 불러오는데 실패했습니다.');
           setPositionDepartments([]);
         }
       }
@@ -646,8 +646,8 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
 
   /**
    * 관리의무 섹션 - "저장" 버튼 클릭 핸들러
-   * - "공통": 모든 부점에 저장
-   * - "고유": 선택한 부점 하나만 저장
+   * - "공통": 모든 부서에 저장
+   * - "고유": 선택한 부서 하나만 저장
    */
   const handleSaveObligation = useCallback(async () => {
     // 유효성 검사
@@ -672,10 +672,10 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
       // 대분류 확인
       const majorCat = obligationMajorOptions.find(o => o.detailCode === row.majorCat);
 
-      // "고유"일 경우 부점 선택 필수
+      // "고유"일 경우 부서 선택 필수
       if (majorCat?.detailName === '고유') {
         if (!row.orgName || !row.selectedOrgCode) {
-          toast.warning('대분류가 "고유"인 경우 부점을 선택해야 합니다.');
+          toast.warning('대분류가 "고유"인 경우 부서을 선택해야 합니다.');
           return;
         }
       }
@@ -696,9 +696,9 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         const majorCat = obligationMajorOptions.find(o => o.detailCode === row.majorCat);
 
         if (majorCat?.detailName === '공통') {
-          // "공통"일 경우: 모든 부점에 저장
+          // "공통"일 경우: 모든 부서에 저장
           if (positionDepartments.length === 0) {
-            toast.warning('직책에 연결된 부점이 없습니다.');
+            toast.warning('직책에 연결된 부서이 없습니다.');
             return;
           }
 
@@ -713,7 +713,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
             });
           });
         } else if (majorCat?.detailName === '고유') {
-          // "고유"일 경우: 선택한 부점 하나만 저장
+          // "고유"일 경우: 선택한 부서 하나만 저장
           obligationsToSave.push({
             detailId: row.detailId,
             majorCat: row.majorCat,
@@ -781,7 +781,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
   }, [obligationRows, obligationMajorOptions, positionDepartments]);
 
   /**
-   * 직책 정보 DataGrid에 표시할 데이터 (직책 + 부점명 조합)
+   * 직책 정보 DataGrid에 표시할 데이터 (직책 + 부서명 조합)
    */
   const positionGridData = useMemo(() => {
     console.log('[positionGridData] selectedPosition:', selectedPosition);
@@ -793,7 +793,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
     }
 
     try {
-      // 부점 목록이 있으면 각 부점마다 행 생성
+      // 부서 목록이 있으면 각 부서마다 행 생성
       if (positionDepartments && positionDepartments.length > 0) {
         const result = positionDepartments.map((dept, index) => ({
           id: `pos-dept-${index}`, // ID 추가 (BaseDataGrid의 getRowId용)
@@ -801,18 +801,18 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
           hqName: selectedPosition.hqName || '-',
           orgName: dept?.org_name || '-'
         }));
-        console.log('[positionGridData] 부점 목록 있음, 결과:', result);
+        console.log('[positionGridData] 부서 목록 있음, 결과:', result);
         return result;
       }
 
-      // 부점 목록이 없으면 직책 정보만 표시
+      // 부서 목록이 없으면 직책 정보만 표시
       const result = [{
         id: 'pos-single', // ID 추가 (BaseDataGrid의 getRowId용)
         positionsName: selectedPosition.positionsName || '-',
         hqName: selectedPosition.hqName || '-',
         orgName: '-'
       }];
-      console.log('[positionGridData] 부점 목록 없음, 결과:', result);
+      console.log('[positionGridData] 부서 목록 없음, 결과:', result);
       return result;
     } catch (error) {
       console.error('[ResponsibilityFormModal] positionGridData 생성 실패:', error);
@@ -838,7 +838,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
     },
     {
       field: 'orgName',
-      headerName: '부점명',
+      headerName: '부서명',
       flex: 1,
       sortable: false
     }
@@ -1076,7 +1076,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
       },
       {
         field: 'orgName',
-        headerName: '부점명',
+        headerName: '부서명',
         width: 150,
         sortable: false,
         editable: (params) => {
@@ -1089,10 +1089,10 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
         cellEditor: 'agSelectCellEditor',
         cellEditorParams: (params: any) => {
           try {
-            // 직책의 부점 목록을 콤보박스 옵션으로 제공
+            // 직책의 부서 목록을 콤보박스 옵션으로 제공
             const orgNames = (positionDepartments || []).map(d => d?.org_name || '').filter(Boolean);
             return {
-              values: orgNames.length > 0 ? orgNames : ['선택 가능한 부점이 없습니다']
+              values: orgNames.length > 0 ? orgNames : ['선택 가능한 부서이 없습니다']
             };
           } catch (error) {
             console.error('[obligationColumns] cellEditorParams 에러:', error);
@@ -1109,14 +1109,14 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
             return '전체';
           }
 
-          // "고유"일 경우 선택한 부점명 표시
+          // "고유"일 경우 선택한 부서명 표시
           return params.data.orgName || '';
         },
         valueSetter: (params) => {
           try {
             if (params.data) {
               params.data.orgName = params.newValue;
-              // 선택한 부점의 org_code 찾아서 저장
+              // 선택한 부서의 org_code 찾아서 저장
               const selectedDept = (positionDepartments || []).find(d => d?.org_name === params.newValue);
               if (selectedDept) {
                 params.data.selectedOrgCode = selectedDept.org_code;
@@ -1256,7 +1256,7 @@ const ResponsibilityFormModal: React.FC<ResponsibilityFormModalProps> = ({
                 </FormControl>
               </Box>
 
-              {/* 직책 정보 DataGrid (부점명 포함) */}
+              {/* 직책 정보 DataGrid (부서명 포함) */}
               <Box sx={{ width: '100%', height: '180px' }}>
                 <BaseDataGrid
                   data={positionGridData}

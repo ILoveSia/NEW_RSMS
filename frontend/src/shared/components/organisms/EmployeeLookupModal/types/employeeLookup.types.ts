@@ -8,8 +8,8 @@ export interface Employee {
   id: string;
   employeeId: string;           // 직번
   name: string;                 // 직원명
-  branchCode: string;           // 부점코드
-  branchName: string;           // 부점명
+  branchCode: string;           // 부서코드
+  branchName: string;           // 부서명
   department: string;           // 직급
   position: string;             // 직책
   status: 'ACTIVE' | 'INACTIVE';// 상태 (재직/퇴직)
@@ -28,7 +28,7 @@ export interface EmployeeLookupFilters {
   name?: string;                // 직원명
   employeeId?: string;          // 직번
   department?: string;          // 직급
-  branchCode?: string;          // 부점코드 (추가 필터)
+  branchCode?: string;          // 부서코드 (추가 필터)
 }
 
 // 직원조회 검색 결과 타입

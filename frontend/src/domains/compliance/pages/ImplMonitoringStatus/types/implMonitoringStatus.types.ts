@@ -11,7 +11,7 @@ export interface InspectionExecution {
   obligationInfo: string;                    // 관리의무
   managementActivityName: string;            // 관리활동명
   activityFrequencyCd: string;               // 관리활동수행주기
-  orgCode: string;                           // 부점
+  orgCode: string;                           // 부서
   inspectionMethod: string;                  // 이행점검방법
   inspector: string;                         // 점검자
   inspectionResult?: string;                 // 점검결과
@@ -58,7 +58,7 @@ export interface InspectionPeriod {
 export interface ExecutionFilters {
   ledgerOrderId?: string;                    // 책무이행차수
   inspectionPeriodId?: string;               // 점검명
-  branchCode?: string;                       // 부점코드
+  branchCode?: string;                       // 부서코드
 }
 
 // 점검 의견 타입

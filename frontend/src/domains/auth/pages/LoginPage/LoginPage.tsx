@@ -254,13 +254,14 @@ export const LoginPage: React.FC = () => {
             </Button>
           </form>
 
-          {/* 개발 안내 */}
+          {/* 시스템 안내 */}
           <Box className={styles.devInfo}>
-            <Typography variant="body2" className={styles.prototypeWarning}>
-              ⚠️ 이 시스템은 현재 프로토타입 단계입니다.
+            <Typography variant="body2" className={styles.systemInfoTitle}>
+              📋 책무구조 관리시스템 (RSMS)
             </Typography>
-            <Typography variant="body2" className={styles.prototypeSubtext}>
-              실제 운영 환경에서는 사용하지 마세요.
+            <Typography variant="body2" className={styles.systemInfoDesc}>
+              조직의 책무와 관리활동을 체계적으로 관리하고,<br />
+              내부통제 및 이행점검을 효율적으로 수행하는 통합 관리 시스템입니다.
             </Typography>
           </Box>
         </Paper>

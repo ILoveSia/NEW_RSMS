@@ -53,7 +53,7 @@ export interface DutyInspection extends BaseInspection {
 export interface ExecutiveReportFilters {
   ledgerOrderId: string; // 책무이행차수
   inspectionName: string; // 점검명
-  branchName: string; // 부점명
+  branchName: string; // 부서명
   inspectionStatus: InspectionStatus | ''; // 점검상태
   improvementStatus: ImprovementStatus | ''; // 개선조치상태
   responsibility: string; // 책무 구분

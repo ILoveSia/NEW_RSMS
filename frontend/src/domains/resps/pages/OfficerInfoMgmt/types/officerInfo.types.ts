@@ -31,7 +31,7 @@ export interface OfficerInfo {
   responsibilityChartName?: string;  // 책무구조도명
 
   // 연관 정보
-  meetingBodies?: MeetingBody[];     // 소관부점 회의체
+  meetingBodies?: MeetingBody[];     // 소관부서 회의체
   responsibilities?: ResponsibilityDetail[]; // 책무 상세
   managementObligations?: ManagementObligation[]; // 관리의무
 
@@ -45,7 +45,7 @@ export interface OfficerInfo {
 // 📊 임원정보 상태
 export type OfficerInfoStatus = 'test' | 'confirmed' | 'pending' | 'approved' | 'rejected';
 
-// 👥 소관부점 회의체 정보
+// 👥 소관부서 회의체 정보
 export interface MeetingBody {
   id: string;
   meetingName: string;               // 회의체명
@@ -90,7 +90,7 @@ export interface OfficerInfoFormData {
   dualPositionDetails?: string;
   responsibilityAssignDate: string;
 
-  // 소관부점 회의체 정보
+  // 소관부서 회의체 정보
   meetingBodies: MeetingBodyFormData[];
 
   // 책무 정보

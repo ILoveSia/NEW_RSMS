@@ -189,7 +189,7 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
           책무: formData.책무,
           책무세부내용: formData.책무세부내용,
           관리의무: formData.관리의무,
-          부점명: formData.부점명,
+          부서명: formData.부서명,
           등록일자: new Date().toISOString().split('T')[0],
           등록자: '현재사용자',
           등록자직책: '관리자',
@@ -227,7 +227,7 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
                   책무: formData.책무,
                   책무세부내용: formData.책무세부내용,
                   관리의무: formData.관리의무,
-                  부점명: formData.부점명,
+                  부서명: formData.부서명,
                   본부구분: formData.본부구분,
                   부서명: formData.부서명
                 }
@@ -326,7 +326,7 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
             책무: item.responsibilityCdName || item.responsibilityInfo || '',
             책무세부내용: detailSummary,
             관리의무: obligationSummary,
-            부점명: item.hqName || '',
+            부서명: item.hqName || '',
             등록일자: item.createdAt ? item.createdAt.split('T')[0] : '',
             등록자: item.createdBy || '',
             등록자직책: '',

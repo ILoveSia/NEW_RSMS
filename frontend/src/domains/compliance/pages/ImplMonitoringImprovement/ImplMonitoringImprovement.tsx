@@ -323,14 +323,14 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     {
       key: 'branchCode',
       type: 'text',
-      label: '부점코드',
-      placeholder: '부점코드를 입력하세요',
+      label: '부서코드',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrganizationSearch,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     }
   ], [filters.ledgerOrderId, handleLedgerOrderChange, handleOrganizationSearch]);
@@ -630,7 +630,7 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
           open={organizationSearchOpen}
           onClose={handleOrganizationSearchClose}
           onSelect={handleOrganizationSelect}
-          title="부점 조회"
+          title="부서 조회"
           multiple={false}
         />
 

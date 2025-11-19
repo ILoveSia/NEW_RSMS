@@ -115,7 +115,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
 
   /**
    * 데이터 조회 함수
-   * - 원장차수와 부점코드로 필터링하여 조회
+   * - 원장차수와 부서코드로 필터링하여 조회
    */
   const fetchDeptOpManuals = useCallback(async () => {
     setLoading(true);
@@ -123,7 +123,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     try {
       let data: any[];
 
-      // 원장차수와 부점코드 둘 다 있으면 특정 조회
+      // 원장차수와 부서코드 둘 다 있으면 특정 조회
       if (filters.ledgerOrder && filters.irregularityName) {
         data = await getDeptManagerManualsByLedgerOrderIdAndOrgCode(
           filters.ledgerOrder,
@@ -145,7 +145,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         responsibilityInfo: dto.responsibilityInfo || '',
         responsibilityDetailInfo: dto.responsibilityDetailInfo || '',
         obligationInfo: dto.obligationInfo || '',  // ✅ 관리의무 추가
-        orgName: dto.orgName || '',                 // ✅ 부점명 추가
+        orgName: dto.orgName || '',                 // ✅ 부서명 추가
 
         // dept_manager_manuals 직접 필드
         manualCd: dto.manualCd,                    // ✅ 메뉴얼코드 추가
@@ -310,7 +310,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
       irregularityName: organization.orgCode || ''
     }));
     setOrganizationSearchOpen(false);
-    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
+    toast.success(`부서코드 "${organization.orgCode}" 선택되었습니다.`);
   }, []);
 
   // 조직조회 모달 닫기
@@ -337,15 +337,15 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
     },
     {
       key: 'irregularityName',
-      label: '부점코드',
+      label: '부서코드',
       type: 'text',
-      placeholder: '부점코드를 입력하세요',
+      placeholder: '부서코드를 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 2 },
       endAdornment: {
         type: 'button',
         icon: 'Search',
         onClick: handleOrganizationSearch,
-        tooltip: '부점조회'
+        tooltip: '부서조회'
       }
     },
     {
@@ -753,7 +753,7 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
         open={organizationSearchOpen}
         onClose={handleOrganizationSearchClose}
         onSelect={handleOrganizationSelect}
-        title="부점조회"
+        title="부서조회"
       />
     </div>
   );
