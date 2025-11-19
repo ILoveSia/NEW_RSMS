@@ -242,13 +242,11 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
 
-    const loadingToastId = toast.loading('관리활동 수행 정보를 조회 중입니다...');
-
     try {
       // dept_manager_manuals 테이블에서 전체 데이터 조회
       const data = await getAllDeptManagerManuals();
 
-      console.log('🔍 [ActivityExecution] 조회된 데이터:', data);
+      console.log(`✅ [ActivityExecution] 관리활동 ${data.length}건 조회 완료`);
 
       // Backend DTO → Frontend 타입 변환
       const converted: ActivityExecution[] = data.map((dto, index) => ({
@@ -288,11 +286,9 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
         total: converted.length,
         totalPages: Math.ceil(converted.length / prev.size)
       }));
-
-      toast.update(loadingToastId, 'success', `관리활동 ${converted.length}건이 조회되었습니다.`);
     } catch (error) {
       console.error('❌ [ActivityExecution] 데이터 조회 실패:', error);
-      toast.update(loadingToastId, 'error', '관리활동 수행 정보 조회에 실패했습니다.');
+      toast.error('관리활동 수행 정보 조회에 실패했습니다.');
       setActivities([]);
     } finally {
       setLoading(false);
@@ -313,7 +309,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       departmentCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
-    toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+    console.log('🔄 [ActivityExecution] 검색 조건 초기화');
   }, []);
 
   // 조직검색 핸들러
@@ -328,7 +324,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       departmentCode: organization.orgCode || ''
     }));
     setOrganizationSearchOpen(false);
-    toast.success(`부점코드 "${organization.orgCode}" 선택되었습니다.`);
+    console.log(`✅ [ActivityExecution] 부점 선택: ${organization.orgCode}`);
   }, []);
 
   const handleOrganizationSearchClose = useCallback(() => {

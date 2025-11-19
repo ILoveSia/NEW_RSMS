@@ -185,9 +185,9 @@ const HomeDashboard: React.FC = () => {
         <div className={styles.hierarchyHeader}>
           <h3>은행 책무체계도</h3>
           <p className={styles.hierarchySubtitle}>
-            책무구조도 대상 인원은 총 20명이며, 내부통제 책무담당자 미터 책무업무를 적정상담, 내부통제 적정완화 및 법제비교는 수행합니다.
+            책무구조도 대상 인원은 총 6명이며, 내부통제 책무담당자 미터 책무업무를 적정상담, 내부통제 적정완화 및 법제비교는 수행합니다.
           </p>
-          <div className={styles.hierarchyDate}>기준일: 2024-12-30</div>
+          <div className={styles.hierarchyDate}>기준일: 2025-01-01</div>
         </div>
 
         <div className={styles.orgChart}>
@@ -422,15 +422,15 @@ const HomeDashboard: React.FC = () => {
               <div className={styles.orgChartHeader}>
                 <div className={styles.bankLogo}>
                   <img
-                    src="/src/assets/images/itcen.jpg"
-                    alt="ITCEN ENTEC Logo"
+                    src="/src/assets/images/gjtec.jpg"
+                    alt="GJTEC Logo"
                     className={styles.logoImage}
                   />
                 </div>
                 <div className={styles.chartTitle}>
-                  <h3>ITCEN <span className={styles.entecBlue}>ENTEC</span> 책무체계도</h3>
-                  <p>책무구조도 대상 임원은 총 16명이며, 내부통제 책무유형에 따라 책무기술서를 작성하고, 내부통제 책임관리 및 변경관리를 수행합니다.</p>
-                  <div className={styles.baseDate}>기준일: 2024-12-30</div>
+                  <h3> <span className={styles.entecBlue}>GJTEC</span> 책무체계도</h3>
+                  <p>책무구조도 대상 임원은 총 5명이며, 내부통제 책무유형에 따라 책무기술서를 작성하고, 내부통제 책임관리 및 변경관리를 수행합니다.</p>
+                  <div className={styles.baseDate}>기준일: 2025-01-01</div>
                 </div>
               </div>
 
@@ -453,216 +453,104 @@ const HomeDashboard: React.FC = () => {
                   <span>공통책무</span>
                 </div>
                 <div className={styles.legendItem}>
-                  <span className={styles.legendLine}>—</span>
+                  <span className={styles.legendArrow}>↑</span>
                   <span>보고체계</span>
                 </div>
               </div>
 
               {/* 조직도 */}
               <div className={styles.newOrgChart}>
-                {/* 최상위: CEO */}
+                {/* 최상위: CEO + 이사회의장 + 준법감시인 */}
                 <div className={styles.topLevel}>
                   <div className={styles.orgNode}>
                     <div className={styles.nodeContent}>
                       <div className={styles.nodePosition}>대표이사(CEO)</div>
-                      <div className={styles.nodeName}>김정식</div>
+                      <div className={styles.nodeName}>김근식</div>
                       <div className={styles.nodeDate}>2025-01-01</div>
                       <div className={styles.nodeTags}>
                         <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
                       </div>
                     </div>
                   </div>
+
+                  <div className={styles.orgNode}>
+                    <div className={styles.nodeContent}>
+                      <div className={styles.nodePosition}>이사회의장</div>
+                      <div className={styles.nodeName}>김근식</div>
+                      <div className={styles.nodeDate}>2025-01-01</div>
+                      <div className={styles.nodeTags}>
+                        <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.orgNode}>
+                    <div className={styles.nodeContent}>
+                      <div className={styles.nodePosition}>준법감시인</div>
+                      <div className={styles.nodeName}>윤상의</div>
+                      <div className={styles.nodeDate}>2025-01-01</div>
+                      <div className={styles.nodeTags}>
+                        <span className={`${styles.tag} ${styles.guidance}`}>R02</span>
+                        <span className={`${styles.tag} ${styles.guidance}`}>R03</span>
+                        <span className={`${styles.tag} ${styles.guidance}`}>R04</span>
+                        <span className={`${styles.tag} ${styles.guidance}`}>R10</span>
+                        <span className={`${styles.tag} ${styles.common}`}>C01</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                {/* 최상위 → 임원 연결선 */}
+                <div className={styles.topToExecutiveConnection}>
+                  <div className={styles.verticalArrowUp}></div>
+                </div>
 
                 {/* 임원영역 */}
                 <div className={styles.executiveSection}>
-                  <h4 className={styles.sectionTitle}>임원영역</h4>
                   <div className={styles.executiveLevel}>
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>이사회의장</div>
-                        <div className={styles.nodeName}>김경식</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
-                        </div>
-                      </div>
-                    </div>
 
                     <div className={styles.orgNode}>
                       <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>상임감사위원</div>
-                        <div className={styles.nodeName}>윤창의</div>
+                        <div className={styles.nodePosition}>경영지원본부장</div>
+                        <div className={styles.nodeName}>고명일</div>
                         <div className={styles.nodeDate}>2025-01-01</div>
                         <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R05</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R06</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>이사회사무국장</div>
-                        <div className={styles.nodeName}>박착진</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>은행장CEO</div>
-                        <div className={styles.nodeName}>고병일</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R01</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R06</span>
+                          <span className={`${styles.tag} ${styles.guidance}`}>R07</span>
                           <span className={`${styles.tag} ${styles.guidance}`}>R08</span>
                           <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>준법감시인</div>
-                        <div className={styles.nodeName}>김우진</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R04</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R05</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 본부장영역 */}
-                <div className={styles.managerSection}>
-                  <h4 className={styles.sectionTitle}>본부장영역</h4>
-                  <div className={styles.managerLevel}>
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>영업전략본부장</div>
-                        <div className={styles.nodeName}>정일선</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.financial}`}>F01</span>
-                          <span className={`${styles.tag} ${styles.financial}`}>F02</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>투자금융본부장</div>
-                        <div className={styles.nodeName}>임형수</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.financial}`}>F07</span>
-                          <span className={`${styles.tag} ${styles.financial}`}>F08</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>디지털본부장</div>
-                        <div className={styles.nodeName}>변미경</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.management}`}>M11</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>여신지원본부장</div>
-                        <div className={styles.nodeName}>박성우</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.financial}`}>F01</span>
-                          <span className={`${styles.tag} ${styles.financial}`}>F02</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>경영지원본부장,신탁본부장</div>
-                        <div className={styles.nodeName}>임양진</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
                           <span className={`${styles.tag} ${styles.management}`}>M01</span>
-                          <span className={`${styles.tag} ${styles.financial}`}>F11</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
+                          <span className={`${styles.tag} ${styles.management}`}>M02</span>
+                          <span className={`${styles.tag} ${styles.management}`}>M03</span>
                         </div>
                       </div>
                     </div>
 
                     <div className={styles.orgNode}>
                       <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>IT본부장</div>
-                        <div className={styles.nodeName}>변동하</div>
+                        <div className={styles.nodePosition}>주식운용본부장</div>
+                        <div className={styles.nodeName}>박상수</div>
                         <div className={styles.nodeDate}>2025-01-01</div>
                         <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.management}`}>M11</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R07</span>
                           <span className={`${styles.tag} ${styles.common}`}>C01</span>
+                          <span className={`${styles.tag} ${styles.financial}`}>F01</span>
                         </div>
                       </div>
                     </div>
 
                     <div className={styles.orgNode}>
                       <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>리스크컴플라이언스책임자</div>
-                        <div className={styles.nodeName}>김종택</div>
+                        <div className={styles.nodePosition}>부동산운용본부장</div>
+                        <div className={styles.nodeName}>오명근</div>
                         <div className={styles.nodeDate}>2025-01-01</div>
                         <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R03</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R04</span>
                           <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>금융소비자보호총괄책임자</div>
-                        <div className={styles.nodeName}>김은호</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R09</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.orgNode}>
-                      <div className={styles.nodeContent}>
-                        <div className={styles.nodePosition}>정보보호최고책임자</div>
-                        <div className={styles.nodeName}>이상제</div>
-                        <div className={styles.nodeDate}>2025-01-01</div>
-                        <div className={styles.nodeTags}>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R07</span>
-                          <span className={`${styles.tag} ${styles.guidance}`}>R08</span>
-                          <span className={`${styles.tag} ${styles.common}`}>C01</span>
+                          <span className={`${styles.tag} ${styles.financial}`}>F02</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
 
 
               </div>

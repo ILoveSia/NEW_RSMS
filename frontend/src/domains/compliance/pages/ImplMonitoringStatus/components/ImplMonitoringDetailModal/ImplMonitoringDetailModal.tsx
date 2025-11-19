@@ -26,7 +26,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { InspectionExecution } from '../../types/implMonitoringStatus.types';
 
@@ -99,7 +98,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
   onUpdate,
   loading = false
 }) => {
-  const { t } = useTranslation('compliance');
 
   const {
     control,
@@ -336,7 +334,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
                               size="small"
                               error={!!errors.performer}
                               helperText={errors.performer?.message}
-                              disabled
                             />
                           )}
                         />
@@ -353,7 +350,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
                               value={field.value ? dayjs(field.value) : null}
                               onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
                               format="YYYY/MM/DD"
-                              disabled
                               slotProps={{
                                 textField: {
                                   size: 'small',
@@ -378,7 +374,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
                             <FormControl fullWidth size="small" error={!!errors.activityResult}>
                               <Select
                                 {...field}
-                                disabled
                               >
                                 <MenuItem value="01">미수행</MenuItem>
                                 <MenuItem value="02">수행완료</MenuItem>
@@ -400,7 +395,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
                             <FormControl fullWidth size="small" error={!!errors.performanceAssessment}>
                               <Select
                                 {...field}
-                                disabled
                               >
                                 <MenuItem value="01">적정</MenuItem>
                                 <MenuItem value="02">부적정</MenuItem>
@@ -427,7 +421,6 @@ const ImplMonitoringDetailModal: React.FC<ImplMonitoringDetailModalProps> = ({
                             rows={4}
                             error={!!errors.activityOpinion}
                             helperText={errors.activityOpinion?.message}
-                            disabled
                           />
                         )}
                       />

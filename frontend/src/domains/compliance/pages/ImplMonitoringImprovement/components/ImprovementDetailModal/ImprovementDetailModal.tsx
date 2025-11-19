@@ -27,7 +27,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ImprovementData } from '../ImprovementDataGrid/improvementColumns';
 
@@ -117,7 +116,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
   onUpdate,
   loading = false
 }) => {
-  const { t } = useTranslation('compliance');
 
   const {
     control,
@@ -146,8 +144,8 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
   // 개선이행상태 감시
   const improvementStatus = watch('improvementStatus');
 
-  // 조회 모드 여부
-  const isViewMode = mode === 'detail';
+  // 조회 모드 여부 - 모든 필드 활성화를 위해 false로 고정
+  const isViewMode = false;
 
   /**
    * 폼 초기화
@@ -415,7 +413,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                             fullWidth
                             multiline
                             rows={3}
-                            disabled={isViewMode || improvementStatus === '01' || improvementStatus === '04' || improvementStatus === '05'}
                             error={!!errors.improvementPlanContent}
                             helperText={errors.improvementPlanContent?.message}
                           />
@@ -435,7 +432,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                               value={field.value ? dayjs(field.value) : null}
                               onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
                               format="YYYY/MM/DD"
-                              disabled={isViewMode || improvementStatus === '01' || improvementStatus === '04' || improvementStatus === '05'}
                               slotProps={{
                                 textField: {
                                   size: 'small',
@@ -460,7 +456,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                               value={field.value ? dayjs(field.value) : null}
                               onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
                               format="YYYY/MM/DD"
-                              disabled={isViewMode || improvementStatus !== '03'}
                               slotProps={{
                                 textField: {
                                   size: 'small',
@@ -493,7 +488,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                             fullWidth
                             multiline
                             rows={3}
-                            disabled={isViewMode || (improvementStatus !== '04' && improvementStatus !== '05')}
                             error={!!errors.improvementDetail}
                             helperText={errors.improvementDetail?.message}
                           />
@@ -512,7 +506,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                             value={field.value ? dayjs(field.value) : null}
                             onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
                             format="YYYY/MM/DD"
-                            disabled={isViewMode || (improvementStatus !== '04' && improvementStatus !== '05')}
                             slotProps={{
                               textField: {
                                 size: 'small',

@@ -1384,7 +1384,7 @@
 }
 
 .orgChartSection {
-  flex: 0 0 60%;
+  flex: 0 0 55%;
   padding: 20px;
   overflow-y: auto;
   background: #f8f9fa;
@@ -1482,6 +1482,16 @@
       background: #666;
       border-radius: 1px;
     }
+
+    .legendArrow {
+      font-size: 20px;
+      font-weight: bold;
+      color: #007bff;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -1495,37 +1505,98 @@
 // 섹션 타이틀 스타일
 .sectionTitle {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
-  margin: 0 0 16px 0;
-  padding: 8px 12px;
-  background: #e9ecef;
-  border-radius: 6px;
+  margin: 0 0 20px 0;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
   text-align: center;
+  border-left: 4px solid #007bff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .executiveSection, .managerSection {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  background: white;
+  border-radius: $border-radius-lg;
+  padding: 28px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
 }
 
 .topLevel {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 60px;
+  background: white;
+  border-radius: $border-radius-lg;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  position: relative;
+
+  .orgNode {
+    position: relative;
+
+    // 첫 번째 노드(이사회의장) - 오른쪽 화살표 →
+    &:first-child::after {
+      content: '→';
+      position: absolute;
+      right: -38px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 30px;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    // 마지막 노드(준법감시인) - 왼쪽 화살표 ←
+    &:last-child::before {
+      content: '←';
+      position: absolute;
+      left: -38px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 30px;
+      font-weight: bold;
+      color: #007bff;
+    }
+  }
+}
+
+// 최상위 → 임원 연결선
+.topToExecutiveConnection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+  position: relative;
+
+  .verticalArrowUp {
+    font-size: 30px;
+    font-weight: bold;
+    color: #007bff;
+    line-height: 1;
+
+    &::before {
+      content: '↑';
+    }
+  }
 }
 
 .executiveLevel {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  justify-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
 }
 
 .managerLevel {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 24px;
   justify-items: center;
 }
 
@@ -1552,46 +1623,46 @@
   background: white;
   border: 2px solid #007bff;
   border-radius: $border-radius-lg;
-  padding: 10px;
-  width: 140px;
-  max-width: 140px;
+  padding: 16px 12px;
+  width: 170px;
+  max-width: 170px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .nodeContent {
     .nodeName {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: #333;
-      margin-bottom: 4px;
-      line-height: 1.2;
+      margin-bottom: 6px;
+      line-height: 1.3;
     }
 
     .nodePosition {
-      font-size: 10px;
+      font-size: 12px;
       color: #666;
-      margin-bottom: 4px;
-      line-height: 1.2;
+      margin-bottom: 6px;
+      line-height: 1.3;
       word-break: keep-all;
     }
 
     .nodeDate {
-      font-size: 9px;
+      font-size: 10px;
       color: #999;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .nodeTags {
       display: flex;
       flex-wrap: wrap;
-      gap: 2px;
+      gap: 3px;
       justify-content: center;
 
       .tag {
-        font-size: 8px;
+        font-size: 9px;
         font-weight: 600;
-        padding: 1px 4px;
-        border-radius: 3px;
+        padding: 2px 5px;
+        border-radius: 4px;
         color: white;
 
         &.guidance { background: #dc3545; }
@@ -1713,7 +1784,7 @@
 }
 
 .responsibilityTagsSection {
-  flex: 0 0 40%;
+  flex: 0 0 45%;
   padding: 20px;
   overflow-y: auto;
   background: white;
@@ -1733,8 +1804,8 @@
   }
 
   .tagList {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 

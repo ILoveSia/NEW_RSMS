@@ -22,16 +22,22 @@ export const activityExecutionColumns = (
     resizable: false
   },
 
-  // 2. 부점 (orgCode)
+  // 2. 부점 (orgName 표시, orgCode는 tooltip)
   {
-    field: 'orgCode',
+    field: 'orgName',
     headerName: '부점',
-    width: 150,
-    cellStyle: { textAlign: 'center' },
-    headerClass: 'ag-header-cell-center',
+    width: 200,
+    cellStyle: { textAlign: 'left' },
+    headerClass: 'ag-header-cell-left',
     sortable: true,
     resizable: true,
-    tooltipField: 'orgName'
+    tooltipField: 'orgCode',
+    valueGetter: (params: any) => {
+      const orgName = params.data?.orgName || '';
+      const orgCode = params.data?.orgCode || '';
+      // orgName이 있으면 표시, 없으면 orgCode 표시
+      return orgName || orgCode || '-';
+    }
   },
 
   // 3. 관리활동명 (activityName)
