@@ -435,73 +435,41 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
         id: '1',
         // dept_manager_manuals 테이블 컬럼
         sequenceNumber: 1,
-        inspectionName: '2025년 1분기 정기점검',
-        obligationInfo: '정보보호 관리 의무',
-        managementActivityName: '개인정보 보호 점검',
-        orgCode: '준법지원부',
+        inspectionName: '2025년 하반기 정기점검',
+        obligationInfo: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독',
+        managementActivityName: '외부위임 소송사건의 업무 처리 적정성 점검',
+        orgCode: '준법지원팀',
         // impl_inspection_items 테이블 컬럼
         inspector: '김철수',
         inspectionResult: '03', // 부적정
-        improvementManager: '이영희',
-        improvementStatus: '02', // 개선계획
-        improvementPlanDate: '2025-01-17',
-        improvementApprovedDate: null,
+        improvementManager: '홍길동',
+        improvementStatus: '04', // 개선계획
+        improvementPlanDate: '2025-11-22',
+        improvementApprovedDate: '2025-11-23',
         improvementCompletedDate: null,
-        finalInspectionResult: ''
+        finalInspectionResult: '',  // 미선택
+        finalInspectionDate: null,
+        finalInspectionOpinion: ''
       },
       {
         id: '2',
         // dept_manager_manuals 테이블 컬럼
         sequenceNumber: 2,
-        inspectionName: '2025년 1분기 정기점검',
-        obligationInfo: '자금세탁방지 의무',
-        managementActivityName: '자금세탁방지 시스템 점검',
-        orgCode: '리스크관리부',
+        inspectionName: '2025년 하반기 정기점검',
+        obligationInfo: '정관 변경 업무 및 내규 제정·개정·폐지안의 사전심의 업무 관리',
+        managementActivityName: '정관 변경 및 내규 제·개정·폐지 시 사전검토 및 협의 수행여부에 대한 점검',
+        orgCode: '준법지원팀',
         // impl_inspection_items 테이블 컬럼
-        inspector: '박민수',
+        inspector: '김철수',
         inspectionResult: '03', // 부적정
-        improvementManager: '정수진',
+        improvementManager: '홍길동',
         improvementStatus: '05', // 개선완료
-        improvementPlanDate: '2025-01-19',
-        improvementApprovedDate: '2025-01-22',
-        improvementCompletedDate: '2025-01-25',
-        finalInspectionResult: '01' // 승인
-      },
-      {
-        id: '3',
-        // dept_manager_manuals 테이블 컬럼
-        sequenceNumber: 3,
-        inspectionName: '2025년 1분기 정기점검',
-        obligationInfo: '리스크 관리 의무',
-        managementActivityName: '신용리스크 평가 점검',
-        orgCode: '신용평가부',
-        // impl_inspection_items 테이블 컬럼
-        inspector: '최준호',
-        inspectionResult: '03', // 부적정
-        improvementManager: '강민지',
-        improvementStatus: '01', // 개선미이행
-        improvementPlanDate: null,
-        improvementApprovedDate: null,
-        improvementCompletedDate: null,
-        finalInspectionResult: ''
-      },
-      {
-        id: '4',
-        // dept_manager_manuals 테이블 컬럼
-        sequenceNumber: 4,
-        inspectionName: '2025년 1분기 정기점검',
-        obligationInfo: '내부통제 관리 의무',
-        managementActivityName: '내부통제 프로세스 점검',
-        orgCode: '내부감사부',
-        // impl_inspection_items 테이블 컬럼
-        inspector: '윤서영',
-        inspectionResult: '03', // 부적정
-        improvementManager: '김태현',
-        improvementStatus: '04', // 개선이행
-        improvementPlanDate: '2025-01-20',
-        improvementApprovedDate: '2025-01-23',
-        improvementCompletedDate: null,
-        finalInspectionResult: ''
+        improvementPlanDate: '2025-11-22',
+        improvementApprovedDate: '2025-11-23',
+        improvementCompletedDate: '2025-11-24',
+        finalInspectionResult: '01',  // 승인
+        finalInspectionDate: '2025-11-26',
+        finalInspectionOpinion: '개선계획에 따라 관련 규정이 적절히 개정되었으며, 담당자 교육 및 개선사항 적용이 완료되어 승인처리 하였습니다.'
       }
     ];
 

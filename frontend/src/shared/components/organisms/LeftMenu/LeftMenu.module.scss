@@ -224,3 +224,10 @@
     }
   }
 }
+
+// 인쇄 시 LeftMenu 완전히 숨김
+@media print {
+  .leftMenu {
+    display: none !important;
+  }
+}

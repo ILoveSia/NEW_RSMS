@@ -40,7 +40,7 @@ const PositionNameRenderer = ({ value, data, context }: any) => {
 };
 
 /**
- * 책무기술서 데이터 그리드 컬럼 정의
+ * 책무기술서 데이터 그리드 컬럼 정의 (resp_statement_execs 테이블 기반)
  * - "직책" 컬럼: 파란색 링크 스타일, 클릭 시 상세 모달 열기
  */
 export const responsibilityDocColumns: ColDef<ResponsibilityDoc>[] = [
@@ -48,7 +48,7 @@ export const responsibilityDocColumns: ColDef<ResponsibilityDoc>[] = [
     headerName: '순번',
     field: 'seq',
     sortable: true,
-    filter: true,
+    filter: 'agNumberColumnFilter',
     width: 80,
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
@@ -57,7 +57,7 @@ export const responsibilityDocColumns: ColDef<ResponsibilityDoc>[] = [
     headerName: '직책',
     field: 'positionName',
     sortable: true,
-    filter: true,
+    filter: 'agTextColumnFilter',
     flex: 1,
     minWidth: 150,
     cellRenderer: PositionNameRenderer,
@@ -66,37 +66,81 @@ export const responsibilityDocColumns: ColDef<ResponsibilityDoc>[] = [
     headerClass: 'ag-header-center'
   },
   {
-    headerName: '요청일자',
-    field: 'requestDate',
+    headerName: '임원성명',
+    field: 'executiveName',
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    width: 120,
+    cellClass: 'ag-cell-center',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value || '-';
+    }
+  },
+  {
+    headerName: '현직책 부여일',
+    field: 'positionAssignedDate',
     sortable: true,
     filter: 'agDateColumnFilter',
-    width: 120,
+    width: 140,
     cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center'
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      // YYYY-MM-DD → YYYY/MM/DD 형식으로 표시
+      return value.replace(/-/g, '/');
+    }
   },
   {
-    headerName: '요청자',
-    field: 'requestor',
+    headerName: '겸직사항',
+    field: 'concurrentPosition',
     sortable: true,
-    filter: true,
-    width: 120,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center'
+    filter: 'agTextColumnFilter',
+    width: 200,
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value || '-';
+    }
   },
   {
-    headerName: '승인일자',
-    field: 'approvalDate',
+    headerName: '책무 분배일',
+    field: 'responsibilityAssignedDate',
     sortable: true,
     filter: 'agDateColumnFilter',
-    width: 120,
+    width: 130,
     cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center'
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      // YYYY-MM-DD → YYYY/MM/DD 형식으로 표시
+      return value.replace(/-/g, '/');
+    }
   },
   {
-    headerName: '승인자',
-    field: 'approver',
+    headerName: '등록일자',
+    field: 'createdAt',
     sortable: true,
-    filter: true,
+    filter: 'agDateColumnFilter',
+    width: 130,
+    cellClass: 'ag-cell-center',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      // YYYY-MM-DD HH:mm:ss → YYYY/MM/DD 형식으로 표시
+      return value.split('T')[0].replace(/-/g, '/');
+    }
+  },
+  {
+    headerName: '등록자',
+    field: 'createdBy',
+    sortable: true,
+    filter: 'agTextColumnFilter',
     width: 120,
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
@@ -105,17 +149,20 @@ export const responsibilityDocColumns: ColDef<ResponsibilityDoc>[] = [
     headerName: '사용여부',
     field: 'isActive',
     sortable: true,
-    filter: true,
-    width: 100,
+    filter: 'agTextColumnFilter',
+    width: 110,
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center',
-    cellRenderer: (params: { value: boolean }) => (
-      <Chip
-        label={params.value ? '사용' : '미사용'}
-        color={getActiveColor(params.value)}
-        size="small"
-        variant="outlined"
-      />
-    )
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      const displayText = value ? '사용' : '미사용';
+      const color = value ? '#4caf50' : '#9e9e9e';
+
+      return (
+        <span style={{ color, fontWeight: 500 }}>
+          {displayText}
+        </span>
+      );
+    }
   }
 ];

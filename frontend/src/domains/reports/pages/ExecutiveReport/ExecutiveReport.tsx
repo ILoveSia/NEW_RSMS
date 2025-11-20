@@ -277,10 +277,7 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
       label: '점검명',
       options: [
         { value: '', label: '전체' },
-        { value: '2024년1회차 이행점검', label: '2024년1회차 이행점검' },
-        { value: '2024년2회차 이행점검', label: '2024년2회차 이행점검' },
-        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' },
-        { value: '2026년1회차 이행점검', label: '2026년1회차 이행점검' }
+        { value: '2025년 하반기 정기점검', label: '2025년 하반기 정기점검' }
       ],
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
@@ -311,16 +308,16 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
     //   disabled: loadingStates.targetOrg,
     //   loading: loadingStates.targetOrg
     // },
-    {
-      key: 'newReport',
-      type: 'custom',
-      label: '신규 보고서 작성',
-      variant: 'contained',
-      color: 'success',
-      onClick: handleNewReport,
-      disabled: loadingStates.newReport,
-      loading: loadingStates.newReport
-    }
+    // {
+    //   key: 'newReport',
+    //   type: 'custom',
+    //   label: '신규 보고서 작성',
+    //   variant: 'contained',
+    //   color: 'success',
+    //   onClick: handleNewReport,
+    //   disabled: loadingStates.newReport,
+    //   loading: loadingStates.newReport
+    // }
   ], [handleTargetOrgManagement, handleNewReport, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
@@ -582,16 +579,16 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
               </div>
               <div className={styles.summaryBody}>
                 <div className={styles.summaryRow}>
-                  <div className={styles.summaryCell}>4개</div>
-                  <div className={styles.summaryCell}>8개</div>
-                  <div className={styles.summaryCell}>8개</div>
+                  <div className={styles.summaryCell}>1개</div>
+                  <div className={styles.summaryCell}>3개</div>
+                  <div className={styles.summaryCell}>5개</div>
                   <div className={styles.summaryCell}>
-                    <span className={styles.completed}>작성 : 0건</span>
-                    <span className={styles.notCompleted}>부적성 : 0건</span>
+                    <span className={styles.completed}>작성 : 3건</span>
+                    <span className={styles.notCompleted}>부적성 : 2건</span>
                   </div>
                   <div className={styles.summaryCell}>
-                    <span className={styles.completed}>완료 : 0건</span>
-                    <span className={styles.inProgress}>진행중 : 0건</span>
+                    <span className={styles.completed}>완료 : 1건</span>
+                    <span className={styles.inProgress}>진행중 : 1건</span>
                   </div>
                 </div>
               </div>
@@ -611,21 +608,10 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
               </div>
               <div className={styles.simpleTableBody}>
                 <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>(공통) 소관 업무-조직의 내부통제기조 및 위험관리기조</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
+                  <div className={styles.simpleTableCell}>법무·송무 업무와 관련된 책무</div>
+                  <div className={styles.simpleTableCell}>점검</div>
                 </div>
-                <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>경영진단 업무와 관련된 책무</div>
-                  <div className={styles.simpleTableCell}>부적성</div>
-                </div>
-                <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>온법감시 업무와 관련된 책무</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
-                </div>
-                <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>내부감시 업무와 관련된 책무</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
-                </div>
+
               </div>
             </div>
           </div>
@@ -645,43 +631,58 @@ const ExecutiveReport: React.FC<ExecutiveReportProps> = ({ className }) => {
               </div>
               <div className={styles.simpleTableBody}>
                 <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>내부감시 업무와 관련된 책무 세부 내용 1에 대한 관리의무 1</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
-                  <div className={styles.simpleTableCell}>내부통제기조 및 위험관리기조 수립 목적에 대한 관리의무</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
+                  <div className={styles.simpleTableCell}>중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토</div>
+                  <div className={styles.simpleTableCell}>점검</div>
+                  <div className={styles.simpleTableCell}>소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독</div>
+                  <div className={styles.simpleTableCell}>점검</div>
                 </div>
                 <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>경영진단 업무와 관련된 책무에 대한 세부내용 1</div>
-                  <div className={styles.simpleTableCell}>부적성</div>
-                  <div className={styles.simpleTableCell}>온법감시 업무와 관련된 책무 세부내용에 대한 관리의무</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
+                  <div className={styles.simpleTableCell}>정관 변경 업무 및 내규 제정·개정·폐지안의 사전심의 업무 관리</div>
+                  <div className={styles.simpleTableCell}>점검</div>
+                  <div className={styles.simpleTableCell}></div>
+                  <div className={styles.simpleTableCell}></div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 📋 3) 관리의무 유형별 점검 현황 */}
+          {/* 📋 3) 관리활동명 점검 현황 */}
           <div className={styles.tableSection}>
             <h3 className={styles.sectionTitle}>
               <BusinessIcon className={styles.sectionIcon} />
-              3) 관리의무 유형별 점검 현황
+              3) 관리활동 점검 현황
             </h3>
             <div className={styles.simpleTable}>
               <div className={styles.simpleTableHeader}>
-                <div className={styles.simpleTableHeaderCell} style={{width: '70%'}}>관리의무 유형</div>
-                <div className={styles.simpleTableHeaderCell} style={{width: '15%'}}>의무</div>
-                <div className={styles.simpleTableHeaderCell} style={{width: '15%'}}>점검결과</div>
+                <div className={styles.simpleTableHeaderCell} style={{width: '40%'}}>관리활동</div>
+                <div className={styles.simpleTableHeaderCell} style={{width: '50%'}}>책무관리항목</div>
+                <div className={styles.simpleTableHeaderCell} style={{width: '10%'}}>점검결과</div>
               </div>
               <div className={styles.simpleTableBody}>
                 <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>기타</div>
-                  <div className={styles.simpleTableCell}>3</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
+                  <div className={styles.simpleTableCell}>중요계약서 서식 및 내용의 적정성 검토에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>중요계약서 서식 및 내용의 적정성 검토에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>적정</div>
                 </div>
                 <div className={styles.simpleTableRow}>
-                  <div className={styles.simpleTableCell}>(공통1) 내부통제기준의 적정하게 마련되고, 효과적으로 집행·운영되고 있는지 여부에 대한 점검</div>
-                  <div className={styles.simpleTableCell}>1</div>
-                  <div className={styles.simpleTableCell}>미점검</div>
+                  <div className={styles.simpleTableCell}>법률 관련 질의회신 내용의 적정성 검토에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>법률 관련 질의회신 내용의 적정성 검토에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>적정</div>
+                </div>
+                <div className={styles.simpleTableRow}>
+                  <div className={styles.simpleTableCell}>소송관련 업무 전반에 대한 지원 점검</div>
+                  <div className={styles.simpleTableCell}>소송관련 업무 전반에 대한 지원 및 관련 자료 수집 및 보관 절차준수 여부에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>적정</div>
+                </div>
+                <div className={styles.simpleTableRow}>
+                  <div className={styles.simpleTableCell}>외부위임 소송사건의 업무 처리 적정성 점검</div>
+                  <div className={styles.simpleTableCell}>외부위임 소송업무의 변호사 선정 및 자문료 금액에 대한 규정 준수 및 전결권자 승인여부에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>부적정</div>
+                </div>
+                <div className={styles.simpleTableRow}>
+                  <div className={styles.simpleTableCell}>정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검</div>
+                  <div className={styles.simpleTableCell}>정관 변경 및 내규 제·개정·폐지 시 사전검토 및 협의 수행여부에 대한 점검</div>
+                  <div className={styles.simpleTableCell}>부적정</div>
                 </div>
               </div>
             </div>

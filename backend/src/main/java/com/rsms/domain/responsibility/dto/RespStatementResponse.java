@@ -20,41 +20,82 @@ import java.util.List;
 @Builder
 public class RespStatementResponse {
 
+    // ===== 기본키 =====
     /**
-     * 책무기술서 ID
+     * 책무기술서_임원_정보ID (PK)
      */
-    private String id;
+    private String respStmtExecId;
+
+    // ===== 외래키 =====
+    /**
+     * 직책ID (FK)
+     */
+    private Long positionsId;
 
     /**
-     * 원장차수ID
+     * 원장차수ID (FK)
      */
     private String ledgerOrderId;
 
     /**
-     * 직책ID
-     */
-    private Long positionId;
-
-    /**
-     * 직책명
+     * 직책명 (positions 테이블 JOIN)
      */
     private String positionName;
 
+    // ===== 기본 정보 (resp_statement_execs 테이블 컬럼) =====
     /**
-     * 상태 (draft, pending, approved 등)
+     * 사용자ID
      */
-    private String status;
+    private String userId;
 
     /**
-     * 결재상태 (pending, approved, rejected)
+     * 임원성명
      */
-    private String approvalStatus;
+    private String executiveName;
 
     /**
-     * 활성화 여부
+     * 사번
      */
-    private Boolean isActive;
+    private String employeeNo;
 
+    /**
+     * 현직책 부여일
+     */
+    private String positionAssignedDate;
+
+    /**
+     * 겸직사항
+     */
+    private String concurrentPosition;
+
+    /**
+     * 직무대행자 내용
+     */
+    private String actingOfficerInfo;
+
+    /**
+     * 비고
+     */
+    private String remarks;
+
+    // ===== 책무기술서 정보 =====
+    /**
+     * 책무개요 내용
+     */
+    private String responsibilityOverview;
+
+    /**
+     * 책무 배분일자
+     */
+    private String responsibilityAssignedDate;
+
+    // ===== 상태 정보 =====
+    /**
+     * 사용여부 ('Y', 'N')
+     */
+    private String isActive;
+
+    // ===== 공통 컬럼 (Audit) =====
     /**
      * 생성일시
      */
@@ -75,18 +116,34 @@ public class RespStatementResponse {
      */
     private String updatedBy;
 
+    // ===== 추가 정보 (프론트엔드 호환성) =====
     /**
-     * 책무개요
+     * 책무기술서 ID (respStmtExecId 별칭)
      */
-    private String responsibilityOverview;
+    private String id;
 
     /**
-     * 책무배경
+     * 직책ID (positionsId 별칭)
+     */
+    private Long positionId;
+
+    /**
+     * 상태 (draft, pending, approved 등) - 향후 확장용
+     */
+    private String status;
+
+    /**
+     * 결재상태 (pending, approved, rejected) - 향후 확장용
+     */
+    private String approvalStatus;
+
+    /**
+     * 책무배경 - 향후 확장용
      */
     private String responsibilityBackground;
 
     /**
-     * 책무배분일
+     * 책무배분일 (responsibilityAssignedDate 별칭)
      */
     private String responsibilityBackgroundDate;
 
@@ -112,25 +169,48 @@ public class RespStatementResponse {
 
     /**
      * Entity에서 Response DTO로 변환
+     * - resp_statement_execs 테이블의 모든 컬럼을 매핑
      */
     public static RespStatementResponse fromEntity(
             com.rsms.domain.responsibility.entity.RespStatementExec entity) {
+        String respStmtExecIdStr = entity.getRespStmtExecId() != null
+                ? entity.getRespStmtExecId().toString() : null;
+
         return RespStatementResponse.builder()
-                .id(entity.getRespStmtExecId().toString())
-                .ledgerOrderId(entity.getLedgerOrder().getLedgerOrderId())
-                .positionId(entity.getPosition().getPositionsId())
-                .positionName(entity.getPosition().getPositionsName())
-                .status("draft") // TODO: 실제 상태 필드 추가 필요
-                .approvalStatus("pending") // TODO: 실제 결재상태 필드 추가 필요
-                .isActive("Y".equals(entity.getIsActive()))
+                // 기본키
+                .respStmtExecId(respStmtExecIdStr)
+                // 외래키
+                .positionsId(entity.getPosition() != null ? entity.getPosition().getPositionsId() : null)
+                .ledgerOrderId(entity.getLedgerOrder() != null ? entity.getLedgerOrder().getLedgerOrderId() : null)
+                .positionName(entity.getPosition() != null ? entity.getPosition().getPositionsName() : null)
+                // 기본 정보 (resp_statement_execs 테이블 컬럼)
+                .userId(entity.getUserId())
+                .executiveName(entity.getExecutiveName())
+                .employeeNo(entity.getEmployeeNo())
+                .positionAssignedDate(entity.getPositionAssignedDate() != null
+                        ? entity.getPositionAssignedDate().toString() : null)
+                .concurrentPosition(entity.getConcurrentPosition())
+                .actingOfficerInfo(entity.getActingOfficerInfo())
+                .remarks(entity.getRemarks())
+                // 책무기술서 정보
+                .responsibilityOverview(entity.getResponsibilityOverview())
+                .responsibilityAssignedDate(entity.getResponsibilityAssignedDate() != null
+                        ? entity.getResponsibilityAssignedDate().toString() : null)
+                // 상태 정보
+                .isActive(entity.getIsActive()) // 'Y' or 'N' 문자열 그대로
+                // 공통 컬럼 (Audit)
                 .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null)
                 .createdBy(entity.getCreatedBy())
                 .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null)
                 .updatedBy(entity.getUpdatedBy())
-                .responsibilityOverview(entity.getResponsibilityOverview())
+                // 추가 정보 (프론트엔드 호환성 - 별칭)
+                .id(respStmtExecIdStr) // respStmtExecId 별칭
+                .positionId(entity.getPosition() != null ? entity.getPosition().getPositionsId() : null) // positionsId 별칭
+                .status("draft") // TODO: 실제 상태 필드 추가 필요
+                .approvalStatus("pending") // TODO: 실제 결재상태 필드 추가 필요
                 .responsibilityBackgroundDate(entity.getResponsibilityAssignedDate() != null
-                    ? entity.getResponsibilityAssignedDate().toString() : null)
-                // TODO: mainCommittees는 추후 추가 (별도 조회 필요)
+                        ? entity.getResponsibilityAssignedDate().toString() : null) // responsibilityAssignedDate 별칭
+                // mainCommittees는 추후 추가 (별도 조회 필요)
                 .build();
     }
 }

@@ -138,24 +138,38 @@ export interface MainCommitteeResponse {
 }
 
 /**
- * 책무기술서 응답 DTO
+ * 책무기술서 응답 DTO (resp_statement_execs 테이블 전체 컬럼)
  */
 export interface ResponsibilityDocResponse {
-  id: string;
-  ledgerOrderId: string;
-  positionId: number;
-  positionName: string;
-  status: string;
-  approvalStatus: string;
-  isActive: boolean;
-  createdAt: string;
-  createdBy: string;
-  updatedAt: string;
-  updatedBy: string;
-  responsibilityOverview?: string;      // 책무개요
-  responsibilityBackground?: string;    // 책무배경
-  responsibilityBackgroundDate?: string; // 책무배분일
-  mainCommittees?: MainCommitteeResponse[]; // 주관회의체 목록
+  // 기본키
+  respStmtExecId: string;                       // resp_stmt_exec_id (PK)
+
+  // 외래키
+  positionsId: number;                          // positions_id (FK)
+  ledgerOrderId: string;                        // ledger_order_id (FK)
+  positionName: string;                         // 직책명 (positions 테이블 JOIN)
+
+  // 기본 정보
+  userId: string;                               // user_id
+  executiveName: string;                        // executive_name
+  employeeNo?: string;                          // employee_no
+  positionAssignedDate?: string;                // position_assigned_date
+  concurrentPosition?: string;                  // concurrent_position
+  actingOfficerInfo?: string;                   // acting_officer_info
+  remarks?: string;                             // remarks
+
+  // 책무기술서 정보
+  responsibilityOverview?: string;              // responsibility_overview
+  responsibilityAssignedDate?: string;          // responsibility_assigned_date
+
+  // 상태 정보
+  isActive: string;                             // is_active ('Y', 'N')
+
+  // 공통 컬럼
+  createdAt: string;                            // created_at
+  createdBy: string;                            // created_by
+  updatedAt: string;                            // updated_at
+  updatedBy: string;                            // updated_by
 }
 
 /**

@@ -295,4 +295,9 @@
       }
     }
   }
+
+  // 인쇄 시 TopHeader 완전히 숨김
+  @media print {
+    display: none !important;
+  }
 }

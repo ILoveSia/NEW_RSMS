@@ -15,11 +15,13 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   TextField,
   Typography
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -32,6 +34,7 @@ import {
   ActivityExecution,
   ActivityExecutionFormData
 } from '../../types/activityExecution.types';
+import type { UseCommonCodeReturn } from '@/shared/hooks/useCommonCode/useCommonCode';
 
 interface ActivityExecutionModalProps {
   open: boolean;
@@ -41,6 +44,7 @@ interface ActivityExecutionModalProps {
   onSave: (data: ActivityExecutionFormData) => void;
   onUpdate: (id: string, data: ActivityExecutionFormData) => void;
   loading?: boolean;
+  checkFrequencyCode?: UseCommonCodeReturn;
 }
 
 /**
@@ -70,7 +74,8 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
   onClose,
   onSave,
   onUpdate,
-  loading = false
+  loading = false,
+  checkFrequencyCode
 }) => {
   const { t } = useTranslation('resps');
 
@@ -97,8 +102,8 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
         reset({
           performanceDate: activity.executionDate || dayjs().format('YYYY-MM-DD'),
           performer: activity.executorName || activity.executorId || '',
-          activityResult: activity.executionResultCd || '01',
-          performanceAssessment: activity.executionStatus || '01',
+          activityResult: activity.executionStatus || '01',  // 수행여부: executionStatus
+          performanceAssessment: activity.executionResultCd || '01',  // 수행결과: executionResultCd
           activityOpinion: activity.executionResultContent || ''
         });
       } else {
@@ -106,8 +111,8 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
         reset({
           performanceDate: activity.executionDate || '',
           performer: activity.executorName || activity.executorId || '',
-          activityResult: activity.executionResultCd || '',
-          performanceAssessment: activity.executionStatus || '',
+          activityResult: activity.executionStatus || '',  // 수행여부: executionStatus
+          performanceAssessment: activity.executionResultCd || '',  // 수행결과: executionResultCd
           activityOpinion: activity.executionResultContent || ''
         });
       }
@@ -146,10 +151,26 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
             background: 'var(--theme-page-header-bg)',
             color: 'var(--theme-page-header-text)',
             fontSize: '1.25rem',
-            fontWeight: 600
+            fontWeight: 600,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            pr: 1
           }}
         >
-          {modalTitle}
+          <span>{modalTitle}</span>
+          <IconButton
+            onClick={onClose}
+            disabled={loading}
+            sx={{
+              color: 'var(--theme-page-header-text)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
 
         <DialogContent dividers sx={{ p: 3 }}>
@@ -162,7 +183,7 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                 </Typography>
 
                 {/* 카드 섹션 1: 기본 정보 */}
-                <div className={styles.cardSection}>
+                <div className={`${styles.cardSection} ${styles.cardBasicInfo}`}>
                   <div className={styles.cardTitle}>📋 기본 정보</div>
 
                   <div className={styles.fieldGroup}>
@@ -202,7 +223,7 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                 </div>
 
                 {/* 카드 섹션 2: 점검 정보 */}
-                <div className={styles.cardSection}>
+                <div className={`${styles.cardSection} ${styles.cardInspectionInfo}`}>
                   <div className={styles.cardTitle}>📝 점검 정보</div>
 
                   <div className={styles.fieldGroup}>
@@ -237,7 +258,11 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                       fullWidth
                       size="small"
                       variant="outlined"
-                      value={activity?.execCheckFrequencyCd || '-'}
+                      value={
+                        activity?.execCheckFrequencyCd
+                          ? checkFrequencyCode?.getCodeName(activity.execCheckFrequencyCd) || activity.execCheckFrequencyCd
+                          : '-'
+                      }
                       InputProps={{ readOnly: true }}
                     />
                   </div>
@@ -250,7 +275,7 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                   수행정보 영역
                 </Typography>
 
-                <div className={styles.cardSection}>
+                <div className={`${styles.cardSection} ${styles.cardPerformanceInput}`}>
                   <div className={styles.cardTitle}>✏️ 수행정보 입력</div>
 
                   <div className={styles.fieldGroup}>

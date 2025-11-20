@@ -471,7 +471,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원팀',
         inspectionMethod: '법률 위험이 발생하지 않도록 표준계약서 및 약관 작성·운영 기준 마련 여부',
         inspector: '김철수',
-        inspectionResult: '적정',
+        inspectionResult: '02', // 02: 적정
         inspectionDetail: '모든 항목 정상 확인',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -488,7 +488,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원팀',
         inspectionMethod: '법률자문 의뢰 시 질의 배경, 질의 요지, 해당 부점의 의견 등의 기재 여부 의뢰한 사안에 대하여 신속히 검토하고, 그 결과를 문서의 방법으로 회신여부 의뢰받은 법률자문이 다수일 경우에는 접수한 순서대로 회신 수행 여부',
         inspector: '김철수',
-        inspectionResult: '미흡',
+        inspectionResult: '02', // 01: 미점검
         inspectionDetail: '일부 항목 보완 필요',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -505,7 +505,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원팀',
         inspectionMethod: '법·규정이나 법적 문서의 해석 및 업무의 적법성 여부의 의문시 사항에 대한 지원 여부 : 각 부점의 업무와 관련하여 긴박한 법적 문제가 발생항목에 대한 지원 여부',
         inspector: '김철수',
-        inspectionResult: '적정',
+        inspectionResult: '02', // 02: 적정
         inspectionDetail: '모든 항목 정상 확인',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',
@@ -522,8 +522,8 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원팀',
         inspectionMethod: '법률자문신청서를 작성하여 문서로 법률자문을 의뢰 여부 : 법률자문의뢰시 질의 배경, 질의 요지, 해당 부점의 의견 등을 기재 여부 : 법률자문의뢰 관련 비용의 의뢰부점에 귀속 여부',
         inspector: '김철수',
-        inspectionResult: '적정',
-        inspectionDetail: '모든 항목 정상 확인',
+        inspectionResult: '03', // 02: 적정
+        inspectionDetail: '개선이 필요',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',
         createdAt: '2024-09-21T10:00:00Z',
@@ -539,7 +539,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
         orgCode: '준법지원팀',
         inspectionMethod: '정관·사규 등의 제정 및 개폐시 관계법령등의 준수 여부 및 사전 심의 수행 여부',
         inspector: '김철수',
-        inspectionResult: '부적정',
+        inspectionResult: '03', // 03: 부적정
         inspectionDetail: '개선이 필요',
         inspectionStatus: 'COMPLETED',
         inspectionPeriodId: '2026_FIRST_HALF',

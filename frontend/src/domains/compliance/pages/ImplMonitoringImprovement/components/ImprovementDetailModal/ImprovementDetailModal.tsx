@@ -1,12 +1,12 @@
 /**
  * 개선이행 상세 모달
- * - ImplMonitoringDetailModal 구조와 유사
- * - 좌측: 관리활동 영역 (읽기 전용)
+ * - ImplMonitoringDetailModal과 동일한 디자인 적용
+ * - 좌측: 관리활동 영역 (읽기 전용, 카드 섹션)
  * - 우측: 개선이행정보 + 최종점검정보 영역 (편집 가능)
- * - 점검정보는 이미 부적정으로 확정된 항목만 표시되므로 점검정보 섹션 없음
  */
 
 import { Button } from '@/shared/components/atoms/Button';
+import styles from './ImprovementDetailModal.module.scss';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Dialog,
@@ -16,11 +16,13 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   TextField,
   Typography
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -62,49 +64,20 @@ interface ImprovementFormData {
 /**
  * 개선이행정보 + 최종점검정보 폼 검증 스키마
  */
-const schema = yup.object().shape({
+const schema = yup.object({
   // 개선이행정보
-  improvementManager: yup
-    .string()
-    .default(''),
-  improvementStatus: yup
-    .string()
-    .required('개선이행상태는 필수입니다'),
-  improvementPlanContent: yup
-    .string()
-    .default('')
-    .max(1000, '개선계획내용은 1000자 이내로 입력해주세요'),
-  improvementPlanDate: yup
-    .string()
-    .nullable()
-    .default(null),
-  improvementApprovedDate: yup
-    .string()
-    .nullable()
-    .default(null),
-  improvementDetail: yup
-    .string()
-    .default('')
-    .max(1000, '개선이행세부내용은 1000자 이내로 입력해주세요'),
-  improvementCompletedDate: yup
-    .string()
-    .nullable()
-    .default(null),
+  improvementManager: yup.string(),
+  improvementStatus: yup.string().required('개선이행상태는 필수입니다'),
+  improvementPlanContent: yup.string().max(1000, '개선계획내용은 1000자 이내로 입력해주세요'),
+  improvementPlanDate: yup.string().nullable(),
+  improvementApprovedDate: yup.string().nullable(),
+  improvementDetail: yup.string().max(1000, '개선이행세부내용은 1000자 이내로 입력해주세요'),
+  improvementCompletedDate: yup.string().nullable(),
   // 최종점검정보
-  finalInspector: yup
-    .string()
-    .default(''),
-  finalInspectionResult: yup
-    .string()
-    .required('최종점검결과는 필수입니다'),
-  finalInspectionOpinion: yup
-    .string()
-    .default('')
-    .max(1000, '최종점검결과 내용은 1000자 이내로 입력해주세요'),
-  finalInspectionDate: yup
-    .string()
-    .nullable()
-    .default(null)
+  finalInspector: yup.string(),
+  finalInspectionResult: yup.string().required('최종점검결과는 필수입니다'),
+  finalInspectionOpinion: yup.string().max(1000, '최종점검결과 내용은 1000자 이내로 입력해주세요'),
+  finalInspectionDate: yup.string().nullable()
 });
 
 const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
@@ -121,59 +94,73 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isValid }
   } = useForm<ImprovementFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
       improvementManager: '',
-      improvementStatus: '01', // 01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행
+      improvementStatus: '01',
       improvementPlanContent: '',
       improvementPlanDate: dayjs().format('YYYY-MM-DD'),
       improvementApprovedDate: null,
       improvementDetail: '',
       improvementCompletedDate: null,
       finalInspector: '',
-      finalInspectionResult: '01', // 01:승인, 02:반려
+      finalInspectionResult: '',
       finalInspectionOpinion: '',
       finalInspectionDate: dayjs().format('YYYY-MM-DD')
     }
   });
 
-  // 개선이행상태 감시
-  const improvementStatus = watch('improvementStatus');
-
-  // 조회 모드 여부 - 모든 필드 활성화를 위해 false로 고정
-  const isViewMode = false;
-
-  /**
-   * 폼 초기화
-   * - mode와 improvement 데이터에 따라 폼 데이터 설정
-   */
   useEffect(() => {
-    if (open && improvement && mode === 'edit') {
+    if (open && improvement) {
+      if (mode === 'edit') {
+        reset({
+          improvementManager: improvement.improvementManager || '',
+          improvementStatus: improvement.improvementStatus || '01',
+          improvementPlanContent: '점검 결과 부적정 사항에 대한 개선계획을 수립하였습니다.\n1. 관련 규정 및 절차 재검토\n2. 담당자 교육 실시\n3. 개선 조치 완료 후 재점검 실시',
+          improvementPlanDate: improvement.improvementPlanDate || dayjs().format('YYYY-MM-DD'),
+          improvementApprovedDate: improvement.improvementApprovedDate || null,
+          improvementDetail: '개선계획에 따라 다음과 같이 이행하였습니다.\n1. 관련 규정 개정 완료 (2024.01.15)\n2. 전체 담당자 교육 완료 (2024.01.20)\n3. 개선사항 적용 및 검증 완료 (2024.01.25)',
+          improvementCompletedDate: improvement.improvementCompletedDate || null,
+          finalInspector: improvement.inspector || '',
+          finalInspectionResult: improvement.finalInspectionResult || '',
+          finalInspectionOpinion: improvement.finalInspectionOpinion || '',
+          finalInspectionDate: improvement.finalInspectionDate || null
+        });
+      } else {
+        reset({
+          improvementManager: improvement.improvementManager || '',
+          improvementStatus: improvement.improvementStatus || '01',
+          improvementPlanContent: '점검 결과 부적정 사항에 대한 개선계획을 수립하였습니다.\n1. 관련 규정 및 절차 재검토\n2. 담당자 교육 실시\n3. 개선 조치 완료 후 재점검 실시',
+          improvementPlanDate: improvement.improvementPlanDate || dayjs().format('YYYY-MM-DD'),
+          improvementApprovedDate: improvement.improvementApprovedDate || null,
+          improvementDetail: '개선계획에 따라 다음과 같이 이행하였습니다.\n1. 관련 규정 개정 완료 (2024.01.15)\n2. 전체 담당자 교육 완료 (2024.01.20)\n3. 개선사항 적용 및 검증 완료 (2024.01.25)',
+          improvementCompletedDate: improvement.improvementCompletedDate || null,
+          finalInspector: improvement.inspector || '',
+          finalInspectionResult: improvement.finalInspectionResult || '',
+          finalInspectionOpinion: improvement.finalInspectionOpinion || '',
+          finalInspectionDate: improvement.finalInspectionDate || null
+        });
+      }
+    } else if (open && !improvement) {
       reset({
-        improvementManager: improvement.improvementManager || '',
-        improvementStatus: improvement.improvementStatus || '01',
+        improvementManager: '',
+        improvementStatus: '01',
         improvementPlanContent: '',
-        improvementPlanDate: improvement.improvementPlanDate || dayjs().format('YYYY-MM-DD'),
-        improvementApprovedDate: improvement.improvementApprovedDate || null,
+        improvementPlanDate: dayjs().format('YYYY-MM-DD'),
+        improvementApprovedDate: null,
         improvementDetail: '',
-        improvementCompletedDate: improvement.improvementCompletedDate || null,
+        improvementCompletedDate: null,
         finalInspector: '',
-        finalInspectionResult: improvement.finalInspectionResult || '01',
+        finalInspectionResult: '01',
         finalInspectionOpinion: '',
         finalInspectionDate: dayjs().format('YYYY-MM-DD')
       });
-    } else if (open && !improvement) {
-      reset();
     }
   }, [open, improvement, mode, reset]);
 
-  /**
-   * 폼 제출 핸들러
-   */
   const handleFormSubmit = useCallback((data: ImprovementFormData) => {
     if (mode === 'edit' && improvement) {
       onUpdate(improvement.id, data);
@@ -182,20 +169,20 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
     }
   }, [mode, improvement, onSave, onUpdate]);
 
-  const modalTitle = mode === 'detail' ? '개선이행 상세 조회' : '개선이행 등록';
+  const modalTitle = mode === 'detail' ? '개선이행 상세 조회' : '개선이행 결과 작성';
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="xl"
+        maxWidth="lg"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 1,
-            maxHeight: '90vh',
-            width: '95%'
+            maxHeight: '85vh',
+            width: '85%'
           }
         }}
       >
@@ -204,10 +191,26 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
             background: 'var(--theme-page-header-bg)',
             color: 'var(--theme-page-header-text)',
             fontSize: '1.25rem',
-            fontWeight: 600
+            fontWeight: 600,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            pr: 1
           }}
         >
-          {modalTitle}
+          <span>{modalTitle}</span>
+          <IconButton
+            onClick={onClose}
+            disabled={loading}
+            sx={{
+              color: 'var(--theme-page-header-text)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
 
         <DialogContent dividers sx={{ p: 3 }}>
@@ -215,402 +218,350 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
             <Grid container spacing={3}>
               {/* 왼쪽: 관리활동 영역 (읽기 전용) */}
               <Grid item xs={12} md={7}>
-                <div >
-                  <Typography >
-                    관리활동 영역
-                  </Typography>
+                <Typography className={styles.sectionTitle}>
+                  관리활동 영역
+                </Typography>
 
-                  {/* 책무명 + 책무세부내용 */}
-                  <div >
-                    <div >
-                      <Typography >책무명</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value={improvement?.inspectionName || '고객정보보호 관리체계 구축'}
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                    <div >
-                      <Typography >책무세부내용</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value="고객정보보호를 위한 관리체계 구축 및 운영"
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                  </div>
+                {/* 카드 섹션 1: 기본 정보 */}
+                <div className={`${styles.cardSection} ${styles.cardBasicInfo}`}>
+                  <div className={styles.cardTitle}>📋 기본 정보</div>
 
-                  {/* 관리의무 */}
-                  <div >
-                    <Typography >관리의무</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>부서명</Typography>
                     <TextField
                       fullWidth
                       size="small"
                       variant="outlined"
-                      value={improvement?.obligationInfo || '자금세탁방지 의무'}
+                      value={improvement?.orgCode || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 관리활동구분코드 + 관리활동명 */}
-                  <div >
-                    <div >
-                      <Typography >관리활동구분코드</Typography>
-                      <FormControl fullWidth size="small">
-                        <Select
-                          value="고유"
-                          disabled
-                        >
-                          <MenuItem value="고유">고유</MenuItem>
-                          <MenuItem value="공통">공통</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <div >
-                      <Typography >관리활동명</Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        variant="outlined"
-                        value={improvement?.managementActivityName || '자금세탁방지 시스템 운영'}
-                        InputProps={{ readOnly: true }}
-                        
-                      />
-                    </div>
-                  </div>
-
-                  {/* 관리활동증빙자료 */}
-                  <div >
-                    <Typography >관리활동증빙자료</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>책무관리항목</Typography>
                     <TextField
                       fullWidth
                       size="small"
                       variant="outlined"
-                      value="자금세탁방지 점검보고서, 시스템 운영 로그"
+                      multiline
+                      rows={2}
+                      value={improvement?.obligationInfo || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 이행점검방법 */}
-                  <div >
-                    <Typography >이행점검방법</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>관리활동명</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value={improvement?.managementActivityName || '-'}
+                      InputProps={{ readOnly: true }}
+                    />
+                  </div>
+                </div>
+
+                {/* 카드 섹션 2: 점검 정보 */}
+                <div className={`${styles.cardSection} ${styles.cardInspectionInfo}`}>
+                  <div className={styles.cardTitle}>📝 점검 정보</div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>수행점검항목</Typography>
                     <TextField
                       fullWidth
                       multiline
                       rows={3}
                       size="small"
                       variant="outlined"
-                      value="문서검토 + 실사"
+                      value={improvement?.managementActivityName || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 이행점검세부내용 */}
-                  <div >
-                    <Typography >이행점검세부내용</Typography>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>점검결과내용</Typography>
                     <TextField
                       fullWidth
                       multiline
-                      rows={3}
+                      rows={4}
                       size="small"
                       variant="outlined"
-                      value="자금세탁방지 시스템 운영 점검 및 관련 문서 검토"
+                      value={improvement?.inspectionName || '-'}
                       InputProps={{ readOnly: true }}
-                      
                     />
                   </div>
 
-                  {/* 증빙 자료 */}
-                  <div >
-                    <Typography >증빙 자료</Typography>
-                    <div >
-                      <Typography variant="body2" color="textSecondary">
-                        첨부파일 기능은 추후 구현 예정입니다.
-                      </Typography>
-                    </div>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>점검주기</Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      value="월간"
+                      InputProps={{ readOnly: true }}
+                    />
                   </div>
                 </div>
               </Grid>
 
               {/* 오른쪽: 개선이행정보 + 최종점검정보 영역 (편집 가능) */}
               <Grid item xs={12} md={5}>
-                <div >
-                  {/* 1. 개선이행정보 */}
-                  <div >
-                    <Typography >
-                      1. 개선이행정보
-                    </Typography>
+                <Typography className={styles.sectionTitle}>
+                  개선이행정보 + 최종점검정보 영역
+                </Typography>
 
-                    <div >
-                      <div >
-                        <Typography >개선담당자</Typography>
-                        <Controller
-                          name="improvementManager"
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              fullWidth
-                              size="small"
-                              disabled={isViewMode}
-                              error={!!errors.improvementManager}
-                              helperText={errors.improvementManager?.message}
-                            />
-                          )}
-                        />
-                      </div>
+                {/* 카드 섹션 3: 개선계획 */}
+                <div className={`${styles.cardSection} ${styles.cardImprovementPlan}`}>
+                  <div className={styles.cardTitle}>✏️ 개선계획</div>
 
-                      <div >
-                        <Typography >개선이행상태 <span >*</span></Typography>
-                        <Controller
-                          name="improvementStatus"
-                          control={control}
-                          render={({ field }) => (
-                            <FormControl fullWidth size="small" error={!!errors.improvementStatus}>
-                              <Select
-                                {...field}
-                                disabled={isViewMode}
-                              >
-                                <MenuItem value="01">개선미이행</MenuItem>
-                                <MenuItem value="02">개선계획</MenuItem>
-                                <MenuItem value="03">승인요청</MenuItem>
-                                <MenuItem value="04">개선이행</MenuItem>
-                                <MenuItem value="05">개선완료</MenuItem>
-                              </Select>
-                              {errors.improvementStatus && (
-                                <FormHelperText>{errors.improvementStatus.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* 개선계획 입력 영역 */}
-                    <div style={{ marginTop: '16px', marginBottom: '8px' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                        ▶ 개선계획 입력 영역
-                      </Typography>
-                    </div>
-
-                    <div >
-                      <Typography >개선계획내용</Typography>
+                  <div className={styles.twoColumnGrid}>
+                    <div>
+                      <Typography className={styles.fieldLabel}>개선담당자</Typography>
                       <Controller
-                        name="improvementPlanContent"
+                        name="improvementManager"
                         control={control}
                         render={({ field }) => (
                           <TextField
                             {...field}
                             fullWidth
-                            multiline
-                            rows={3}
-                            error={!!errors.improvementPlanContent}
-                            helperText={errors.improvementPlanContent?.message}
+                            size="small"
+                            error={!!errors.improvementManager}
+                            helperText={errors.improvementManager?.message}
                           />
                         )}
                       />
                     </div>
 
-                    <div >
-                      <div >
-                        <Typography >개선계획수립일자</Typography>
-                        <Controller
-                          name="improvementPlanDate"
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              {...field}
-                              value={field.value ? dayjs(field.value) : null}
-                              onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                              format="YYYY/MM/DD"
-                              slotProps={{
-                                textField: {
-                                  size: 'small',
-                                  fullWidth: true,
-                                  error: !!errors.improvementPlanDate,
-                                  helperText: errors.improvementPlanDate?.message
-                                }
-                              }}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div >
-                        <Typography >개선계획승인일자</Typography>
-                        <Controller
-                          name="improvementApprovedDate"
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              {...field}
-                              value={field.value ? dayjs(field.value) : null}
-                              onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                              format="YYYY/MM/DD"
-                              slotProps={{
-                                textField: {
-                                  size: 'small',
-                                  fullWidth: true,
-                                  error: !!errors.improvementApprovedDate,
-                                  helperText: errors.improvementApprovedDate?.message
-                                }
-                              }}
-                            />
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* 개선이행 입력 영역 */}
-                    <div style={{ marginTop: '16px', marginBottom: '8px' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                        ▶ 개선이행 입력 영역
-                      </Typography>
-                    </div>
-
-                    <div >
-                      <Typography >개선이행세부내용</Typography>
+                    <div>
+                      <Typography className={styles.fieldLabel}>개선이행상태 <span style={{ color: 'red' }}>*</span></Typography>
                       <Controller
-                        name="improvementDetail"
+                        name="improvementStatus"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
-                            fullWidth
-                            multiline
-                            rows={3}
-                            error={!!errors.improvementDetail}
-                            helperText={errors.improvementDetail?.message}
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div >
-                      <Typography >개선완료일자</Typography>
-                      <Controller
-                        name="improvementCompletedDate"
-                        control={control}
-                        render={({ field }) => (
-                          <DatePicker
-                            {...field}
-                            value={field.value ? dayjs(field.value) : null}
-                            onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                            format="YYYY/MM/DD"
-                            slotProps={{
-                              textField: {
-                                size: 'small',
-                                fullWidth: true,
-                                error: !!errors.improvementCompletedDate,
-                                helperText: errors.improvementCompletedDate?.message
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 2. 최종점검정보 */}
-                  <div >
-                    <Typography >
-                      2. 최종점검정보
-                    </Typography>
-
-                    <div >
-                      <div >
-                        <Typography >최종점검자</Typography>
-                        <Controller
-                          name="finalInspector"
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              fullWidth
-                              size="small"
-                              disabled={isViewMode}
-                              error={!!errors.finalInspector}
-                              helperText={errors.finalInspector?.message}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div >
-                        <Typography >최종점검일자</Typography>
-                        <Controller
-                          name="finalInspectionDate"
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              {...field}
-                              value={field.value ? dayjs(field.value) : null}
-                              onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                              format="YYYY/MM/DD"
-                              disabled={isViewMode}
-                              slotProps={{
-                                textField: {
-                                  size: 'small',
-                                  fullWidth: true,
-                                  error: !!errors.finalInspectionDate,
-                                  helperText: errors.finalInspectionDate?.message
-                                }
-                              }}
-                            />
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div >
-                      <Typography >최종점검결과 <span >*</span></Typography>
-                      <Controller
-                        name="finalInspectionResult"
-                        control={control}
-                        render={({ field }) => (
-                          <FormControl fullWidth size="small" error={!!errors.finalInspectionResult}>
+                          <FormControl fullWidth size="small" error={!!errors.improvementStatus}>
                             <Select
-                              {...field}
-                              disabled={isViewMode}
+                              value={field.value || '01'}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
                             >
-                              <MenuItem value="01">승인</MenuItem>
-                              <MenuItem value="02">반려</MenuItem>
+                              <MenuItem value="01">개선미이행</MenuItem>
+                              <MenuItem value="02">개선계획</MenuItem>
+                              <MenuItem value="03">승인요청</MenuItem>
+                              <MenuItem value="04">개선이행</MenuItem>
+                              <MenuItem value="05">개선완료</MenuItem>
                             </Select>
-                            {errors.finalInspectionResult && (
-                              <FormHelperText>{errors.finalInspectionResult.message}</FormHelperText>
+                            {errors.improvementStatus && (
+                              <FormHelperText>{errors.improvementStatus.message}</FormHelperText>
                             )}
                           </FormControl>
                         )}
                       />
                     </div>
+                  </div>
 
-                    <div >
-                      <Typography >최종점검결과 내용</Typography>
-                      <Controller
-                        name="finalInspectionOpinion"
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            disabled={isViewMode}
-                            error={!!errors.finalInspectionOpinion}
-                            helperText={errors.finalInspectionOpinion?.message}
-                          />
-                        )}
-                      />
-                    </div>
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>개선계획내용</Typography>
+                    <Controller
+                      name="improvementPlanContent"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={3}
+                          error={!!errors.improvementPlanContent}
+                          helperText={errors.improvementPlanContent?.message}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>개선계획수립일자</Typography>
+                    <Controller
+                      name="improvementPlanDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                          format="YYYY/MM/DD"
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              fullWidth: true,
+                              error: !!errors.improvementPlanDate,
+                              helperText: errors.improvementPlanDate?.message
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* 카드 섹션 4: 개선이행 */}
+                <div className={`${styles.cardSection} ${styles.cardImprovementExecution}`}>
+                  <div className={styles.cardTitle}>✏️ 개선이행</div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>개선계획승인일자</Typography>
+                    <Controller
+                      name="improvementApprovedDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                          format="YYYY/MM/DD"
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              fullWidth: true,
+                              error: !!errors.improvementApprovedDate,
+                              helperText: errors.improvementApprovedDate?.message
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>개선이행세부내용</Typography>
+                    <Controller
+                      name="improvementDetail"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={3}
+                          error={!!errors.improvementDetail}
+                          helperText={errors.improvementDetail?.message}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>개선완료일자</Typography>
+                    <Controller
+                      name="improvementCompletedDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                          format="YYYY/MM/DD"
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              fullWidth: true,
+                              error: !!errors.improvementCompletedDate,
+                              helperText: errors.improvementCompletedDate?.message
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* 카드 섹션 4: 최종점검정보 입력 */}
+                <div className={`${styles.cardSection} ${styles.cardFinalInspectionInput}`}>
+                  <div className={styles.cardTitle}>🔍 최종점검정보 입력</div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>최종점검자</Typography>
+                    <Controller
+                      name="finalInspector"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          size="small"
+                          error={!!errors.finalInspector}
+                          helperText={errors.finalInspector?.message}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>최종점검일자</Typography>
+                    <Controller
+                      name="finalInspectionDate"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          {...field}
+                          value={field.value ? dayjs(field.value) : null}
+                          onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                          format="YYYY/MM/DD"
+                          slotProps={{
+                            textField: {
+                              size: 'small',
+                              fullWidth: true,
+                              error: !!errors.finalInspectionDate,
+                              helperText: errors.finalInspectionDate?.message
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>최종점검결과 <span style={{ color: 'red' }}>*</span></Typography>
+                    <Controller
+                      name="finalInspectionResult"
+                      control={control}
+                      render={({ field }) => (
+                        <FormControl fullWidth size="small" error={!!errors.finalInspectionResult}>
+                          <Select
+                            value={field.value || ''}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            name={field.name}
+                            displayEmpty
+                          >
+                            <MenuItem value="">미선택</MenuItem>
+                            <MenuItem value="01">승인</MenuItem>
+                            <MenuItem value="02">반려</MenuItem>
+                          </Select>
+                          {errors.finalInspectionResult && (
+                            <FormHelperText>{errors.finalInspectionResult.message}</FormHelperText>
+                          )}
+                        </FormControl>
+                      )}
+                    />
+                  </div>
+
+                  <div className={styles.fieldGroup}>
+                    <Typography className={styles.fieldLabel}>최종점검결과 내용</Typography>
+                    <Controller
+                      name="finalInspectionOpinion"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          multiline
+                          rows={3}
+                          error={!!errors.finalInspectionOpinion}
+                          helperText={errors.finalInspectionOpinion?.message}
+                        />
+                      )}
+                    />
                   </div>
                 </div>
               </Grid>

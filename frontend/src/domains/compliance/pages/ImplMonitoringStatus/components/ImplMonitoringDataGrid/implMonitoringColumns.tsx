@@ -3,8 +3,8 @@
  * InspectorAssign와 동일한 스타일 적용
  */
 
-import React from 'react';
 import { ColDef } from 'ag-grid-community';
+import React from 'react';
 import { InspectionExecution } from '../../types/implMonitoringStatus.types';
 
 // 관리활동명 링크 렌더러 (상세조회용)
@@ -42,9 +42,9 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'sequenceNumber',
     headerName: '순번',
-    width: 80,
+    width: 60,
     minWidth: 60,
-    maxWidth: 100,
+    maxWidth: 60,
     sortable: true,
     filter: 'agNumberColumnFilter',
     cellClass: 'ag-cell-center',
@@ -53,7 +53,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspectionName',
     headerName: '점검명',
-    width: 200,
+    width: 150,
     minWidth: 150,
     sortable: true,
     filter: 'agTextColumnFilter',
@@ -67,8 +67,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'obligationInfo',
     headerName: '책무관리항목',
-    width: 150,
-    minWidth: 120,
+    width: 200,
+    minWidth: 200,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -82,7 +82,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     field: 'managementActivityName',
     headerName: '관리활동명',
     width: 200,
-    minWidth: 150,
+    minWidth: 200,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -93,8 +93,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspectionMethod',
     headerName: '수행점검항목',
-    width: 150,
-    minWidth: 120,
+    width: 220,
+    minWidth: 220,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -107,8 +107,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'activityFrequencyCd',
     headerName: '점검주기',
-    width: 150,
-    minWidth: 120,
+    width: 100,
+    minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
@@ -117,7 +117,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'orgCode',
     headerName: '부서',
-    width: 120,
+    width: 100,
     minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
@@ -127,8 +127,8 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspector',
     headerName: '점검자',
-    width: 150,
-    minWidth: 120,
+    width: 100,
+    minWidth: 100,
     sortable: false,
     filter: false,
     cellClass: 'ag-cell-center',
@@ -152,7 +152,7 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     field: 'inspectionDetail',
     headerName: '점검결과내용',
     flex: 1,
-    minWidth: 200,
+    minWidth: 150,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -166,29 +166,35 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
   {
     field: 'inspectionResult',
     headerName: '점검결과',
-    width: 120,
+    width: 100,
     minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
-      const value = params.value;
-      if (!value) return '-';
+      const code = params.value;
+      if (!code) return '-';
 
-      // 점검결과에 따른 색상 표시
-      let color = '#666';
-      if (value === '적합' || value === 'PASS') {
-        color = '#4caf50';
-      } else if (value === '부적합' || value === 'FAIL') {
-        color = '#f44336';
-      } else if (value === '보완필요' || value === 'IMPROVEMENT') {
-        color = '#ff9800';
+      // 코드를 텍스트로 변환 및 색상 지정 (부적정만 빨간색)
+      let text = '';
+      let color = '#666'; // 기본 색상
+
+      if (code === '01') {
+        text = '미점검';
+      } else if (code === '02') {
+        text = '적정';
+      } else if (code === '03') {
+        text = '부적정';
+        color = '#f44336'; // 빨간색
+      } else {
+        // fallback: 코드 값 그대로 표시
+        text = code;
       }
 
       return (
         <span style={{ color, fontWeight: 500 }}>
-          {value}
+          {text}
         </span>
       );
     }

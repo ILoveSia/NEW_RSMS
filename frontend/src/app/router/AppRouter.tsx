@@ -46,7 +46,9 @@ const ImplMonitoringImprovement = React.lazy(() => import('@/domains/compliance/
 
 // Reports (보고서) 도메인
 const ExecutiveReport = React.lazy(() => import('@/domains/reports/pages/ExecutiveReport'));
+const ExecutiveReportView = React.lazy(() => import('@/domains/reports/pages/ExecutiveReportView'));
 const CeoReport = React.lazy(() => import('@/domains/reports/pages/CeoReport'));
+const CeoReportView = React.lazy(() => import('@/domains/reports/pages/CeoReportView'));
 const ReportList = React.lazy(() => import('@/domains/reports/pages/ReportList'));
 
 // SubmitReport (제출보고서) 도메인
@@ -471,7 +473,6 @@ const AppRouter: React.FC = () => {
                 <Routes>
                   {/* 임원이행점검보고서 */}
                   <Route path="executive-report" element={<ExecutiveReport />} />
-                  <Route path="executive-report" element={<ExecutiveReport />} />
                   <Route path="executive-report/:id" element={
                     <TemporaryPage
                       title="임원이행점검보고서 상세"
@@ -490,6 +491,9 @@ const AppRouter: React.FC = () => {
                       description="기존 임원이행점검보고서 정보를 수정하는 페이지입니다."
                     />
                   } />
+
+                  {/* 임원이행점검보고서 조회 (필터/액션바 없는 버전) */}
+                  <Route path="executive-view/:reportId" element={<ExecutiveReportView />} />
 
                   {/* CEO이행점검보고서 */}
                   <Route path="ceo-report" element={<CeoReport />} />
@@ -511,6 +515,9 @@ const AppRouter: React.FC = () => {
                       description="기존 CEO이행점검보고서 정보를 수정하는 페이지입니다."
                     />
                   } />
+
+                  {/* CEO이행점검보고서 조회 (필터/액션바 없는 버전) */}
+                  <Route path="ceo-view/:reportId" element={<CeoReportView />} />
 
                   {/* 보고서목록 */}
                   <Route path="report-list" element={<ReportList />} />

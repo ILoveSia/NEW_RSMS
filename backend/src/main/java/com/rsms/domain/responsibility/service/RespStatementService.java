@@ -136,6 +136,7 @@ public class RespStatementService {
 
     /**
      * 책무기술서 목록 조회 (페이징)
+     * - 전체 조회 (필터 없음)
      *
      * @param pageable 페이징 정보
      * @return 책무기술서 목록 (페이징)
@@ -145,6 +146,42 @@ public class RespStatementService {
                 pageable.getPageNumber(), pageable.getPageSize());
 
         Page<RespStatementExec> entities = respStatementExecRepository.findAll(pageable);
+
+        return entities.map(RespStatementResponse::fromEntity);
+    }
+
+    /**
+     * 책무기술서 목록 조회 (필터링 + 페이징)
+     * - 원장차수ID, 직책명, 사용여부로 필터링
+     *
+     * @param ledgerOrderId 원장차수ID (선택)
+     * @param positionName 직책명 (선택)
+     * @param isActive 사용여부 (선택)
+     * @param pageable 페이징 정보
+     * @return 필터링된 책무기술서 목록 (페이징)
+     */
+    public Page<RespStatementResponse> findAllWithFilters(
+            String ledgerOrderId,
+            String positionName,
+            Boolean isActive,
+            Pageable pageable) {
+        log.info("[RespStatementService] 책무기술서 필터링 조회 - ledgerOrderId: {}, positionName: {}, isActive: {}, page: {}, size: {}",
+                ledgerOrderId, positionName, isActive, pageable.getPageNumber(), pageable.getPageSize());
+
+        // Boolean → String 'Y'/'N' 변환
+        String isActiveStr = null;
+        if (isActive != null) {
+            isActiveStr = isActive ? "Y" : "N";
+        }
+
+        Page<RespStatementExec> entities = respStatementExecRepository.findAllWithFilters(
+                ledgerOrderId,
+                positionName,
+                isActiveStr,
+                pageable
+        );
+
+        log.info("[RespStatementService] 필터링 조회 완료 - 총 {}건", entities.getTotalElements());
 
         return entities.map(RespStatementResponse::fromEntity);
     }

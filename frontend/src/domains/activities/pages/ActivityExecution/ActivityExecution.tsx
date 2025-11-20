@@ -59,6 +59,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
   // 공통코드 조회
   const executionStatusCode = useCommonCode('EXEC_STTS_CD');      // 수행상태 (수행여부)
   const executionResultCode = useCommonCode('EXEC_RSLT_CD');      // 수행결과코드
+  const checkFrequencyCode = useCommonCode('CHCK_FRQ_CD');        // 점검주기코드
 
   // State Management
   const [activities, setActivities] = useState<ActivityExecution[]>([]);
@@ -615,6 +616,7 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
             onSave={handleActivitySave}
             onUpdate={handleActivityUpdate}
             loading={loading}
+            checkFrequencyCode={checkFrequencyCode}
           />
         </BaseModalWrapper>
 

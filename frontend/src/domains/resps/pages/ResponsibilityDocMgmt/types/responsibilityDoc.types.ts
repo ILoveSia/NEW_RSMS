@@ -2,27 +2,18 @@
  * 책무기술서관리 타입 정의
  */
 
-// 기본 엔티티 인터페이스
+// 기본 엔티티 인터페이스 (resp_statement_execs 테이블 기반)
 export interface ResponsibilityDoc {
-  id: string;
-  seq: number;
-  positionName: string;
-  requestDate: string;
-  requestorPosition: string;
-  requestor: string;
-  approvalDate?: string;
-  approverPosition?: string;
-  approver?: string;
-  isChanged: boolean;
-  isActive: boolean;
-  status: 'draft' | 'pending' | 'approved' | 'rejected';
-  approvalStatus: 'draft' | 'pending' | 'approved' | 'rejected';
-  registrationDate: string;
-  registrar: string;
-  registrarPosition: string;
-  modificationDate: string;
-  modifier: string;
-  modifierPosition: string;
+  id: string;                           // resp_stmt_exec_id
+  seq: number;                          // 순번 (프론트엔드 생성)
+  positionName: string;                 // 직책명 (positions 테이블 JOIN)
+  executiveName: string;                // 임원성명 (executive_name)
+  positionAssignedDate: string | null;  // 현직책 부여일 (position_assigned_date)
+  concurrentPosition: string | null;    // 겸직사항 (concurrent_position)
+  responsibilityAssignedDate: string | null; // 책무 분배일 (responsibility_assigned_date)
+  createdAt: string;                    // 등록일자 (created_at)
+  createdBy: string;                    // 등록자 (created_by)
+  isActive: boolean;                    // 사용여부 (is_active: 'Y'/'N')
 }
 
 // 임의 직책 정보
@@ -79,12 +70,11 @@ export interface ResponsibilityDocFormData {
 }
 
 // 필터 인터페이스
+// 필터 인터페이스 (resp_statement_execs 테이블 기반)
 export interface ResponsibilityDocFilters {
-  ledgerOrderId: string;
-  positionName: string;
-  status: string;
-  isActive: string;
-  approvalStatus: string;
+  ledgerOrderId: string;        // 원장차수ID
+  positionName: string;          // 직책명
+  isActive: string;              // 사용여부 ('Y'/'N')
 }
 
 // 페이지네이션 인터페이스

@@ -40,6 +40,14 @@ const ImprovementActionModal = React.lazy(() =>
   import('./components/ImprovementActionModal/ImprovementActionModal').then(module => ({ default: module.default }))
 );
 
+const ExecutiveReportModal = React.lazy(() =>
+  import('./components/ExecutiveReportModal/ExecutiveReportModal').then(module => ({ default: module.default }))
+);
+
+const CeoReportModal = React.lazy(() =>
+  import('./components/CeoReportModal/CeoReportModal').then(module => ({ default: module.default }))
+);
+
 interface ReportListProps {
   className?: string;
 }
@@ -85,6 +93,11 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     detailModal: false,
     selectedReport: null
   });
+
+  // 보고서 조회 모달 상태
+  const [executiveReportModalOpen, setExecutiveReportModalOpen] = useState(false);
+  const [ceoReportModalOpen, setCeoReportModalOpen] = useState(false);
+  const [selectedReportId, setSelectedReportId] = useState<string | undefined>(undefined);
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<ReportListFilters>) => {
@@ -290,6 +303,15 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   // Grid Event Handlers
   const handleRowClick = useCallback((report: Report) => {
     console.log('행 클릭:', report);
+
+    // 보고서 구분에 따라 해당 모달 표시
+    if (report.category === '임원') {
+      setSelectedReportId(report.id);
+      setExecutiveReportModalOpen(true);
+    } else if (report.category === 'CEO') {
+      setSelectedReportId(report.id);
+      setCeoReportModalOpen(true);
+    }
   }, []);
 
   const handleRowDoubleClick = useCallback((report: Report) => {
@@ -450,16 +472,16 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       {
         id: '1',
         sequence: 1,
-        department: '경영진단본부',
-        category: 'EXECUTIVE',
-        inspectionName: '2025년 1차 이행점검',
-        inspectionPeriod: '2025.01.01~2025.03.31',
+        department: '준법지원본부',
+        category: '임원',
+        inspectionName: '2025년 하반기 정기점검',
+        inspectionPeriod: '2025.11.21~2025.12.20',
         reportNumber: '20250001A0001R001',
         status: 'APPROVED' as const,
         author: '홍길동',
-        createdAt: '2025-03-15',
+        createdAt: '2025-11-24',
         approver: '김대표',
-        approvedAt: '2025-03-20',
+        approvedAt: '2025-11-24',
         reviewContent: '정기 이행점검 완료',
         result: '적정',
         improvementAction: '지속 모니터링'
@@ -467,29 +489,19 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       {
         id: '2',
         sequence: 2,
-        department: 'CEO',
+        department: '준법지원본부',
         category: 'CEO',
-        inspectionName: 'CEO 특별점검',
-        inspectionPeriod: '2025.02.01~2025.02.29',
+        inspectionName: '2025년 하반기 정기점검',
+        inspectionPeriod: '2025.11.21~2025.12.20',
         reportNumber: '20250001A0001R002',
         status: 'SUBMITTED' as const,
         author: '김철수',
-        createdAt: '2025-02-28',
+        createdAt: '2025-11-24',
+        approver: '김대표',
+        approvedAt: '2025-11-24',
         reviewContent: 'CEO 지시사항 점검',
-        result: '개선필요'
-      },
-      {
-        id: '3',
-        sequence: 3,
-        department: '영업본부',
-        category: 'DEPARTMENT',
-        inspectionName: '영업실적 점검',
-        inspectionPeriod: '2025.01.15~2025.02.15',
-        reportNumber: '20250001A0001R003',
-        status: 'DRAFT' as const,
-        author: '박영희',
-        createdAt: '2025-02-15',
-        reviewContent: '영업목표 달성도 점검'
+        result: '개선필요',
+        improvementAction: '지속 모니터링'
       }
     ];
 
@@ -635,6 +647,34 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
           onClose={handleOrgSearchClose}
           onSelect={handleOrganizationSelect}
         />
+
+        {/* 임원 보고서 조회 모달 */}
+        <React.Suspense fallback={<LoadingSpinner size="small" />}>
+          {executiveReportModalOpen && (
+            <ExecutiveReportModal
+              open={executiveReportModalOpen}
+              onClose={() => {
+                setExecutiveReportModalOpen(false);
+                setSelectedReportId(undefined);
+              }}
+              reportId={selectedReportId}
+            />
+          )}
+        </React.Suspense>
+
+        {/* CEO 보고서 조회 모달 */}
+        <React.Suspense fallback={<LoadingSpinner size="small" />}>
+          {ceoReportModalOpen && (
+            <CeoReportModal
+              open={ceoReportModalOpen}
+              onClose={() => {
+                setCeoReportModalOpen(false);
+                setSelectedReportId(undefined);
+              }}
+              reportId={selectedReportId}
+            />
+          )}
+        </React.Suspense>
       </div>
     </React.Profiler>
   );

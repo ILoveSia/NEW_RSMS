@@ -55,9 +55,7 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   const [filters, setFilters] = useState<ResponsibilityDocFilters>({
     ledgerOrderId: '',
     positionName: '',
-    status: '',
-    isActive: '',
-    approvalStatus: ''
+    isActive: ''
   });
 
   const [pagination, setPagination] = useState<ResponsibilityDocPagination>({
@@ -188,24 +186,18 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       // 실제 API 호출
       const response = await responsibilityDocApi.createResponsibilityDoc(createRequest);
 
-      // 응답 데이터로 새 책무기술서 객체 생성
+      // 응답 데이터로 새 책무기술서 객체 생성 (resp_statement_execs 테이블 전체 컬럼)
       const newDoc: ResponsibilityDoc = {
-        id: response.id,
+        id: response.respStmtExecId,
         seq: docs.length + 1,
         positionName: response.positionName,
-        requestDate: response.createdAt.split('T')[0],
-        requestor: response.createdBy,
-        requestorPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
-        isChanged: false,
-        isActive: response.isActive,
-        status: response.status,
-        approvalStatus: response.approvalStatus,
-        registrationDate: response.createdAt.split('T')[0],
-        registrar: response.createdBy,
-        registrarPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
-        modificationDate: response.updatedAt.split('T')[0],
-        modifier: response.updatedBy,
-        modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
+        executiveName: response.executiveName,
+        positionAssignedDate: response.positionAssignedDate || null,
+        concurrentPosition: response.concurrentPosition || null,
+        responsibilityAssignedDate: response.responsibilityAssignedDate || null,
+        createdAt: response.createdAt,
+        createdBy: response.createdBy,
+        isActive: response.isActive === 'Y'
       };
 
       setDocs(prev => [newDoc, ...prev]);
@@ -241,20 +233,18 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       // 실제 API 호출
       const response = await responsibilityDocApi.updateResponsibilityDoc(id, updateRequest);
 
-      // 응답 데이터로 기존 책무기술서 업데이트
+      // 응답 데이터로 기존 책무기술서 업데이트 (resp_statement_execs 테이블 전체 컬럼)
       setDocs(prev =>
         prev.map(doc =>
           doc.id === id
             ? {
                 ...doc,
                 positionName: response.positionName,
-                isChanged: true,
-                isActive: response.isActive,
-                status: response.status,
-                approvalStatus: response.approvalStatus,
-                modificationDate: response.updatedAt.split('T')[0],
-                modifier: response.updatedBy,
-                modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
+                executiveName: response.executiveName,
+                positionAssignedDate: response.positionAssignedDate || null,
+                concurrentPosition: response.concurrentPosition || null,
+                responsibilityAssignedDate: response.responsibilityAssignedDate || null,
+                isActive: response.isActive === 'Y'
               }
             : doc
         )
@@ -288,13 +278,41 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
     const loadingToastId = toast.loading('책무기술서를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // 실제 API 호출 (필터 적용)
+      const response = await responsibilityDocApi.getResponsibilityDocs({
+        ledgerOrderId: filters.ledgerOrderId || undefined,
+        positionName: filters.positionName || undefined,
+        isActive: filters.isActive ? (filters.isActive === 'Y') : undefined,
+        page: 0,
+        size: 20
+      });
+
+      // 응답 데이터를 ResponsibilityDoc 형식으로 변환 (resp_statement_execs 테이블 전체 컬럼)
+      const convertedDocs: ResponsibilityDoc[] = response.content.map((item, index) => ({
+        id: item.respStmtExecId,
+        seq: index + 1,
+        positionName: item.positionName,
+        executiveName: item.executiveName,
+        positionAssignedDate: item.positionAssignedDate || null,
+        concurrentPosition: item.concurrentPosition || null,
+        responsibilityAssignedDate: item.responsibilityAssignedDate || null,
+        createdAt: item.createdAt,
+        createdBy: item.createdBy,
+        isActive: item.isActive === 'Y'
+      }));
+
+      setDocs(convertedDocs);
+      setPagination(prev => ({
+        ...prev,
+        total: response.totalElements,
+        totalPages: response.totalPages,
+        page: response.page + 1
+      }));
 
       console.log('검색 필터:', filters);
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
+      toast.update(loadingToastId, 'success', `검색이 완료되었습니다. (${response.totalElements}건)`);
     } catch (error) {
       // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
@@ -305,16 +323,53 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
     }
   }, [filters]);
 
-  const handleClearFilters = useCallback(() => {
+  const handleClearFilters = useCallback(async () => {
+    // 필터 초기화
     setFilters({
       ledgerOrderId: '',
       positionName: '',
-      status: '',
-      isActive: '',
-      approvalStatus: ''
+      isActive: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
-    toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+
+    // 전체 데이터 다시 로드
+    try {
+      setLoading(true);
+
+      const response = await responsibilityDocApi.getResponsibilityDocs({
+        page: 0,
+        size: 20
+      });
+
+      // 응답 데이터를 ResponsibilityDoc 형식으로 변환 (resp_statement_execs 테이블 전체 컬럼)
+      const convertedDocs: ResponsibilityDoc[] = response.content.map((item, index) => ({
+        id: item.respStmtExecId,
+        seq: index + 1,
+        positionName: item.positionName,
+        executiveName: item.executiveName,
+        positionAssignedDate: item.positionAssignedDate || null,
+        concurrentPosition: item.concurrentPosition || null,
+        responsibilityAssignedDate: item.responsibilityAssignedDate || null,
+        createdAt: item.createdAt,
+        createdBy: item.createdBy,
+        isActive: item.isActive === 'Y'
+      }));
+
+      setDocs(convertedDocs);
+      setPagination(prev => ({
+        ...prev,
+        total: response.totalElements,
+        totalPages: response.totalPages,
+        page: response.page + 1
+      }));
+
+      toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+      toast.error('데이터를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   // Grid Event Handlers
@@ -330,18 +385,12 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
   // Memoized computed values (성능 최적화)
   const statistics = useMemo(() => {
     const total = pagination.total;
-    const draftCount = docs.filter(d => d.status === 'draft').length;
-    const pendingCount = docs.filter(d => d.status === 'pending').length;
-    const approvedCount = docs.filter(d => d.status === 'approved').length;
     const activeCount = docs.filter(d => d.isActive).length;
     const inactiveCount = docs.filter(d => !d.isActive).length;
     const systemUptime = 98.5; // TODO: 실제 시스템 가동률 API 연동
 
     return {
       total,
-      draftCount,
-      pendingCount,
-      approvedCount,
       activeCount,
       inactiveCount,
       systemUptime
@@ -376,14 +425,13 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'approvalStatus',
+      key: 'isActive',
       type: 'select',
-      label: '결재상태',
+      label: '사용여부',
       options: [
         { value: '', label: '전체' },
-        { value: 'pending', label: '대기' },
-        { value: 'approved', label: '승인' },
-        { value: 'rejected', label: '반려' }
+        { value: 'Y', label: '사용' },
+        { value: 'N', label: '미사용' }
       ],
       gridSize: { xs: 12, sm: 6, md: 2 }
     }
@@ -495,27 +543,18 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
           size: 20
         });
 
-        // 응답 데이터를 ResponsibilityDoc 형식으로 변환
+        // 응답 데이터를 ResponsibilityDoc 형식으로 변환 (resp_statement_execs 테이블 기반)
         const convertedDocs: ResponsibilityDoc[] = response.content.map((item, index) => ({
-          id: item.id,
+          id: item.respStmtExecId,
           seq: index + 1,
           positionName: item.positionName,
-          requestDate: item.createdAt.split('T')[0],
-          requestor: item.createdBy,
-          requestorPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
-          approvalDate: item.updatedAt?.split('T')[0],
-          approver: item.updatedBy,
-          approverPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
-          isChanged: false,
-          isActive: item.isActive,
-          status: item.status as 'draft' | 'pending' | 'approved' | 'rejected',
-          approvalStatus: item.approvalStatus as 'draft' | 'pending' | 'approved' | 'rejected',
-          registrationDate: item.createdAt.split('T')[0],
-          registrar: item.createdBy,
-          registrarPosition: '관리자', // TODO: 실제 직위 정보 추가 필요
-          modificationDate: item.updatedAt.split('T')[0],
-          modifier: item.updatedBy,
-          modifierPosition: '관리자' // TODO: 실제 직위 정보 추가 필요
+          executiveName: item.executiveName,
+          positionAssignedDate: item.positionAssignedDate || null,
+          concurrentPosition: item.concurrentPosition || null,
+          responsibilityAssignedDate: item.responsibilityAssignedDate || null,
+          createdAt: item.createdAt,
+          createdBy: item.createdBy,
+          isActive: item.isActive === 'Y'
         }));
 
         setDocs(convertedDocs);

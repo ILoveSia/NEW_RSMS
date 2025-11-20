@@ -119,3 +119,34 @@ select {
     text-decoration: underline;
   }
 }
+
+// 인쇄 최적화: 모달 외 레이아웃 요소 숨김
+@media print {
+  // TopHeader, LeftMenu 등 레이아웃 요소 숨김
+  #root > div > div:first-child {
+    display: none !important;
+  }
+
+  // ReportList 컨테이너 숨김
+  [class*="ReportList_container"] {
+    display: none !important;
+  }
+
+  // MUI Dialog 백드롭 숨김
+  .MuiBackdrop-root {
+    display: none !important;
+  }
+
+  // MUI Modal을 전체 화면으로
+  .MuiModal-root {
+    position: absolute !important;
+  }
+
+  // Dialog Paper 최적화
+  .MuiDialog-paper {
+    box-shadow: none !important;
+    max-height: none !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+}

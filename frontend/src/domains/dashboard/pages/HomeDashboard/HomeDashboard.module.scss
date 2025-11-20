@@ -1789,10 +1789,14 @@
   overflow-y: auto;
   background: white;
   border-left: 1px solid #e0e0e0;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .tagGroup {
   margin-bottom: 24px;
+  flex-shrink: 0;
 
   .tagGroupTitle {
     font-size: 16px;

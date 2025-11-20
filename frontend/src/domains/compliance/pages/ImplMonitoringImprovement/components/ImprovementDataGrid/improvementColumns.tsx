@@ -3,8 +3,8 @@
  * dept_manager_manuals + impl_inspection_items 테이블 결합
  */
 
-import React from 'react';
 import { ColDef } from 'ag-grid-community';
+import React from 'react';
 
 /**
  * 개선이행 데이터 타입
@@ -28,6 +28,8 @@ export interface ImprovementData {
   improvementApprovedDate: string | null;  // 개선승인일자 (improvement_plan_approved_date)
   improvementCompletedDate: string | null; // 개선완료일자 (improvement_completed_date)
   finalInspectionResult: string;           // 최종점검결과 (final_inspection_result_cd: 01=승인, 02=반려)
+  finalInspectionDate: string | null;      // 최종점검일자 (final_inspection_date)
+  finalInspectionOpinion: string;          // 최종점검결과내용 (final_inspection_result_content)
 }
 
 // 관리활동명 링크 렌더러 (상세조회용)
@@ -55,7 +57,7 @@ const ManagementActivityNameRenderer = ({ value, data, onCellClicked }: any) => 
         e.currentTarget.style.textDecoration = 'none';
       }}
     >
-      {value && value.length > 25 ? `${value.substring(0, 25)}...` : (value || '')}
+      {value && value.length > 50 ? `${value.substring(0, 50)}...` : (value || '')}
     </a>
   );
 };
@@ -68,9 +70,8 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   {
     field: 'sequenceNumber',
     headerName: '순번',
-    width: 80,
-    minWidth: 60,
-    maxWidth: 100,
+    width: 100,
+    minWidth: 80,
     sortable: true,
     filter: 'agNumberColumnFilter',
     cellClass: 'ag-cell-center',
@@ -87,28 +88,28 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
+      return value || '';
     }
   },
   {
     field: 'obligationInfo',
     headerName: '관리의무',
-    width: 180,
-    minWidth: 150,
+    width: 350,
+    minWidth: 300,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
+      return value || '';
     }
   },
   {
     field: 'managementActivityName',
     headerName: '관리활동명',
-    width: 250,
-    minWidth: 200,
+    width: 350,
+    minWidth: 300,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -213,8 +214,8 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   {
     field: 'improvementStatus',
     headerName: '개선이행상태',
-    width: 160,
-    minWidth: 130,
+    width: 150,
+    minWidth: 120,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
@@ -286,8 +287,8 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   {
     field: 'improvementCompletedDate',
     headerName: '개선완료일자',
-    width: 160,
-    minWidth: 130,
+    width: 180,
+    minWidth: 150,
     sortable: true,
     filter: 'agDateColumnFilter',
     cellClass: 'ag-cell-center',
@@ -302,8 +303,8 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   {
     field: 'finalInspectionResult',
     headerName: '최종점검결과',
-    width: 160,
-    minWidth: 130,
+    width: 150,
+    minWidth: 120,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
@@ -330,6 +331,22 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
         </span>
       );
     }
+  },
+  {
+    field: 'finalInspectionDate',
+    headerName: '최종점검일자',
+    width: 180,
+    minWidth: 150,
+    sortable: true,
+    filter: 'agDateColumnFilter',
+    cellClass: 'ag-cell-center',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      // YYYY-MM-DD → YYYY/MM/DD 형식으로 표시
+      return value.replace(/-/g, '/');
+    }
   }
 ];
 
@@ -345,7 +362,7 @@ export const defaultSortModel = [
 export const defaultColumnState = [
   {
     colId: 'sequenceNumber',
-    width: 80,
+    width: 100,
     pinned: 'left' as const
   }
 ];

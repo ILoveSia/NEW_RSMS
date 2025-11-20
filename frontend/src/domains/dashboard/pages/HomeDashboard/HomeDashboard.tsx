@@ -449,10 +449,6 @@ const HomeDashboard: React.FC = () => {
                   <span>경영관리 관련 책무</span>
                 </div>
                 <div className={styles.legendItem}>
-                  <span className={`${styles.legendColor} ${styles.common}`}>C</span>
-                  <span>공통책무</span>
-                </div>
-                <div className={styles.legendItem}>
                   <span className={styles.legendArrow}>↑</span>
                   <span>보고체계</span>
                 </div>
@@ -586,33 +582,13 @@ const HomeDashboard: React.FC = () => {
               <div className={styles.tagGroup}>
                 <h4 className={styles.tagGroupTitle}>금융영업 관련 책무(23)</h4>
                 <div className={styles.tagList}>
-                  {['F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23'].map(code => (
+                  {['F01', 'F02', 'F03'].map(code => (
                     <div key={code} className={`${styles.tagItem} ${styles.financial}`}>
                       <span className={styles.tagCode}>{code}</span>
                       <span className={styles.tagDesc}>
-                        {code === 'F01' && '여신업무에 관한 책무'}
-                        {code === 'F02' && '여신 대위해산 및 지보(시보경리) 업'}
-                        {code === 'F03' && '신신보증금 관련 책무일부 보리멸랐경'}
-                        {code === 'F04' && '수신업무 관련한 관련한 책무'}
-                        {code === 'F05' && '유가증권 및 그 외의 부유동업무는 관련한 책무'}
-                        {code === 'F06' && '제증업무 : 지급결제업무의 관련한 책무'}
-                        {code === 'F07' && '투자해외업무(투자금유통 소유의) 관련한 책무'}
-                        {code === 'F08' && '투자해외업무(시호사업 소유의) 관련한 책무'}
-                        {code === 'F09' && '용사술당법업무(종합멘터소업의 관련한 책무'}
-                        {code === 'F10' && '자본식업무운영업무(ISA)의 관련한 책무'}
-                        {code === 'F11' && '신탁업무의 관련한 책무'}
-                        {code === 'F12' && '모든성업의 병질정의심체업무의 관련 책무'}
-                        {code === 'F13' && '기업인출 관련한 책무'}
-                        {code === 'F14' && '천신골융업무의 관련한 책무'}
-                        {code === 'F15' && '억산저출료만정상 관련한 책무'}
-                        {code === 'F16' && '수단실출혈어 관련한실일간의 관련한 책무'}
-                        {code === 'F17' && '한국사어업무(시주료사오) 관련한 책무'}
-                        {code === 'F18' && '기광람 관련시 관련한 책무'}
-                        {code === 'F19' && '자라평간원의 관련한 책무'}
-                        {code === 'F20' && '투자육 관련 지소결업습의 관련한 책무'}
-                        {code === 'F21' && '고객식상의 관련한 책무'}
-                        {code === 'F22' && '회전인 기본 및 등관의 관련한 책무'}
-                        {code === 'F23' && '개인의출사상(만화ENISA) 관련한 책무'}
+                        {code === 'F01' && '주식형펀드 운용과 관련된 책무'}
+                        {code === 'F02' && '부동산펀드 운용과 관련된 책무'}
+                        {code === 'F03' && '일임업무와 관련된 책무'}
                       </span>
                     </div>
                   ))}
@@ -622,34 +598,21 @@ const HomeDashboard: React.FC = () => {
               <div className={styles.tagGroup}>
                 <h4 className={styles.tagGroupTitle}>경영관리 관련 책무(17)</h4>
                 <div className={styles.tagList}>
-                  {['M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17'].map(code => (
+                  {['M01', 'M02', 'M03'].map(code => (
                     <div key={code} className={`${styles.tagItem} ${styles.management}`}>
                       <span className={styles.tagCode}>{code}</span>
                       <span className={styles.tagDesc}>
-                        {code === 'M01' && '경영업무 관련 책무'}
-                        {code === 'M02' && '인사업무의 관련한 책무'}
+                        {code === 'M01' && '인사업무와 관련된 책무'}
+                        {code === 'M02' && '총무 업무와 관된 책무'}
                         {code === 'M03' && '보수업무의 관련한 책무'}
-                        {code === 'M04' && '채무업무 관련한 책무'}
-                        {code === 'M05' && '공시업무동국의 및 정기사신 관련하'}
-                        {code === 'M06' && '제변업무생된 남서권사의 관련한 책무'}
-                        {code === 'M07' && '통감업무의 관련한 책무'}
-                        {code === 'M08' && '저세업 경마식(김과김관리) 관련한 책무'}
-                        {code === 'M09' && '청부업무의 관련한 책무'}
-                        {code === 'M10' && '진영업무 및 리렌제용 관련하법의 책무'}
-                        {code === 'M11' && '정산서스템 운영 · 관리담당와 관련한 책무'}
-                        {code === 'M12' && '차일건서비슬 관련한 책무'}
-                        {code === 'M13' && '총무업무의 관련한 책무'}
-                        {code === 'M14' && '안전업무의 관련한 책무'}
-                        {code === 'M15' && '안연업 및 보안결관리법의 관련한 책무'}
-                        {code === 'M16' && '제기결업중의 관련한 책무'}
-                        {code === 'M17' && '공시업무(여러투자지 옳지 관련하실 책무'}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className={styles.tagGroup}>
+
+              {/* <div className={styles.tagGroup}>
                 <h4 className={styles.tagGroupTitle}>공통 책무(2)</h4>
                 <div className={styles.tagList}>
                   <div className={`${styles.tagItem} ${styles.common}`}>
@@ -661,7 +624,8 @@ const HomeDashboard: React.FC = () => {
                     <span className={styles.tagDesc}>소관 업무위원의 업무 및 운영뜻관리법의 관련한 책무</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
+
             </div>
           </div>
         </div>
@@ -680,7 +644,7 @@ const HomeDashboard: React.FC = () => {
           <div className={styles.welcomeCard}>
             <div className={styles.welcomeHeader}>
               <h2>반갑습니다!</h2>
-              <p>관리자님.</p>
+              <p>admin 님</p>
             </div>
 
             <div className={styles.notificationIcons}>
@@ -779,7 +743,7 @@ const HomeDashboard: React.FC = () => {
                   onClick={() => handleCardClick('관리의무')}
                 >
                   <span className={styles.cardTitle}>관리의무</span>
-                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(2)</span></span>
+                  <span className={styles.cardNumber}>3<span className={styles.subNumber}>(2)</span></span>
                 </div>
               </div>
               <div className={styles.verticalArrow}></div>
@@ -791,7 +755,7 @@ const HomeDashboard: React.FC = () => {
                   onClick={() => handleCardClick('이행점검')}
                 >
                   <span className={styles.cardTitle}>이행점검</span>
-                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
+                  <span className={styles.cardNumber}>5<span className={styles.subNumber}>(5)</span></span>
                 </div>
               </div>
 
@@ -813,21 +777,21 @@ const HomeDashboard: React.FC = () => {
                   onClick={() => handleCardClick('미점검')}
                 >
                   <span className={styles.cardTitle}>미점검</span>
-                  <span className={styles.cardNumber}>2<span className={styles.subNumber}>(1)</span></span>
+                  <span className={styles.cardNumber}>0<span className={styles.subNumber}>(1)</span></span>
                 </div>
                 <div
                   className={`${styles.flowCard} ${styles.clickable}`}
                   onClick={() => handleCardClick('적정')}
                 >
                   <span className={styles.cardTitle}>적정</span>
-                  <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
+                  <span className={styles.cardNumberBlue}>3<span className={styles.subNumber}>(0)</span></span>
                 </div>
                 <div
                   className={`${styles.flowCard} ${styles.clickable}`}
                   onClick={() => handleCardClick('부적정')}
                 >
                   <span className={styles.cardTitle}>부적정</span>
-                  <span className={styles.cardNumberRed}>0<span className={styles.subNumber}>(0)</span></span>
+                  <span className={styles.cardNumberRed}>2<span className={styles.subNumber}>(0)</span></span>
                 </div>
               </div>
 
@@ -848,14 +812,14 @@ const HomeDashboard: React.FC = () => {
                   onClick={() => handleCardClick('개선완료')}
                 >
                   <span className={styles.cardTitle}>개선완료</span>
-                  <span className={styles.cardNumberBlue}>0<span className={styles.subNumber}>(0)</span></span>
+                  <span className={styles.cardNumberBlue}>1<span className={styles.subNumber}>(0)</span></span>
                 </div>
                 <div
                   className={`${styles.flowCard} ${styles.clickable}`}
                   onClick={() => handleCardClick('개선진행중')}
                 >
                   <span className={styles.cardTitle}>개선진행중</span>
-                  <span className={styles.cardNumber}>0<span className={styles.subNumber}>(0)</span></span>
+                  <span className={styles.cardNumber}>1<span className={styles.subNumber}>(0)</span></span>
                 </div>
               </div>
 
@@ -949,12 +913,12 @@ const HomeDashboard: React.FC = () => {
             <h3>준법감시인 책무현황</h3>
             <div className={styles.statusBoxesHorizontal}>
               <div className={styles.statusBox}>
-                <div className={styles.boxNumber}>9</div>
+                <div className={styles.boxNumber}>7</div>
                 <div className={styles.boxLabel}>책무</div>
               </div>
 
               <div className={styles.statusBox}>
-                <div className={styles.boxNumber}>14</div>
+                <div className={styles.boxNumber}>30</div>
                 <div className={styles.boxLabel}>관리의무</div>
               </div>
 
@@ -964,13 +928,12 @@ const HomeDashboard: React.FC = () => {
               </div>
 
               <div className={`${styles.statusBox} ${styles.highlight}`}>
-                <div className={styles.boxNumber}>4</div>
+                <div className={styles.boxNumber}>0</div>
                 <div className={styles.boxLabel}>미점검</div>
               </div>
-
               <div className={`${styles.statusBox} ${styles.danger}`}>
-                <div className={styles.boxNumber}>1</div>
-                <div className={styles.boxLabel}>부적절</div>
+                <div className={styles.boxNumber}>2</div>
+                <div className={styles.boxLabel}>부적정</div>
               </div>
             </div>
           </div>

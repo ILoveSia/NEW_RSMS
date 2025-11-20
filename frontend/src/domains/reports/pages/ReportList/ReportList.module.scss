@@ -417,3 +417,10 @@
     color: var(--theme-button-primary, $color-primary);
   }
 }
+
+// 인쇄 시 ReportList 페이지 숨김 (모달만 표시)
+@media print {
+  .container {
+    display: none !important;
+  }
+}

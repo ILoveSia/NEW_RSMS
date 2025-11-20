@@ -12,13 +12,13 @@ import styles from './CeoReport.module.scss';
 
 // Types
 import type {
-    CeoComplianceOpinionStatus,
-    CeoDashboardStats,
-    CeoOverallDutyInspection,
-    CeoReportFilters,
-    CeoReportLoadingStates,
-    CeoReportModalState,
-    CeoSummaryStats
+  CeoComplianceOpinionStatus,
+  CeoDashboardStats,
+  CeoOverallDutyInspection,
+  CeoReportFilters,
+  CeoReportLoadingStates,
+  CeoReportModalState,
+  CeoSummaryStats
 } from './types/ceoReport.types';
 
 // Shared Components
@@ -251,10 +251,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
       label: '점검명',
       options: [
         { value: '', label: '전체' },
-        { value: '2024년1회차 이행점검', label: '2024년1회차 이행점검' },
-        { value: '2024년2회차 이행점검', label: '2024년2회차 이행점검' },
-        { value: '2025년1회차 이행점검', label: '2025년1회차 이행점검' },
-        { value: '2026년1회차 이행점검', label: '2026년1회차 이행점검' }
+        { value: '2025년 하반기 정기점검', label: '2025년 하반기 정기점검' }
       ],
       gridSize: { xs: 12, sm: 6, md: 3 }
     }
@@ -272,16 +269,16 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
     //   disabled: loadingStates.templateDownload,
     //   loading: loadingStates.templateDownload
     // },
-    {
-      key: 'newReport',
-      type: 'custom',
-      label: '신규 보고서 작성',
-      variant: 'contained',
-      color: 'success',
-      onClick: handleNewReport,
-      disabled: loadingStates.newReport,
-      loading: loadingStates.newReport
-    }
+    // {
+    //   key: 'newReport',
+    //   type: 'custom',
+    //   label: '신규 보고서 작성',
+    //   variant: 'contained',
+    //   color: 'success',
+    //   onClick: handleNewReport,
+    //   disabled: loadingStates.newReport,
+    //   loading: loadingStates.newReport
+    // }
   ], [handleTemplateDownload, handleNewReport, loadingStates]);
 
   // BaseActionBar용 상태 정보 정의
@@ -471,7 +468,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
               <div className={styles.simpleTableHeaderCell}>책무</div>
               <div className={styles.simpleTableHeaderCell}>직책</div>
               <div className={styles.simpleTableHeaderCell}>관리의무 수</div>
-              <div className={styles.simpleTableHeaderCell}>부작정</div>
+              <div className={styles.simpleTableHeaderCell}>부적정</div>
               <div className={styles.simpleTableHeaderCell}>미이행</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />완료</div>
               <div className={styles.simpleTableHeaderCell}>개선의견<br />진행중</div>
@@ -510,7 +507,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
               <div className={styles.simpleTableHeaderCell}>비고</div>
             </div>
             <div className={styles.simpleTableBody}>
-              {ceoImpliedDutyData.map((item) => (
+              {/* {ceoImpliedDutyData.map((item) => (
                 <div key={item.id} className={styles.simpleTableRow}>
                   <div className={styles.simpleTableCell}>{item.order}</div>
                   <div className={styles.simpleTableCell}>{item.managementDuty || '(데이터 확인 필요)'}</div>
@@ -520,7 +517,7 @@ const CeoReport: React.FC<CeoReportProps> = ({ className }) => {
                   <div className={styles.simpleTableCell}>{item.inspectionResult || '-'}</div>
                   <div className={styles.simpleTableCell}>{item.remarks || '-'}</div>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

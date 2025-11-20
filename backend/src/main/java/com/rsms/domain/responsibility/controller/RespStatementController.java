@@ -89,14 +89,14 @@ public class RespStatementController {
     }
 
     /**
-     * 책무기술서 목록 조회 (페이징)
+     * 책무기술서 목록 조회 (페이징 + 필터링)
      * GET /api/responsibility-docs
      *
      * @param ledgerOrderId 원장차수ID (선택)
      * @param positionName 직책명 (선택)
-     * @param status 상태 (선택)
-     * @param isActive 활성화 여부 (선택)
-     * @param approvalStatus 결재상태 (선택)
+     * @param status 상태 (선택, 향후 확장용)
+     * @param isActive 사용여부 (선택)
+     * @param approvalStatus 결재상태 (선택, 향후 확장용)
      * @param page 페이지 번호 (기본값: 0)
      * @param size 페이지 크기 (기본값: 20)
      * @return 책무기술서 목록 (페이징)
@@ -111,11 +111,24 @@ public class RespStatementController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        log.info("[RespStatementController] 책무기술서 목록 조회 - page: {}, size: {}", page, size);
+        log.info("[RespStatementController] 책무기술서 목록 조회 - ledgerOrderId: {}, positionName: {}, isActive: {}, page: {}, size: {}",
+                ledgerOrderId, positionName, isActive, page, size);
 
-        // TODO: 필터링 기능 추가 필요 (현재는 전체 조회만 지원)
         Pageable pageable = PageRequest.of(page, size);
-        Page<RespStatementResponse> responsePage = respStatementService.findAll(pageable);
+        Page<RespStatementResponse> responsePage;
+
+        // 필터 조건이 하나라도 있으면 필터링 쿼리 사용
+        if (ledgerOrderId != null || positionName != null || isActive != null) {
+            responsePage = respStatementService.findAllWithFilters(
+                    ledgerOrderId,
+                    positionName,
+                    isActive,
+                    pageable
+            );
+        } else {
+            // 필터 조건이 없으면 전체 조회
+            responsePage = respStatementService.findAll(pageable);
+        }
 
         // 응답 형식 맞추기
         Map<String, Object> response = new HashMap<>();

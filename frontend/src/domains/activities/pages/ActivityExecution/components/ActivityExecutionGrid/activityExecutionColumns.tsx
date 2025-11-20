@@ -150,7 +150,7 @@ export const activityExecutionColumns = (
     }
   },
 
-  // 8. 수행결과 (executionResultCd) - 공통코드 변환
+  // 8. 수행결과 (01:적정, 02:부적정)
   {
     field: 'executionResultCd',
     headerName: '수행결과',
@@ -161,7 +161,14 @@ export const activityExecutionColumns = (
     resizable: false,
     valueGetter: (params: any) => {
       const code = params.data?.executionResultCd;
-      return code ? executionResultCode.getCodeName(code) : '-';
+      if (!code) return '-';
+
+      // 01:적정, 02:부적정
+      if (code === '01') return '적정';
+      if (code === '02') return '부적정';
+
+      // 공통코드 fallback
+      return executionResultCode.getCodeName(code) || code;
     }
   }
 ];
