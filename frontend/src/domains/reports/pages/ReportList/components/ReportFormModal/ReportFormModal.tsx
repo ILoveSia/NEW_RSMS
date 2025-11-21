@@ -14,11 +14,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-  MenuItem
+  MenuItem,
+  TextField
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -33,13 +32,10 @@ import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/Ledger
  */
 interface ReportFormData {
   ledgerOrderId: string;              // 원장차수ID
-  implInspectionPlanId: string;       // 이행점검ID
+  inspectionName: string;             // 점검명
   reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서, 03:부서별보고서)
-  reviewContent: string;              // 검토내용
   reviewDate: string | null;          // 검토일자
   result: string;                     // 결과
-  improvementAction: string;          // 개선조치
-  remarks: string;                    // 비고
 }
 
 /**
@@ -64,18 +60,13 @@ const schema = yup.object().shape({
   ledgerOrderId: yup
     .string()
     .required('원장차수는 필수입니다'),
-  implInspectionPlanId: yup
+  inspectionName: yup
     .string()
-    .required('이행점검ID는 필수입니다')
-    .max(13, '이행점검ID는 13자리입니다'),
+    .required('점검명은 필수입니다'),
   reportTypeCd: yup
     .string()
     .required('보고서구분은 필수입니다')
-    .oneOf(['01', '02', '03'], '보고서구분은 01, 02, 03만 가능합니다'),
-  reviewContent: yup
-    .string()
-    .default('')
-    .max(2000, '검토내용은 2000자 이내로 입력해주세요'),
+    .oneOf(['01', '02'], '보고서구분은 01, 02, 03만 가능합니다'),
   reviewDate: yup
     .string()
     .nullable()
@@ -83,15 +74,7 @@ const schema = yup.object().shape({
   result: yup
     .string()
     .default('')
-    .max(2000, '결과는 2000자 이내로 입력해주세요'),
-  improvementAction: yup
-    .string()
-    .default('')
-    .max(2000, '개선조치는 2000자 이내로 입력해주세요'),
-  remarks: yup
-    .string()
-    .default('')
-    .max(500, '비고는 500자 이내로 입력해주세요')
+    .max(2000, '결과는 2000자 이내로 입력해주세요')
 });
 
 const ReportFormModal: React.FC<ReportFormModalProps> = ({
@@ -115,10 +98,8 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
         return '01';
       case 'EXECUTIVE':
         return '02';
-      case 'DEPARTMENT':
-        return '03';
       default:
-        return '03';
+        return '02';
     }
   };
 
@@ -132,13 +113,10 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     mode: 'onChange',
     defaultValues: {
       ledgerOrderId: '',
-      implInspectionPlanId: '',
+      inspectionName: '',
       reportTypeCd: getReportTypeCd(reportType),
-      reviewContent: '',
       reviewDate: dayjs().format('YYYY-MM-DD'),
-      result: '',
-      improvementAction: '',
-      remarks: ''
+      result: ''
     }
   });
 
@@ -150,25 +128,19 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     if (mode === 'create') {
       reset({
         ledgerOrderId: '',
-        implInspectionPlanId: '',
+        inspectionName: '',
         reportTypeCd: getReportTypeCd(reportType),
-        reviewContent: '',
         reviewDate: dayjs().format('YYYY-MM-DD'),
-        result: '',
-        improvementAction: '',
-        remarks: ''
+        result: ''
       });
       setIsEditing(true);
     } else if (reportData) {
       reset({
         ledgerOrderId: reportData.ledgerOrderId || '',
-        implInspectionPlanId: reportData.implInspectionPlanId || '',
+        inspectionName: reportData.inspectionName || '',
         reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
-        reviewContent: reportData.reviewContent || '',
         reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
-        result: reportData.result || '',
-        improvementAction: reportData.improvementAction || '',
-        remarks: reportData.remarks || ''
+        result: reportData.result || ''
       });
       setIsEditing(false);
     }
@@ -222,13 +194,10 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     if (mode === 'detail' && reportData) {
       reset({
         ledgerOrderId: reportData.ledgerOrderId || '',
-        implInspectionPlanId: reportData.implInspectionPlanId || '',
+        inspectionName: reportData.inspectionName || '',
         reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
-        reviewContent: reportData.reviewContent || '',
         reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
-        result: reportData.result || '',
-        improvementAction: reportData.improvementAction || '',
-        remarks: reportData.remarks || ''
+        result: reportData.result || ''
       });
       setIsEditing(false);
     } else {
@@ -243,12 +212,12 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 1,
-          maxHeight: '90vh'
+          maxHeight: '80vh'
         }
       }}
     >
@@ -265,113 +234,87 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
       <DialogContent dividers sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {/* 원장차수 + 이행점검ID */}
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Box sx={{ flex: 1 }}>
-              <LedgerOrderComboBox
-                value={undefined}
-                onChange={() => {}}
-                label="원장차수"
-                required
-                disabled={isReadOnly}
-                error={!!errors.ledgerOrderId}
-                helperText={errors.ledgerOrderId?.message}
-                fullWidth
-                size="small"
-              />
-            </Box>
+          {/* 원장차수 */}
+          <LedgerOrderComboBox
+            value={undefined}
+            onChange={() => {}}
+            label="원장차수"
+            required
+            disabled={isReadOnly}
+            error={!!errors.ledgerOrderId}
+            helperText={errors.ledgerOrderId?.message}
+            fullWidth
+            size="small"
+          />
 
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="implInspectionPlanId"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="이행점검ID"
-                    required
-                    fullWidth
-                    size="small"
-                    disabled={isReadOnly}
-                    error={!!errors.implInspectionPlanId}
-                    helperText={errors.implInspectionPlanId?.message}
-                    placeholder="예: 20250001A0001"
-                  />
-                )}
-              />
-            </Box>
-          </Box>
-
-          {/* 보고서구분 + 검토일자 */}
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="reportTypeCd"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    select
-                    label="보고서구분"
-                    required
-                    fullWidth
-                    size="small"
-                    disabled={isReadOnly}
-                    error={!!errors.reportTypeCd}
-                    helperText={errors.reportTypeCd?.message}
-                  >
-                    <MenuItem value="01">CEO보고서</MenuItem>
-                    <MenuItem value="02">임원보고서</MenuItem>
-                    <MenuItem value="03">부서별보고서</MenuItem>
-                  </TextField>
-                )}
-              />
-            </Box>
-
-            <Box sx={{ flex: 1 }}>
-              <Controller
-                name="reviewDate"
-                control={control}
-                render={({ field }) => (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      {...field}
-                      label="검토일자"
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
-                      format="YYYY/MM/DD"
-                      disabled={isReadOnly}
-                      slotProps={{
-                        textField: {
-                          size: 'small',
-                          fullWidth: true,
-                          error: !!errors.reviewDate,
-                          helperText: errors.reviewDate?.message
-                        }
-                      }}
-                    />
-                  </LocalizationProvider>
-                )}
-              />
-            </Box>
-          </Box>
-
-          {/* 검토내용 */}
+          {/* 점검명 */}
           <Controller
-            name="reviewContent"
+            name="inspectionName"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="검토내용"
+                select
+                label="점검명"
+                required
                 fullWidth
-                multiline
-                rows={4}
+                size="small"
                 disabled={isReadOnly}
-                error={!!errors.reviewContent}
-                helperText={errors.reviewContent?.message}
-                placeholder="검토 내용을 입력하세요"
-              />
+                error={!!errors.inspectionName}
+                helperText={errors.inspectionName?.message}
+              >
+                <MenuItem value="">선택</MenuItem>
+                <MenuItem value="2025년 하반기 정기점검">2025년 하반기 정기점검</MenuItem>
+              </TextField>
+            )}
+          />
+
+          {/* 보고서구분 */}
+          <Controller
+            name="reportTypeCd"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                select
+                label="보고서구분"
+                required
+                fullWidth
+                size="small"
+                disabled={isReadOnly}
+                error={!!errors.reportTypeCd}
+                helperText={errors.reportTypeCd?.message}
+              >
+                <MenuItem value="01">CEO보고서</MenuItem>
+                <MenuItem value="02">임원보고서</MenuItem>
+                {/* <MenuItem value="03">부서별보고서</MenuItem> */}
+              </TextField>
+            )}
+          />
+
+          {/* 검토일자 */}
+          <Controller
+            name="reviewDate"
+            control={control}
+            render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  {...field}
+                  label="검토일자"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || null)}
+                  format="YYYY/MM/DD"
+                  disabled={isReadOnly}
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      fullWidth: true,
+                      error: !!errors.reviewDate,
+                      helperText: errors.reviewDate?.message
+                    }
+                  }}
+                />
+              </LocalizationProvider>
             )}
           />
 
@@ -385,49 +328,12 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
                 label="결과"
                 fullWidth
                 multiline
-                rows={4}
+                rows={3}
+                size="small"
                 disabled={isReadOnly}
                 error={!!errors.result}
                 helperText={errors.result?.message}
                 placeholder="점검 결과를 입력하세요"
-              />
-            )}
-          />
-
-          {/* 개선조치 */}
-          <Controller
-            name="improvementAction"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="개선조치"
-                fullWidth
-                multiline
-                rows={4}
-                disabled={isReadOnly}
-                error={!!errors.improvementAction}
-                helperText={errors.improvementAction?.message}
-                placeholder="개선조치 내용을 입력하세요"
-              />
-            )}
-          />
-
-          {/* 비고 */}
-          <Controller
-            name="remarks"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="비고"
-                fullWidth
-                multiline
-                rows={2}
-                disabled={isReadOnly}
-                error={!!errors.remarks}
-                helperText={errors.remarks?.message}
-                placeholder="비고 사항을 입력하세요"
               />
             )}
           />

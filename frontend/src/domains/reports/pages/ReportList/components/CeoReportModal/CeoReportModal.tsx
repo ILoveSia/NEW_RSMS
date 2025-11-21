@@ -277,6 +277,22 @@ const CeoReportModal: React.FC<CeoReportModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* 이행점검결과 */}
+        <div className={styles.resultSection}>
+          <h3 className={styles.sectionTitle}>
+            <BusinessCenterIcon className={styles.sectionIcon} />
+            이행점검결과
+          </h3>
+          <div className={styles.resultContent}>
+            <textarea
+              className={styles.resultTextarea}
+              placeholder="이행점검 결과 내용을 입력하세요..."
+              rows={3}
+              defaultValue="2025년 하반기 CEO 보고서 점검 결과, 전체적으로 책무 이행이 양호한 것으로 확인되었습니다."
+            />
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
