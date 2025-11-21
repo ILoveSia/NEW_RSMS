@@ -95,6 +95,9 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
     field: 'seq',
     headerName: '순번',
     width: 80,
+    minWidth: 80,
+    maxWidth: 80,
+    suppressSizeToFit: true,
     cellStyle: { textAlign: 'center', fontWeight: '500' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -104,7 +107,8 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'ledgerOrderId',
     headerName: '책무이행차수',
-    width: 140,
+    width: 160,
+    minWidth: 140,
     cellStyle: { textAlign: 'center', fontWeight: '500' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -117,7 +121,8 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'round',
     headerName: '회차',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     cellStyle: { textAlign: 'center', fontWeight: '500' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -131,7 +136,9 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'resolutionName',
     headerName: '이사회 결의명',
-    width: 280,
+    width: 350,
+    minWidth: 280,
+    flex: 1,
     sortable: true,
     filter: 'agTextColumnFilter',
     filterParams: {
@@ -145,7 +152,8 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'resolutionDate',
     headerName: '이사회 결의일자',
-    width: 140,
+    width: 160,
+    minWidth: 140,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -166,7 +174,8 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'uploadDate',
     headerName: '업로드 일자',
-    width: 120,
+    width: 140,
+    minWidth: 120,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,
@@ -176,7 +185,8 @@ export const boardHistoryColumns: ColDef<BoardHistory>[] = [
   {
     field: 'fileCount',
     headerName: '첨부파일',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-center',
     sortable: true,

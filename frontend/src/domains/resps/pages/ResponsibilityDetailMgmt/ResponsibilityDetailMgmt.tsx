@@ -603,6 +603,8 @@ const ResponsibilityDetailMgmt: React.FC<ResponsibilityDetailMgmtProps> = ({ cla
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           rowClassRules={{
             'responsibility-detail-group-separator': isLastRowInGroup
           }}

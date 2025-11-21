@@ -46,13 +46,20 @@ export const positionColumns: ColDef<Position>[] = [
     sortable: true,
     filter: true,
     width: 80,
+    minWidth: 80,
+    maxWidth: 80,
+    suppressSizeToFit: true, // 순번 컬럼은 고정 크기 유지
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '직책',
     field: 'positionName',
     sortable: true,
     filter: true,
-    width: 150,
+    width: 200,
+    minWidth: 150,
+    flex: 1, // 남은 공간 채우기
     cellRenderer: PositionNameRenderer,
     cellStyle: { fontWeight: '500' },
     // @ts-ignore - AG-Grid Community spanRows 기능
@@ -63,21 +70,28 @@ export const positionColumns: ColDef<Position>[] = [
     field: 'executiveName',
     sortable: true,
     filter: true,
-    width: 120
+    width: 150,
+    minWidth: 120,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '본부명',
     field: 'hqName',
     sortable: true,
     filter: true,
-    width: 150
+    width: 200,
+    minWidth: 150,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '부서명',
     field: 'orgName',
     sortable: true,
     filter: true,
-    width: 200,
+    width: 250,
+    minWidth: 200,
     wrapText: false,       // 텍스트 줄바꿈 방지
     autoHeight: false,     // 자동 높이 조절 방지
     valueGetter: (params) => {
@@ -104,35 +118,50 @@ export const positionColumns: ColDef<Position>[] = [
     field: 'registrationDate',
     sortable: true,
     filter: 'agDateColumnFilter',
-    width: 120
+    width: 150,
+    minWidth: 120,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '등록자',
     field: 'registrar',
     sortable: true,
     filter: true,
-    width: 100
+    width: 120,
+    minWidth: 100,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '수정일',
     field: 'modificationDate',
     sortable: true,
     filter: 'agDateColumnFilter',
-    width: 120
+    width: 150,
+    minWidth: 120,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '수정자',
     field: 'modifier',
     sortable: true,
     filter: true,
-    width: 100
+    width: 120,
+    minWidth: 100,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   },
   {
     headerName: '사용여부',
     field: 'isActive',
     sortable: true,
     filter: true,
-    width: 100,
+    width: 120,
+    minWidth: 100,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
     cellRenderer: (params: { value: boolean }) => (
       <Chip
         label={params.value ? '사용' : '미사용'}
@@ -147,6 +176,9 @@ export const positionColumns: ColDef<Position>[] = [
     field: 'dual',
     sortable: true,
     filter: true,
-    width: 100
+    width: 120,
+    minWidth: 100,
+    headerClass: 'ag-header-cell-center',
+    cellClass: 'ag-cell-center',
   }
 ];

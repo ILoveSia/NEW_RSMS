@@ -666,6 +666,8 @@ const ResponsibilityDocMgmt: React.FC<ResponsibilityDocMgmtProps> = ({ className
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           context={{
             onPositionClick: handleDocDetail // 직책 컬럼 클릭 시 상세 모달 열기
           }}

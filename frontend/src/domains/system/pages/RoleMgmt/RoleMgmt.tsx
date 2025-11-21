@@ -590,6 +590,8 @@ const RoleMgmt: React.FC<RoleMgmtProps> = ({ className }) => {
                     columns={permissionDetailColumns}
                     height="100%"
                     pagination={false}
+                  suppressHorizontalScroll={false}
+                  suppressColumnVirtualisation={false}
                   />
                 )}
               </div>

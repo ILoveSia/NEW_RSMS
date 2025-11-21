@@ -351,6 +351,8 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
                 emptyMessage="조회된 수행자가 없습니다."
                 theme="alpine"
                 pagination={false}
+              suppressHorizontalScroll={false}
+              suppressColumnVirtualisation={false}
               />
             </Box>
           </Box>

@@ -574,6 +574,8 @@ const InternalControlRegister: React.FC<InternalControlRegisterProps> = ({ class
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+        suppressHorizontalScroll={false}
+        suppressColumnVirtualisation={false}
         />
       </div>
 

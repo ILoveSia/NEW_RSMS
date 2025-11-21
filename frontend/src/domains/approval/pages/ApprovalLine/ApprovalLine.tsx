@@ -561,6 +561,8 @@ const ApprovalLine: React.FC<ApprovalLineProps> = ({ className }) => {
                     theme="alpine"
                     height="calc(100vh - 280px)"
                     pagination={false}
+                  suppressHorizontalScroll={false}
+                  suppressColumnVirtualisation={false}
                   />
                 </div>
               </Paper>

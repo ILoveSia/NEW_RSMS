@@ -257,8 +257,13 @@ const BaseDataGrid = <TData = any,>({
     setGridApi(params.api);
 
     // 컬럼 자동 크기 조정 - 초기 로드 시에만 한 번 실행
-    params.api.sizeColumnsToFit();
-  }, []);
+    // suppressHorizontalScroll이 false이거나 suppressColumnVirtualisation이 false인 경우 sizeColumnsToFit 호출 안함
+    const shouldSkipAutoSize = gridProps.suppressHorizontalScroll === false || gridProps.suppressColumnVirtualisation === false;
+
+    if (!shouldSkipAutoSize) {
+      params.api.sizeColumnsToFit();
+    }
+  }, [gridProps.suppressHorizontalScroll, gridProps.suppressColumnVirtualisation]);
 
   // 셀 클릭 이벤트
   const handleCellClicked = useCallback((event: CellClickedEvent<TData>) => {

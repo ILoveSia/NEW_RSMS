@@ -580,7 +580,7 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
             책무카테고리: dto.responsibilityCatName || dto.responsibilityCat,
             책무내용: dto.responsibilityInfo,
             책무관련근거: dto.responsibilityLegal,
-            사용여부: dto.isActive === 'Y' ? '사용' : '미사용',
+            사용여부: dto.responsibilityIsActive === 'Y' ? 'Y' : 'N',  // string으로 변환 (Y/N 텍스트 표시)
             등록일자: dto.createdAt ? dto.createdAt.split('T')[0] : '',
             등록자: dto.createdBy || '',
             _rawData: dto
@@ -649,6 +649,8 @@ const ResponsibilityMgmt: React.FC<ResponsibilityMgmtProps> = ({ className }) =>
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
         />
       </div>
 

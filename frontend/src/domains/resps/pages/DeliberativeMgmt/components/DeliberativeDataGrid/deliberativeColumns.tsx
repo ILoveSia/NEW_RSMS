@@ -100,6 +100,9 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
     field: 'seq',
     headerName: '순번',
     width: 80,
+    minWidth: 80,
+    maxWidth: 80,
+    suppressSizeToFit: true,
     sortable: true,
     filter: false,
     cellStyle: { textAlign: 'center' }
@@ -107,7 +110,9 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'name',
     headerName: '회의체명',
-    width: 200,
+    width: 250,
+    minWidth: 200,
+    flex: 1,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellRenderer: DeliberativeNameRenderer,
@@ -116,7 +121,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'holdingPeriod',
     headerName: '개최주기',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     sortable: true,
     filter: 'agSetColumnFilter',
     cellRenderer: createHoldingPeriodRenderer(holdingPeriodCodes),
@@ -125,7 +131,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'chairperson',
     headerName: '위원장',
-    width: 120,
+    width: 140,
+    minWidth: 120,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellStyle: { fontWeight: '500' }
@@ -133,7 +140,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'members',
     headerName: '위원',
-    width: 250,
+    width: 300,
+    minWidth: 250,
     sortable: false,
     filter: false,
     cellRenderer: ({ value }: { value: string }) => (
@@ -145,7 +153,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'mainAgenda',
     headerName: '주요심의사항',
-    width: 300,
+    width: 350,
+    minWidth: 300,
     sortable: false,
     filter: false,
     cellRenderer: MainAgendaRenderer,
@@ -154,7 +163,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'registrationDate',
     headerName: '등록일자',
-    width: 110,
+    width: 130,
+    minWidth: 110,
     sortable: true,
     filter: 'agDateColumnFilter',
     cellStyle: { textAlign: 'center', fontSize: '0.875rem' }
@@ -162,7 +172,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'registrar',
     headerName: '등록자',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellStyle: { fontSize: '0.875rem' }
@@ -170,7 +181,8 @@ export const createDeliberativeColumns = (holdingPeriodCodes: CommonCodeDetail[]
   {
     field: 'isActive',
     headerName: '사용여부',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     sortable: true,
     filter: 'agSetColumnFilter',
     cellRenderer: ActiveStatusRenderer,

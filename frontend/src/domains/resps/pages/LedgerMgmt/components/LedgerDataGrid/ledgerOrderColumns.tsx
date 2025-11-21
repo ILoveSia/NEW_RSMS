@@ -45,10 +45,13 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     headerName: '순번',
     field: '순번',
     width: 80,
+    minWidth: 80,
+    maxWidth: 80,
     headerClass: 'ag-header-cell-center',
     cellClass: 'ag-cell-center',
     sortable: true,
     filter: false,
+    suppressSizeToFit: true,
     valueFormatter: (params) => {
       if (params.value !== undefined && params.value !== null) {
         return String(params.value);
@@ -59,7 +62,8 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '책무이행차수ID',
     field: 'ledgerOrderId',
-    width: 150,
+    width: 180,
+    minWidth: 150,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
@@ -70,7 +74,9 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '책무이행차수 제목',
     field: 'ledgerOrderTitle',
-    width: 250,
+    width: 350,
+    minWidth: 250,
+    flex: 1,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
@@ -80,7 +86,8 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '책무차수상태',
     field: 'ledgerOrderStatus',
-    width: 120,
+    width: 130,
+    minWidth: 120,
     sortable: true,
     filter: 'agSetColumnFilter',
     headerClass: 'ag-header-cell-center',
@@ -93,7 +100,8 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '비고',
     field: 'ledgerOrderRemarks',
-    width: 300,
+    width: 400,
+    minWidth: 300,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
@@ -104,6 +112,7 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     headerName: '생성일시',
     field: 'createdAt',
     width: 180,
+    minWidth: 160,
     sortable: true,
     filter: 'agDateColumnFilter',
     floatingFilter: false,
@@ -126,7 +135,8 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '생성자',
     field: 'createdBy',
-    width: 120,
+    width: 130,
+    minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,
@@ -137,6 +147,7 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
     headerName: '수정일시',
     field: 'updatedAt',
     width: 180,
+    minWidth: 160,
     sortable: true,
     filter: 'agDateColumnFilter',
     floatingFilter: false,
@@ -159,7 +170,8 @@ export const ledgerOrderColumns: ColDef<LedgerOrder>[] = [
   {
     headerName: '수정자',
     field: 'updatedBy',
-    width: 120,
+    width: 130,
+    minWidth: 100,
     sortable: true,
     filter: 'agTextColumnFilter',
     floatingFilter: false,

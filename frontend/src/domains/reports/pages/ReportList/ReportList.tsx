@@ -606,6 +606,8 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           />
         </div>
 

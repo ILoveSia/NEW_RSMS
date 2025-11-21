@@ -514,6 +514,8 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+        suppressHorizontalScroll={false}
+        suppressColumnVirtualisation={false}
         />
       </div>
 

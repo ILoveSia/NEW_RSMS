@@ -48,8 +48,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       field: 'sequence',
       headerName: '순번',
       width: 80,
-      minWidth: 60,
-      maxWidth: 100,
+      minWidth: 80,
+      maxWidth: 80,
+      suppressSizeToFit: true,
       sortable: true,
       filter: 'agNumberColumnFilter',
       cellClass: 'ag-cell-center',
@@ -59,8 +60,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'ledgerOrderId',
       headerName: '책무이행차수',
-      width: 150,
-      minWidth: 120,
+      width: 180,
+      minWidth: 140,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -70,8 +71,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'inspectionName',
       headerName: '점검명',
-      width: 200,
-      minWidth: 150,
+      width: 280,
+      minWidth: 200,
+      flex: 1,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
@@ -85,8 +87,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'inspectionType',
       headerName: '점검유형',
-      width: 120,
-      minWidth: 100,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -96,8 +98,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'inspectionStartDate',
       headerName: '점검 수행기간',
-      width: 200,
-      minWidth: 150,
+      width: 240,
+      minWidth: 200,
       sortable: false,
       filter: false,
       cellClass: 'ag-cell-center',
@@ -114,8 +116,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'registrationDate',
       headerName: '등록일자',
-      width: 120,
-      minWidth: 100,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agDateColumnFilter',
       cellClass: 'ag-cell-center',
@@ -130,8 +132,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'registrant',
       headerName: '등록자',
-      width: 120,
-      minWidth: 100,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -141,8 +143,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     {
       field: 'status',
       headerName: '상태',
-      width: 100,
-      minWidth: 80,
+      width: 120,
+      minWidth: 100,
       sortable: true,
       filter: 'agSetColumnFilter',
       cellClass: 'ag-cell-center',
@@ -707,6 +709,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+            suppressHorizontalScroll={false}
+            suppressColumnVirtualisation={false}
           />
         </div>
 

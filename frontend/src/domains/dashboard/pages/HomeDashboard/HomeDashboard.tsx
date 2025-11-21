@@ -135,13 +135,13 @@ const mockOrgData: OrganizationNode = {
 // 테이블 데이터 구조
 const implementationData = {
   '소관업무': [
-    { id: 1, title: '내부통제 집행 관리의무', status: '미점검' },
-    { id: 2, title: '리스크 관리 운영 업무', status: '적정' },
-    { id: 3, title: '감사업무 점검 관리의무', status: '미점검' }
+    { id: 1, title: '중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토', status: '적정' },
+    { id: 2, title: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독', status: '적정' },
+    { id: 3, title: '정관 변경 업무 및 내규 제정·개정·폐지안의 사전심의 업무 관리', status: '부적정' }
   ],
   '미래성장본부': [
-    { id: 4, title: '신규사업 관리의무1', status: '미점검' },
-    { id: 5, title: '투자심사 관리의무2', status: '적정' }
+    { id: 4, title: '업무위·수탁과 관련한 기준 및 절차 수립, 감독기관 승인신청 및 보고관련 업무에 대한 관리·감독', status: '미점검' },
+    { id: 5, title: '업무위·수탁과 관련한 기준 및 절차 수립, 감독기관 승인신청 및 보고관련 업무에 대한 관리·감독', status: '미점검' }
   ]
 };
 
@@ -715,8 +715,7 @@ const HomeDashboard: React.FC = () => {
             <div className={styles.flowHeaderNew}>
               <div className={styles.headerControls}>
                 <select className={styles.periodSelect} value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value)}>
-                  <option value="2026년 07월">2026년 07월</option>
-                  <option value="2026년 06월">2026년 06월</option>
+                  <option value="20250001">2025년 하반기 정기점검</option>
                 </select>
               </div>
               <h3 className={styles.centerTitle}>책무 현황</h3>
@@ -942,7 +941,7 @@ const HomeDashboard: React.FC = () => {
           <div className={styles.implementationStatusLarge}>
             <h3>책무-관리의무 이행 현황</h3>
 
-            <div className={styles.statusTags}>
+            {/* <div className={styles.statusTags}>
               <div className={styles.statusTag}>
                 <span className={styles.tagLabel}>적정</span>
                 <span className={styles.tagNumber}>0</span>
@@ -959,7 +958,7 @@ const HomeDashboard: React.FC = () => {
                 <span className={styles.tagLabel}>부적정</span>
                 <span className={styles.tagNumber}>0</span>
               </div>
-            </div>
+            </div> */}
 
             {/* 2개 카드 테이블 구조 */}
             <div className={styles.implementationTable}>
@@ -972,10 +971,10 @@ const HomeDashboard: React.FC = () => {
                   >
                     <div className={styles.cardContent}>
                       <p className={styles.cardTitle}>
-                        소관 업무·조직의 내부통제 등 집행 및 운영과 관련된 책무
+                        법무·송무 업무와 관련된 책무
                       </p>
                       <button className={`${styles.statusButton} ${selectedMainItem === '소관업무' ? styles.selected : ''}`}>
-                        미점검
+                        점검
                       </button>
                     </div>
                   </div>
@@ -986,7 +985,7 @@ const HomeDashboard: React.FC = () => {
                   >
                     <div className={styles.cardContent}>
                       <p className={styles.cardTitle}>
-                        미래성장본부 예시 책무 공통 관리의무1
+                        업무의 위탁 및 수탁업무와 관련된 책무
                       </p>
                       <button className={`${styles.statusButton} ${selectedMainItem === '미래성장본부' ? styles.selected : ''}`}>
                         미점검

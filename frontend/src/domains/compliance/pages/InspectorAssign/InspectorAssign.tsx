@@ -47,9 +47,10 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'sequence',
       headerName: '순번',
-      width: 60,
-      minWidth: 60,
-      maxWidth: 100,
+      width: 80,
+      minWidth: 80,
+      maxWidth: 80,
+      suppressSizeToFit: true,
       sortable: true,
       filter: 'agNumberColumnFilter',
       cellClass: 'ag-cell-center',
@@ -58,8 +59,9 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspectionName',
       headerName: '점검명',
-      width: 150,
-      minWidth: 150,
+      width: 220,
+      minWidth: 180,
+      flex: 1,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
@@ -72,7 +74,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'obligationInfo',
       headerName: '관리의무',
-      width: 300,
+      width: 350,
       minWidth: 300,
       sortable: true,
       filter: 'agTextColumnFilter',
@@ -86,8 +88,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'activityName',
       headerName: '관리활동명',
-      width: 150,
-      minWidth: 150,
+      width: 240,
+      minWidth: 200,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
@@ -100,8 +102,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'activityFrequencyCd',
       headerName: '점검주기',
-      width: 80,
-      minWidth: 80,
+      width: 120,
+      minWidth: 100,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -110,8 +112,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'orgCode',
       headerName: '부서',
-      width: 100,
-      minWidth: 100,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
@@ -120,8 +122,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspector',
       headerName: '점검자',
-      width: 80,
-      minWidth: 80,
+      width: 120,
+      minWidth: 100,
       sortable: false,
       filter: false,
       cellClass: 'ag-cell-center',
@@ -140,8 +142,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'inspectionDate',
       headerName: '점검일자',
-      width: 80,
-      minWidth: 80,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agDateColumnFilter',
       cellClass: 'ag-cell-center',
@@ -158,8 +160,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     {
       field: 'assignmentStatus',
       headerName: '상태',
-      width: 80,
-      minWidth: 80,
+      width: 140,
+      minWidth: 120,
       sortable: true,
       filter: 'agSetColumnFilter',
       cellClass: 'ag-cell-center',
@@ -830,6 +832,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+            suppressHorizontalScroll={false}
+            suppressColumnVirtualisation={false}
             context={{
               onInspectorSelect: handleInspectorSelect
             }}

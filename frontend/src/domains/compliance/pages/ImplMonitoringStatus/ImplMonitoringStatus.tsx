@@ -669,6 +669,8 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+            suppressHorizontalScroll={false}
+            suppressColumnVirtualisation={false}
           />
         </div>
 

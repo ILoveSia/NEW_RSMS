@@ -643,6 +643,8 @@ const ManagementObligationMgmt: React.FC<ManagementObligationMgmtProps> = ({ cla
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           rowClassRules={{
             'management-obligation-group-separator': isLastRowInGroup
           }}

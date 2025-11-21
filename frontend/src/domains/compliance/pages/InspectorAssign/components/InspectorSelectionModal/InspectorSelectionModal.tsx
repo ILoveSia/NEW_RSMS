@@ -324,6 +324,8 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
                 emptyMessage="조회된 점검자가 없습니다."
                 theme="alpine"
                 pagination={false}
+                suppressHorizontalScroll={false}
+                suppressColumnVirtualisation={false}
               />
             </Box>
           </Box>

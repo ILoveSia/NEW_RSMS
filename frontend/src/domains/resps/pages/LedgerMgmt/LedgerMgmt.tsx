@@ -409,6 +409,8 @@ const LedgerMgmt: React.FC<LedgerMgmtProps> = ({ className }) => {
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
         />
       </div>
 

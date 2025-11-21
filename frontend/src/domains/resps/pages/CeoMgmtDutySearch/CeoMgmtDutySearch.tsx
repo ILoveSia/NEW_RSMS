@@ -433,6 +433,8 @@ const CeoMgmtDutySearch: React.FC<CeoMgmtDutySearchProps> = ({ className }) => {
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
+        suppressHorizontalScroll={false}
+        suppressColumnVirtualisation={false}
         />
       </div>
 

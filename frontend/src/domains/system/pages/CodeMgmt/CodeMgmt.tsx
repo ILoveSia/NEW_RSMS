@@ -888,6 +888,8 @@ const CodeMgmt: React.FC = () => {
                     rowSelection="multiple"
                     checkboxSelection={true}
                     headerCheckboxSelection={true}
+                  suppressHorizontalScroll={false}
+                  suppressColumnVirtualisation={false}
                   />
                 )}
               </div>
@@ -1023,6 +1025,8 @@ const CodeMgmt: React.FC = () => {
                     rowSelection="multiple"
                     checkboxSelection={true}
                     headerCheckboxSelection={true}
+                  suppressHorizontalScroll={false}
+                  suppressColumnVirtualisation={false}
                   />
                 )}
               </div>

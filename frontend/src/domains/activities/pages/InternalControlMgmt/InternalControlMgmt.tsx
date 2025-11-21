@@ -557,6 +557,8 @@ const InternalControlMgmt: React.FC<InternalControlMgmtProps> = ({ className }) 
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           />
         </div>
 

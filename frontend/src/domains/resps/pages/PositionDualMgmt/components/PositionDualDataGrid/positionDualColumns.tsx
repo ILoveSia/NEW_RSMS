@@ -121,13 +121,17 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
     field: 'seq',
     headerName: '순번',
     width: 80,
+    minWidth: 80,
+    maxWidth: 80,
+    suppressSizeToFit: true,
     cellStyle: { textAlign: 'center' },
     headerClass: 'ag-header-cell-centered'
   },
   {
     field: 'concurrentStatusCode',
     headerName: '겸직현황코드',
-    width: 140,
+    width: 160,
+    minWidth: 140,
     cellRenderer: ConcurrentStatusCodeRenderer,
     cellStyle: { fontWeight: '500', textAlign: 'center' },
     headerClass: 'ag-header-cell-centered'
@@ -135,7 +139,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'positionCode',
     headerName: '직책코드',
-    width: 120,
+    width: 140,
+    minWidth: 120,
     cellStyle: {
       textAlign: 'center'
     },
@@ -144,7 +149,9 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'positionName',
     headerName: '직책명',
-    width: 180,
+    width: 200,
+    minWidth: 150,
+    flex: 1,
     cellRenderer: PositionNameRenderer,
     cellStyle: {
       display: 'flex',
@@ -154,7 +161,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'isRepresentative',
     headerName: '대표여부',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     cellRenderer: RepresentativeStatusRenderer,
     cellStyle: {
       display: 'flex',
@@ -166,13 +174,15 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'hpName',
     headerName: '본부명',
-    width: 150,
+    width: 180,
+    minWidth: 150,
     cellStyle: { textAlign: 'left' }
   },
   {
     field: 'registrationDate',
     headerName: '등록일자',
-    width: 110,
+    width: 130,
+    minWidth: 110,
     cellStyle: {
       textAlign: 'center'
     },
@@ -181,7 +191,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'registrar',
     headerName: '등록자',
-    width: 120,
+    width: 130,
+    minWidth: 120,
     cellStyle: {
       display: 'flex',
       alignItems: 'center'
@@ -190,7 +201,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'modificationDate',
     headerName: '수정일자',
-    width: 110,
+    width: 130,
+    minWidth: 110,
     valueGetter: (params) => params.data?.modificationDate || '-',
     cellStyle: (params: any) => ({
       textAlign: 'center',
@@ -201,7 +213,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'modifier',
     headerName: '수정자',
-    width: 120,
+    width: 130,
+    minWidth: 120,
     cellStyle: {
       display: 'flex',
       alignItems: 'center'
@@ -210,7 +223,8 @@ export const positionDualColumns: ColDef<PositionDual>[] = [
   {
     field: 'isActive',
     headerName: '사용여부',
-    width: 100,
+    width: 120,
+    minWidth: 100,
     cellRenderer: ActiveStatusRenderer,
     cellStyle: {
       display: 'flex',

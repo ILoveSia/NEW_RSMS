@@ -500,6 +500,8 @@ const AccessLog: React.FC<AccessLogMgmtProps> = ({ className }) => {
             rowSelection="multiple"
             checkboxSelection={true}
             headerCheckboxSelection={true}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
           />
         </div>
 

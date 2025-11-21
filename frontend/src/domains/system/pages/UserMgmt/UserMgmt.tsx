@@ -595,6 +595,8 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
               pageSize={pagination.size}
               rowSelection="multiple"
               checkboxSelection={true}
+              suppressHorizontalScroll={false}
+              suppressColumnVirtualisation={false}
             />
         )}
       </div>
