@@ -1,6 +1,7 @@
 /**
  * 수행자 지정 모달
- * - InspectorSelectionModal을 기반으로 "점검자" → "수행자"로 용어 변경
+ * - 실제 employees 테이블 데이터와 연동
+ * - searchEmployees API를 통해 사원 목록 조회
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -23,14 +24,19 @@ import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { ColDef } from 'ag-grid-community';
 import type { ActivityExecution } from '../../types/activityExecution.types';
+import { searchEmployees } from '@/shared/api/employeeApi';
+import type { Employee } from '@/shared/types/employee';
 
-// 수행자 타입 정의
+/**
+ * 수행자 타입 정의
+ * - Employee 타입과 매핑하여 그리드에 표시
+ */
 export interface Performer {
-  id: string;
-  name: string;
-  department: string;
-  position: string;
-  specialtyArea: string;
+  id: string;           // empNo (직원번호)
+  name: string;         // empName (직원명)
+  department: string;   // orgName (조직명)
+  position: string;     // jobGrade (직급)
+  specialtyArea: string; // jobTitle (직함)
   type: 'INTERNAL' | 'EXTERNAL';
   isActive: boolean;
 }
@@ -142,73 +148,80 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
     }
   });
 
-  // Mock data for performers
-  const mockPerformers: Performer[] = useMemo(() => [
-    {
-      id: 'PERFORMER_001',
-      name: '이신혁',
-      department: '기획팀',
-      position: '대리',
-      specialtyArea: '시스템',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'PERFORMER_002',
-      name: '김철수',
-      department: '개발팀',
-      position: '과장',
-      specialtyArea: '보안',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'PERFORMER_003',
-      name: '박영희',
-      department: '운영팀',
-      position: '차장',
-      specialtyArea: '운영',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'PERFORMER_004',
-      name: '최외부',
-      department: '외부감사법인',
-      position: '수석감사원',
-      specialtyArea: '감사',
-      type: 'EXTERNAL',
-      isActive: true
-    },
-    {
-      id: 'PERFORMER_005',
-      name: '정외부',
-      department: '컨설팅회사',
-      position: '시니어컨설턴트',
-      specialtyArea: '컨설팅',
-      type: 'EXTERNAL',
-      isActive: true
-    }
-  ], []);
+  /**
+   * 실제 사원 데이터를 저장할 state
+   * - employees API에서 조회한 데이터를 Performer 형식으로 변환하여 저장
+   */
+  const [performers, setPerformers] = useState<Performer[]>([]);
 
-  // Filter performers based on search only
+  /**
+   * Employee 데이터를 Performer 형식으로 변환
+   * @param employee - API에서 조회한 Employee 데이터
+   * @returns Performer 형식으로 변환된 데이터
+   */
+  const convertEmployeeToPerformer = useCallback((employee: Employee): Performer => {
+    return {
+      id: employee.empNo,
+      name: employee.empName,
+      department: employee.orgName || employee.orgCode || '-',
+      position: employee.jobGrade || '-',
+      specialtyArea: employee.jobTitle || '-',
+      type: 'INTERNAL',  // employees 테이블은 내부 직원
+      isActive: employee.isActive === 'Y'
+    };
+  }, []);
+
+  /**
+   * 사원 목록 조회 API 호출
+   * - 검색어로 필터링하여 조회
+   */
+  const fetchEmployees = useCallback(async (keyword?: string) => {
+    setSelectionState(prev => ({ ...prev, loading: true }));
+    try {
+      // 검색 조건 설정 (빈 객체면 전체 조회)
+      const searchFilter = keyword ? { empName: keyword } : {};
+      const employees = await searchEmployees(searchFilter);
+
+      // Employee -> Performer 변환
+      const convertedPerformers = employees
+        .filter(emp => emp.isActive === 'Y')  // 활성화된 직원만
+        .map(convertEmployeeToPerformer);
+
+      setPerformers(convertedPerformers);
+    } catch (error) {
+      console.error('사원 목록 조회 실패:', error);
+      setPerformers([]);
+    } finally {
+      setSelectionState(prev => ({ ...prev, loading: false }));
+    }
+  }, [convertEmployeeToPerformer]);
+
+  /**
+   * 검색어로 사원 목록 필터링 (클라이언트 사이드)
+   * - API 조회 결과에서 추가적으로 필터링
+   */
   const filteredPerformers = useMemo(() => {
-    let filtered = mockPerformers.filter(performer => performer.isActive);
-
-    if (selectionState.searchKeyword.trim()) {
-      const keyword = selectionState.searchKeyword.toLowerCase();
-      filtered = filtered.filter(performer =>
-        performer.name.toLowerCase().includes(keyword) ||
-        performer.department.toLowerCase().includes(keyword) ||
-        performer.position.toLowerCase().includes(keyword) ||
-        performer.specialtyArea.toLowerCase().includes(keyword)
-      );
+    // 검색어가 없으면 전체 목록 반환
+    if (!selectionState.searchKeyword.trim()) {
+      return performers;
     }
 
-    return filtered;
-  }, [mockPerformers, selectionState.searchKeyword]);
+    // 클라이언트 사이드 필터링 (추가 검색)
+    const keyword = selectionState.searchKeyword.toLowerCase();
+    return performers.filter(performer =>
+      performer.name.toLowerCase().includes(keyword) ||
+      performer.department.toLowerCase().includes(keyword) ||
+      performer.position.toLowerCase().includes(keyword) ||
+      performer.specialtyArea.toLowerCase().includes(keyword)
+    );
+  }, [performers, selectionState.searchKeyword]);
 
-  // Reset form when modal opens
+  /**
+   * 모달이 열릴 때 초기화 및 사원 데이터 조회
+   * - 폼 리셋
+   * - 선택 상태 초기화
+   * - 사원 목록 API 호출
+   */
   useEffect(() => {
     if (open) {
       reset();
@@ -217,17 +230,18 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
         selectedPerformer: null,
         searchKeyword: ''
       }));
+      // 모달 열릴 때 사원 목록 조회
+      fetchEmployees();
     }
-  }, [open, activity, reset]);
+  }, [open, activity, reset, fetchEmployees]);
 
-  // Handle search
+  /**
+   * 검색 버튼 클릭 핸들러
+   * - 검색어로 API 재조회
+   */
   const handleSearch = useCallback(() => {
-    // 실제로는 API 호출
-    setSelectionState(prev => ({ ...prev, loading: true }));
-    setTimeout(() => {
-      setSelectionState(prev => ({ ...prev, loading: false }));
-    }, 300);
-  }, []);
+    fetchEmployees(selectionState.searchKeyword || undefined);
+  }, [fetchEmployees, selectionState.searchKeyword]);
 
   // Handle performer selection (행 선택 변경)
   const handlePerformerSelect = useCallback((selectedRows: Performer[]) => {
@@ -343,7 +357,6 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
                 columns={performerColumns}
                 loading={selectionState.loading}
                 rowSelection="single"
-                selectedRows={selectionState.selectedPerformer ? [selectionState.selectedPerformer] : []}
                 onSelectionChange={handlePerformerSelect}
                 onRowClick={handleRowClick}
                 onRowDoubleClick={handleRowDoubleClick}
@@ -351,8 +364,8 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
                 emptyMessage="조회된 수행자가 없습니다."
                 theme="alpine"
                 pagination={false}
-              suppressHorizontalScroll={false}
-              suppressColumnVirtualisation={false}
+                suppressHorizontalScroll={false}
+                suppressColumnVirtualisation={false}
               />
             </Box>
           </Box>

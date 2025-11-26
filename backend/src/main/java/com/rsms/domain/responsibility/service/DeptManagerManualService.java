@@ -234,10 +234,15 @@ public class DeptManagerManualService {
      */
     @Transactional
     public DeptManagerManualDto updateManual(String manualCd, UpdateDeptManagerManualRequest request, String username) {
-        log.debug("[DeptManagerManualService] 메뉴얼 수정 요청 - manualCd: {}, username: {}", manualCd, username);
+        log.info("[DeptManagerManualService] 메뉴얼 수정 요청 시작 - manualCd: {}, username: {}", manualCd, username);
+        log.info("[DeptManagerManualService] 수정 요청 데이터 - request: respItem={}, activityName={}, execCheckMethod={}",
+            request.getRespItem(), request.getActivityName(), request.getExecCheckMethod());
 
         DeptManagerManual manual = deptManagerManualRepository.findById(manualCd)
             .orElseThrow(() -> new IllegalArgumentException("메뉴얼을 찾을 수 없습니다. CODE: " + manualCd));
+
+        log.info("[DeptManagerManualService] 기존 데이터 - respItem={}, activityName={}, execCheckMethod={}",
+            manual.getRespItem(), manual.getActivityName(), manual.getExecCheckMethod());
 
         // 수정 가능한 필드만 업데이트
         manual.setRespItem(request.getRespItem());
@@ -255,8 +260,12 @@ public class DeptManagerManualService {
         manual.setRemarks(request.getRemarks());
         manual.setUpdatedBy(username);
 
+        log.info("[DeptManagerManualService] 수정 후 데이터 - respItem={}, activityName={}, execCheckMethod={}",
+            manual.getRespItem(), manual.getActivityName(), manual.getExecCheckMethod());
+
         DeptManagerManual updated = deptManagerManualRepository.save(manual);
-        log.info("[DeptManagerManualService] 메뉴얼 수정 완료 - manualCd: {}", updated.getManualCd());
+        log.info("[DeptManagerManualService] 메뉴얼 수정 완료 - manualCd: {}, updatedAt: {}",
+            updated.getManualCd(), updated.getUpdatedAt());
 
         return convertToDto(updated);
     }
@@ -292,6 +301,40 @@ public class DeptManagerManualService {
         }
 
         log.info("[DeptManagerManualService] 메뉴얼 일괄 삭제 완료 - count: {}", manualCds.size());
+    }
+
+    /**
+     * 수행자 일괄 지정
+     * - 여러 메뉴얼에 수행자(executor_id)를 일괄 업데이트
+     *
+     * @param manualCds 메뉴얼코드 리스트
+     * @param executorId 수행자 ID (emp_no)
+     * @param username 수정자
+     * @return 업데이트된 메뉴얼 DTO 리스트
+     */
+    @Transactional
+    public List<DeptManagerManualDto> assignExecutorBatch(List<String> manualCds, String executorId, String username) {
+        log.info("[DeptManagerManualService] 수행자 일괄 지정 요청 - count: {}, executorId: {}, username: {}",
+            manualCds.size(), executorId, username);
+
+        List<DeptManagerManualDto> updatedManuals = new java.util.ArrayList<>();
+
+        for (String manualCd : manualCds) {
+            DeptManagerManual manual = deptManagerManualRepository.findById(manualCd)
+                .orElseThrow(() -> new IllegalArgumentException("메뉴얼을 찾을 수 없습니다. CODE: " + manualCd));
+
+            // 수행자 ID만 업데이트
+            manual.setExecutorId(executorId);
+            manual.setUpdatedBy(username);
+
+            DeptManagerManual saved = deptManagerManualRepository.save(manual);
+            updatedManuals.add(convertToDto(saved));
+
+            log.debug("[DeptManagerManualService] 수행자 지정 완료 - manualCd: {}, executorId: {}", manualCd, executorId);
+        }
+
+        log.info("[DeptManagerManualService] 수행자 일괄 지정 완료 - count: {}", updatedManuals.size());
+        return updatedManuals;
     }
 
     // ===============================

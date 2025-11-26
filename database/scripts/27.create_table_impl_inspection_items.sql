@@ -85,7 +85,7 @@ CREATE TABLE rsms.impl_inspection_items (
   improvement_plan_content TEXT,                      -- 개선계획내용
   improvement_plan_date DATE,                         -- 개선계획수립일자
 
-   improvement_plan_approved_by VARCHAR(50),          -- 개선계획 승인자ID (결재시스템 연동용)
+  improvement_plan_approved_by VARCHAR(50),          -- 개선계획 승인자ID (결재시스템 연동용)
   improvement_plan_approved_date DATE,                -- 개선계획 승인일자
 
   improvement_detail_content TEXT,                    -- 개선이행세부내용

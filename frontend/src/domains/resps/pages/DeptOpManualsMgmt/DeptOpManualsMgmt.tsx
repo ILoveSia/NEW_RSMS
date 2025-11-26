@@ -544,28 +544,43 @@ const DeptOpManualsMgmt: React.FC<DeptOpManualsMgmtProps> = ({ className }) => {
   }, [filters.ledgerOrder, fetchDeptOpManuals, handleModalClose]);
 
   // 수정 핸들러
+  // - formData 구조: { ledgerOrderId, orgCode, activities: ManagementActivityRow[] }
+  // - 상세조회 수정 시 activities 배열의 첫 번째 항목을 사용
   const handleUpdate = useCallback(async (id: string, formData: any) => {
     setLoadingStates(prev => ({ ...prev, create: true }));
 
     try {
+      // activities 배열에서 첫 번째 항목 추출 (상세조회 수정 시 단일 항목)
+      const activity = formData.activities?.[0];
+
+      if (!activity) {
+        toast.error('수정할 데이터가 없습니다.');
+        return;
+      }
+
+      console.log('📤 [DeptOpManualsMgmt] 수정 요청 - id(manualCd):', id);
+      console.log('📤 [DeptOpManualsMgmt] 수정 요청 - activity:', activity);
+
       // 실제 API 호출: 부서장업무메뉴얼 수정
       const updateRequest: UpdateDeptManagerManualRequest = {
-        respItem: formData.respItem,
-        activityName: formData.activityName,
-        executorId: formData.executorId,
-        executionDate: formData.executionDate,
-        executionStatus: formData.executionStatus,
-        executionResultCd: formData.executionResultCd,
-        executionResultContent: formData.executionResultContent,
-        execCheckMethod: formData.execCheckMethod,
-        execCheckDetail: formData.execCheckDetail,
-        execCheckFrequencyCd: formData.execCheckFrequencyCd,
-        isActive: formData.isActive || 'Y',
-        status: formData.status,
-        remarks: formData.remarks
+        respItem: activity.respItem,
+        activityName: activity.activityName,
+        executorId: activity.executorId,
+        executionDate: activity.executionDate,
+        executionStatus: activity.executionStatus,
+        executionResultCd: activity.executionResultCd,
+        executionResultContent: activity.executionResultContent,
+        execCheckMethod: activity.execCheckMethod,
+        execCheckDetail: activity.execCheckDetail,
+        execCheckFrequencyCd: activity.execCheckFrequencyCd,
+        isActive: activity.isActive || 'Y',
+        status: activity.status,
+        remarks: activity.remarks
       };
 
-      await updateDeptManagerManual(id, updateRequest);
+      console.log('📤 [DeptOpManualsMgmt] API 요청 데이터:', updateRequest);
+      const result = await updateDeptManagerManual(id, updateRequest);
+      console.log('📥 [DeptOpManualsMgmt] API 응답 데이터:', result);
 
       console.log('✅ [DeptOpManualsMgmt] 수정 완료:', id);
       toast.success('부서장업무메뉴얼이 수정되었습니다.', { autoClose: 2000 });

@@ -123,3 +123,29 @@ export const deleteDeptManagerManuals = async (
 ): Promise<void> => {
   await apiClient.post(`${BASE_URL}/delete-batch`, manualCds);
 };
+
+/**
+ * 수행자 일괄 지정 요청 타입
+ */
+export interface AssignExecutorRequest {
+  manualCds: string[];    // 메뉴얼 코드 목록
+  executorId: string;     // 수행자 ID (emp_no)
+}
+
+/**
+ * 수행자 일괄 지정 API
+ * POST /api/resps/dept-manager-manuals/assign-executor
+ * - 여러 메뉴얼에 수행자를 일괄 지정
+ *
+ * @param request - 일괄 지정 요청 (메뉴얼 코드 목록, 수행자 ID)
+ * @returns 업데이트된 메뉴얼 목록
+ */
+export const assignExecutorBatch = async (
+  request: AssignExecutorRequest
+): Promise<DeptManagerManualDto[]> => {
+  const response = await apiClient.post<DeptManagerManualDto[]>(
+    `${BASE_URL}/assign-executor`,
+    request
+  );
+  return response.data;
+};

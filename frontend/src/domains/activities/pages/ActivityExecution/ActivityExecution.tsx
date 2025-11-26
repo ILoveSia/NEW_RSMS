@@ -20,7 +20,7 @@ import type {
 } from './types/activityExecution.types';
 
 // API
-import { getAllDeptManagerManuals } from '@/domains/resps/api/deptManagerManualApi';
+import { getAllDeptManagerManuals, assignExecutorBatch } from '@/domains/resps/api/deptManagerManualApi';
 
 // Shared Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
@@ -151,14 +151,25 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     setPerformerModalOpen(false);
   }, []);
 
+  /**
+   * 수행자 지정 핸들러
+   * - 선택된 활동들에 수행자(executor_id)를 일괄 지정
+   * - assignExecutorBatch API 호출
+   */
   const handlePerformerAssign = useCallback(async (
     activities: ActivityExecution[],
     performer: any,
     _formData: any
   ) => {
     try {
-      // TODO: API 호출 구현
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // 메뉴얼 코드 목록 추출 (id가 manualCd)
+      const manualCds = activities.map(a => a.id);
+
+      // API 호출 - 수행자 일괄 지정
+      await assignExecutorBatch({
+        manualCds,
+        executorId: performer.id  // Performer.id = empNo
+      });
 
       // 로컬 상태 업데이트 - 선택된 모든 항목에 수행자 지정
       const activityIds = activities.map(a => a.id);
@@ -166,7 +177,8 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
         activityIds.includes(item.id)
           ? {
               ...item,
-              performer: performer.name,
+              executorId: performer.id,
+              executorName: performer.name,
               updatedAt: new Date().toISOString()
             }
           : item

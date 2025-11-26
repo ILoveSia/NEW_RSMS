@@ -191,4 +191,42 @@ public class DeptManagerManualController {
 
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * 수행자 일괄 지정 API
+     * POST /api/resps/dept-manager-manuals/assign-executor
+     * - 여러 메뉴얼에 수행자를 일괄 지정
+     *
+     * @param request 수행자 일괄 지정 요청 (manualCds, executorId)
+     * @param principal 인증된 사용자 정보
+     * @return 업데이트된 메뉴얼 DTO 리스트
+     */
+    @PostMapping("/assign-executor")
+    public ResponseEntity<List<DeptManagerManualDto>> assignExecutorBatch(
+            @RequestBody AssignExecutorRequest request,
+            Principal principal) {
+        log.info("POST /api/resps/dept-manager-manuals/assign-executor - 수행자 일괄 지정: count={}, executorId={}",
+            request.getManualCds().size(), request.getExecutorId());
+
+        String username = principal != null ? principal.getName() : "system";
+        List<DeptManagerManualDto> updated = deptManagerManualService.assignExecutorBatch(
+            request.getManualCds(),
+            request.getExecutorId(),
+            username
+        );
+
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * 수행자 일괄 지정 요청 DTO
+     */
+    @lombok.Getter
+    @lombok.Setter
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class AssignExecutorRequest {
+        private List<String> manualCds;  // 메뉴얼 코드 목록
+        private String executorId;        // 수행자 ID (emp_no)
+    }
 }

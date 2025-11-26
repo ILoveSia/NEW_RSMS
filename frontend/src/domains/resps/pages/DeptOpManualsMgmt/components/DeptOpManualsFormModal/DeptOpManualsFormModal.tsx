@@ -35,6 +35,7 @@ import './DeptOpManualsFormModal.module.scss';
 /**
  * 관리활동 Grid Row 데이터 타입
  * - dept_manager_manuals 테이블 컬럼 기준
+ * - 수정 시 기존 데이터 보존을 위해 모든 필드 포함
  */
 export interface ManagementActivityRow {
   id: string;                         // 임시 ID (Grid 행 구분용)
@@ -47,6 +48,13 @@ export interface ManagementActivityRow {
   execCheckFrequencyCd: string;       // 점검주기 (수행점검주기)
   isActive: 'Y' | 'N';                // 사용여부
   remarks: string;                    // 비고
+  // 수행 정보 (수정 시 기존 값 보존 필요)
+  executorId?: string;                // 수행자ID
+  executionDate?: string;             // 수행일자
+  executionStatus?: string;           // 수행상태 (01:미수행, 02:수행완료)
+  executionResultCd?: string;         // 수행결과코드 (01:적정, 02:부적정)
+  executionResultContent?: string;    // 수행결과내용
+  status?: string;                    // 상태
 }
 
 /**
@@ -131,6 +139,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
 
       // 관리활동 데이터 복원
       // manual 객체에서 실제 데이터를 Grid 형태로 변환
+      // 수행 관련 필드도 포함하여 수정 시 기존 값이 유지되도록 함
       const activityData: ManagementActivityRow = {
         id: manual.manualCd || manual.id || `temp_${Date.now()}`,
         obligationCd: manual.obligationCd || '',
@@ -141,7 +150,14 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
         execCheckDetail: manual.execCheckDetail || '',
         execCheckFrequencyCd: manual.execCheckFrequencyCd || '',
         isActive: manual.isActive === true || manual.isActive === 'Y' ? 'Y' : 'N',
-        remarks: manual.remarks || ''
+        remarks: manual.remarks || '',
+        // 수행 정보 (수정 시 기존 값 보존)
+        executorId: manual.executorId || '',
+        executionDate: manual.executionDate || '',
+        executionStatus: manual.executionStatus || '',
+        executionResultCd: manual.executionResultCd || '',
+        executionResultContent: manual.executionResultContent || '',
+        status: manual.status || ''
       };
 
       setActivities([activityData]);
@@ -237,7 +253,14 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       execCheckDetail: '',
       execCheckFrequencyCd: '',
       isActive: 'Y',
-      remarks: ''
+      remarks: '',
+      // 수행 정보 기본값
+      executorId: '',
+      executionDate: '',
+      executionStatus: '01',  // 미수행
+      executionResultCd: '',
+      executionResultContent: '',
+      status: 'active'
     };
 
     setActivities(prev => [...prev, newRow]);
@@ -268,20 +291,32 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
 
   // Grid 셀 값 변경
   const handleCellValueChanged = useCallback((params: any) => {
-    const { data, colDef, newValue } = params;
+    const { data, colDef, newValue, oldValue } = params;
 
-    setActivities(prev => prev.map(row => {
-      if (row.id === data.id) {
-        return {
-          ...row,
-          [colDef.field]: newValue
-        };
-      }
-      return row;
-    }));
+    console.log('🔄 [DeptOpManualsFormModal] 셀 값 변경:', {
+      field: colDef.field,
+      oldValue,
+      newValue,
+      rowId: data.id
+    });
+
+    setActivities(prev => {
+      const updated = prev.map(row => {
+        if (row.id === data.id) {
+          return {
+            ...row,
+            [colDef.field]: newValue
+          };
+        }
+        return row;
+      });
+      console.log('🔄 [DeptOpManualsFormModal] activities 업데이트:', updated);
+      return updated;
+    });
   }, []);
 
   // Grid 컬럼 정의 (고정 너비로 가로 스크롤 지원)
+  // - 수정 모드(isEditing)에서는 관리의무 컬럼 수정 불가
   const columns: ColDef<ManagementActivityRow>[] = [
     {
       field: 'obligationInfo',
@@ -289,7 +324,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       width: 400,
       minWidth: 400,
       maxWidth: 400,
-      editable: true,
+      editable: !isReadOnly && !isEditing,  // 수정 모드에서는 관리의무 수정 불가
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: {
         values: obligationOptions.map(opt => opt.label)
@@ -427,6 +462,11 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
       activities
     };
 
+    console.log('📋 [DeptOpManualsFormModal] 저장 요청 - mode:', mode);
+    console.log('📋 [DeptOpManualsFormModal] 저장 요청 - manual.id:', manual?.id);
+    console.log('📋 [DeptOpManualsFormModal] 저장 요청 - formData:', formData);
+    console.log('📋 [DeptOpManualsFormModal] 저장 요청 - activities:', activities);
+
     try {
       if (mode === 'create') {
         await onSave(formData);
@@ -557,7 +597,7 @@ const DeptOpManualsFormModal: React.FC<DeptOpManualsFormModalProps> = ({
                   size="small"
                   startIcon={<AddIcon />}
                   onClick={handleAddRow}
-                  disabled={isReadOnly || !orgCode}
+                  disabled={isReadOnly || !orgCode || isEditing}  // 수정 모드에서는 행추가 비활성화
                 >
                   행 추가
                 </Button>

@@ -154,7 +154,7 @@ COMMENT ON COLUMN rsms.impl_inspection_plans.impl_inspection_name IS '이행점�
 COMMENT ON COLUMN rsms.impl_inspection_plans.inspection_type_cd IS '점검유형코드 (common_code_details 참조 - 예: 정기점검, 특별점검 등)';
 COMMENT ON COLUMN rsms.impl_inspection_plans.impl_inspection_start_date IS '이행점검시작일';
 COMMENT ON COLUMN rsms.impl_inspection_plans.impl_inspection_end_date IS '이행점검종료일';
-COMMENT ON COLUMN rsms.impl_inspection_plans.impl_inspection_status_cd IS '이행점검계획상태코드 (common_code_details.group_cd = 'FLFL_STCD' 참조)';
+COMMENT ON COLUMN rsms.impl_inspection_plans.impl_inspection_status_cd IS '이행점검계획상태코드 (common_code_details.group_cd = FLFL_STCD 참조)';
 COMMENT ON COLUMN rsms.impl_inspection_plans.remarks IS '비고';
 COMMENT ON COLUMN rsms.impl_inspection_plans.is_active IS '사용여부 (Y: 사용, N: 미사용)';
 COMMENT ON COLUMN rsms.impl_inspection_plans.created_at IS '생성일시';

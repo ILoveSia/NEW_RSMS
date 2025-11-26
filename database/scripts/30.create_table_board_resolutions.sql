@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS rsms.board_resolutions (
     -- 외래키 제약조건
     CONSTRAINT fk_board_resolutions_ledger_order
         FOREIGN KEY (ledger_order_id)
-        REFERENCES ledger_orders(ledger_order_id)
+        REFERENCES ledger_order(ledger_order_id)
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
@@ -71,7 +71,7 @@ CREATE INDEX idx_board_resolutions_created_at
 COMMENT ON TABLE rsms.board_resolutions IS '이사회결의 정보 테이블 - 원장차수별 이사회 결의 관리';
 
 COMMENT ON COLUMN rsms.board_resolutions.resolution_id IS '이사회결의ID (PK) - 원장차수ID(8자리) + "B" + 순번(4자리)';
-COMMENT ON COLUMN rsms.board_resolutions.ledger_order_id IS '원장차수ID (FK) - ledger_orders 테이블 참조';
+COMMENT ON COLUMN rsms.board_resolutions.ledger_order_id IS '원장차수ID (FK) - ledger_order 테이블 참조';
 COMMENT ON COLUMN rsms.board_resolutions.meeting_number IS '회차 - 원장차수별 자동 증가 (새 원장차수 시작 시 1로 초기화)';
 COMMENT ON COLUMN rsms.board_resolutions.resolution_name IS '이사회 결의명';
 COMMENT ON COLUMN rsms.board_resolutions.summary IS '요약정보';
