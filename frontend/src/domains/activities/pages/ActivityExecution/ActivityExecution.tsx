@@ -20,7 +20,7 @@ import type {
 } from './types/activityExecution.types';
 
 // API
-import { getAllDeptManagerManuals, assignExecutorBatch } from '@/domains/resps/api/deptManagerManualApi';
+import { getAllDeptManagerManuals, assignExecutorBatch, updateDeptManagerManual } from '@/domains/resps/api/deptManagerManualApi';
 
 // Shared Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
@@ -211,18 +211,57 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
     }
   }, [handleModalClose]);
 
+  /**
+   * 관리활동 수행 정보 수정
+   * - dept_manager_manuals 테이블 업데이트
+   * - formData를 UpdateDeptManagerManualRequest 형식으로 변환
+   */
   const handleActivityUpdate = useCallback(async (id: string, formData: ActivityExecutionFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 관리활동 수행 수정
 
-      // 임시로 기존 활동 업데이트
+      // 현재 활동 데이터 찾기 (기존 정보 유지를 위해)
+      const currentActivity = activities.find(a => a.id === id);
+      if (!currentActivity) {
+        throw new Error('활동 정보를 찾을 수 없습니다.');
+      }
+
+      console.log('✅ [ActivityExecution] 수행정보 수정 시작');
+      console.log('  - manualCd:', id);
+      console.log('  - formData:', formData);
+
+      // API 호출 - dept_manager_manuals 테이블 업데이트
+      const updatedData = await updateDeptManagerManual(id, {
+        // 기존 정보 유지 (필수 필드)
+        respItem: currentActivity.respItem || '',
+        activityName: currentActivity.activityName || '',
+        isActive: 'Y',
+
+        // 수행 정보 업데이트
+        executorId: currentActivity.executorId || '',
+        executionDate: formData.performanceDate || undefined,
+        executionStatus: formData.activityResult || '01',       // 수행여부
+        executionResultCd: formData.performanceAssessment || undefined,  // 수행결과
+        executionResultContent: formData.activityOpinion || '', // 수행결과내용
+
+        // 기존 점검 정보 유지
+        execCheckMethod: currentActivity.execCheckMethod || undefined,
+        execCheckDetail: currentActivity.execCheckDetail || undefined,
+        execCheckFrequencyCd: currentActivity.execCheckFrequencyCd || undefined
+      });
+
+      console.log('✅ [ActivityExecution] 수행정보 수정 완료:', updatedData);
+
+      // 로컬 상태 업데이트
       setActivities(prev =>
         prev.map(activity =>
           activity.id === id
             ? {
                 ...activity,
-                status: 'completed' as const,
+                executionDate: formData.performanceDate || '',
+                executionStatus: formData.activityResult || '01',
+                executionResultCd: formData.performanceAssessment || '',
+                executionResultContent: formData.activityOpinion || '',
                 updatedAt: new Date().toISOString()
               }
             : activity
@@ -230,14 +269,14 @@ const ActivityExecution: React.FC<ActivityExecutionProps> = ({ className }) => {
       );
 
       handleModalClose();
-      toast.success('관리활동 수행이 성공적으로 수정되었습니다.');
+      toast.success('관리활동 수행 정보가 성공적으로 수정되었습니다.');
     } catch (error) {
-      console.error('관리활동 수행 수정 실패:', error);
+      console.error('❌ [ActivityExecution] 관리활동 수행 수정 실패:', error);
       toast.error('관리활동 수행 수정에 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose]);
+  }, [handleModalClose, activities]);
 
   const handleActivityDetail = useCallback((activity: ActivityExecution) => {
     setModalState(prev => ({

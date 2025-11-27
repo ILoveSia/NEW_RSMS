@@ -119,7 +119,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- ============================================
   -- 공통 컬럼 (BaseEntity)
   -- ============================================
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',             -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',          -- 사용여부 ('Y', 'N')
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 생성일시
   created_by VARCHAR(50) NOT NULL,                    -- 생성자
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 수정일시

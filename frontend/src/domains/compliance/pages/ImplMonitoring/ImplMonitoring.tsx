@@ -1,3 +1,10 @@
+/**
+ * 이행점검계획 페이지
+ * - impl_inspection_plans 테이블 CRUD
+ * - dept_manager_manuals 기반 점검대상 선택
+ * - impl_inspection_items 일괄 생성
+ */
+
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
 import toast from '@/shared/utils/toast';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -5,9 +12,19 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import type { ColDef } from 'ag-grid-community';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ImplMonitoring.module.scss';
+
+// API imports
+import {
+  getAllImplInspectionPlans,
+  getImplInspectionPlansByLedgerOrderId,
+  createImplInspectionPlan,
+  updateImplInspectionPlan,
+  deleteImplInspectionPlans
+} from '@/domains/compliance/api/implInspectionPlanApi';
+import type { ImplInspectionPlanDto } from '@/domains/compliance/types/implInspectionPlan.types';
 
 // Types
 import type {
@@ -39,11 +56,61 @@ interface ImplMonitoringProps {
   className?: string;
 }
 
+/**
+ * Backend API 응답을 UI 타입으로 변환
+ * - ImplInspectionPlanDto -> PeriodSetting
+ */
+const convertToPeriodSetting = (dto: ImplInspectionPlanDto, index: number): PeriodSetting => {
+  // 상태코드 -> UI 상태 변환
+  const statusMap: Record<string, 'ACTIVE' | 'INACTIVE' | 'DRAFT'> = {
+    '01': 'DRAFT',    // 계획 -> 임시
+    '02': 'ACTIVE',   // 진행중 -> 시행
+    '03': 'ACTIVE',   // 완료 -> 시행
+    '04': 'INACTIVE'  // 보류 -> 중단
+  };
+
+  const statusTextMap: Record<string, string> = {
+    '01': '계획',
+    '02': '진행중',
+    '03': '완료',
+    '04': '보류'
+  };
+
+  const status = statusMap[dto.implInspectionStatusCd] || 'DRAFT';
+
+  return {
+    id: dto.implInspectionPlanId,
+    sequence: index + 1,
+    ledgerOrderId: dto.ledgerOrderId,
+    inspectionName: dto.implInspectionName,
+    inspectionType: dto.inspectionTypeName || (dto.inspectionTypeCd === '01' ? '정기점검' : '특별점검'),
+    inspectionTypeCd: dto.inspectionTypeCd,
+    inspectionStartDate: dto.implInspectionStartDate,
+    inspectionEndDate: dto.implInspectionEndDate,
+    activityStartDate: dto.implInspectionStartDate, // UI용 (같은 값 사용)
+    activityEndDate: dto.implInspectionEndDate,     // UI용 (같은 값 사용)
+    registrationDate: dto.createdAt?.split('T')[0] || '',
+    registrant: dto.createdBy,
+    status: status,
+    statusCd: dto.implInspectionStatusCd,
+    statusText: statusTextMap[dto.implInspectionStatusCd] || '',
+    remarks: dto.remarks,
+    isActive: dto.isActive === 'Y',
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+    createdBy: dto.createdBy,
+    updatedBy: dto.updatedBy,
+    totalItemCount: dto.totalItemCount,
+    completedItemCount: dto.completedItemCount,
+    inProgressItemCount: dto.inProgressItemCount
+  };
+};
+
 const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
   const { t } = useTranslation('compliance');
 
   // 기간설정 컬럼 정의 (모든 컬럼 포함)
-  const implMonitoringColumns = useMemo<ColDef<PeriodSetting>[]>(() => [
+  const implMonitoringColumns = useMemo(() => [
     {
       field: 'sequence',
       headerName: '순번',
@@ -174,7 +241,7 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
         suppressSorting: true
       }
     }
-  ], []);
+  ] as ColDef<PeriodSetting>[], []);
 
   // State Management
   const [periods, setPeriods] = useState<PeriodSetting[]>([]);
@@ -260,8 +327,9 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     const loadingToastId = toast.loading(`${selectedPeriods.length}개 기간설정을 삭제 중입니다...`);
 
     try {
-      // TODO: 실제 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+      // 실제 삭제 API 호출 (impl_inspection_plans 일괄 삭제)
+      const idsToDelete = selectedPeriods.map(p => p.id);
+      await deleteImplInspectionPlans(idsToDelete);
 
       // 상태 업데이트 (삭제된 항목 제거)
       setPeriods(prev =>
@@ -297,75 +365,65 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
   const handlePeriodSave = useCallback(async (formData: PeriodSettingFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 기간설정 생성
-      // const response = await periodApi.create(formData);
 
-      // 임시로 새 기간설정 객체 생성
-      const newPeriod: PeriodSetting = {
-        id: Date.now().toString(),
-        sequence: periods.length + 1,
-        ledgerOrderId: '20240001',
-        inspectionName: formData.inspectionName,
-        inspectionType: '정기점검',
-        inspectionStartDate: formData.inspectionStartDate,
-        inspectionEndDate: formData.inspectionEndDate,
-        activityStartDate: '',
-        activityEndDate: '',
-        registrationDate: new Date().toISOString().split('T')[0],
-        registrant: '현재사용자',
-        status: formData.status,
-        statusText: formData.status === 'ACTIVE' ? '시행' : formData.status === 'INACTIVE' ? '중단' : '임시',
-        isActive: formData.status === 'ACTIVE',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: 'admin',
-        updatedBy: 'admin'
-      };
+      // 실제 API 호출 (impl_inspection_plans + impl_inspection_items 일괄 생성)
+      const response = await createImplInspectionPlan({
+        ledgerOrderId: formData.ledgerOrderId,
+        implInspectionName: formData.inspectionName,
+        inspectionTypeCd: formData.inspectionTypeCd,
+        implInspectionStartDate: formData.inspectionStartDate,
+        implInspectionEndDate: formData.inspectionEndDate,
+        remarks: formData.remarks,
+        manualCds: formData.manualCds // 선택된 점검대상 목록 (impl_inspection_items 생성용)
+      });
 
-      setPeriods(prev => [newPeriod, ...prev]);
+      // 응답 데이터를 UI 타입으로 변환하여 목록에 추가
+      const newPeriod = convertToPeriodSetting(response, 0);
+
+      setPeriods(prev => [newPeriod, ...prev.map((p, i) => ({ ...p, sequence: i + 2 }))]);
       setPagination(prev => ({ ...prev, total: prev.total + 1 }));
       handleModalClose();
-      toast.success('기간설정이 성공적으로 등록되었습니다.');
+      toast.success('이행점검계획이 성공적으로 등록되었습니다.');
     } catch (error) {
-      console.error('기간설정 등록 실패:', error);
-      toast.error('기간설정 등록에 실패했습니다.');
+      console.error('이행점검계획 등록 실패:', error);
+      toast.error('이행점검계획 등록에 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose, periods.length]);
+  }, [handleModalClose]);
 
+  /**
+   * 이행점검계획 수정 핸들러
+   * - impl_inspection_plans 테이블만 UPDATE
+   * - impl_inspection_items는 수정하지 않음
+   */
   const handlePeriodUpdate = useCallback(async (id: string, formData: PeriodSettingFormData) => {
     try {
       setLoading(true);
-      // TODO: API 호출로 기간설정 수정
-      // const response = await periodApi.update(id, formData);
 
-      // 임시로 기존 기간설정 업데이트
+      // 실제 API 호출 (impl_inspection_plans UPDATE)
+      const response = await updateImplInspectionPlan(id, {
+        implInspectionName: formData.inspectionName,
+        inspectionTypeCd: formData.inspectionTypeCd,
+        implInspectionStartDate: formData.inspectionStartDate,
+        implInspectionEndDate: formData.inspectionEndDate,
+        remarks: formData.remarks
+      });
+
+      // 응답 데이터로 목록 업데이트
       setPeriods(prev =>
         prev.map(period =>
           period.id === id
-            ? {
-                ...period,
-                inspectionName: formData.inspectionName,
-                inspectionStartDate: formData.inspectionStartDate,
-                inspectionEndDate: formData.inspectionEndDate,
-                activityStartDate: formData.activityStartDate,
-                activityEndDate: formData.activityEndDate,
-                status: formData.status,
-                statusText: formData.status === 'ACTIVE' ? '시행' : formData.status === 'INACTIVE' ? '중단' : '임시',
-                isActive: formData.status === 'ACTIVE',
-                updatedAt: new Date().toISOString(),
-                updatedBy: 'admin'
-              }
+            ? convertToPeriodSetting(response, period.sequence - 1)
             : period
         )
       );
 
       handleModalClose();
-      toast.success('기간설정이 성공적으로 수정되었습니다.');
+      toast.success('이행점검계획이 성공적으로 수정되었습니다.');
     } catch (error) {
-      console.error('기간설정 수정 실패:', error);
-      toast.error('기간설정 수정에 실패했습니다.');
+      console.error('이행점검계획 수정 실패:', error);
+      toast.error('이행점검계획 수정에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -379,19 +437,56 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     }));
   }, []);
 
-  const handleSearch = useCallback(async () => {
+  /**
+   * 이행점검계획 목록 조회 (API 호출)
+   * - 원장차수ID가 있으면 해당 차수만 조회
+   * - 없으면 전체 조회
+   */
+  const fetchInspectionPlans = useCallback(async (ledgerOrderId?: string) => {
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
+
+    try {
+      let response: ImplInspectionPlanDto[];
+
+      if (ledgerOrderId) {
+        // 원장차수ID로 필터링 조회
+        response = await getImplInspectionPlansByLedgerOrderId(ledgerOrderId);
+      } else {
+        // 전체 조회
+        response = await getAllImplInspectionPlans();
+      }
+
+      // API 응답을 UI 타입으로 변환
+      const convertedPeriods = response.map((dto, index) => convertToPeriodSetting(dto, index));
+
+      setPeriods(convertedPeriods);
+      setPagination(prev => ({
+        ...prev,
+        total: convertedPeriods.length,
+        totalPages: Math.ceil(convertedPeriods.length / prev.size)
+      }));
+
+      return convertedPeriods;
+    } catch (error) {
+      console.error('이행점검계획 목록 조회 실패:', error);
+      toast.error('이행점검계획 목록 조회에 실패했습니다.');
+      return [];
+    } finally {
+      setLoading(false);
+      setLoadingStates(prev => ({ ...prev, search: false }));
+    }
+  }, []);
+
+  const handleSearch = useCallback(async () => {
     setPagination(prev => ({ ...prev, page: 1 }));
 
     // 로딩 토스트 표시
-    const loadingToastId = toast.loading('기간설정 정보를 검색 중입니다...');
+    const loadingToastId = toast.loading('이행점검계획 정보를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-
-      console.log('검색 필터:', filters);
+      // 실제 API 호출 (원장차수ID 필터 적용)
+      await fetchInspectionPlans(filters.ledgerOrderId || undefined);
 
       // 성공 토스트로 업데이트
       toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
@@ -399,11 +494,8 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
       // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
       console.error('검색 실패:', error);
-    } finally {
-      setLoading(false);
-      setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, [filters]);
+  }, [filters.ledgerOrderId, fetchInspectionPlans]);
 
   const handleClearFilters = useCallback(() => {
     setFilters({
@@ -532,7 +624,7 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
 
   // 성능 모니터링 함수
   const onRenderProfiler = useCallback((
-    id: string,
+    _id: string, // 프로파일러 ID (사용하지 않음)
     phase: 'mount' | 'update' | 'nested-update',
     actualDuration: number,
     baseDuration: number,
@@ -582,39 +674,10 @@ const ImplMonitoring: React.FC<ImplMonitoringProps> = ({ className }) => {
     }
   }, []);
 
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockPeriods: PeriodSetting[] = [
-      {
-        id: '1',
-        sequence: 1,
-        ledgerOrderId: '20250001',
-        inspectionName: '2025년 하반기 정기점검',
-        inspectionType: '정기점검',
-        inspectionStartDate: '2025-11-21',
-        inspectionEndDate: '2025-12-20',
-        activityStartDate: '2025-11-21',
-        activityEndDate: '2025-12-20',
-        registrationDate: '2025-11-21',
-        registrant: '김관리',
-        status: 'ACTIVE',
-        statusText: '시행',
-        isActive: true,
-        createdAt: '2025-11-21T09:00:00Z',
-        updatedAt: '2025-11-21T09:00:00Z',
-        createdBy: 'admin',
-        updatedBy: 'admin'
-      }
-    ];
-
-    setPeriods(mockPeriods);
-    setPagination(prev => ({
-      ...prev,
-      total: mockPeriods.length,
-      totalPages: Math.ceil(mockPeriods.length / prev.size)
-    }));
-  }, []);
+  // 페이지 로드 시 이행점검계획 목록 조회
+  useEffect(() => {
+    fetchInspectionPlans();
+  }, [fetchInspectionPlans]);
 
   return (
     <React.Profiler id="ImplMonitoring" onRender={onRenderProfiler}>

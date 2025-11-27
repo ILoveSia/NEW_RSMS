@@ -5,7 +5,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import type { ColDef } from 'ag-grid-community';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './InspectorAssign.module.scss';
 
 // Types
@@ -18,6 +18,17 @@ import type {
   InspectorAssignModalState,
   InspectorAssignPagination
 } from './types/inspectorAssign.types';
+
+// API
+import {
+  getAllImplInspectionItems,
+  getImplInspectionItemsByLedgerOrderId,
+  assignInspectorBatch
+} from '@/domains/compliance/api/implInspectionPlanApi';
+import type { ImplInspectionItemDto } from '@/domains/compliance/types/implInspectionPlan.types';
+
+// Store - 공통코드 조회용
+import { useCodeStore } from '@/app/store/codeStore';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -39,8 +50,63 @@ interface InspectorAssignProps {
   className?: string;
 }
 
+/**
+ * ImplInspectionItemDto를 InspectorAssignment로 변환하는 함수
+ * - impl_inspection_items 테이블 데이터를 UI 타입으로 변환
+ * @param dto API 응답 DTO
+ * @param index 순번 (0부터 시작)
+ * @returns InspectorAssignment UI 타입
+ */
+const convertToInspectorAssignment = (
+  dto: ImplInspectionItemDto,
+  index: number
+): InspectorAssignment => {
+  // 점검 상태 변환 (inspectionStatusCd → assignmentStatus)
+  const getAssignmentStatus = (): 'ASSIGNED' | 'UNASSIGNED' | 'COMPLETED' => {
+    // 01: 미점검, 02: 적정, 03: 부적정
+    if (dto.inspectorId && dto.inspectorId !== '') {
+      if (dto.inspectionStatusCd === '02' || dto.inspectionStatusCd === '03') {
+        return 'COMPLETED';  // 점검 완료
+      }
+      return 'ASSIGNED';  // 점검자 지정됨
+    }
+    return 'UNASSIGNED';  // 미지정
+  };
+
+  // 점검자 정보 구성
+  const inspector: Inspector | null = dto.inspectorId ? {
+    id: dto.inspectorId,
+    name: dto.inspectorId,  // TODO: 실제 점검자명 조회 필요
+    department: dto.deptManagerManual?.orgName || '',
+    position: '',
+    specialtyArea: '',
+    type: 'INTERNAL',
+    isActive: true
+  } : null;
+
+  return {
+    id: dto.implInspectionItemId,
+    sequence: index + 1,
+    inspectionName: dto.implInspectionPlan?.implInspectionName || '',
+    obligationInfo: dto.deptManagerManual?.obligationName || dto.deptManagerManual?.respItem || '',
+    activityName: dto.deptManagerManual?.activityName || '',
+    activityFrequencyCd: dto.deptManagerManual?.execCheckFrequencyCd || '',
+    orgCode: dto.deptManagerManual?.orgName || dto.deptManagerManual?.orgCode || '',
+    inspector,
+    inspectionDate: dto.inspectionDate || undefined,
+    assignmentStatus: getAssignmentStatus(),
+    createdAt: dto.createdAt || '',
+    updatedAt: dto.updatedAt || '',
+    createdBy: dto.createdBy || '',
+    updatedBy: dto.updatedBy || ''
+  };
+};
+
 // React.memo로 컴포넌트 메모이제이션 (성능 최적화)
 const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className }) => {
+
+  // 공통코드 조회 함수 (점검주기 코드명 표시용)
+  const getCodeName = useCodeStore((state) => state.getCodeName);
 
   // 점검자지정 컬럼 정의
   const inspectorColumns = useMemo<ColDef<InspectorAssignment>[]>(() => [
@@ -57,18 +123,18 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       headerClass: 'ag-header-center'
     },
     {
+      // 점검명 - 너비 축소
       field: 'inspectionName',
       headerName: '점검명',
-      width: 220,
-      minWidth: 180,
-      flex: 1,
+      width: 180,
+      minWidth: 150,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
       headerClass: 'ag-header-center',
       cellRenderer: (params: any) => {
         const value = params.value;
-        return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
+        return value && value.length > 20 ? `${value.substring(0, 20)}...` : value;
       }
     },
     {
@@ -86,28 +152,37 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       }
     },
     {
+      // 관리활동명 - 너비 확대 및 flex 추가
       field: 'activityName',
       headerName: '관리활동명',
-      width: 240,
-      minWidth: 200,
+      width: 320,
+      minWidth: 280,
+      flex: 1,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-left',
       headerClass: 'ag-header-center',
       cellRenderer: (params: any) => {
         const value = params.value;
-        return value && value.length > 25 ? `${value.substring(0, 25)}...` : (value || '');
+        return value && value.length > 40 ? `${value.substring(0, 40)}...` : (value || '');
       }
     },
     {
+      // 점검주기 - 공통코드명으로 표시 (FLFL_ISPC_FRCD)
       field: 'activityFrequencyCd',
       headerName: '점검주기',
-      width: 120,
-      minWidth: 100,
+      width: 100,
+      minWidth: 90,
       sortable: true,
       filter: 'agTextColumnFilter',
       cellClass: 'ag-cell-center',
-      headerClass: 'ag-header-center'
+      headerClass: 'ag-header-center',
+      cellRenderer: (params: any) => {
+        const code = params.value;
+        if (!code) return '-';
+        // 공통코드 그룹 'FLFL_ISPC_FRCD'에서 코드명 조회
+        return getCodeName('FLFL_ISPC_FRCD', code);
+      }
     },
     {
       field: 'orgCode',
@@ -178,7 +253,7 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
         return statusText;
       }
     }
-  ], []);
+  ], [getCodeName]);
 
   // State Management
   const [assignments, setAssignments] = useState<InspectorAssignment[]>([]);
@@ -215,135 +290,46 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
   // 조직조회팝업 상태
   const [organizationSearchOpen, setOrganizationSearchOpen] = useState<boolean>(false);
 
-  // Mock data for testing
-  const mockAssignments: InspectorAssignment[] = useMemo(() => [
-    {
-      id: 'ASG_001',
-      sequence: 1,
-      inspectionName: '2025년 하반기 정기점검',
-      obligationInfo: '중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토',
-      activityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
-      activityFrequencyCd: '월간',
-      orgCode: '준법지원팀',
-      inspector: {
-        id: 'EMP_001',
-        name: '김철수',
-        empNo: 'E2024001',
-        department: '준법지원팀',
-        position: '선임',
-        email: 'kim.cs@company.com',
-        phone: '02-1234-5678'
-      },
-      inspectionDate: '2025-11-24',
-      assignmentStatus: 'ASSIGNED',
-      createdAt: '2025-09-22',
-      updatedAt: '2025-09-22',
-      createdBy: 'admin',
-      updatedBy: 'admin'
-    },
-    {
-      id: 'ASG_002',
-      sequence: 2,
-      inspectionName: '2025년 하반기 정기점검',
-      obligationInfo: '중요계약서(약관 포함), 서식 검토 내용 및 법률실무에 대한 질의회신 내용의 적정성 검토',
-      activityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
-      activityFrequencyCd: '월간',
-      orgCode: '준법지원팀',
-      inspector: {
-        id: 'EMP_001',
-        name: '김철수',
-        empNo: 'E2024001',
-        department: '준법지원팀',
-        position: '선임',
-        email: 'kim.cs@company.com',
-        phone: '02-1234-5678'
-      },
-      inspectionDate: '2025-11-24',
-      assignmentStatus: 'ASSIGNED',
-      createdAt: '2025-09-22',
-      updatedAt: '2025-09-22',
-      createdBy: 'admin',
-      updatedBy: 'admin'
-    },
-    {
-      id: 'ASG_003',
-      sequence: 3,
-      inspectionName: '2025년 하반기 정기점검',
-      obligationInfo: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독',
-      activityName: '소송관련 업무 전반에 대한 지원 점검',
-      activityFrequencyCd: '월간',
-      orgCode: '준법지원팀',
-      inspector: {
-        id: 'EMP_001',
-        name: '김철수',
-        empNo: 'E2024001',
-        department: '준법지원팀',
-        position: '선임',
-        email: 'kim.cs@company.com',
-        phone: '02-1234-5678'
-      },
-      inspectionDate: '2025-11-24',
-      assignmentStatus: 'ASSIGNED',
-      createdAt: '2025-09-22',
-      updatedAt: '2025-09-22',
-      createdBy: 'admin',
-      updatedBy: 'admin'
-    },
-    {
-      id: 'ASG_004',
-      sequence: 4,
-      inspectionName: '2025년 하반기 정기점검',
-      obligationInfo: '소송 관련 제도 전반, 소송 업무 처리 및 외부위임 소송사건의 업무 처리 적정성 관리·감독',
-      activityName: '외부위임 소송사건의 업무 처리 적정성 점검',
-      activityFrequencyCd: '월간',
-      orgCode: '준법지원팀',
-      inspector: {
-        id: 'EMP_001',
-        name: '김철수',
-        empNo: 'E2024001',
-        department: '준법지원팀',
-        position: '선임',
-        email: 'kim.cs@company.com',
-        phone: '02-1234-5678'
-      },
-      inspectionDate: '2025-11-24',
-      assignmentStatus: 'ASSIGNED',
-      createdAt: '2025-09-22',
-      updatedAt: '2025-09-22',
-      createdBy: 'admin',
-      updatedBy: 'admin'
-    },
-    {
-      id: 'ASG_005',
-      sequence: 5,
-      inspectionName: '2025년 하반기 정기점검',
-      obligationInfo: '정관 변경 업무 및 내규 제정·개정·폐지안의 사전심의 업무 관리',
-      activityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
-      activityFrequencyCd: '연간',
-      orgCode: '준법지원팀',
-      inspector: {
-        id: 'EMP_001',
-        name: '김철수',
-        empNo: 'E2024001',
-        department: '준법지원팀',
-        position: '선임',
-        email: 'kim.cs@company.com',
-        phone: '02-1234-5678'
-      },
-      inspectionDate: '2025-11-24',
-      assignmentStatus: 'ASSIGNED',
-      createdAt: '2025-09-22',
-      updatedAt: '2025-09-22',
-      createdBy: 'admin',
-      updatedBy: 'admin'
-    }
-  ], []);
+  /**
+   * 점검자지정 목록 데이터 조회 함수
+   * - impl_inspection_items 테이블 기준으로 dept_manager_manuals JOIN
+   * @param ledgerOrderId 원장차수ID (없으면 전체 조회)
+   */
+  const fetchAssignments = useCallback(async (ledgerOrderId?: string) => {
+    setLoading(true);
+    try {
+      let data: ImplInspectionItemDto[];
 
-  // Mock 데이터로 초기화
-  React.useEffect(() => {
-    setAssignments(mockAssignments);
-    setPagination(prev => ({ ...prev, total: mockAssignments.length }));
-  }, [mockAssignments]);
+      if (ledgerOrderId && ledgerOrderId !== '') {
+        // 원장차수ID로 필터링된 조회
+        data = await getImplInspectionItemsByLedgerOrderId(ledgerOrderId);
+      } else {
+        // 전체 조회
+        data = await getAllImplInspectionItems();
+      }
+
+      // API 응답을 UI 타입으로 변환
+      const convertedAssignments = data.map((dto, index) =>
+        convertToInspectorAssignment(dto, index)
+      );
+
+      setAssignments(convertedAssignments);
+      setPagination(prev => ({ ...prev, total: convertedAssignments.length }));
+
+      console.log('점검자지정 목록 조회 성공:', convertedAssignments.length, '건');
+    } catch (error) {
+      console.error('점검자지정 목록 조회 실패:', error);
+      toast.error('점검자지정 목록 조회에 실패했습니다.');
+      setAssignments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // 페이지 로드 시 전체 데이터 조회
+  useEffect(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
 
   // 통계 정보 계산 (메모이제이션)
   const statisticsData = useMemo<AssignmentStatistics>(() => {
@@ -370,8 +356,11 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
+  /**
+   * 검색 실행 함수
+   * - 필터 조건에 따라 impl_inspection_items 데이터 조회
+   */
   const handleSearch = useCallback(async () => {
-    setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
 
@@ -379,8 +368,8 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     const loadingToastId = toast.loading('점검자 지정 정보를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // 원장차수ID를 기준으로 API 호출
+      await fetchAssignments(filters.ledgerOrderId || undefined);
 
       console.log('검색 필터:', filters);
 
@@ -391,12 +380,14 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
       console.error('검색 실패:', error);
     } finally {
-      setLoading(false);
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, [filters]);
+  }, [filters.ledgerOrderId, fetchAssignments]);
 
-  const handleClearFilters = useCallback(() => {
+  /**
+   * 검색 조건 초기화 및 전체 데이터 재조회
+   */
+  const handleClearFilters = useCallback(async () => {
     setFilters({
       ledgerOrderId: '',
       inspectionName: '',
@@ -405,8 +396,11 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
       boolCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
+
+    // 전체 데이터 재조회
+    await fetchAssignments();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, []);
+  }, [fetchAssignments]);
 
   // 원장차수 변경 핸들러
   const handleLedgerOrderChange = useCallback((value: string | null) => {
@@ -568,33 +562,57 @@ const InspectorAssignComponent: React.FC<InspectorAssignProps> = ({ className })
     });
   }, []);
 
+  /**
+   * 점검자 일괄 지정 핸들러
+   * - impl_inspection_items 테이블의 inspector_id 컬럼 업데이트
+   * - ActivityExecution.tsx의 handlePerformerAssign 패턴 참고
+   * @param assignments 선택된 점검항목 목록
+   * @param inspector 지정할 점검자 정보
+   * @param _formData 폼 데이터 (현재 미사용)
+   */
   const handleInspectorAssign = useCallback(async (
     assignments: InspectorAssignment[],
     inspector: Inspector,
     _formData: InspectorAssignFormData
   ) => {
+    // 점검항목ID 목록 추출 (impl_inspection_item_id)
+    const itemIds = assignments.map(a => a.id);
+
+    console.log('✅ [InspectorAssign] 점검자 일괄 지정 시작');
+    console.log('  - 대상 항목 수:', itemIds.length);
+    console.log('  - 점검자ID:', inspector.id);
+    console.log('  - 점검자명:', inspector.name);
+
     try {
-      // TODO: API 호출 구현
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Backend API 호출 - impl_inspection_items.inspector_id 업데이트
+      const response = await assignInspectorBatch({
+        itemIds,
+        inspectorId: inspector.id
+      });
 
-      // 로컬 상태 업데이트 - 선택된 모든 항목에 점검자 지정
-      const assignmentIds = assignments.map(a => a.id);
-      setAssignments(prev => prev.map(item =>
-        assignmentIds.includes(item.id)
-          ? {
-              ...item,
-              inspector,
-              assignmentStatus: 'ASSIGNED' as const,
-              updatedAt: new Date().toISOString().split('T')[0]
-            }
-          : item
-      ));
+      console.log('✅ [InspectorAssign] API 응답:', response);
 
-      toast.success(`${assignments.length}건의 항목에 ${inspector.name} 점검자가 지정되었습니다.`);
-      setSelectedAssignments([]);  // 선택 초기화
-      handleModalClose();
+      if (response.success) {
+        // 로컬 상태 업데이트 - 선택된 모든 항목에 점검자 지정
+        setAssignments(prev => prev.map(item =>
+          itemIds.includes(item.id)
+            ? {
+                ...item,
+                inspector,
+                assignmentStatus: 'ASSIGNED' as const,
+                updatedAt: new Date().toISOString().split('T')[0]
+              }
+            : item
+        ));
+
+        toast.success(`${response.updatedCount}건의 항목에 ${inspector.name} 점검자가 지정되었습니다.`);
+        setSelectedAssignments([]);  // 선택 초기화
+        handleModalClose();
+      } else {
+        toast.error('점검자 지정에 실패했습니다.');
+      }
     } catch (error) {
-      console.error('Assignment error:', error);
+      console.error('❌ [InspectorAssign] 점검자 지정 오류:', error);
       toast.error('점검자 지정 중 오류가 발생했습니다.');
     }
   }, [handleModalClose]);

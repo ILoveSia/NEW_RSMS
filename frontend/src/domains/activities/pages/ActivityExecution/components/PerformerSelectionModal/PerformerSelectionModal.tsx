@@ -5,9 +5,6 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import {
   TextField,
   Typography,
@@ -66,21 +63,12 @@ interface PerformerSelectionModalProps {
   loading?: boolean;
 }
 
-const schema = yup.object({
-  assignmentReason: yup
-    .string()
-    .max(200, '지정 사유는 200자 이내로 입력해주세요'),
-  estimatedDate: yup
-    .string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, '날짜 형식이 올바르지 않습니다 (YYYY-MM-DD)'),
-});
-
-// 수행자 목록 컬럼 정의
+// 수행자 목록 컬럼 정의 (이름, 부서, 직급만 표시)
 const performerColumns: ColDef<Performer>[] = [
   {
     headerName: '이름',
     field: 'name',
-    width: 100,
+    width: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-left',
@@ -90,7 +78,7 @@ const performerColumns: ColDef<Performer>[] = [
     headerName: '부서',
     field: 'department',
     flex: 1,
-    minWidth: 130,
+    minWidth: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-left',
@@ -99,17 +87,7 @@ const performerColumns: ColDef<Performer>[] = [
   {
     headerName: '직급',
     field: 'position',
-    width: 100,
-    sortable: true,
-    filter: true,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center'
-  },
-  {
-    headerName: '전문영역',
-    field: 'specialtyArea',
-    flex: 1,
-    minWidth: 120,
+    width: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-center',
@@ -133,19 +111,6 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
     performers: [],
     selectedPerformer: null,
     loading: false
-  });
-
-  // Form setup (간단한 검증용)
-  const {
-    handleSubmit,
-    reset
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: 'onChange',
-    defaultValues: {
-      assignmentReason: '',
-      estimatedDate: ''
-    }
   });
 
   /**
@@ -211,20 +176,17 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
     return performers.filter(performer =>
       performer.name.toLowerCase().includes(keyword) ||
       performer.department.toLowerCase().includes(keyword) ||
-      performer.position.toLowerCase().includes(keyword) ||
-      performer.specialtyArea.toLowerCase().includes(keyword)
+      performer.position.toLowerCase().includes(keyword)
     );
   }, [performers, selectionState.searchKeyword]);
 
   /**
    * 모달이 열릴 때 초기화 및 사원 데이터 조회
-   * - 폼 리셋
    * - 선택 상태 초기화
    * - 사원 목록 API 호출
    */
   useEffect(() => {
     if (open) {
-      reset();
       setSelectionState(prev => ({
         ...prev,
         selectedPerformer: null,
@@ -233,7 +195,7 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
       // 모달 열릴 때 사원 목록 조회
       fetchEmployees();
     }
-  }, [open, activity, reset, fetchEmployees]);
+  }, [open, activity, fetchEmployees]);
 
   /**
    * 검색 버튼 클릭 핸들러
@@ -278,17 +240,36 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
     }
   }, [activities, onSelect]);
 
-  // Handle form submission
-  const onSubmit = useCallback((formData: any) => {
-    if (!selectionState.selectedPerformer) return;
-    if (!activities || activities.length === 0) return;
+  /**
+   * 저장 버튼 클릭 핸들러
+   * - 선택된 수행자 정보를 부모 컴포넌트로 전달
+   * - dept_manager_manuals 테이블의 executor_id 업데이트
+   */
+  const handleSave = useCallback(() => {
+    // 선택된 수행자 확인
+    if (!selectionState.selectedPerformer) {
+      console.warn('수행자가 선택되지 않았습니다.');
+      return;
+    }
 
+    // 선택된 활동 목록 확인
+    if (!activities || activities.length === 0) {
+      console.warn('지정할 관리활동이 없습니다.');
+      return;
+    }
+
+    console.log('✅ [PerformerSelectionModal] 저장 클릭');
+    console.log('  - 선택된 수행자:', selectionState.selectedPerformer);
+    console.log('  - 대상 활동 수:', activities.length);
+
+    // 폼 데이터 구성
     const submitData: PerformerAssignFormData = {
       performerId: selectionState.selectedPerformer.id,
-      assignmentReason: formData.assignmentReason || '',
-      estimatedDate: formData.estimatedDate || ''
+      assignmentReason: '',
+      estimatedDate: ''
     };
 
+    // 부모 컴포넌트의 onSelect 호출 (API 호출)
     onSelect(activities, selectionState.selectedPerformer, submitData);
   }, [activities, selectionState.selectedPerformer, onSelect]);
 
@@ -331,7 +312,7 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
           <TextField
             fullWidth
             size="small"
-            placeholder="수행자 이름, 부서, 직급, 전문영역으로 검색"
+            placeholder="수행자 이름, 부서, 직급으로 검색"
             value={selectionState.searchKeyword}
             onChange={(e) => setSelectionState(prev => ({ ...prev, searchKeyword: e.target.value }))}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -383,9 +364,6 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                   {selectionState.selectedPerformer.department} · {selectionState.selectedPerformer.position}
                 </Typography>
-                <Typography variant="body2" color="primary" sx={{ fontSize: '0.875rem' }}>
-                  전문영역: {selectionState.selectedPerformer.specialtyArea}
-                </Typography>
               </Box>
             </Box>
           )}
@@ -398,7 +376,7 @@ const PerformerSelectionModal: React.FC<PerformerSelectionModalProps> = ({
         </Button>
         <Button
           variant="contained"
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSave}
           disabled={!selectionState.selectedPerformer || loading}
         >
           {loading ? '저장 중...' : '저장'}

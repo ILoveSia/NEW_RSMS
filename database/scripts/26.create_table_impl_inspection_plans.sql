@@ -70,7 +70,7 @@ CREATE TABLE rsms.impl_inspection_plans (
   remarks TEXT,                                            -- 비고
 
   -- 상태 정보
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',                 -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',              -- 사용여부 ('Y', 'N')
 
   -- 공통 컬럼 (BaseEntity)
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 생성일시

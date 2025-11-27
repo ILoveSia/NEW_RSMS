@@ -37,7 +37,7 @@ CREATE TABLE rsms.dept_manager_manuals (
   -- 수행 정보
   executor_id VARCHAR(50),                             -- 수행자ID
   execution_date DATE,                                 -- 수행일자
-  execution_status VARCHAR(20),                        -- 수행여부 (01:미수행, 02:수행완료)
+  execution_status VARCHAR(20) DEFAULT '01',           -- 수행여부 (01:미수행, 02:수행완료)
   execution_result_cd VARCHAR(20),                     -- 수행결과코드 (01:적정, 02:부적정)
   execution_result_content TEXT,                       -- 수행결과내용
 

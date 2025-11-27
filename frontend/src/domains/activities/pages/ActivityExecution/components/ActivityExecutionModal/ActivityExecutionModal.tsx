@@ -91,7 +91,7 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
       performanceDate: dayjs().format('YYYY-MM-DD'),
       performer: '',
       activityResult: '01',
-      performanceAssessment: '01',
+      performanceAssessment: '',  // 기본값: 선택 (빈 문자열)
       activityOpinion: ''
     }
   });
@@ -107,12 +107,12 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
           activityOpinion: activity.executionResultContent || ''
         });
       } else {
-        // detail 모드: 읽기 전용으로 실제 데이터 표시
+        // detail 모드: 읽기 전용으로 실제 데이터 표시 (데이터 없으면 '선택' 표시를 위해 빈 문자열)
         reset({
           performanceDate: activity.executionDate || '',
           performer: activity.executorName || activity.executorId || '',
-          activityResult: activity.executionStatus || '',  // 수행여부: executionStatus
-          performanceAssessment: activity.executionResultCd || '',  // 수행결과: executionResultCd
+          activityResult: activity.executionStatus || '01',  // 수행여부: executionStatus (기본값: 미수행)
+          performanceAssessment: activity.executionResultCd || '',  // 수행결과: executionResultCd (빈값이면 '선택')
           activityOpinion: activity.executionResultContent || ''
         });
       }
@@ -346,7 +346,11 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                         control={control}
                         render={({ field }) => (
                           <FormControl fullWidth size="small" error={!!errors.performanceAssessment}>
-                            <Select {...field}>
+                            <Select
+                              {...field}
+                              displayEmpty
+                            >
+                              <MenuItem value="" disabled>선택</MenuItem>
                               <MenuItem value="01">적정</MenuItem>
                               <MenuItem value="02">부적정</MenuItem>
                             </Select>

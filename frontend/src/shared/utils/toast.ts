@@ -236,5 +236,31 @@ export const toastUtils = {
   promise: showPromiseToast,
 };
 
-// 원본 toast 객체를 default export로 제공 (react-toastify 호환성)
-export { toast as default } from 'react-toastify';
+/**
+ * 확장된 toast 객체
+ * - react-toastify의 기본 기능 + 커스텀 update 메서드
+ * - toast.update(toastId, type, message) 형식 지원
+ */
+const extendedToast = {
+  ...toast,
+  success: showSuccessToast,
+  error: showErrorToast,
+  warning: showWarningToast,
+  info: showInfoToast,
+  loading: showLoadingToast,
+  // 3개 인자를 받는 커스텀 update 함수
+  update: (toastId: Id, typeOrOptions: 'success' | 'error' | 'warning' | 'info' | Parameters<typeof toast.update>[1], message?: ToastContent) => {
+    // 3개 인자 형식: toast.update(toastId, type, message)
+    if (typeof typeOrOptions === 'string' && message !== undefined) {
+      updateToast(toastId, typeOrOptions, message);
+    } else {
+      // 2개 인자 형식 (기존 react-toastify 호환): toast.update(toastId, options)
+      toast.update(toastId, typeOrOptions as Parameters<typeof toast.update>[1]);
+    }
+  },
+  dismiss: dismissToast,
+  dismissAll: dismissAllToasts,
+  promise: showPromiseToast,
+};
+
+export default extendedToast;

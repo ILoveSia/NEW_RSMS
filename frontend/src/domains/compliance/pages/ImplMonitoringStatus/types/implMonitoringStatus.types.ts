@@ -8,7 +8,9 @@ export interface InspectionExecution {
   id: string;
   sequenceNumber: number;                    // 순번
   inspectionName: string;                    // 점검명
-  obligationInfo: string;                    // 관리의무
+  responsibilityInfo?: string;               // 책무 (responsibilities.responsibility_info)
+  responsibilityDetailInfo?: string;         // 책무상세 (responsibility_details.responsibility_detail_info)
+  obligationInfo: string;                    // 관리의무 (management_obligations.obligation_info)
   managementActivityName: string;            // 관리활동명
   activityFrequencyCd: string;               // 관리활동수행주기
   orgCode: string;                           // 부서

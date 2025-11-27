@@ -4,7 +4,7 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ImplMonitoringStatus.module.scss';
 
@@ -16,6 +16,14 @@ import type {
   ExecutionStatistics,
   InspectionExecution
 } from './types/implMonitoringStatus.types';
+
+// API
+import {
+  getAllItemsForExecution,
+  getItemsByLedgerOrderIdForExecution,
+  updateInspectionResult
+} from '@/domains/compliance/api/implInspectionPlanApi';
+import type { ImplInspectionItemDto } from '@/domains/compliance/types/implInspectionPlan.types';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -40,6 +48,47 @@ const ImplMonitoringDetailModal = React.lazy(() =>
 interface ImplMonitoringStatusProps {
   className?: string;
 }
+
+/**
+ * API 응답 데이터를 화면 표시용 데이터로 변환
+ * - impl_inspection_items 기반 데이터를 InspectionExecution 타입으로 변환
+ */
+const transformApiDataToExecution = (
+  items: ImplInspectionItemDto[],
+  startIndex: number = 0
+): InspectionExecution[] => {
+  return items.map((item, index) => ({
+    id: item.implInspectionItemId,
+    sequenceNumber: startIndex + index + 1,
+    inspectionName: item.implInspectionPlan?.implInspectionName || '',
+    responsibilityInfo: item.deptManagerManual?.responsibilityInfo || '',
+    responsibilityDetailInfo: item.deptManagerManual?.responsibilityDetailInfo || '',
+    obligationInfo: item.deptManagerManual?.obligationInfo || '',
+    managementActivityName: item.deptManagerManual?.activityName || '',
+    activityFrequencyCd: item.deptManagerManual?.execCheckFrequencyCd || '',
+    orgCode: item.deptManagerManual?.orgName || item.deptManagerManual?.orgCode || '',
+    inspectionMethod: item.deptManagerManual?.execCheckMethod || '',
+    inspector: item.inspectorId || '',
+    inspectionResult: item.inspectionStatusCd || '01',
+    inspectionDetail: item.inspectionResultContent || '',
+    inspectionStatus: getInspectionStatus(item.inspectionStatusCd),
+    inspectionPeriodId: item.implInspectionPlanId || '',
+    createdAt: item.createdAt || '',
+    updatedAt: item.updatedAt || ''
+  }));
+};
+
+/**
+ * 점검상태코드를 InspectionStatus 타입으로 변환
+ */
+const getInspectionStatus = (statusCd: string): 'NOT_STARTED' | 'FIRST_INSPECTION' | 'SECOND_INSPECTION' | 'COMPLETED' | 'REJECTED' => {
+  switch (statusCd) {
+    case '01': return 'NOT_STARTED';    // 미점검
+    case '02': return 'COMPLETED';      // 적정 (완료)
+    case '03': return 'FIRST_INSPECTION'; // 부적정 (점검중)
+    default: return 'NOT_STARTED';
+  }
+};
 
 const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }) => {
   const { t } = useTranslation('compliance');
@@ -216,67 +265,132 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     }));
   }, []);
 
-  const handleInspectionSave = useCallback(async (data: any) => {
+  /**
+   * 이행점검항목 데이터 로딩 함수
+   * - 원장차수ID가 있으면 해당 차수만 조회
+   * - 없으면 전체 조회
+   * - handleInspectionSave, handleInspectionUpdate, handleSearch 보다 먼저 정의되어야 함
+   */
+  const fetchExecutionData = useCallback(async (ledgerOrderId?: string) => {
+    setLoading(true);
+    const loadingToastId = toast.loading('이행점검 데이터를 조회 중입니다...');
+
+    try {
+      let items: ImplInspectionItemDto[];
+
+      if (ledgerOrderId) {
+        // 원장차수ID가 있으면 해당 차수만 조회
+        items = await getItemsByLedgerOrderIdForExecution(ledgerOrderId);
+      } else {
+        // 전체 조회
+        items = await getAllItemsForExecution();
+      }
+
+      // API 응답 데이터를 화면용 데이터로 변환
+      const transformedData = transformApiDataToExecution(items);
+
+      setExecutions(transformedData);
+      setPagination(prev => ({
+        ...prev,
+        total: transformedData.length,
+        totalPages: Math.ceil(transformedData.length / prev.size)
+      }));
+
+      toast.update(loadingToastId, 'success', `${transformedData.length}건의 데이터를 조회했습니다.`);
+    } catch (error) {
+      console.error('이행점검 데이터 조회 실패:', error);
+      toast.update(loadingToastId, 'error', '이행점검 데이터 조회에 실패했습니다.');
+
+      // 에러 시 빈 배열로 설정
+      setExecutions([]);
+      setPagination(prev => ({
+        ...prev,
+        total: 0,
+        totalPages: 0
+      }));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * 점검 정보 저장 핸들러
+   * - 점검결과상태코드, 점검결과내용 업데이트
+   */
+  const handleInspectionSave = useCallback(async (data: {
+    inspectionStatusCd: string;
+    inspectionResultContent: string;
+  }) => {
+    if (!modalState.selectedExecution) {
+      toast.error('선택된 점검 항목이 없습니다.');
+      return;
+    }
+
     setLoading(true);
     const loadingToastId = toast.loading('점검 정보를 저장 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 점검결과 업데이트 API 호출
+      await updateInspectionResult(modalState.selectedExecution.id, {
+        inspectionStatusCd: data.inspectionStatusCd,
+        inspectionResultContent: data.inspectionResultContent
+      });
 
       toast.update(loadingToastId, 'success', '점검 정보가 저장되었습니다.');
       handleModalClose();
+
+      // 데이터 새로고침
+      await fetchExecutionData(filters.ledgerOrderId || undefined);
     } catch (error) {
       toast.update(loadingToastId, 'error', '점검 정보 저장에 실패했습니다.');
       console.error('점검 정보 저장 실패:', error);
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose]);
+  }, [handleModalClose, modalState.selectedExecution, fetchExecutionData, filters.ledgerOrderId]);
 
-  const handleInspectionUpdate = useCallback(async (id: string, data: any) => {
+  /**
+   * 점검 정보 수정 핸들러
+   * - 점검결과상태코드, 점검결과내용 업데이트
+   */
+  const handleInspectionUpdate = useCallback(async (id: string, data: {
+    inspectionStatusCd: string;
+    inspectionResultContent: string;
+  }) => {
     setLoading(true);
     const loadingToastId = toast.loading('점검 정보를 수정 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 점검결과 업데이트 API 호출
+      await updateInspectionResult(id, {
+        inspectionStatusCd: data.inspectionStatusCd,
+        inspectionResultContent: data.inspectionResultContent
+      });
 
       toast.update(loadingToastId, 'success', '점검 정보가 수정되었습니다.');
       handleModalClose();
+
+      // 데이터 새로고침
+      await fetchExecutionData(filters.ledgerOrderId || undefined);
     } catch (error) {
       toast.update(loadingToastId, 'error', '점검 정보 수정에 실패했습니다.');
       console.error('점검 정보 수정 실패:', error);
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose]);
+  }, [handleModalClose, fetchExecutionData, filters.ledgerOrderId]);
 
   const handleSearch = useCallback(async () => {
-    setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
 
-    // 로딩 토스트 표시
-    const loadingToastId = toast.loading('점검 대상을 검색 중입니다...');
+    console.log('검색 필터:', filters);
 
-    try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+    // 원장차수ID로 필터링된 조회 수행
+    await fetchExecutionData(filters.ledgerOrderId || undefined);
 
-      console.log('검색 필터:', filters);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
-    } catch (error) {
-      // 에러 토스트로 업데이트
-      toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
-      console.error('검색 실패:', error);
-    } finally {
-      setLoading(false);
-      setLoadingStates(prev => ({ ...prev, search: false }));
-    }
-  }, [filters]);
+    setLoadingStates(prev => ({ ...prev, search: false }));
+  }, [filters, fetchExecutionData]);
 
   const handleClearFilters = useCallback(() => {
     setFilters({
@@ -457,104 +571,10 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     }
   }, []);
 
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockExecutions: InspectionExecution[] = [
-      {
-        id: '1',
-        sequenceNumber: 1,
-        inspectionName: '2025년 하반기 정기점검',
-        obligationInfo: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
-        managementActivityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
-        activityFrequencyCd: '월간',
-        orgCode: '준법지원팀',
-        inspectionMethod: '법률 위험이 발생하지 않도록 표준계약서 및 약관 작성·운영 기준 마련 여부',
-        inspector: '김철수',
-        inspectionResult: '02', // 02: 적정
-        inspectionDetail: '모든 항목 정상 확인',
-        inspectionStatus: 'COMPLETED',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
-      },
-      {
-        id: '2',
-        sequenceNumber: 2,
-        inspectionName: '2025년 하반기 정기점검',
-        obligationInfo: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
-        managementActivityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
-        activityFrequencyCd: '월간',
-        orgCode: '준법지원팀',
-        inspectionMethod: '법률자문 의뢰 시 질의 배경, 질의 요지, 해당 부점의 의견 등의 기재 여부 의뢰한 사안에 대하여 신속히 검토하고, 그 결과를 문서의 방법으로 회신여부 의뢰받은 법률자문이 다수일 경우에는 접수한 순서대로 회신 수행 여부',
-        inspector: '김철수',
-        inspectionResult: '02', // 01: 미점검
-        inspectionDetail: '일부 항목 보완 필요',
-        inspectionStatus: 'COMPLETED',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
-      },
-      {
-        id: '3',
-        sequenceNumber: 3,
-        inspectionName: '2025년 하반기 정기점검',
-        obligationInfo: '소송관련 업무 전반에 대한 지원 및 관련 자료 수집 및 보관 절차준수 여부에 대한 점검',
-        managementActivityName: '소송관련 업무 전반에 대한 지원 점검',
-        activityFrequencyCd: '월간',
-        orgCode: '준법지원팀',
-        inspectionMethod: '법·규정이나 법적 문서의 해석 및 업무의 적법성 여부의 의문시 사항에 대한 지원 여부 : 각 부점의 업무와 관련하여 긴박한 법적 문제가 발생항목에 대한 지원 여부',
-        inspector: '김철수',
-        inspectionResult: '02', // 02: 적정
-        inspectionDetail: '모든 항목 정상 확인',
-        inspectionStatus: 'COMPLETED',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
-      },
-      {
-        id: '4',
-        sequenceNumber: 4,
-        inspectionName: '2025년 하반기 정기점검',
-        obligationInfo: '외부위임 소송업무의 변호사 선정 및 자문료 금액에 대한 규정 준수 및 전결권자 승인여부에 대한 점검',
-        managementActivityName: '외부위임 소송사건의 업무 처리 적정성 점검',
-        activityFrequencyCd: '월간',
-        orgCode: '준법지원팀',
-        inspectionMethod: '법률자문신청서를 작성하여 문서로 법률자문을 의뢰 여부 : 법률자문의뢰시 질의 배경, 질의 요지, 해당 부점의 의견 등을 기재 여부 : 법률자문의뢰 관련 비용의 의뢰부점에 귀속 여부',
-        inspector: '김철수',
-        inspectionResult: '03', // 02: 적정
-        inspectionDetail: '개선이 필요',
-        inspectionStatus: 'COMPLETED',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
-      },
-      {
-        id: '5',
-        sequenceNumber: 5,
-        inspectionName: '2025년 하반기 정기점검',
-        obligationInfo: '정관 변경 및 내규 제·개정·폐지 시 사전검토 및 협의 수행여부에 대한 점검',
-        managementActivityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
-        activityFrequencyCd: '연간',
-        orgCode: '준법지원팀',
-        inspectionMethod: '정관·사규 등의 제정 및 개폐시 관계법령등의 준수 여부 및 사전 심의 수행 여부',
-        inspector: '김철수',
-        inspectionResult: '03', // 03: 부적정
-        inspectionDetail: '개선이 필요',
-        inspectionStatus: 'COMPLETED',
-        inspectionPeriodId: '2026_FIRST_HALF',
-        createdAt: '2024-09-21T10:00:00Z',
-        updatedAt: '2024-09-21T10:00:00Z'
-      }
-    ];
-
-    setExecutions(mockExecutions);
-    setPagination(prev => ({
-      ...prev,
-      total: mockExecutions.length,
-      totalPages: Math.ceil(mockExecutions.length / prev.size)
-    }));
-  }, []);
+  // 초기 데이터 로딩
+  useEffect(() => {
+    fetchExecutionData();
+  }, [fetchExecutionData]);
 
   return (
     <React.Profiler id="ImplMonitoringStatus" onRender={onRenderProfiler}>

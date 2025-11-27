@@ -1,5 +1,6 @@
 package com.rsms.domain.responsibility.entity;
 
+import com.rsms.domain.organization.entity.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,8 +55,16 @@ public class DeptManagerManual {
     /**
      * 조직코드 (FK → organizations)
      */
-    @Column(name = "org_code", length = 20, nullable = false)
+    @Column(name = "org_code", length = 20, nullable = false, insertable = false, updatable = false)
     private String orgCode;
+
+    /**
+     * 조직 엔티티 (ManyToOne 관계)
+     * - orgCode를 통해 조직명(orgName) 조회
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "org_code", nullable = false)
+    private Organization organization;
 
     /**
      * 책무관리항목

@@ -37,52 +37,99 @@ const ManagementActivityNameRenderer = ({ value, data, onCellClicked }: any) => 
   );
 };
 
-// AG-Grid 컬럼 정의
+/**
+ * AG-Grid 컬럼 정의
+ * - 점검명 다음에 책무, 책무상세, 관리의무 컬럼 추가
+ * - 컬럼 너비를 데이터가 잘 보이도록 넉넉하게 설정
+ * - 가로스크롤 지원을 위해 suppressSizeToFit 사용
+ */
 export const executionColumns: ColDef<InspectionExecution>[] = [
   {
+    // 순번 컬럼 - 고정 너비
     field: 'sequenceNumber',
     headerName: '순번',
-    width: 60,
-    minWidth: 60,
-    maxWidth: 60,
+    width: 70,
+    minWidth: 70,
+    maxWidth: 70,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agNumberColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
   },
   {
+    // 점검명 컬럼
     field: 'inspectionName',
     headerName: '점검명',
-    width: 150,
-    minWidth: 150,
-    sortable: true,
-    filter: 'agTextColumnFilter',
-    cellClass: 'ag-cell-left',
-    headerClass: 'ag-header-center',
-    cellRenderer: (params: any) => {
-      const value = params.value;
-      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
-    }
-  },
-  {
-    field: 'obligationInfo',
-    headerName: '책무관리항목',
     width: 200,
-    minWidth: 200,
+    minWidth: 180,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
+      return value && value.length > 30 ? `${value.substring(0, 30)}...` : value;
     }
   },
   {
+    // 책무 컬럼 (신규 추가)
+    field: 'responsibilityInfo',
+    headerName: '책무',
+    width: 250,
+    minWidth: 200,
+    suppressSizeToFit: true,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      return value && value.length > 35 ? `${value.substring(0, 35)}...` : value;
+    }
+  },
+  {
+    // 책무상세 컬럼 (신규 추가)
+    field: 'responsibilityDetailInfo',
+    headerName: '책무상세',
+    width: 300,
+    minWidth: 250,
+    suppressSizeToFit: true,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      if (!value) return '-';
+      return value && value.length > 40 ? `${value.substring(0, 40)}...` : value;
+    }
+  },
+  {
+    // 관리의무 컬럼
+    field: 'obligationInfo',
+    headerName: '관리의무',
+    width: 350,
+    minWidth: 300,
+    suppressSizeToFit: true,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value && value.length > 45 ? `${value.substring(0, 45)}...` : (value || '');
+    }
+  },
+  {
+    // 관리활동명 컬럼 - 링크 스타일
     field: 'managementActivityName',
     headerName: '관리활동명',
-    width: 200,
-    minWidth: 200,
+    width: 320,
+    minWidth: 280,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -91,44 +138,52 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     cellStyle: { fontWeight: '500' }
   },
   {
+    // 수행점검항목 컬럼
     field: 'inspectionMethod',
     headerName: '수행점검항목',
-    width: 220,
-    minWidth: 220,
+    width: 350,
+    minWidth: 300,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      return value && value.length > 20 ? `${value.substring(0, 20)}...` : (value || '');
+      return value && value.length > 45 ? `${value.substring(0, 45)}...` : (value || '');
     }
   },
   {
+    // 점검주기 컬럼
     field: 'activityFrequencyCd',
     headerName: '점검주기',
     width: 100,
-    minWidth: 100,
+    minWidth: 90,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
   },
   {
+    // 부서 컬럼
     field: 'orgCode',
     headerName: '부서',
-    width: 100,
+    width: 120,
     minWidth: 100,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center'
   },
   {
+    // 점검자 컬럼
     field: 'inspector',
     headerName: '점검자',
     width: 100,
-    minWidth: 100,
+    minWidth: 90,
+    suppressSizeToFit: true,
     sortable: false,
     filter: false,
     cellClass: 'ag-cell-center',
@@ -149,10 +204,12 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     }
   },
   {
+    // 점검결과내용 컬럼
     field: 'inspectionDetail',
     headerName: '점검결과내용',
-    flex: 1,
-    minWidth: 150,
+    width: 250,
+    minWidth: 200,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-left',
@@ -160,14 +217,16 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     cellRenderer: (params: any) => {
       const value = params.value;
       if (!value) return '-';
-      return value && value.length > 25 ? `${value.substring(0, 25)}...` : value;
+      return value && value.length > 35 ? `${value.substring(0, 35)}...` : value;
     }
   },
   {
+    // 점검결과 컬럼
     field: 'inspectionResult',
     headerName: '점검결과',
     width: 100,
-    minWidth: 100,
+    minWidth: 90,
+    suppressSizeToFit: true,
     sortable: true,
     filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',

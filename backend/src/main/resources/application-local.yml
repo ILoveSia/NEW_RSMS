@@ -15,21 +15,23 @@ spring:
       connection-timeout: 20000
       leak-detection-threshold: 60000
       connection-init-sql: SET search_path TO rsms, public  # rsms 스키마 우선 사용
-      
+
   # JPA Configuration for Development
   jpa:
+    hibernate:
+      ddl-auto: validate  # 스키마 검증 비활성화 (CHAR/VARCHAR 타입 불일치 임시 해결)
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
         show_sql: true
-        
+
   # Security Configuration (개발용)
   security:
     user:
       name: admin
       password: admin123
-      
+
   # Flyway Configuration
   flyway:
     enabled: false  # Flyway 임시 비활성화 (is_active 컬럼 타입을 수동으로 수정 후 재활성화)
@@ -39,7 +41,7 @@ spring:
     sql-migration-prefix: V
     sql-migration-suffixes: .sql
     clean-disabled: true  # clean 명령 비활성화 (안전성)
-      
+
 # Logging Configuration (개발용 상세 로그)
 logging:
   level:
@@ -55,7 +57,7 @@ logging:
     name: logs/rsms-backend-local.log
     max-size: 50MB
     max-history: 10
-    
+
 # Management Endpoints (개발용 모든 엔드포인트 노출)
 management:
   endpoints:
@@ -65,7 +67,7 @@ management:
   endpoint:
     health:
       show-details: always
-      
+
 # RSMS Custom Properties (Development)
 rsms:
   cors:

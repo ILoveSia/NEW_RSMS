@@ -1,7 +1,11 @@
+/**
+ * 점검자 지정 모달
+ * - 실제 employees 테이블 데이터와 연동
+ * - searchEmployees API를 통해 사원 목록 조회
+ * - PerformerSelectionModal 패턴 참고하여 구현
+ */
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import {
   TextField,
   Typography,
@@ -24,6 +28,10 @@ import {
 } from '../../types/inspectorAssign.types';
 import { ColDef } from 'ag-grid-community';
 
+// API 연동
+import { searchEmployees } from '@/shared/api/employeeApi';
+import type { Employee } from '@/shared/types/employee';
+
 interface InspectorSelectionModalProps {
   open: boolean;
   assignment: InspectorAssignment | null;
@@ -33,21 +41,12 @@ interface InspectorSelectionModalProps {
   loading?: boolean;
 }
 
-const schema = yup.object({
-  assignmentReason: yup
-    .string()
-    .max(200, '지정 사유는 200자 이내로 입력해주세요'),
-  estimatedDate: yup
-    .string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, '날짜 형식이 올바르지 않습니다 (YYYY-MM-DD)'),
-});
-
-// 점검자 목록 컬럼 정의 (EmployeeLookupModal 스타일 적용)
+// 점검자 목록 컬럼 정의 (이름, 부서, 직급만 표시)
 const inspectorColumns: ColDef<Inspector>[] = [
   {
     headerName: '이름',
     field: 'name',
-    width: 100,
+    width: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-left',
@@ -57,7 +56,7 @@ const inspectorColumns: ColDef<Inspector>[] = [
     headerName: '부서',
     field: 'department',
     flex: 1,
-    minWidth: 130,
+    minWidth: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-left',
@@ -66,17 +65,7 @@ const inspectorColumns: ColDef<Inspector>[] = [
   {
     headerName: '직급',
     field: 'position',
-    width: 100,
-    sortable: true,
-    filter: true,
-    cellClass: 'ag-cell-center',
-    headerClass: 'ag-header-center'
-  },
-  {
-    headerName: '전문영역',
-    field: 'specialtyArea',
-    flex: 1,
-    minWidth: 120,
+    width: 150,
     sortable: true,
     filter: true,
     cellClass: 'ag-cell-center',
@@ -102,105 +91,97 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     loading: false
   });
 
-  // Form setup (간단한 검증용)
-  const {
-    handleSubmit,
-    reset
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: 'onChange',
-    defaultValues: {
-      assignmentReason: '',
-      estimatedDate: ''
-    }
-  });
+  /**
+   * 실제 사원 데이터를 저장할 state
+   * - employees API에서 조회한 데이터를 Inspector 형식으로 변환하여 저장
+   */
+  const [inspectors, setInspectors] = useState<Inspector[]>([]);
 
-  // Mock data for inspectors
-  const mockInspectors: Inspector[] = useMemo(() => [
-    {
-      id: 'INSPECTOR_001',
-      name: '이신혁',
-      department: '기획팀',
-      position: '대리',
-      specialtyArea: '시스템',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'INSPECTOR_002',
-      name: '김철수',
-      department: '개발팀',
-      position: '과장',
-      specialtyArea: '보안',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'INSPECTOR_003',
-      name: '박영희',
-      department: '운영팀',
-      position: '차장',
-      specialtyArea: '운영',
-      type: 'INTERNAL',
-      isActive: true
-    },
-    {
-      id: 'INSPECTOR_004',
-      name: '최외부',
-      department: '외부감사법인',
-      position: '수석감사원',
-      specialtyArea: '감사',
-      type: 'EXTERNAL',
-      isActive: true
-    },
-    {
-      id: 'INSPECTOR_005',
-      name: '정외부',
-      department: '컨설팅회사',
-      position: '시니어컨설턴트',
-      specialtyArea: '컨설팅',
-      type: 'EXTERNAL',
-      isActive: true
-    }
-  ], []);
+  /**
+   * Employee 데이터를 Inspector 형식으로 변환
+   * @param employee - API에서 조회한 Employee 데이터
+   * @returns Inspector 형식으로 변환된 데이터
+   */
+  const convertEmployeeToInspector = useCallback((employee: Employee): Inspector => {
+    return {
+      id: employee.empNo,
+      name: employee.empName,
+      department: employee.orgName || employee.orgCode || '-',
+      position: employee.jobGrade || '-',
+      specialtyArea: employee.jobTitle || '-',
+      type: 'INTERNAL',  // employees 테이블은 내부 직원
+      isActive: employee.isActive === 'Y'
+    };
+  }, []);
 
-  // Filter inspectors based on search only (점검자 구분 제거)
+  /**
+   * 사원 목록 조회 API 호출
+   * - 검색어로 필터링하여 조회
+   */
+  const fetchEmployees = useCallback(async (keyword?: string) => {
+    setSelectionState(prev => ({ ...prev, loading: true }));
+    try {
+      // 검색 조건 설정 (빈 객체면 전체 조회)
+      const searchFilter = keyword ? { empName: keyword } : {};
+      const employees = await searchEmployees(searchFilter);
+
+      // Employee -> Inspector 변환
+      const convertedInspectors = employees
+        .filter(emp => emp.isActive === 'Y')  // 활성화된 직원만
+        .map(convertEmployeeToInspector);
+
+      setInspectors(convertedInspectors);
+    } catch (error) {
+      console.error('사원 목록 조회 실패:', error);
+      setInspectors([]);
+    } finally {
+      setSelectionState(prev => ({ ...prev, loading: false }));
+    }
+  }, [convertEmployeeToInspector]);
+
+  /**
+   * 검색어로 사원 목록 필터링 (클라이언트 사이드)
+   * - API 조회 결과에서 추가적으로 필터링
+   */
   const filteredInspectors = useMemo(() => {
-    let filtered = mockInspectors.filter(inspector => inspector.isActive);
-
-    if (selectionState.searchKeyword.trim()) {
-      const keyword = selectionState.searchKeyword.toLowerCase();
-      filtered = filtered.filter(inspector =>
-        inspector.name.toLowerCase().includes(keyword) ||
-        inspector.department.toLowerCase().includes(keyword) ||
-        inspector.position.toLowerCase().includes(keyword) ||
-        inspector.specialtyArea.toLowerCase().includes(keyword)
-      );
+    // 검색어가 없으면 전체 목록 반환
+    if (!selectionState.searchKeyword.trim()) {
+      return inspectors;
     }
 
-    return filtered;
-  }, [mockInspectors, selectionState.searchKeyword]);
+    // 클라이언트 사이드 필터링 (추가 검색)
+    const keyword = selectionState.searchKeyword.toLowerCase();
+    return inspectors.filter(inspector =>
+      inspector.name.toLowerCase().includes(keyword) ||
+      inspector.department.toLowerCase().includes(keyword) ||
+      inspector.position.toLowerCase().includes(keyword)
+    );
+  }, [inspectors, selectionState.searchKeyword]);
 
-  // Reset form when modal opens
+  /**
+   * 모달이 열릴 때 초기화 및 사원 데이터 조회
+   * - 선택 상태 초기화
+   * - 사원 목록 API 호출
+   */
   useEffect(() => {
     if (open) {
-      reset();
       setSelectionState(prev => ({
         ...prev,
         selectedInspector: null,
         searchKeyword: ''
       }));
+      // 모달 열릴 때 사원 목록 조회
+      fetchEmployees();
     }
-  }, [open, assignment, reset]);
+  }, [open, assignment, fetchEmployees]);
 
-  // Handle search
+  /**
+   * 검색 버튼 클릭 핸들러
+   * - 검색어로 API 재조회
+   */
   const handleSearch = useCallback(() => {
-    // 실제로는 API 호출
-    setSelectionState(prev => ({ ...prev, loading: true }));
-    setTimeout(() => {
-      setSelectionState(prev => ({ ...prev, loading: false }));
-    }, 300);
-  }, []);
+    fetchEmployees(selectionState.searchKeyword || undefined);
+  }, [fetchEmployees, selectionState.searchKeyword]);
 
   // Handle inspector selection (행 선택 변경)
   const handleInspectorSelect = useCallback((selectedRows: Inspector[]) => {
@@ -237,17 +218,36 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
     }
   }, [assignments, onSelect]);
 
-  // Handle form submission
-  const onSubmit = useCallback((formData: any) => {
-    if (!selectionState.selectedInspector) return;
-    if (!assignments || assignments.length === 0) return;
+  /**
+   * 저장 버튼 클릭 핸들러
+   * - 선택된 점검자 정보를 부모 컴포넌트로 전달
+   * - impl_inspection_items 테이블의 inspector_id 업데이트
+   */
+  const handleSave = useCallback(() => {
+    // 선택된 점검자 확인
+    if (!selectionState.selectedInspector) {
+      console.warn('점검자가 선택되지 않았습니다.');
+      return;
+    }
 
+    // 선택된 항목 목록 확인
+    if (!assignments || assignments.length === 0) {
+      console.warn('지정할 점검항목이 없습니다.');
+      return;
+    }
+
+    console.log('✅ [InspectorSelectionModal] 저장 클릭');
+    console.log('  - 선택된 점검자:', selectionState.selectedInspector);
+    console.log('  - 대상 항목 수:', assignments.length);
+
+    // 폼 데이터 구성
     const submitData: InspectorAssignFormData = {
       inspectorId: selectionState.selectedInspector.id,
-      assignmentReason: formData.assignmentReason || '',
-      estimatedDate: formData.estimatedDate || ''
+      assignmentReason: '',
+      estimatedDate: ''
     };
 
+    // 부모 컴포넌트의 onSelect 호출 (API 호출)
     onSelect(assignments, selectionState.selectedInspector, submitData);
   }, [assignments, selectionState.selectedInspector, onSelect]);
 
@@ -290,7 +290,7 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
           <TextField
             fullWidth
             size="small"
-            placeholder="점검자 이름, 부서, 직급, 전문영역으로 검색"
+            placeholder="점검자 이름, 부서, 직급으로 검색"
             value={selectionState.searchKeyword}
             onChange={(e) => setSelectionState(prev => ({ ...prev, searchKeyword: e.target.value }))}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -316,7 +316,6 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
                 columns={inspectorColumns}
                 loading={selectionState.loading}
                 rowSelection="single"
-                selectedRows={selectionState.selectedInspector ? [selectionState.selectedInspector] : []}
                 onSelectionChange={handleInspectorSelect}
                 onRowClick={handleRowClick}
                 onRowDoubleClick={handleRowDoubleClick}
@@ -343,9 +342,6 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                   {selectionState.selectedInspector.department} · {selectionState.selectedInspector.position}
                 </Typography>
-                <Typography variant="body2" color="primary" sx={{ fontSize: '0.875rem' }}>
-                  전문영역: {selectionState.selectedInspector.specialtyArea}
-                </Typography>
               </Box>
             </Box>
           )}
@@ -358,7 +354,7 @@ const InspectorSelectionModal: React.FC<InspectorSelectionModalProps> = ({
         </Button>
         <Button
           variant="contained"
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSave}
           disabled={!selectionState.selectedInspector || loading}
         >
           {loading ? '저장 중...' : '저장'}

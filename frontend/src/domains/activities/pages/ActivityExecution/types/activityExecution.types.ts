@@ -107,23 +107,25 @@ export interface ActivityExecutionDetail {
   legalReferences: string;          // 법령 참고사항
 }
 
-// 폼 데이터 타입 (이미지 기반 수정)
+// 폼 데이터 타입 (수행정보 입력 모달)
 export interface ActivityExecutionFormData {
-  // 상단 영역 필드
-  activityResult: string;            // 관리활동 결과 작성
-  performanceAssessment: string;     // 관리활동의 적절히 수행여부
-  activityOpinion: string;           // 관리활동 의견
+  // 수행 정보 필드
+  performanceDate?: string;          // 수행일자 (YYYY-MM-DD)
+  performer?: string;                // 수행자명
+  activityResult: string;            // 수행여부 (01:미수행, 02:수행완료)
+  performanceAssessment: string;     // 수행결과 (01:적정, 02:부적정)
+  activityOpinion: string;           // 수행결과내용
 
-  // 하단 체크리스트 필드
-  checklist: string;                 // 체크리스트
-  checklistConfirmed: string;        // 체크리스트 점검여부 (Y/N)
-  complianceCheck: string;
-  internalControlType: string;
-  relatedRegulations: string;
-  controlGuide: string;
-  controlIssues: string;
-  controlIndicators: string;
-  legalReferences: string;
+  // 하단 체크리스트 필드 (선택)
+  checklist?: string;                // 체크리스트
+  checklistConfirmed?: string;       // 체크리스트 점검여부 (Y/N)
+  complianceCheck?: string;
+  internalControlType?: string;
+  relatedRegulations?: string;
+  controlGuide?: string;
+  controlIssues?: string;
+  controlIndicators?: string;
+  legalReferences?: string;
 }
 
 // 필터 타입

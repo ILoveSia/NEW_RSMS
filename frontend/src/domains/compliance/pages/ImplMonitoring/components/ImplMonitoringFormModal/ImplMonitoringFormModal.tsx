@@ -31,23 +31,27 @@ import type { PeriodSetting, PeriodSettingFormData } from '../../types/implMonit
 // Domain Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
-// 부서장업무메뉴얼 타입 정의
+// API imports
+import { getDeptManagerManualsByLedgerOrderId } from '@/domains/resps/api/deptManagerManualApi';
+import { getImplInspectionItems } from '@/domains/compliance/api/implInspectionPlanApi';
+import type { DeptManagerManualDto } from '@/domains/resps/types/deptManagerManual.types';
+
+// 공통코드 Hook
+import { useCommonCode } from '@/shared/hooks/useCommonCode';
+
+// 부서장업무메뉴얼 타입 정의 (UI용)
 interface DeptManagerManual {
-  manualId: number;
+  id: string;                    // BaseDataGrid 행 식별용 (manualCd와 동일값)
+  manualCd: string;              // manualId -> manualCd로 변경 (PK)
   ledgerOrderId: string;
   obligationCd: string;
   orgCode: string;
   orgName: string;
-  activityTypeCd: string;
-  activityName: string;
-  activityDetail: string;
-  riskAssessmentLevelCd: string;
-  activityFrequencyCd: string;
-  evidenceTypeCd: string;
-  implCheckFrequencyCd: string;
-  isConditionalCheck: 'Y' | 'N';
-  implCheckMethod: string;
-  isActive: 'Y' | 'N';
+  respItem: string;              // 책무관리항목
+  activityName: string;          // 관리활동명
+  execCheckMethod: string;       // 수행점검항목
+  execCheckFrequencyCd: string;  // 수행점검주기
+  isActive: string;
   status: string;
 }
 
@@ -67,18 +71,23 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
   mode,
   period,
   onClose,
-  onRefresh,
+  onSave,
+  onUpdate,
+  onRefresh: _onRefresh, // 추후 새로고침 기능 사용 예정
   loading = false
 }) => {
   // 폼 데이터 상태
   const [formData, setFormData] = useState<PeriodSettingFormData>({
+    ledgerOrderId: '',
     inspectionName: '',
+    inspectionTypeCd: '',
     inspectionStartDate: '',
     inspectionEndDate: '',
     activityStartDate: '',
     activityEndDate: '',
-    description: '',
-    status: 'DRAFT'
+    remarks: '',
+    status: 'DRAFT',
+    manualCds: []
   });
 
   // 원장차수 상태
@@ -102,25 +111,43 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
   const [manuals, setManuals] = useState<DeptManagerManual[]>([]);
   const [selectedManuals, setSelectedManuals] = useState<DeptManagerManual[]>([]);
 
+  // 점검주기 공통코드 (ACVT_FRCD)
+  const { getCodeName: getFrequencyName } = useCommonCode('ACVT_FRCD');
+
   // 부서장업무메뉴얼 컬럼 정의
   const manualColumns = useMemo<ColDef<DeptManagerManual>[]>(() => [
     {
       headerCheckboxSelection: mode === 'create',
       checkboxSelection: mode === 'create',
-      width: 10,
+      width: 50,
+      maxWidth: 50,
       headerClass: 'ag-header-center',
       cellClass: 'ag-cell-center'
     },
     {
       field: 'orgName',
       headerName: '부서명',
-      width: 60,
-      sortable: true
+      width: 120,
+      minWidth: 100,
+      sortable: true,
+      cellClass: 'ag-cell-center'
+    },
+    {
+      field: 'respItem',
+      headerName: '책무관리항목',
+      width: 200,
+      minWidth: 150,
+      sortable: true,
+      cellRenderer: (params: any) => {
+        const value = params.value;
+        return value && value.length > 30 ? `${value.substring(0, 30)}...` : value;
+      }
     },
     {
       field: 'activityName',
       headerName: '관리활동명',
       flex: 1,
+      minWidth: 200,
       sortable: true,
       cellRenderer: (params: any) => {
         const value = params.value;
@@ -128,24 +155,39 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
       }
     },
     {
-      field: 'implCheckFrequencyCd',
+      field: 'execCheckFrequencyCd',
       headerName: '점검주기',
-      width: 50,
+      width: 100,
+      minWidth: 80,
       sortable: true,
-      cellClass: 'ag-cell-center'
+      cellClass: 'ag-cell-center',
+      cellRenderer: (params: { value: string }) => {
+        // 공통코드(ACVT_FRCD)로 코드명 변환
+        return params.value ? getFrequencyName(params.value) : '';
+      }
     }
-  ], [mode]);
+  ], [mode, getFrequencyName]);
 
-  // 폼 초기화
+  /**
+   * 폼 초기화
+   * - 등록 모드: 빈 폼으로 초기화
+   * - 상세 모드: 기존 데이터로 초기화 및 이행점검항목 로드
+   */
   useEffect(() => {
     if (open) {
       if (mode === 'create') {
+        // 등록 모드: 빈 폼으로 초기화
         setFormData({
+          ledgerOrderId: '',
           inspectionName: '',
+          inspectionTypeCd: '',
           inspectionStartDate: '',
           inspectionEndDate: '',
-          description: '',
-          status: 'DRAFT'
+          activityStartDate: '',
+          activityEndDate: '',
+          remarks: '',
+          status: 'DRAFT',
+          manualCds: []
         });
         setLedgerOrderId(null);
         setInspectionTypeCd('');
@@ -155,28 +197,37 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           inspectionName: '',
           inspectionTypeCd: '',
           inspectionStartDate: '',
-          inspectionEndDate: ''
+          inspectionEndDate: '',
+          activityStartDate: '',
+          activityEndDate: ''
         });
         setManuals([]);
         setSelectedManuals([]);
       } else if (period) {
-        // 상세 모드
+        // 상세 모드: 기존 데이터로 초기화
         setFormData({
+          ledgerOrderId: period.ledgerOrderId,
           inspectionName: period.inspectionName,
+          inspectionTypeCd: period.inspectionTypeCd || '',
           inspectionStartDate: period.inspectionStartDate,
           inspectionEndDate: period.inspectionEndDate,
-          description: '',
-          status: period.status
+          activityStartDate: period.activityStartDate || '',
+          activityEndDate: period.activityEndDate || '',
+          remarks: period.remarks || '',
+          status: period.status,
+          manualCds: []
         });
         setLedgerOrderId(period.ledgerOrderId);
-        setInspectionTypeCd(period.inspectionType === '정기점검' ? '01' : '02');
+        setInspectionTypeCd(period.inspectionTypeCd || (period.inspectionType === '정기점검' ? '01' : '02'));
         setIsEditing(false);
         setErrors({
           ledgerOrderId: '',
           inspectionName: '',
           inspectionTypeCd: '',
           inspectionStartDate: '',
-          inspectionEndDate: ''
+          inspectionEndDate: '',
+          activityStartDate: '',
+          activityEndDate: ''
         });
 
         // 상세 모드에서 관련 이행점검항목 로드
@@ -192,214 +243,69 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
     }
   }, [ledgerOrderId, mode]);
 
-  // 부서장업무메뉴얼 조회 함수
+  /**
+   * 부서장업무메뉴얼 조회 함수 (API 호출)
+   * - 원장차수ID로 dept_manager_manuals 테이블 조회
+   * - 점검대상 선택을 위해 사용
+   */
   const loadDeptManagerManuals = useCallback(async (ledgerOrderId: string) => {
     try {
-      // TODO: 실제 API 호출
-      // const response = await deptManagerManualsApi.getByLedgerOrderId(ledgerOrderId);
-      // setManuals(response.data);
+      // 실제 API 호출 (dept_manager_manuals 테이블 조회)
+      const response = await getDeptManagerManualsByLedgerOrderId(ledgerOrderId);
 
-      // 임시 데이터
-      const mockManuals: DeptManagerManual[] = [
-        {
-          manualId: 1,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL001',
-          orgCode: 'ORG001',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
-          activityDetail: '분기별 내부통제 시스템 점검 및 보고',
-          riskAssessmentLevelCd: '01',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '01',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'N',
-          implCheckMethod: '문서검토 및 담당자 인터뷰',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 2,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL002',
-          orgCode: 'ORG002',
-          orgName: '준법지원팀',
-          activityTypeCd: '02',
-          activityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
-          activityDetail: '월별 리스크 평가 및 경영진 보고',
-          riskAssessmentLevelCd: '01',
-          activityFrequencyCd: '02',
-          evidenceTypeCd: '02',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'N',
-          implCheckMethod: '리스크 평가 보고서 검토',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 3,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '소송관련 업무 전반에 대한 지원 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 4,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '외부위임 소송사건의 업무 처리 적정성 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 5,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        }
-      ];
-      setManuals(mockManuals);
+      // API 응답을 UI 타입으로 변환
+      const convertedManuals: DeptManagerManual[] = response.map((dto: DeptManagerManualDto) => ({
+        id: dto.manualCd,  // BaseDataGrid 행 식별용
+        manualCd: dto.manualCd,
+        ledgerOrderId: dto.ledgerOrderId,
+        obligationCd: dto.obligationCd || '',
+        orgCode: dto.orgCode,
+        orgName: dto.orgName || dto.orgCode, // orgName이 없으면 orgCode 사용
+        respItem: dto.respItem,
+        activityName: dto.activityName,
+        execCheckMethod: dto.execCheckMethod || '',
+        execCheckFrequencyCd: dto.execCheckFrequencyCd || '',
+        isActive: dto.isActive,
+        status: dto.status || '' // undefined인 경우 빈 문자열로 처리
+      }));
+
+      setManuals(convertedManuals);
+      console.log(`부서장업무메뉴얼 ${convertedManuals.length}건 조회 완료`);
     } catch (error) {
       console.error('부서장업무메뉴얼 조회 실패:', error);
       setManuals([]);
     }
   }, []);
 
-  // 이행점검항목 조회 함수 (상세 모드)
-  const loadInspectionItems = useCallback(async (_periodId: string) => {
+  /**
+   * 이행점검항목 조회 함수 (상세 모드)
+   * - 이행점검계획ID로 impl_inspection_items 테이블 조회
+   * - 각 항목의 관련 부서장업무메뉴얼 정보 표시
+   */
+  const loadInspectionItems = useCallback(async (periodId: string) => {
     try {
-      // TODO: 실제 API 호출
-      // const response = await implInspectionItemsApi.getByPlanId(periodId);
-      // setSelectedManuals(response.data.map(item => item.manual));
+      // 실제 API 호출 (impl_inspection_items 테이블 조회)
+      const response = await getImplInspectionItems(periodId);
 
-      // 임시 데이터
-      const mockItems: DeptManagerManual[] = [
-        {
-          manualId: 1,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL001',
-          orgCode: 'ORG001',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '중요계약서 서식 및 내용의 적정성 검토에 대한 점검',
-          activityDetail: '분기별 내부통제 시스템 점검 및 보고',
-          riskAssessmentLevelCd: '01',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '01',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'N',
-          implCheckMethod: '문서검토 및 담당자 인터뷰',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 2,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL002',
-          orgCode: 'ORG002',
-          orgName: '준법지원팀',
-          activityTypeCd: '02',
-          activityName: '법률 관련 질의회신 내용의 적정성 검토에 대한 점검',
-          activityDetail: '월별 리스크 평가 및 경영진 보고',
-          riskAssessmentLevelCd: '01',
-          activityFrequencyCd: '02',
-          evidenceTypeCd: '02',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'N',
-          implCheckMethod: '리스크 평가 보고서 검토',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 3,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '소송관련 업무 전반에 대한 지원 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 4,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '외부위임 소송사건의 업무 처리 적정성 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        },
-        {
-          manualId: 5,
-          ledgerOrderId: ledgerOrderId,
-          obligationCd: 'OBL003',
-          orgCode: 'ORG003',
-          orgName: '준법지원팀',
-          activityTypeCd: '01',
-          activityName: '정관 변경 및 내규 제·개정·폐지 시 사전심의 및 협의 절차 점검',
-          activityDetail: '전 직원 대상 분기별 컴플라이언스 교육',
-          riskAssessmentLevelCd: '02',
-          activityFrequencyCd: '03',
-          evidenceTypeCd: '03',
-          implCheckFrequencyCd: '월간',
-          isConditionalCheck: 'Y',
-          implCheckMethod: '교육 이수 현황 및 평가 결과 확인',
-          isActive: 'Y',
-          status: 'active'
-        }
-      ];
-      setSelectedManuals(mockItems);
+      // API 응답을 UI 타입으로 변환 (deptManagerManual 정보 사용)
+      const convertedItems: DeptManagerManual[] = response.map((item) => ({
+        id: item.implInspectionItemId || item.manualCd,  // BaseDataGrid 행 식별용
+        manualCd: item.manualCd,
+        ledgerOrderId: '', // 연관 엔티티에서 가져옴
+        obligationCd: item.deptManagerManual?.obligationCd || '',
+        orgCode: item.deptManagerManual?.orgCode || '',
+        orgName: item.deptManagerManual?.orgName || '',
+        respItem: item.deptManagerManual?.respItem || '',
+        activityName: item.deptManagerManual?.activityName || '',
+        execCheckMethod: '',
+        execCheckFrequencyCd: item.deptManagerManual?.execCheckFrequencyCd || '', // 점검주기 추가
+        isActive: item.isActive,
+        status: item.inspectionStatusCd
+      }));
+
+      setSelectedManuals(convertedItems);
+      console.log(`이행점검항목 ${convertedItems.length}건 조회 완료`);
+      console.log('이행점검항목 데이터:', convertedItems);
     } catch (error) {
       console.error('이행점검항목 조회 실패:', error);
       setSelectedManuals([]);
@@ -451,7 +357,11 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
     return !Object.values(newErrors).some(error => error !== '');
   }, [formData, ledgerOrderId, inspectionTypeCd]);
 
-  // 저장 핸들러
+  /**
+   * 저장 핸들러
+   * - 유효성 검증 후 부모 컴포넌트의 onSave 호출
+   * - onSave에서 impl_inspection_plans + impl_inspection_items 일괄 생성
+   */
   const handleSave = useCallback(async () => {
     if (!validate()) {
       return;
@@ -459,70 +369,84 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
 
     try {
       if (mode === 'create') {
-        // TODO: 실제 API 호출
-        // 1. impl_inspection_plans 생성
-        // 2. 선택된 부서장업무메뉴얼로 impl_inspection_items 생성
-
+        // 점검대상 선택 확인
         if (selectedManuals.length === 0) {
           alert('점검할 업무메뉴얼을 선택해주세요');
           return;
         }
 
-        console.log('이행점검계획 생성:', {
-          ledgerOrderId,
+        // 원장차수 확인
+        if (!ledgerOrderId) {
+          alert('원장차수를 선택해주세요');
+          return;
+        }
+
+        // PeriodSettingFormData 생성 (manualCds 포함)
+        const saveData: PeriodSettingFormData = {
+          ledgerOrderId: ledgerOrderId,
           inspectionName: formData.inspectionName,
-          inspectionTypeCd,
+          inspectionTypeCd: inspectionTypeCd,
           inspectionStartDate: formData.inspectionStartDate,
           inspectionEndDate: formData.inspectionEndDate,
           activityStartDate: formData.activityStartDate,
           activityEndDate: formData.activityEndDate,
+          remarks: formData.remarks,
           status: formData.status,
-          selectedManualIds: selectedManuals.map(m => m.manualId)
-        });
+          manualCds: selectedManuals.map(m => m.manualCd) // 선택된 점검대상 manualCd 목록
+        };
 
-        alert('이행점검계획이 성공적으로 등록되었습니다.');
+        console.log('이행점검계획 저장 데이터:', saveData);
 
-        if (onRefresh) {
-          await onRefresh();
-        }
+        // 부모 컴포넌트의 onSave 호출 (실제 API 호출은 ImplMonitoring.tsx에서 수행)
+        await onSave(saveData);
 
-        onClose();
+        // onClose는 부모에서 성공 시 호출됨
       } else if (mode === 'detail' && period && isEditing) {
         // 수정 모드
-        // TODO: 실제 API 호출
-        console.log('이행점검계획 수정:', {
-          id: period.id,
-          formData
-        });
+        const updateData: PeriodSettingFormData = {
+          ledgerOrderId: ledgerOrderId || period.ledgerOrderId,
+          inspectionName: formData.inspectionName,
+          inspectionTypeCd: inspectionTypeCd,
+          inspectionStartDate: formData.inspectionStartDate,
+          inspectionEndDate: formData.inspectionEndDate,
+          activityStartDate: formData.activityStartDate,
+          activityEndDate: formData.activityEndDate,
+          remarks: formData.remarks,
+          status: formData.status,
+          manualCds: [] // 수정 시에는 항목 변경 없음
+        };
 
-        alert('이행점검계획이 성공적으로 수정되었습니다.');
-
-        if (onRefresh) {
-          await onRefresh();
-        }
-
-        onClose();
+        await onUpdate(period.id, updateData);
       }
     } catch (error) {
       console.error('이행점검계획 저장 실패:', error);
       alert(error instanceof Error ? error.message : '이행점검계획 저장에 실패했습니다.');
     }
-  }, [mode, formData, period, isEditing, validate, ledgerOrderId, inspectionTypeCd, selectedManuals, onRefresh, onClose]);
+  }, [mode, formData, period, isEditing, validate, ledgerOrderId, inspectionTypeCd, selectedManuals, onSave, onUpdate]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
   }, []);
 
+  /**
+   * 취소 핸들러
+   * - 상세 모드: 수정 취소 시 원래 데이터로 복원
+   * - 등록 모드: 모달 닫기
+   */
   const handleCancel = useCallback(() => {
     if (mode === 'detail' && period) {
+      // 상세 모드에서 수정 취소: 원래 데이터로 복원
       setFormData({
+        ledgerOrderId: period.ledgerOrderId,
         inspectionName: period.inspectionName,
+        inspectionTypeCd: period.inspectionTypeCd || '',
         inspectionStartDate: period.inspectionStartDate,
         inspectionEndDate: period.inspectionEndDate,
-        activityStartDate: period.activityStartDate,
-        activityEndDate: period.activityEndDate,
-        description: '',
-        status: period.status
+        activityStartDate: period.activityStartDate || '',
+        activityEndDate: period.activityEndDate || '',
+        remarks: period.remarks || '',
+        status: period.status,
+        manualCds: []
       });
       setIsEditing(false);
     } else {
@@ -537,6 +461,9 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
 
   const title = mode === 'create' ? '이행점검계획 등록' : '이행점검계획 상세';
   const isReadOnly = mode === 'detail' && !isEditing;
+
+  // 수정 모드에서도 원장차수는 항상 비활성화 (수정 불가 필드)
+  const isLedgerOrderDisabled = mode === 'detail';
 
   return (
     <Dialog
@@ -577,7 +504,7 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
                   onChange={setLedgerOrderId}
                   label="원장차수"
                   required
-                  disabled={isReadOnly}
+                  disabled={isLedgerOrderDisabled}
                   error={!!errors.ledgerOrderId}
                   helperText={errors.ledgerOrderId}
                   fullWidth
@@ -652,11 +579,11 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
                 />
               </Box>
 
-              {/* 설명 */}
+              {/* 비고 */}
               <TextField
-                label="설명"
-                value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
+                label="비고"
+                value={formData.remarks || ''}
+                onChange={(e) => handleChange('remarks', e.target.value)}
                 disabled={isReadOnly}
                 fullWidth
                 size="small"
@@ -690,7 +617,7 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           )}
 
           {/* 이행점검항목 목록 (상세 모드) */}
-          {mode === 'detail' && selectedManuals.length > 0 && (
+          {mode === 'detail' && (
             <Box>
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, fontSize: '0.95rem' }}>
                 📊 이행점검항목 목록 ({selectedManuals.length}개)
@@ -698,7 +625,7 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
               <Box sx={{ width: '100%', height: '300px' }}>
                 <BaseDataGrid
                   data={selectedManuals}
-                  columns={manualColumns.filter(col => !col.checkboxSelection)}
+                  columns={manualColumns.filter(col => col.field !== undefined)}
                   rowSelection="none"
                   pagination={true}
                   height="300px"
