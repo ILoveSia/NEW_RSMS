@@ -116,4 +116,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
         @Param("minLevel") Integer minLevel,
         @Param("maxLevel") Integer maxLevel
     );
+
+    /**
+     * 직원번호 목록으로 직원 조회 (삭제되지 않은 직원만)
+     * - 점검자/수행자 이름 조회용
+     * @param empNos 직원번호 목록
+     * @return 직원 목록
+     */
+    @Query("SELECT e FROM Employee e WHERE e.empNo IN :empNos AND e.isDeleted = 'N'")
+    List<Employee> findByEmpNoInAndNotDeleted(@Param("empNos") List<String> empNos);
 }

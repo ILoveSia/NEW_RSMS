@@ -109,6 +109,24 @@ public class DeptManagerManual {
     private String executionResultContent;
 
     /**
+     * 수행자명 (employees 테이블 조인 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String executorName;
+
+    /**
+     * 수행상태명 (공통코드 조회 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String executionStatusName;
+
+    /**
+     * 수행결과명 (공통코드 조회 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String executionResultName;
+
+    /**
      * 수행점검항목
      */
     @Column(name = "exec_check_method", length = 500)

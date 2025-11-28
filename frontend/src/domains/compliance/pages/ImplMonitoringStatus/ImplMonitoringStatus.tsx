@@ -4,7 +4,7 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SecurityIcon from '@mui/icons-material/Security';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './ImplMonitoringStatus.module.scss';
 
@@ -52,6 +52,8 @@ interface ImplMonitoringStatusProps {
 /**
  * API 응답 데이터를 화면 표시용 데이터로 변환
  * - impl_inspection_items 기반 데이터를 InspectionExecution 타입으로 변환
+ * - 수행정보: dept_manager_manuals 테이블에서 조회
+ * - 점검자명: employees 테이블 조인으로 조회
  */
 const transformApiDataToExecution = (
   items: ImplInspectionItemDto[],
@@ -68,7 +70,20 @@ const transformApiDataToExecution = (
     activityFrequencyCd: item.deptManagerManual?.execCheckFrequencyCd || '',
     orgCode: item.deptManagerManual?.orgName || item.deptManagerManual?.orgCode || '',
     inspectionMethod: item.deptManagerManual?.execCheckMethod || '',
+
+    // 수행정보 (dept_manager_manuals 테이블)
+    executorId: item.deptManagerManual?.executorId || '',
+    executorName: item.deptManagerManual?.executorName || '',
+    executionDate: item.deptManagerManual?.executionDate || '',
+    executionStatus: item.deptManagerManual?.executionStatus || '',
+    executionStatusName: item.deptManagerManual?.executionStatusName || '',
+    executionResultCd: item.deptManagerManual?.executionResultCd || '',
+    executionResultName: item.deptManagerManual?.executionResultName || '',
+    executionResultContent: item.deptManagerManual?.executionResultContent || '',
+
+    // 점검정보
     inspector: item.inspectorId || '',
+    inspectorName: item.inspectorName || '',
     inspectionResult: item.inspectionStatusCd || '01',
     inspectionDetail: item.inspectionResultContent || '',
     inspectionStatus: getInspectionStatus(item.inspectionStatusCd),
@@ -92,6 +107,9 @@ const getInspectionStatus = (statusCd: string): 'NOT_STARTED' | 'FIRST_INSPECTIO
 
 const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }) => {
   const { t } = useTranslation('compliance');
+
+  // 초기 로딩 중복 실행 방지용 ref
+  const isInitialLoadRef = useRef(false);
 
   // State Management
   const [executions, setExecutions] = useState<InspectionExecution[]>([]);
@@ -316,6 +334,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
   /**
    * 점검 정보 저장 핸들러
    * - 점검결과상태코드, 점검결과내용 업데이트
+   * - 부적정(03) 선택 시: improvement_status_cd = '01', improvement_manager_id = 수행자ID
    */
   const handleInspectionSave = useCallback(async (data: {
     inspectionStatusCd: string;
@@ -331,9 +350,11 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
 
     try {
       // 점검결과 업데이트 API 호출
+      // - 부적정(03) 선택 시 수행자ID를 함께 전달하여 개선담당자로 설정
       await updateInspectionResult(modalState.selectedExecution.id, {
         inspectionStatusCd: data.inspectionStatusCd,
-        inspectionResultContent: data.inspectionResultContent
+        inspectionResultContent: data.inspectionResultContent,
+        executorId: modalState.selectedExecution.executorId || undefined
       });
 
       toast.update(loadingToastId, 'success', '점검 정보가 저장되었습니다.');
@@ -352,6 +373,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
   /**
    * 점검 정보 수정 핸들러
    * - 점검결과상태코드, 점검결과내용 업데이트
+   * - 부적정(03) 선택 시: improvement_status_cd = '01', improvement_manager_id = 수행자ID
    */
   const handleInspectionUpdate = useCallback(async (id: string, data: {
     inspectionStatusCd: string;
@@ -362,9 +384,11 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
 
     try {
       // 점검결과 업데이트 API 호출
+      // - 부적정(03) 선택 시 수행자ID를 함께 전달하여 개선담당자로 설정
       await updateInspectionResult(id, {
         inspectionStatusCd: data.inspectionStatusCd,
-        inspectionResultContent: data.inspectionResultContent
+        inspectionResultContent: data.inspectionResultContent,
+        executorId: modalState.selectedExecution?.executorId || undefined
       });
 
       toast.update(loadingToastId, 'success', '점검 정보가 수정되었습니다.');
@@ -378,7 +402,7 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     } finally {
       setLoading(false);
     }
-  }, [handleModalClose, fetchExecutionData, filters.ledgerOrderId]);
+  }, [handleModalClose, fetchExecutionData, filters.ledgerOrderId, modalState.selectedExecution]);
 
   const handleSearch = useCallback(async () => {
     setLoadingStates(prev => ({ ...prev, search: true }));
@@ -571,10 +595,16 @@ const ImplMonitoringStatus: React.FC<ImplMonitoringStatusProps> = ({ className }
     }
   }, []);
 
-  // 초기 데이터 로딩
+  // 초기 데이터 로딩 (컴포넌트 마운트 시 1회만 실행)
+  // React Strict Mode 및 탭 재진입 시 중복 실행 방지
   useEffect(() => {
+    if (isInitialLoadRef.current) {
+      return; // 이미 로딩이 실행되었으면 스킵
+    }
+    isInitialLoadRef.current = true;
     fetchExecutionData();
-  }, [fetchExecutionData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <React.Profiler id="ImplMonitoringStatus" onRender={onRenderProfiler}>

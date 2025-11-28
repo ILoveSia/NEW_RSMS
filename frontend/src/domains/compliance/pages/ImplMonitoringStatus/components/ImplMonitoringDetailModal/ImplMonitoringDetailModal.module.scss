@@ -2,11 +2,11 @@
 
 // 섹션 타이틀
 .sectionTitle {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: $color-primary-600;
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
   border-bottom: 2px solid $color-primary;
 }
 
@@ -14,48 +14,44 @@
 .cardSection {
   background: white;
   border-radius: $border-radius-lg;
-  padding: 24px;
-  margin-bottom: 24px;
+  padding: 16px;
+  margin-bottom: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
 
   .cardTitle {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 16px 0;
-    padding: 8px 12px;
+    margin: 0 0 12px 0;
+    padding: 6px 10px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 6px;
     border-left: 4px solid $color-primary;
   }
 }
 
-// 왼쪽 영역의 기본정보 카드
+// 왼쪽 영역의 관리활동 정보 카드 (기본정보 + 점검정보 통합)
 .cardBasicInfo {
-  min-height: 280px;
+  height: auto;
 }
 
-// 왼쪽 영역의 점검정보 카드
-.cardInspectionInfo {
-  min-height: 380px;
-}
-
-// 오른쪽 영역의 수행정보 입력 카드 (기본정보와 높이 맞춤)
+// 오른쪽 영역의 수행정보 입력 카드
 .cardPerformanceInput {
-  min-height: 280px;
+  height: auto;
+  margin-bottom: 16px;
 }
 
-// 오른쪽 영역의 점검정보 입력 카드 (점검정보와 높이 맞춤)
+// 오른쪽 영역의 점검정보 입력 카드
 .cardInspectionInput {
-  min-height: 380px;
+  height: auto;
 }
 
 // 필드 그룹
 .fieldGroup {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 
   &:last-child {
     margin-bottom: 0;
@@ -75,8 +71,8 @@
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 // 증빙자료 영역

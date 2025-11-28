@@ -73,10 +73,10 @@ const convertToInspectorAssignment = (
     return 'UNASSIGNED';  // 미지정
   };
 
-  // 점검자 정보 구성
+  // 점검자 정보 구성 - inspectorName이 있으면 성명 표시, 없으면 ID fallback
   const inspector: Inspector | null = dto.inspectorId ? {
     id: dto.inspectorId,
-    name: dto.inspectorId,  // TODO: 실제 점검자명 조회 필요
+    name: dto.inspectorName || dto.inspectorId,  // 점검자명(성명) 우선 표시
     department: dto.deptManagerManual?.orgName || '',
     position: '',
     specialtyArea: '',

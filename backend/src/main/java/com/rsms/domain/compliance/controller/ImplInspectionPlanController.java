@@ -244,16 +244,19 @@ public class ImplInspectionPlanController {
 
     /**
      * 점검결과 업데이트 요청 DTO
+     * - 부적정(03) 선택 시 executorId를 개선담당자로 설정
      */
     public record UpdateInspectionResultRequest(
             String inspectionStatusCd,       // 점검결과상태코드 (01:미점검, 02:적정, 03:부적정)
-            String inspectionResultContent   // 점검결과내용
+            String inspectionResultContent,  // 점검결과내용
+            String executorId                // 수행자ID (부적정 시 개선담당자로 설정)
     ) {}
 
     /**
      * 점검결과 업데이트
      * PUT /api/compliance/impl-inspection-plans/items/{itemId}/inspection-result
      * - 점검결과상태코드, 점검결과내용, 점검일자 업데이트
+     * - 부적정(03) 선택 시: improvement_status_cd = '01', improvement_manager_id = executorId
      */
     @PutMapping("/items/{itemId}/inspection-result")
     public ResponseEntity<ImplInspectionItemDto> updateInspectionResult(
@@ -261,6 +264,7 @@ public class ImplInspectionPlanController {
             @RequestBody UpdateInspectionResultRequest request) {
         log.info("✅ [ImplInspectionPlanController] 점검결과 업데이트: {}", itemId);
         log.info("  - 점검결과상태코드: {}", request.inspectionStatusCd());
+        log.info("  - 수행자ID (개선담당자용): {}", request.executorId());
 
         // TODO: Spring Security에서 현재 사용자 ID 가져오기
         String userId = "system";
@@ -269,6 +273,7 @@ public class ImplInspectionPlanController {
                 itemId,
                 request.inspectionStatusCd(),
                 request.inspectionResultContent(),
+                request.executorId(),
                 userId
         );
 

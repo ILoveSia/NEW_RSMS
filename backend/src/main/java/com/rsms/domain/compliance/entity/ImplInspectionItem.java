@@ -70,6 +70,12 @@ public class ImplInspectionItem {
     private String inspectorId;
 
     /**
+     * 점검자명 (employees 테이블 조인 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String inspectorName;
+
+    /**
      * 점검결과상태코드 (01:미점검, 02:적정, 03:부적정)
      */
     @Column(name = "inspection_status_cd", length = 20, nullable = false)

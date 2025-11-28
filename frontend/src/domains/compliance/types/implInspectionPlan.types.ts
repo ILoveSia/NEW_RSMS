@@ -64,6 +64,8 @@ export interface ImplInspectionItemDto {
   // 1단계: 점검 정보
   /** 점검자ID */
   inspectorId: string;
+  /** 점검자명 (employees.emp_name) */
+  inspectorName?: string;
   /** 점검결과상태코드 (01:미점검, 02:적정, 03:부적정) */
   inspectionStatusCd: string;
   /** 점검결과상태명 */
@@ -80,6 +82,8 @@ export interface ImplInspectionItemDto {
   improvementStatusName: string;
   /** 개선담당자ID */
   improvementManagerId: string;
+  /** 개선담당자명 (employees.emp_name) */
+  improvementManagerName?: string;
   /** 개선계획내용 */
   improvementPlanContent: string;
   /** 개선계획수립일자 */
@@ -127,6 +131,16 @@ export interface ImplInspectionItemDto {
     obligationInfo: string;        // 관리의무내용 (management_obligations.obligation_info)
     execCheckFrequencyCd: string;  // 수행점검주기 (점검주기)
     execCheckMethod: string;       // 수행점검항목 (이행점검방법)
+
+    // 수행정보 (dept_manager_manuals 테이블)
+    executorId?: string;           // 수행자ID
+    executorName?: string;         // 수행자명 (employees.emp_name)
+    executionDate?: string;        // 수행일자
+    executionStatus?: string;      // 수행상태코드
+    executionStatusName?: string;  // 수행상태명
+    executionResultCd?: string;    // 수행결과코드
+    executionResultName?: string;  // 수행결과명
+    executionResultContent?: string; // 수행결과내용
 
     // 책무상세 정보
     responsibilityDetailCd: string;   // 책무상세코드

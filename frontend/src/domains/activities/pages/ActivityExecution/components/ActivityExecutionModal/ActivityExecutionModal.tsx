@@ -5,8 +5,9 @@
  */
 
 import { Button } from '@/shared/components/atoms/Button';
-import styles from './ActivityExecutionModal.module.scss';
+import type { UseCommonCodeReturn } from '@/shared/hooks/useCommonCode/useCommonCode';
 import { yupResolver } from '@hookform/resolvers/yup';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Dialog,
   DialogActions,
@@ -21,7 +22,6 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -34,7 +34,7 @@ import {
   ActivityExecution,
   ActivityExecutionFormData
 } from '../../types/activityExecution.types';
-import type { UseCommonCodeReturn } from '@/shared/hooks/useCommonCode/useCommonCode';
+import styles from './ActivityExecutionModal.module.scss';
 
 interface ActivityExecutionModalProps {
   open: boolean;
@@ -175,16 +175,16 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
 
         <DialogContent dividers sx={{ p: 3 }}>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               {/* 왼쪽: 관리활동 영역 (읽기 전용) */}
               <Grid item xs={12} md={7}>
                 <Typography className={styles.sectionTitle}>
                   관리활동 영역
                 </Typography>
 
-                {/* 카드 섹션 1: 기본 정보 */}
+                {/* 관리활동 정보 (기본정보 + 점검정보 통합) */}
                 <div className={`${styles.cardSection} ${styles.cardBasicInfo}`}>
-                  <div className={styles.cardTitle}>📋 기본 정보</div>
+                  <div className={styles.cardTitle}>📋 관리활동 정보</div>
 
                   <div className={styles.fieldGroup}>
                     <Typography className={styles.fieldLabel}>부서명</Typography>
@@ -220,11 +220,6 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                       InputProps={{ readOnly: true }}
                     />
                   </div>
-                </div>
-
-                {/* 카드 섹션 2: 점검 정보 */}
-                <div className={`${styles.cardSection} ${styles.cardInspectionInfo}`}>
-                  <div className={styles.cardTitle}>📝 점검 정보</div>
 
                   <div className={styles.fieldGroup}>
                     <Typography className={styles.fieldLabel}>수행점검항목</Typography>
@@ -235,19 +230,6 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                       size="small"
                       variant="outlined"
                       value={activity?.execCheckMethod || '-'}
-                      InputProps={{ readOnly: true }}
-                    />
-                  </div>
-
-                  <div className={styles.fieldGroup}>
-                    <Typography className={styles.fieldLabel}>점검세부내용</Typography>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={4}
-                      size="small"
-                      variant="outlined"
-                      value={activity?.execCheckDetail || '-'}
                       InputProps={{ readOnly: true }}
                     />
                   </div>
@@ -373,7 +355,7 @@ const ActivityExecutionModal: React.FC<ActivityExecutionModalProps> = ({
                           {...field}
                           fullWidth
                           multiline
-                          rows={6}
+                          rows={7}
                           error={!!errors.activityOpinion}
                           helperText={errors.activityOpinion?.message}
                         />

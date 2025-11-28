@@ -15,7 +15,20 @@ export interface InspectionExecution {
   activityFrequencyCd: string;               // 관리활동수행주기
   orgCode: string;                           // 부서
   inspectionMethod: string;                  // 이행점검방법
-  inspector: string;                         // 점검자
+
+  // 수행정보 (dept_manager_manuals 테이블)
+  executorId?: string;                       // 수행자ID (dept_manager_manuals.executor_id)
+  executorName?: string;                     // 수행자명 (employees.emp_name)
+  executionDate?: string;                    // 수행일자 (dept_manager_manuals.execution_date)
+  executionStatus?: string;                  // 수행상태 (dept_manager_manuals.execution_status)
+  executionStatusName?: string;              // 수행상태명
+  executionResultCd?: string;                // 수행결과코드 (dept_manager_manuals.execution_result_cd)
+  executionResultName?: string;              // 수행결과명
+  executionResultContent?: string;           // 수행결과내용 (dept_manager_manuals.execution_result_content)
+
+  // 점검정보
+  inspector: string;                         // 점검자ID
+  inspectorName?: string;                    // 점검자명 (employees.emp_name)
   inspectionResult?: string;                 // 점검결과
   inspectionDetail?: string;                 // 점검세부내용
   inspectionStatus: InspectionStatus;        // 상태

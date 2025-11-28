@@ -15,6 +15,8 @@ export interface ImprovementData {
   // dept_manager_manuals 테이블 컬럼 (순번~부서)
   sequenceNumber: number;                  // 순번
   inspectionName: string;                  // 점검명
+  responsibilityInfo: string;              // 책무
+  responsibilityDetailInfo: string;        // 책무상세
   obligationInfo: string;                  // 관리의무
   managementActivityName: string;          // 관리활동명
   orgCode: string;                         // 부서
@@ -89,6 +91,36 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
     cellRenderer: (params: any) => {
       const value = params.value;
       return value || '';
+    }
+  },
+  {
+    // 책무 컬럼 (responsibilities.responsibility_info)
+    field: 'responsibilityInfo',
+    headerName: '책무',
+    width: 200,
+    minWidth: 150,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value || '-';
+    }
+  },
+  {
+    // 책무상세 컬럼 (responsibility_details.responsibility_detail_info)
+    field: 'responsibilityDetailInfo',
+    headerName: '책무상세',
+    width: 250,
+    minWidth: 200,
+    sortable: true,
+    filter: 'agTextColumnFilter',
+    cellClass: 'ag-cell-left',
+    headerClass: 'ag-header-center',
+    cellRenderer: (params: any) => {
+      const value = params.value;
+      return value || '-';
     }
   },
   {

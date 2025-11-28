@@ -228,6 +228,8 @@ export interface UpdateInspectionResultRequest {
   inspectionStatusCd: string;
   /** 점검결과내용 */
   inspectionResultContent: string;
+  /** 수행자ID (부적정 시 개선담당자로 설정) */
+  executorId?: string;
 }
 
 /**
@@ -244,4 +246,38 @@ export const updateInspectionResult = async (
     request
   );
   return response.data;
+};
+
+// ============================================================
+// 이행점검개선 페이지용 API (부적정 항목만 조회)
+// ============================================================
+
+/**
+ * 부적정 항목 전체 조회 (이행점검개선 페이지용)
+ * GET /api/compliance/impl-inspection-plans/items/execution/all
+ * - inspection_status_cd = '03' (부적정) 항목만 필터링
+ * - 책무/책무상세/관리의무 정보 포함
+ */
+export const getAllItemsForImprovement = async (): Promise<ImplInspectionItemDto[]> => {
+  const response = await apiClient.get<ImplInspectionItemDto[]>(
+    `${BASE_URL}/items/execution/all`
+  );
+  // 부적정(03) 항목만 필터링
+  return response.data.filter(item => item.inspectionStatusCd === '03');
+};
+
+/**
+ * 원장차수ID별 부적정 항목 조회 (이행점검개선 페이지용)
+ * GET /api/compliance/impl-inspection-plans/items/execution/ledger-order/{ledgerOrderId}
+ * - inspection_status_cd = '03' (부적정) 항목만 필터링
+ * - 책무/책무상세/관리의무 정보 포함
+ */
+export const getItemsByLedgerOrderIdForImprovement = async (
+  ledgerOrderId: string
+): Promise<ImplInspectionItemDto[]> => {
+  const response = await apiClient.get<ImplInspectionItemDto[]>(
+    `${BASE_URL}/items/execution/ledger-order/${ledgerOrderId}`
+  );
+  // 부적정(03) 항목만 필터링
+  return response.data.filter(item => item.inspectionStatusCd === '03');
 };

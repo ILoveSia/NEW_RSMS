@@ -178,19 +178,20 @@ export const executionColumns: ColDef<InspectionExecution>[] = [
     headerClass: 'ag-header-center'
   },
   {
-    // 점검자 컬럼
-    field: 'inspector',
+    // 점검자 컬럼 - 점검자명(성명) 표시
+    field: 'inspectorName',
     headerName: '점검자',
     width: 100,
     minWidth: 90,
     suppressSizeToFit: true,
-    sortable: false,
-    filter: false,
+    sortable: true,
+    filter: 'agTextColumnFilter',
     cellClass: 'ag-cell-center',
     headerClass: 'ag-header-center',
     cellRenderer: (params: any) => {
       const value = params.value;
-      if (!value) {
+      // 점검자명이 없거나 빈 문자열인 경우 '미지정' 표시
+      if (!value || value.trim() === '') {
         return (
           <span style={{
             color: '#999',

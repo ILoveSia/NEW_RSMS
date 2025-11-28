@@ -10,6 +10,7 @@
 
 import { Button } from '@/shared/components/atoms/Button';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Dialog,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -483,10 +485,26 @@ const ImplMonitoringFormModal: React.FC<ImplMonitoringFormModalProps> = ({
           background: 'var(--theme-page-header-bg)',
           color: 'var(--theme-page-header-text)',
           fontSize: '1.25rem',
-          fontWeight: 600
+          fontWeight: 600,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pr: 1
         }}
       >
-        {title}
+        <span>{title}</span>
+        <IconButton
+          onClick={onClose}
+          disabled={loading}
+          sx={{
+            color: 'var(--theme-page-header-text)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            }
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent dividers sx={{ p: 2 }}>

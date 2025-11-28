@@ -34,6 +34,7 @@ public class ImplInspectionItemDto {
     /**
      * 부서장업무메뉴얼 정보 중첩 객체
      * - 관리의무, 책무상세, 책무 정보 포함
+     * - 수행정보 포함 (수행자명, 수행결과 등)
      */
     @Getter
     @Setter
@@ -50,6 +51,16 @@ public class ImplInspectionItemDto {
         private String obligationInfo;      // 관리의무내용 (management_obligations.obligation_info)
         private String execCheckFrequencyCd; // 수행점검주기 (점검주기)
         private String execCheckMethod;     // 수행점검항목 (이행점검방법)
+
+        // 수행정보 (dept_manager_manuals 테이블)
+        private String executorId;          // 수행자ID
+        private String executorName;        // 수행자명 (employees.emp_name)
+        private String executionDate;       // 수행일자
+        private String executionStatus;     // 수행상태코드
+        private String executionStatusName; // 수행상태명
+        private String executionResultCd;   // 수행결과코드
+        private String executionResultName; // 수행결과명
+        private String executionResultContent; // 수행결과내용
 
         // 책무상세 정보
         private String responsibilityDetailCd;   // 책무상세코드
@@ -123,6 +134,7 @@ public class ImplInspectionItemDto {
                 .implInspectionPlanId(entity.getImplInspectionPlanId())
                 .manualCd(entity.getManualCd())
                 .inspectorId(entity.getInspectorId())
+                .inspectorName(entity.getInspectorName())  // 점검자명 (Transient 필드)
                 .inspectionStatusCd(entity.getInspectionStatusCd())
                 .inspectionStatusName(entity.getInspectionStatusName())
                 .inspectionResultContent(entity.getInspectionResultContent())
@@ -191,6 +203,16 @@ public class ImplInspectionItemDto {
                     .obligationInfo(obligationInfo)
                     .execCheckFrequencyCd(manual.getExecCheckFrequencyCd())
                     .execCheckMethod(manual.getExecCheckMethod())
+                    // 수행정보 (dept_manager_manuals 테이블)
+                    .executorId(manual.getExecutorId())
+                    .executorName(manual.getExecutorName())
+                    .executionDate(manual.getExecutionDate() != null ? manual.getExecutionDate().toString() : null)
+                    .executionStatus(manual.getExecutionStatus())
+                    .executionStatusName(manual.getExecutionStatusName())
+                    .executionResultCd(manual.getExecutionResultCd())
+                    .executionResultName(manual.getExecutionResultName())
+                    .executionResultContent(manual.getExecutionResultContent())
+                    // 책무 정보
                     .responsibilityDetailCd(responsibilityDetailCd)
                     .responsibilityDetailInfo(responsibilityDetailInfo)
                     .responsibilityCd(responsibilityCd)
