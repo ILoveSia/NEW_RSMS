@@ -281,3 +281,64 @@ export const getItemsByLedgerOrderIdForImprovement = async (
   // 부적정(03) 항목만 필터링
   return response.data.filter(item => item.inspectionStatusCd === '03');
 };
+
+/**
+ * 이행점검항목 단건 조회 (개선이행 모달용)
+ * GET /api/compliance/impl-inspection-plans/items/{itemId}
+ * - 책무/책무상세/관리의무 정보 포함
+ * - Transient 필드 포함 (수행자명, 점검자명, 개선담당자명 등)
+ */
+export const getImplInspectionItem = async (
+  itemId: string
+): Promise<ImplInspectionItemDto> => {
+  const response = await apiClient.get<ImplInspectionItemDto>(
+    `${BASE_URL}/items/${itemId}`
+  );
+  return response.data;
+};
+
+/**
+ * 개선이행 업데이트 요청 타입
+ * - 개선계획, 개선이행, 최종점검 정보 업데이트
+ */
+export interface UpdateImprovementRequest {
+  /** 개선담당자ID */
+  improvementManagerId?: string;
+  /** 개선이행상태코드 (01~05) */
+  improvementStatusCd?: string;
+  /** 개선계획내용 */
+  improvementPlanContent?: string;
+  /** 개선계획수립일자 (yyyy-MM-dd) */
+  improvementPlanDate?: string;
+  /** 개선계획 승인자ID */
+  improvementApprovedBy?: string;
+  /** 개선계획 승인일자 (yyyy-MM-dd) */
+  improvementApprovedDate?: string;
+  /** 개선이행세부내용 */
+  improvementDetailContent?: string;
+  /** 개선완료일자 (yyyy-MM-dd) */
+  improvementCompletedDate?: string;
+  /** 최종점검결과코드 (01:승인, 02:반려) */
+  finalInspectionResultCd?: string;
+  /** 최종점검결과내용 */
+  finalInspectionResultContent?: string;
+  /** 최종점검일자 (yyyy-MM-dd) */
+  finalInspectionDate?: string;
+}
+
+/**
+ * 개선이행 업데이트
+ * PUT /api/compliance/impl-inspection-plans/items/{itemId}/improvement
+ * - 개선계획, 개선이행, 최종점검 정보 업데이트
+ * - 개선담당자(improvementManagerId)와 점검자(inspectorId)에 따라 수정 권한 분리
+ */
+export const updateImprovement = async (
+  itemId: string,
+  request: UpdateImprovementRequest
+): Promise<ImplInspectionItemDto> => {
+  const response = await apiClient.put<ImplInspectionItemDto>(
+    `${BASE_URL}/items/${itemId}/improvement`,
+    request
+  );
+  return response.data;
+};

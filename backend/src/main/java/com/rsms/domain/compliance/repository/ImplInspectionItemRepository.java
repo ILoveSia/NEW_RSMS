@@ -179,4 +179,19 @@ public interface ImplInspectionItemRepository extends JpaRepository<ImplInspecti
     List<ImplInspectionItem> findByImplInspectionPlanIdWithFullHierarchy(
             @Param("implInspectionPlanId") String implInspectionPlanId,
             @Param("isActive") String isActive);
+
+    /**
+     * 점검항목 단건 조회 (책무/책무상세/관리의무 정보 포함)
+     * - 개선이행 모달 상세정보 조회용
+     * - dept_manager_manuals → management_obligations → responsibility_details → responsibilities JOIN
+     */
+    @Query("SELECT DISTINCT i FROM ImplInspectionItem i " +
+           "LEFT JOIN FETCH i.deptManagerManual m " +
+           "LEFT JOIN FETCH m.organization " +
+           "LEFT JOIN FETCH m.managementObligation o " +
+           "LEFT JOIN FETCH o.responsibilityDetail rd " +
+           "LEFT JOIN FETCH rd.responsibility r " +
+           "LEFT JOIN FETCH i.implInspectionPlan p " +
+           "WHERE i.implInspectionItemId = :itemId")
+    Optional<ImplInspectionItem> findByIdWithFullHierarchy(@Param("itemId") String itemId);
 }

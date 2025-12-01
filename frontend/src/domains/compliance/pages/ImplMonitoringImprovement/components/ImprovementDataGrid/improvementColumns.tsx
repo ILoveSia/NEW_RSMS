@@ -21,17 +21,33 @@ export interface ImprovementData {
   managementActivityName: string;          // 관리활동명
   orgCode: string;                         // 부서
 
+  // 수행활동 정보 (dept_manager_manuals 테이블)
+  executorId: string;                      // 수행자ID (executor_id)
+  executorName: string;                    // 수행자명
+  executionResultCd: string;               // 수행결과코드 (execution_result_cd: 01=적정, 02=부적정)
+  executionResultName: string;             // 수행결과명
+  executionResultContent: string;          // 수행결과내용 (execution_result_content)
+  activityFrequencyCd: string;             // 점검주기코드 (exec_check_frequency_cd)
+  inspectionMethod: string;                // 수행점검항목 (exec_check_method)
+
   // impl_inspection_items 테이블 컬럼 (점검자~최종점검결과)
-  inspector: string;                       // 점검자 (inspector_id)
+  inspector: string;                       // 점검자ID (inspector_id)
+  inspectorName: string;                   // 점검자명
   inspectionResult: string;                // 점검결과 (inspection_status_cd: 02=적정, 03=부적정)
-  improvementManager: string;              // 수행자(개선담당자) (improvement_manager_id)
+  inspectionResultContent: string;         // 점검결과내용 (inspection_result_content)
+  improvementManagerId: string;            // 개선담당자ID (improvement_manager_id)
+  improvementManagerName: string;          // 개선담당자명
   improvementStatus: string;               // 개선이행상태 (improvement_status_cd: 01=개선미이행, 02=진행중, 03=완료)
+  improvementPlanContent?: string;         // 개선계획내용 (improvement_plan_content)
   improvementPlanDate: string | null;      // 개선계획수립일자 (improvement_plan_date)
   improvementApprovedDate: string | null;  // 개선승인일자 (improvement_plan_approved_date)
+  improvementDetailContent?: string;       // 개선이행세부내용 (improvement_detail_content)
   improvementCompletedDate: string | null; // 개선완료일자 (improvement_completed_date)
   finalInspectionResult: string;           // 최종점검결과 (final_inspection_result_cd: 01=승인, 02=반려)
   finalInspectionDate: string | null;      // 최종점검일자 (final_inspection_date)
   finalInspectionOpinion: string;          // 최종점검결과내용 (final_inspection_result_content)
+  finalInspectorId: string;                // 최종점검자ID (final_inspector_id)
+  finalInspectorName: string;              // 최종점검자명
 }
 
 // 관리활동명 링크 렌더러 (상세조회용)
@@ -164,7 +180,7 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
   // impl_inspection_items 테이블 컬럼 (점검자~최종점검결과)
   // ========================================
   {
-    field: 'inspector',
+    field: 'inspectorName',
     headerName: '점검자',
     width: 150,
     minWidth: 120,
@@ -220,7 +236,7 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
     }
   },
   {
-    field: 'improvementManager',
+    field: 'improvementManagerName',
     headerName: '개선담당자(수행자)',
     width: 180,
     minWidth: 150,

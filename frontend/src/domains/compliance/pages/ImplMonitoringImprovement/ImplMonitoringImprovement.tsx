@@ -24,7 +24,10 @@ import type {
 // API
 import {
   getAllItemsForImprovement,
-  getItemsByLedgerOrderIdForImprovement
+  getItemsByLedgerOrderIdForImprovement,
+  getImplInspectionItem,
+  updateImprovement,
+  type UpdateImprovementRequest
 } from '@/domains/compliance/api/implInspectionPlanApi';
 import type { ImplInspectionItemDto } from '@/domains/compliance/types/implInspectionPlan.types';
 
@@ -53,7 +56,7 @@ const transformApiDataToImprovement = (
 ): ImprovementData[] => {
   return items.map((item, index) => ({
     id: item.implInspectionItemId,
-    // dept_manager_manuals 테이블 컬럼
+    // dept_manager_manuals 테이블 컬럼 (관리활동 정보)
     sequenceNumber: startIndex + index + 1,
     inspectionName: item.implInspectionPlan?.implInspectionName || '',
     responsibilityInfo: item.deptManagerManual?.responsibilityInfo || '',
@@ -61,17 +64,36 @@ const transformApiDataToImprovement = (
     obligationInfo: item.deptManagerManual?.obligationInfo || '',
     managementActivityName: item.deptManagerManual?.activityName || '',
     orgCode: item.deptManagerManual?.orgName || item.deptManagerManual?.orgCode || '',
-    // impl_inspection_items 테이블 컬럼
-    inspector: item.inspectorName || item.inspectorId || '',
+
+    // 수행활동 정보 (dept_manager_manuals 테이블)
+    executorId: item.deptManagerManual?.executorId || '',
+    executorName: item.deptManagerManual?.executorName || '',
+    executionResultCd: item.deptManagerManual?.executionResultCd || '',
+    executionResultName: item.deptManagerManual?.executionResultName || '',
+    executionResultContent: item.deptManagerManual?.executionResultContent || '',
+    activityFrequencyCd: item.deptManagerManual?.execCheckFrequencyCd || '',
+    inspectionMethod: item.deptManagerManual?.execCheckMethod || '',
+
+    // impl_inspection_items 테이블 컬럼 (점검정보)
+    inspector: item.inspectorId || '',
+    inspectorName: item.inspectorName || '',
     inspectionResult: item.inspectionStatusCd || '',
-    improvementManager: item.improvementManagerName || item.improvementManagerId || '',
+    inspectionResultContent: item.inspectionResultContent || '',
+
+    // 개선이행 정보
+    improvementManagerId: item.improvementManagerId || '',
+    improvementManagerName: item.improvementManagerName || '',
     improvementStatus: item.improvementStatusCd || '01',
     improvementPlanDate: item.improvementPlanDate || null,
     improvementApprovedDate: item.improvementPlanApprovedDate || null,
     improvementCompletedDate: item.improvementCompletedDate || null,
+
+    // 최종점검 정보
     finalInspectionResult: item.finalInspectionResultCd || '',
     finalInspectionDate: item.finalInspectionDate || null,
-    finalInspectionOpinion: item.finalInspectionResultContent || ''
+    finalInspectionOpinion: item.finalInspectionResultContent || '',
+    finalInspectorId: item.finalInspectorId || '',
+    finalInspectorName: item.finalInspectorName || ''
   }));
 };
 
@@ -166,42 +188,6 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }));
   }, [selectedExecutions]);
 
-  const handleRequestApproval = useCallback(async () => {
-    if (selectedExecutions.length === 0) {
-      toast.warning('승인요청할 항목을 선택해주세요.');
-      return;
-    }
-
-    const confirmMessage = `선택된 ${selectedExecutions.length}개의 개선계획을 승인요청하시겠습니까?`;
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
-
-    setLoadingStates(prev => ({ ...prev, detail: true }));
-    const loadingToastId = toast.loading(`${selectedExecutions.length}개 개선계획을 승인요청 중입니다...`);
-
-    try {
-      // TODO: 실제 개선계획 승인요청 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      setExecutions(prev =>
-        prev.map(exec =>
-          selectedExecutions.some(selected => selected.id === exec.id)
-            ? { ...exec, improvementStatus: '04' } // 개선이행으로 상태 변경
-            : exec
-        )
-      );
-      setSelectedExecutions([]);
-
-      toast.update(loadingToastId, 'success', `${selectedExecutions.length}개 개선계획이 승인요청되었습니다.`);
-    } catch (error) {
-      toast.update(loadingToastId, 'error', '개선계획 승인요청에 실패했습니다.');
-      console.error('승인요청 실패:', error);
-    } finally {
-      setLoadingStates(prev => ({ ...prev, detail: false }));
-    }
-  }, [selectedExecutions]);
-
   const handleCompleteImprovement = useCallback(async () => {
     if (selectedExecutions.length === 0) {
       toast.warning('개선완료 처리할 항목을 선택해주세요.');
@@ -261,13 +247,110 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }));
   }, []);
 
-  const handleExecutionDetail = useCallback((execution: ImprovementData) => {
-    setModalState(prev => ({
-      ...prev,
-      detailModal: true,
-      selectedExecution: execution
-    }));
+  /**
+   * 개선이행 상세 모달 열기
+   * - API에서 최신 데이터를 조회하여 모달에 표시
+   */
+  const handleExecutionDetail = useCallback(async (execution: ImprovementData) => {
+    setLoadingStates(prev => ({ ...prev, detail: true }));
+
+    try {
+      // API에서 최신 상세 데이터 조회
+      const latestData = await getImplInspectionItem(execution.id);
+
+      // API 응답을 ImprovementData 형식으로 변환
+      const updatedExecution: ImprovementData = {
+        ...execution,
+        // 개선이행 정보 업데이트
+        improvementManagerId: latestData.improvementManagerId || execution.improvementManagerId,
+        improvementManagerName: latestData.improvementManagerName || execution.improvementManagerName,
+        improvementStatus: latestData.improvementStatusCd || execution.improvementStatus,
+        improvementPlanDate: latestData.improvementPlanDate || execution.improvementPlanDate,
+        improvementPlanContent: latestData.improvementPlanContent || '',
+        improvementApprovedDate: latestData.improvementPlanApprovedDate || execution.improvementApprovedDate,
+        improvementDetailContent: latestData.improvementDetailContent || '',
+        improvementCompletedDate: latestData.improvementCompletedDate || execution.improvementCompletedDate,
+        // 최종점검 정보 업데이트
+        finalInspectionResult: latestData.finalInspectionResultCd || execution.finalInspectionResult,
+        finalInspectionDate: latestData.finalInspectionDate || execution.finalInspectionDate,
+        finalInspectionOpinion: latestData.finalInspectionResultContent || execution.finalInspectionOpinion,
+        // 점검정보
+        inspectionResultContent: latestData.inspectionResultContent || execution.inspectionResultContent
+      };
+
+      setModalState(prev => ({
+        ...prev,
+        detailModal: true,
+        selectedExecution: updatedExecution
+      }));
+    } catch (error) {
+      console.error('상세 데이터 조회 실패:', error);
+      toast.error('상세 데이터 조회에 실패했습니다.');
+      // 에러 시 기존 데이터로 모달 열기
+      setModalState(prev => ({
+        ...prev,
+        detailModal: true,
+        selectedExecution: execution
+      }));
+    } finally {
+      setLoadingStates(prev => ({ ...prev, detail: false }));
+    }
   }, []);
+
+  /**
+   * 개선이행 업데이트 핸들러
+   * - ImprovementDetailModal에서 저장 버튼 클릭 시 호출
+   */
+  const handleImprovementUpdate = useCallback(async (id: string, formData: any) => {
+    setLoadingStates(prev => ({ ...prev, detail: true }));
+    const loadingToastId = toast.loading('개선이행 정보를 저장 중입니다...');
+
+    try {
+      // 폼 데이터를 API 요청 형식으로 변환
+      const request: UpdateImprovementRequest = {
+        improvementManagerId: formData.improvementManager,
+        improvementStatusCd: formData.improvementStatus,
+        improvementPlanContent: formData.improvementPlanContent,
+        improvementPlanDate: formData.improvementPlanDate,
+        improvementApprovedBy: undefined, // 승인자는 별도 로직으로 처리
+        improvementApprovedDate: formData.improvementApprovedDate,
+        improvementDetailContent: formData.improvementDetail,
+        improvementCompletedDate: formData.improvementCompletedDate,
+        finalInspectionResultCd: formData.finalInspectionResult,
+        finalInspectionResultContent: formData.finalInspectionOpinion,
+        finalInspectionDate: formData.finalInspectionDate
+      };
+
+      // API 호출
+      const updatedItem = await updateImprovement(id, request);
+
+      // 목록 데이터 업데이트
+      setExecutions(prev =>
+        prev.map(exec =>
+          exec.id === id
+            ? {
+                ...exec,
+                improvementStatus: updatedItem.improvementStatusCd || exec.improvementStatus,
+                improvementPlanDate: updatedItem.improvementPlanDate || exec.improvementPlanDate,
+                improvementApprovedDate: updatedItem.improvementPlanApprovedDate || exec.improvementApprovedDate,
+                improvementCompletedDate: updatedItem.improvementCompletedDate || exec.improvementCompletedDate,
+                finalInspectionResult: updatedItem.finalInspectionResultCd || exec.finalInspectionResult,
+                finalInspectionDate: updatedItem.finalInspectionDate || exec.finalInspectionDate,
+                finalInspectionOpinion: updatedItem.finalInspectionResultContent || exec.finalInspectionOpinion
+              }
+            : exec
+        )
+      );
+
+      toast.update(loadingToastId, 'success', '개선이행 정보가 저장되었습니다.');
+      handleModalClose();
+    } catch (error) {
+      console.error('개선이행 업데이트 실패:', error);
+      toast.update(loadingToastId, 'error', '개선이행 정보 저장에 실패했습니다.');
+    } finally {
+      setLoadingStates(prev => ({ ...prev, detail: false }));
+    }
+  }, [handleModalClose]);
 
   /**
    * 부적정 항목 데이터 로딩 함수
@@ -423,10 +506,6 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     const canWritePlan = selectedExecutions.length > 0 &&
       selectedExecutions.every(e => e.improvementStatus === '01' || e.improvementStatus === '04');
 
-    // 개선계획 승인요청: 02(개선계획) 상태만 활성화
-    const canRequestApproval = selectedExecutions.length > 0 &&
-      selectedExecutions.every(e => e.improvementStatus === '02');
-
     // 개선완료: 04(개선이행) 상태만 활성화
     const canComplete = selectedExecutions.length > 0 &&
       selectedExecutions.every(e => e.improvementStatus === '04');
@@ -443,17 +522,6 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
         confirmationRequired: false
       },
       {
-        key: 'requestApproval',
-        type: 'custom',
-        label: '개선계획 승인요청',
-        variant: 'contained',
-        color: 'primary',
-        onClick: handleRequestApproval,
-        disabled: !canRequestApproval || loadingStates.detail,
-        loading: loadingStates.detail,
-        confirmationRequired: true
-      },
-      {
         key: 'complete',
         type: 'custom',
         label: '개선완료',
@@ -465,7 +533,7 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
         confirmationRequired: true
       }
     ];
-  }, [handleWriteImprovementPlan, handleRequestApproval, handleCompleteImprovement, selectedExecutions, loadingStates]);
+  }, [handleWriteImprovementPlan, handleCompleteImprovement, selectedExecutions, loadingStates]);
 
   const statusInfo = useMemo<StatusInfo[]>(() => [
     {
@@ -488,27 +556,10 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     }
   ], [statistics]);
 
-  const onRenderProfiler = useCallback((
-    id: string,
-    phase: 'mount' | 'update' | 'nested-update',
-    actualDuration: number,
-    baseDuration: number,
-    startTime: number,
-    commitTime: number
-  ) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 ImplMonitoringImprovement Performance Profiler`);
-      console.log(`📊 Phase: ${phase}`);
-      console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
-      console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
-      console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
-      console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
-
-      if (actualDuration > 16) {
-        console.warn(`⚠️ 성능 주의: 렌더링 시간이 16ms를 초과했습니다 (${actualDuration.toFixed(2)}ms)`);
-      }
-      console.groupEnd();
-    }
+  // 성능 모니터링 함수 - 콘솔 로그 제거됨
+  // 필요시 React DevTools Profiler 사용 권장
+  const onRenderProfiler = useCallback(() => {
+    // 성능 프로파일링 비활성화
   }, []);
 
   // 초기 데이터 로딩 (컴포넌트 마운트 시 1회만 실행)
@@ -648,12 +699,12 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
         <React.Suspense fallback={<LoadingSpinner />}>
           <ImprovementDetailModal
             open={modalState.detailModal}
-            mode="detail"
+            mode="edit"
             improvement={modalState.selectedExecution}
             onClose={handleModalClose}
             onSave={() => {}}
-            onUpdate={() => {}}
-            loading={loading}
+            onUpdate={handleImprovementUpdate}
+            loading={loadingStates.detail}
           />
         </React.Suspense>
       </div>

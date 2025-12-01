@@ -438,28 +438,10 @@ const ManualInquiry: React.FC<ManualInquiryProps> = ({ className }) => {
     }
   ], [statistics]);
 
-  // 성능 모니터링 함수
-  const onRenderProfiler = useCallback((
-    _profilerID: string,
-    phase: 'mount' | 'update' | 'nested-update',
-    actualDuration: number,
-    baseDuration: number,
-    startTime: number,
-    commitTime: number
-  ) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 ManualInquiry Performance Profiler`);
-      console.log(`📊 Phase: ${phase}`);
-      console.log(`⏱️ Actual Duration: ${actualDuration.toFixed(2)}ms`);
-      console.log(`📏 Base Duration: ${baseDuration.toFixed(2)}ms`);
-      console.log(`🚀 Start Time: ${startTime.toFixed(2)}ms`);
-      console.log(`✅ Commit Time: ${commitTime.toFixed(2)}ms`);
-
-      if (actualDuration > 16) { // 60fps 기준 16ms 초과 시 경고
-        console.warn(`⚠️ 성능 주의: 렌더링 시간이 16ms를 초과했습니다 (${actualDuration.toFixed(2)}ms)`);
-      }
-      console.groupEnd();
-    }
+  // 성능 모니터링 함수 - 콘솔 로그 제거됨
+  // 필요시 React DevTools Profiler 사용 권장
+  const onRenderProfiler = useCallback(() => {
+    // 성능 프로파일링 비활성화
   }, []);
 
   // Mock data loading

@@ -98,6 +98,10 @@ export interface ImplInspectionItemDto {
   improvementCompletedDate: string;
 
   // 3단계: 최종점검 정보
+  /** 최종점검자ID */
+  finalInspectorId?: string;
+  /** 최종점검자명 (employees.emp_name) */
+  finalInspectorName?: string;
   /** 최종점검결과코드 (01:승인, 02:반려) */
   finalInspectionResultCd: string;
   /** 최종점검결과내용 */

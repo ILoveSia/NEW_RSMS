@@ -107,6 +107,8 @@ public class ImplInspectionItemDto {
     private LocalDate improvementCompletedDate; // 개선완료일자
 
     // 3단계: 최종점검 정보
+    private String finalInspectorId;        // 최종점검자ID
+    private String finalInspectorName;      // 최종점검자명
     private String finalInspectionResultCd; // 최종점검결과코드
     private String finalInspectionResultName;// 최종점검결과명
     private String finalInspectionResultContent; // 최종점검결과내용
@@ -142,10 +144,13 @@ public class ImplInspectionItemDto {
                 .improvementStatusCd(entity.getImprovementStatusCd())
                 .improvementStatusName(entity.getImprovementStatusName())
                 .improvementManagerId(entity.getImprovementManagerId())
+                .improvementManagerName(entity.getImprovementManagerName())  // 개선담당자명 (Transient 필드)
                 .improvementPlanContent(entity.getImprovementPlanContent())
                 .improvementPlanDate(entity.getImprovementPlanDate())
                 .improvementDetailContent(entity.getImprovementDetailContent())
                 .improvementCompletedDate(entity.getImprovementCompletedDate())
+                .finalInspectorId(entity.getFinalInspectorId())
+                .finalInspectorName(entity.getFinalInspectorName())  // 최종점검자명 (Transient 필드)
                 .finalInspectionResultCd(entity.getFinalInspectionResultCd())
                 .finalInspectionResultContent(entity.getFinalInspectionResultContent())
                 .finalInspectionDate(entity.getFinalInspectionDate())

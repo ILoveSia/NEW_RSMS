@@ -33,9 +33,9 @@
   }
 }
 
-// 왼쪽 영역의 기본정보 카드
+// 왼쪽 영역의 기본정보 카드 (책무, 책무세부, 관리의무 추가로 높이 증가)
 .cardBasicInfo {
-  min-height: 280px;
+  min-height: 480px;
 }
 
 // 왼쪽 영역의 점검정보 카드
@@ -43,14 +43,14 @@
   min-height: 380px;
 }
 
-// 오른쪽 영역의 개선계획 카드
+// 오른쪽 영역의 개선계획 카드 (첨부파일 영역 포함)
 .cardImprovementPlan {
-  min-height: 380px;
+  min-height: 480px;  // 첨부파일 컴포넌트 공간 확보
 }
 
-// 오른쪽 영역의 개선이행 카드
+// 오른쪽 영역의 개선이행 카드 (첨부파일 영역 포함)
 .cardImprovementExecution {
-  min-height: 300px;
+  min-height: 420px;  // 첨부파일 컴포넌트 공간 확보
 }
 
 // 오른쪽 영역의 최종점검정보 입력 카드

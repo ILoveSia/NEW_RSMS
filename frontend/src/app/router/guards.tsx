@@ -128,21 +128,21 @@ function checkPermission(user: any, permission: RoutePermission): boolean {
       return true; // 이미 인증된 사용자
     
     case 'admin':
-      // 실제 DB 역할 코드 체크: 002(최고관리자), 103(시스템관리자)
+      // 실제 DB 역할 코드 체크: 101(최고관리자), 002(준법감시인), 103(시스템관리자)
       return user.roleCodes?.some((role: string) =>
-        ['ADMIN', '002', '103'].includes(role)
+        ['ADMIN', '101', '002', '103'].includes(role)
       ) || false;
-    
+
     case 'manager':
-      // 실제 DB 역할 코드 포함: 002(최고관리자), 103(시스템관리자), 201(임원), 202(부서장)
+      // 실제 DB 역할 코드 포함: 101(최고관리자), 002(준법감시인), 103(시스템관리자), 201(임원), 202(부서장)
       return user.roleCodes?.some((role: string) =>
-        ['ADMIN', 'CEO', 'EXECUTIVE', 'MANAGER', '002', '103', '201', '202'].includes(role)
+        ['ADMIN', 'CEO', 'EXECUTIVE', 'MANAGER', '101', '002', '103', '201', '202'].includes(role)
       ) || false;
 
     case 'executive':
-      // 실제 DB 역할 코드 포함: 002(최고관리자), 103(시스템관리자), 201(임원)
+      // 실제 DB 역할 코드 포함: 101(최고관리자), 002(준법감시인), 103(시스템관리자), 201(임원)
       return user.roleCodes?.some((role: string) =>
-        ['ADMIN', 'CEO', 'EXECUTIVE', '002', '103', '201'].includes(role)
+        ['ADMIN', 'CEO', 'EXECUTIVE', '101', '002', '103', '201'].includes(role)
       ) || false;
     
     default:

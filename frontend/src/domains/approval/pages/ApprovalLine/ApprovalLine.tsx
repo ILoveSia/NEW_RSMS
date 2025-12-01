@@ -279,24 +279,10 @@ const ApprovalLine: React.FC<ApprovalLineProps> = ({ className }) => {
     };
   }, [approvalLines]);
 
-  // React.Profiler onRender callback for performance monitoring
-  const onRenderProfiler = useCallback((
-    _id: string,
-    phase: 'mount' | 'update' | 'nested-update',
-    actualDuration: number,
-    baseDuration: number,
-    startTime: number,
-    commitTime: number
-  ) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.group(`🔍 ApprovalLine Performance Profiler`);
-      console.log(`Phase: ${phase}`);
-      console.log(`Actual duration: ${actualDuration.toFixed(2)}ms`);
-      console.log(`Base duration: ${baseDuration.toFixed(2)}ms`);
-      console.log(`Start time: ${startTime.toFixed(2)}ms`);
-      console.log(`Commit time: ${commitTime.toFixed(2)}ms`);
-      console.groupEnd();
-    }
+  // 성능 모니터링 함수 - 콘솔 로그 제거됨
+  // 필요시 React DevTools Profiler 사용 권장
+  const onRenderProfiler = useCallback(() => {
+    // 성능 프로파일링 비활성화
   }, []);
 
   /**
@@ -314,7 +300,6 @@ const ApprovalLine: React.FC<ApprovalLineProps> = ({ className }) => {
    */
   const handleRowClick = useCallback((approvalLine: ApprovalLineType) => {
     setSelectedApprovalLine(approvalLine);
-    console.log('선택된 결재선:', approvalLine);
   }, []);
 
   const handleRowDoubleClick = useCallback((approvalLine: ApprovalLineType) => {

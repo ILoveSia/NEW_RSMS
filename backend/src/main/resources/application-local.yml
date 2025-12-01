@@ -34,9 +34,9 @@ spring:
 
   # Flyway Configuration
   flyway:
-    enabled: false  # Flyway 임시 비활성화 (is_active 컬럼 타입을 수동으로 수정 후 재활성화)
+    enabled: false  # Flyway 비활성화 - attachments 테이블은 수동으로 생성 필요
     baseline-on-migrate: true  # 기존 스키마에 flyway_schema_history 자동 생성
-    baseline-version: 7  # V001-V007은 이미 적용된 것으로 간주
+    baseline-version: 15  # V001-V015는 이미 적용된 것으로 간주 (V016부터 실행)
     locations: classpath:db/migration
     sql-migration-prefix: V
     sql-migration-suffixes: .sql

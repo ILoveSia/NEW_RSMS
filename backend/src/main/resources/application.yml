@@ -147,6 +147,8 @@ rsms:
     jwt:
       secret: ${JWT_SECRET:rsms-secret-key-change-in-production}
       expiration: 86400000  # 24시간 (밀리초)
+  upload:
+    path: ${UPLOAD_PATH:./uploads}  # 파일 업로드 기본 경로
   cors:
     allowed-methods:
       - GET

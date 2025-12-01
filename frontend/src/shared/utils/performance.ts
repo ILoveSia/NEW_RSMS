@@ -86,16 +86,8 @@ class PerformanceStore {
     this.metrics.push(enhancedMetric);
     this.callbacks.forEach(callback => callback(enhancedMetric));
 
-    // 개발 환경에서 콘솔 로깅
-    if (process.env.NODE_ENV === 'development') {
-      const grade = this.getMetricGrade(metric);
-      console.group(`🎯 Performance Metric: ${metric.name}`);
-      console.log(`📊 Value: ${metric.value}${this.getMetricUnit(metric.name)}`);
-      console.log(`🎖️ Grade: ${grade}`);
-      console.log(`📍 URL: ${window.location.pathname}`);
-      console.log(`⏱️ Timestamp: ${new Date(enhancedMetric.timestamp).toISOString()}`);
-      console.groupEnd();
-    }
+    // 성능 메트릭 콘솔 로깅 비활성화
+    // 필요시 브라우저 DevTools Performance 탭 또는 Ctrl+Shift+P 사용
   }
 
   /**

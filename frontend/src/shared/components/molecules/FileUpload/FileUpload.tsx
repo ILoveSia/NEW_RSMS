@@ -283,6 +283,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           ))}
         </div>
       )}
+
+      {/* 읽기 전용 모드에서 파일이 없을 때 표시 */}
+      {readOnly && value.length === 0 && (
+        <div className={styles.emptyState}>
+          <AttachFileIcon className={styles.emptyIcon} />
+          <span>첨부된 파일이 없습니다</span>
+        </div>
+      )}
     </div>
   );
 };

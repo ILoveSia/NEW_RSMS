@@ -112,6 +112,12 @@ public class ImplInspectionItem {
     private String improvementManagerId;
 
     /**
+     * 개선담당자명 (employees 테이블 조인 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String improvementManagerName;
+
+    /**
      * 개선계획내용
      */
     @Column(name = "improvement_plan_content", columnDefinition = "TEXT")
@@ -150,6 +156,19 @@ public class ImplInspectionItem {
     // ============================================
     // 3단계: 최종점검 정보
     // ============================================
+
+    /**
+     * 최종점검자ID (DB 컬럼 없음, 점검자ID와 동일하게 사용)
+     * - 최종점검은 점검자(inspector_id)가 수행
+     */
+    @Transient
+    private String finalInspectorId;
+
+    /**
+     * 최종점검자명 (employees 테이블 조인 결과, DB 컬럼 아님)
+     */
+    @Transient
+    private String finalInspectorName;
 
     /**
      * 최종점검결과코드 (01:승인, 02:반려)

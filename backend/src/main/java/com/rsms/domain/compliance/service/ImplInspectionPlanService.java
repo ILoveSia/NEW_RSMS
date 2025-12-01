@@ -299,6 +299,7 @@ public class ImplInspectionPlanService {
     /**
      * Transient 필드 설정
      * - 수행자명 (executorName), 점검자명 (inspectorName)
+     * - 개선담당자명 (improvementManagerName), 최종점검자명 (finalInspectorName)
      * - 수행상태명 (executionStatusName), 수행결과명 (executionResultName)
      * @param items 이행점검항목 목록
      */
@@ -307,13 +308,21 @@ public class ImplInspectionPlanService {
             return;
         }
 
-        // 1. 수행자ID, 점검자ID 수집
+        // 1. 수행자ID, 점검자ID, 개선담당자ID, 최종점검자ID 수집
         List<String> employeeIds = items.stream()
                 .flatMap(item -> {
                     java.util.stream.Stream.Builder<String> builder = java.util.stream.Stream.builder();
                     // 점검자ID
                     if (item.getInspectorId() != null && !item.getInspectorId().isEmpty()) {
                         builder.add(item.getInspectorId());
+                    }
+                    // 개선담당자ID
+                    if (item.getImprovementManagerId() != null && !item.getImprovementManagerId().isEmpty()) {
+                        builder.add(item.getImprovementManagerId());
+                    }
+                    // 최종점검자ID
+                    if (item.getFinalInspectorId() != null && !item.getFinalInspectorId().isEmpty()) {
+                        builder.add(item.getFinalInspectorId());
                     }
                     // 수행자ID (부서장업무메뉴얼)
                     if (item.getDeptManagerManual() != null &&
@@ -345,6 +354,18 @@ public class ImplInspectionPlanService {
                 String inspectorName = employeeNameMap.get(item.getInspectorId());
                 log.info("  - 점검자ID: {}, 조회된 점검자명: {}", item.getInspectorId(), inspectorName);
                 item.setInspectorName(inspectorName != null ? inspectorName : item.getInspectorId());
+            }
+
+            // 개선담당자명 설정
+            if (item.getImprovementManagerId() != null && !item.getImprovementManagerId().isEmpty()) {
+                String managerName = employeeNameMap.get(item.getImprovementManagerId());
+                item.setImprovementManagerName(managerName != null ? managerName : item.getImprovementManagerId());
+            }
+
+            // 최종점검자명 설정
+            if (item.getFinalInspectorId() != null && !item.getFinalInspectorId().isEmpty()) {
+                String finalInspectorName = employeeNameMap.get(item.getFinalInspectorId());
+                item.setFinalInspectorName(finalInspectorName != null ? finalInspectorName : item.getFinalInspectorId());
             }
 
             // 부서장업무메뉴얼 Transient 필드 설정
@@ -434,6 +455,120 @@ public class ImplInspectionPlanService {
         log.info("✅ [ImplInspectionPlanService] 점검결과 업데이트 완료: {}", itemId);
 
         return ImplInspectionItemDto.from(savedItem);
+    }
+
+    /**
+     * 개선이행 업데이트
+     * - 개선계획, 개선이행, 최종점검 정보 업데이트
+     * @param itemId 점검항목ID
+     * @param improvementManagerId 개선담당자ID
+     * @param improvementStatusCd 개선이행상태코드 (01~05)
+     * @param improvementPlanContent 개선계획내용
+     * @param improvementPlanDate 개선계획수립일자
+     * @param improvementApprovedBy 개선계획 승인자ID
+     * @param improvementApprovedDate 개선계획 승인일자
+     * @param improvementDetailContent 개선이행세부내용
+     * @param improvementCompletedDate 개선완료일자
+     * @param finalInspectionResultCd 최종점검결과코드
+     * @param finalInspectionResultContent 최종점검결과내용
+     * @param finalInspectionDate 최종점검일자
+     * @param userId 수정자ID
+     * @return 업데이트된 항목 DTO
+     */
+    @Transactional
+    public ImplInspectionItemDto updateImprovement(
+            String itemId,
+            String improvementManagerId,
+            String improvementStatusCd,
+            String improvementPlanContent,
+            String improvementPlanDate,
+            String improvementApprovedBy,
+            String improvementApprovedDate,
+            String improvementDetailContent,
+            String improvementCompletedDate,
+            String finalInspectionResultCd,
+            String finalInspectionResultContent,
+            String finalInspectionDate,
+            String userId) {
+        log.info("✅ [ImplInspectionPlanService] 개선이행 업데이트 시작");
+        log.info("  - 점검항목ID: {}", itemId);
+        log.info("  - 개선이행상태코드: {}", improvementStatusCd);
+        log.info("  - 개선담당자ID: {}", improvementManagerId);
+
+        ImplInspectionItem item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("점검항목을 찾을 수 없습니다: " + itemId));
+
+        // 개선담당자ID 업데이트
+        if (improvementManagerId != null && !improvementManagerId.isEmpty()) {
+            item.setImprovementManagerId(improvementManagerId);
+        }
+
+        // 개선이행상태코드 업데이트
+        if (improvementStatusCd != null && !improvementStatusCd.isEmpty()) {
+            item.setImprovementStatusCd(improvementStatusCd);
+        }
+
+        // 개선계획 정보 업데이트
+        if (improvementPlanContent != null) {
+            item.setImprovementPlanContent(improvementPlanContent);
+        }
+        if (improvementPlanDate != null && !improvementPlanDate.isEmpty()) {
+            item.setImprovementPlanDate(java.time.LocalDate.parse(improvementPlanDate));
+        }
+
+        // 개선계획 승인 정보 업데이트
+        if (improvementApprovedBy != null && !improvementApprovedBy.isEmpty()) {
+            item.setImprovementPlanApprovedBy(improvementApprovedBy);
+        }
+        if (improvementApprovedDate != null && !improvementApprovedDate.isEmpty()) {
+            item.setImprovementPlanApprovedDate(java.time.LocalDate.parse(improvementApprovedDate));
+        }
+        if (improvementDetailContent != null) {
+            item.setImprovementDetailContent(improvementDetailContent);
+        }
+        if (improvementCompletedDate != null && !improvementCompletedDate.isEmpty()) {
+            item.setImprovementCompletedDate(java.time.LocalDate.parse(improvementCompletedDate));
+        }
+
+        // 최종점검 정보 업데이트
+        if (finalInspectionResultCd != null && !finalInspectionResultCd.isEmpty()) {
+            item.setFinalInspectionResultCd(finalInspectionResultCd);
+        }
+        if (finalInspectionResultContent != null) {
+            item.setFinalInspectionResultContent(finalInspectionResultContent);
+        }
+        if (finalInspectionDate != null && !finalInspectionDate.isEmpty()) {
+            item.setFinalInspectionDate(java.time.LocalDate.parse(finalInspectionDate));
+        }
+
+        item.setUpdatedBy(userId);
+
+        ImplInspectionItem savedItem = itemRepository.save(item);
+        log.info("✅ [ImplInspectionPlanService] 개선이행 업데이트 완료: {}", itemId);
+
+        // Transient 필드 설정
+        populateTransientFields(List.of(savedItem));
+
+        return ImplInspectionItemDto.from(savedItem);
+    }
+
+    /**
+     * 이행점검항목 단건 조회 (상세정보 포함)
+     * - Full Hierarchy 정보 포함 (책무/책무상세/관리의무)
+     * - Transient 필드 설정 (수행자명, 점검자명, 개선담당자명 등)
+     * @param itemId 점검항목ID
+     * @return 항목 DTO
+     */
+    public ImplInspectionItemDto findItemById(String itemId) {
+        log.info("✅ [ImplInspectionPlanService] 이행점검항목 단건 조회: {}", itemId);
+
+        ImplInspectionItem item = itemRepository.findByIdWithFullHierarchy(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("점검항목을 찾을 수 없습니다: " + itemId));
+
+        // Transient 필드 설정
+        populateTransientFields(List.of(item));
+
+        return ImplInspectionItemDto.from(item);
     }
 
     /**

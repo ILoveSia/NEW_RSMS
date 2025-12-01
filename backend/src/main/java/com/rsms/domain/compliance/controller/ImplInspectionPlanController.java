@@ -253,6 +253,29 @@ public class ImplInspectionPlanController {
     ) {}
 
     /**
+     * 개선이행 업데이트 요청 DTO
+     * - 개선계획, 개선이행, 최종점검 정보 업데이트
+     */
+    public record UpdateImprovementRequest(
+            // 개선계획 정보
+            String improvementManagerId,     // 개선담당자ID
+            String improvementStatusCd,      // 개선이행상태코드 (01~05)
+            String improvementPlanContent,   // 개선계획내용
+            String improvementPlanDate,      // 개선계획수립일자 (yyyy-MM-dd)
+
+            // 개선이행 정보
+            String improvementApprovedBy,    // 개선계획 승인자ID
+            String improvementApprovedDate,  // 개선계획 승인일자 (yyyy-MM-dd)
+            String improvementDetailContent, // 개선이행세부내용
+            String improvementCompletedDate, // 개선완료일자 (yyyy-MM-dd)
+
+            // 최종점검 정보
+            String finalInspectionResultCd,  // 최종점검결과코드 (01:승인, 02:반려)
+            String finalInspectionResultContent, // 최종점검결과내용
+            String finalInspectionDate       // 최종점검일자 (yyyy-MM-dd)
+    ) {}
+
+    /**
      * 점검결과 업데이트
      * PUT /api/compliance/impl-inspection-plans/items/{itemId}/inspection-result
      * - 점검결과상태코드, 점검결과내용, 점검일자 업데이트
@@ -278,5 +301,53 @@ public class ImplInspectionPlanController {
         );
 
         return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * 개선이행 업데이트
+     * PUT /api/compliance/impl-inspection-plans/items/{itemId}/improvement
+     * - 개선계획, 개선이행, 최종점검 정보 업데이트
+     * - 개선담당자(improvementManagerId)와 점검자(inspectorId)에 따라 수정 권한 분리
+     */
+    @PutMapping("/items/{itemId}/improvement")
+    public ResponseEntity<ImplInspectionItemDto> updateImprovement(
+            @PathVariable String itemId,
+            @RequestBody UpdateImprovementRequest request) {
+        log.info("✅ [ImplInspectionPlanController] 개선이행 업데이트: {}", itemId);
+        log.info("  - 개선이행상태코드: {}", request.improvementStatusCd());
+        log.info("  - 개선담당자ID: {}", request.improvementManagerId());
+
+        // TODO: Spring Security에서 현재 사용자 ID 가져오기
+        String userId = "system";
+
+        ImplInspectionItemDto updated = planService.updateImprovement(
+                itemId,
+                request.improvementManagerId(),
+                request.improvementStatusCd(),
+                request.improvementPlanContent(),
+                request.improvementPlanDate(),
+                request.improvementApprovedBy(),
+                request.improvementApprovedDate(),
+                request.improvementDetailContent(),
+                request.improvementCompletedDate(),
+                request.finalInspectionResultCd(),
+                request.finalInspectionResultContent(),
+                request.finalInspectionDate(),
+                userId
+        );
+
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * 이행점검항목 단건 조회
+     * GET /api/compliance/impl-inspection-plans/items/{itemId}
+     * - 개선이행 모달에서 상세 정보 조회용
+     */
+    @GetMapping("/items/{itemId}")
+    public ResponseEntity<ImplInspectionItemDto> findItemById(@PathVariable String itemId) {
+        log.info("✅ [ImplInspectionPlanController] 이행점검항목 단건 조회: {}", itemId);
+        ImplInspectionItemDto item = planService.findItemById(itemId);
+        return ResponseEntity.ok(item);
     }
 }
