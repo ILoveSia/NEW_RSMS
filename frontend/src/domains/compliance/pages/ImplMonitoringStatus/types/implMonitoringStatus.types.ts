@@ -116,7 +116,7 @@ export interface InspectionInfo {
 // 개선이행정보 타입
 export interface ImprovementInfo {
   improvementManagerId: string;              // 개선담당자 (impl_inspection_items.improvement_manager_id)
-  improvementStatusCd: string;               // 개선이행상태 (impl_inspection_items.improvement_status_cd) (01:개선미이행, 02:진행중, 03:완료)
+  improvementStatusCd: string;               // 개선이행상태 (impl_inspection_items.improvement_status_cd) (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료)
   improvementPlanContent: string;            // 개선계획내용 (impl_inspection_items.improvement_plan_content)
   improvementPlanDate: string;               // 개선계획수립일자 (impl_inspection_items.improvement_plan_date)
   improvementDetailContent: string;          // 개선이행세부내용 (impl_inspection_items.improvement_detail_content)

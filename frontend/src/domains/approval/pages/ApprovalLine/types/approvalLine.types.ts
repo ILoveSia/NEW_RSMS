@@ -2,9 +2,11 @@
  * 결재선 관리 타입 정의
  *
  * @description 결재선 관리 화면에서 사용되는 모든 타입을 정의
+ * - 백엔드 API DTO와 매핑
  * @author Claude AI
- * @version 1.0.0
+ * @version 2.0.0
  * @created 2025-09-24
+ * @updated 2025-12-02
  */
 
 // ===============================
@@ -17,20 +19,17 @@
 export type UseYN = 'Y' | 'N';
 
 /**
- * 결재선 업무 구분
+ * 결재선 업무 구분 (백엔드 workTypeCd)
  */
-export type WorkType = 'WRS' | 'PMS' | 'RMS' | 'AMS' | 'CMS' | 'ALL';
+export type WorkType = 'WRS' | 'IMPL' | 'IMPROVE' | string;
 
 /**
  * 업무 구분 라벨 매핑
  */
-export const WORK_TYPE_LABELS: Record<WorkType, string> = {
-  WRS: 'WRS-책무구조',
-  PMS: 'PMS-프로젝트관리',
-  RMS: 'RMS-리스크관리',
-  AMS: 'AMS-감사관리',
-  CMS: 'CMS-규정관리',
-  ALL: '전체'
+export const WORK_TYPE_LABELS: Record<string, string> = {
+  WRS: '책무구조도',
+  IMPL: '이행점검',
+  IMPROVE: '개선이행'
 };
 
 // ===============================
@@ -38,32 +37,77 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
 // ===============================
 
 /**
- * 결재선 기본 인터페이스
+ * 결재 유형 코드
+ */
+export type ApprovalTypeCd = 'DRAFT' | 'REVIEW' | 'APPROVE' | 'FINAL';
+
+/**
+ * 결재자 유형 코드
+ */
+export type ApproverTypeCd = 'USER' | 'POSITION' | 'DEPT';
+
+/**
+ * 결재선 단계 인터페이스 (백엔드 ApprovalLineStepDto 매핑)
+ */
+export interface ApprovalLineStep {
+  /** 단계 ID (백엔드: approvalLineStepId) */
+  id: string;
+
+  /** 결재선 ID (FK) */
+  approvalLineId?: string;
+
+  /** 단계 순서 (1부터 시작) */
+  stepOrder: number;
+
+  /** 단계명 (예: 기안, 검토, 승인, 최종승인) */
+  stepName: string;
+
+  /** 결재유형 코드 */
+  approvalTypeCd: ApprovalTypeCd | string;
+
+  /** 결재유형명 (표시용) */
+  approvalTypeName?: string;
+
+  /** 결재자유형 코드 */
+  approverTypeCd: ApproverTypeCd | string;
+
+  /** 결재자유형명 (표시용) */
+  approverTypeName?: string;
+
+  /** 결재자 ID (사용자/직책/부서 ID) */
+  approverId?: string;
+
+  /** 결재자명 (표시용) */
+  approverName?: string;
+
+  /** 필수여부 (Y/N) */
+  isRequired: UseYN | string;
+
+  /** 비고 */
+  remarks?: string;
+}
+
+/**
+ * 결재선 기본 인터페이스 (백엔드 ApprovalLineDto 매핑)
  */
 export interface ApprovalLine {
-  /** 결재선 ID */
+  /** 결재선 ID (백엔드: approvalLineId) */
   id: string;
 
   /** 순서 */
   sequence: number;
 
-  /** 결재선명 (필수) */
+  /** 결재선명 (백엔드: approvalLineName) */
   name: string;
 
-  /** 업무 구분 */
+  /** 업무 구분 코드 (백엔드: workTypeCd) */
   workType: WorkType;
+
+  /** 업무 구분명 (백엔드: workTypeName) */
+  workTypeName?: string;
 
   /** Popup 제목 */
   popupTitle: string;
-
-  /** URL 정보 */
-  url: string;
-
-  /** 설명 */
-  description?: string;
-
-  /** 팝업여부 */
-  isPopup: UseYN;
 
   /** 수정기능여부 */
   isEditable: UseYN;
@@ -73,6 +117,9 @@ export interface ApprovalLine {
 
   /** 비고 */
   remarks?: string;
+
+  /** 결재선 단계 목록 */
+  steps?: ApprovalLineStep[];
 
   /** 생성일시 */
   createdAt: string;
@@ -99,15 +146,6 @@ export interface ApprovalLineFormData {
 
   /** Popup 제목 */
   popupTitle: string;
-
-  /** URL 정보 */
-  url: string;
-
-  /** 설명 */
-  description?: string;
-
-  /** 팝업여부 */
-  isPopup: UseYN;
 
   /** 수정기능여부 */
   isEditable: UseYN;
@@ -176,75 +214,21 @@ export interface ApprovalLinePagination {
 }
 
 /**
- * 정렬 정보 인터페이스
+ * 통계 정보 인터페이스
  */
-export interface ApprovalLineSorting {
-  /** 정렬 대상 필드 */
-  field: keyof ApprovalLine;
+export interface ApprovalLineStatistics {
+  /** 전체 개수 */
+  total: number;
 
-  /** 정렬 방향 */
-  direction: 'asc' | 'desc';
-}
+  /** 사용중 개수 */
+  used: number;
 
-/**
- * 좌우 분할 레이아웃 상태
- */
-export interface SplitLayoutState {
-  /** 좌측 선택된 결재선 */
-  selectedApprovalLine: ApprovalLine | null;
-
-  /** 좌측 그리드 로딩 상태 */
-  leftLoading: boolean;
-
-  /** 우측 상세 로딩 상태 */
-  rightLoading: boolean;
+  /** 미사용 개수 */
+  unused: number;
 }
 
 // ===============================
-// API Response Types
-// ===============================
-
-/**
- * 결재선 목록 조회 응답
- */
-export interface ApprovalLineListResponse {
-  /** 결재선 목록 */
-  items: ApprovalLine[];
-
-  /** 페이지네이션 정보 */
-  pagination: ApprovalLinePagination;
-
-  /** 응답 메시지 */
-  message?: string;
-}
-
-/**
- * 결재선 상세 조회 응답
- */
-export interface ApprovalLineDetailResponse {
-  /** 결재선 정보 */
-  item: ApprovalLine;
-
-  /** 응답 메시지 */
-  message?: string;
-}
-
-/**
- * 결재선 생성/수정 응답
- */
-export interface ApprovalLineMutationResponse {
-  /** 성공 여부 */
-  success: boolean;
-
-  /** 결재선 정보 */
-  item?: ApprovalLine;
-
-  /** 응답 메시지 */
-  message: string;
-}
-
-// ===============================
-// Mock Data & Options
+// Options
 // ===============================
 
 /**
@@ -259,15 +243,13 @@ export interface SelectOption {
 }
 
 /**
- * 업무 구분 옵션
+ * 업무 구분 옵션 (백엔드 workTypeCd 매핑)
  */
 export const WORK_TYPE_OPTIONS: SelectOption[] = [
   { value: '', label: '전체' },
-  { value: 'WRS', label: 'WRS-책무구조' },
-  { value: 'PMS', label: 'PMS-프로젝트관리' },
-  { value: 'RMS', label: 'RMS-리스크관리' },
-  { value: 'AMS', label: 'AMS-감사관리' },
-  { value: 'CMS', label: 'CMS-규정관리' }
+  { value: 'WRS', label: '책무구조도' },
+  { value: 'IMPL', label: '이행점검' },
+  { value: 'IMPROVE', label: '개선이행' }
 ];
 
 /**
@@ -277,114 +259,6 @@ export const USE_YN_OPTIONS: SelectOption[] = [
   { value: '', label: '전체' },
   { value: 'Y', label: '사용' },
   { value: 'N', label: '미사용' }
-];
-
-/**
- * Mock 결재선 데이터
- */
-export const MOCK_APPROVAL_LINES: ApprovalLine[] = [
-  {
-    id: '1',
-    sequence: 1,
-    name: 'W01-특수기능사용권 결재',
-    workType: 'WRS',
-    popupTitle: '특수기능사용권 승인 결재',
-    url: 'WRS/POP_APRVL_ListDat_For...',
-    description: '특수기능사용권 승인을 위한 결재선',
-    isPopup: 'Y',
-    isEditable: 'Y',
-    isUsed: 'Y',
-    remarks: '시스템 핵심 기능',
-    createdAt: '2025-09-01 09:00:00',
-    updatedAt: '2025-09-20 14:30:00',
-    createdBy: 'admin',
-    updatedBy: 'admin'
-  },
-  {
-    id: '2',
-    sequence: 2,
-    name: 'W05-권한부여 결재',
-    workType: 'WRS',
-    popupTitle: '권한부여 결재',
-    url: 'WRS/POP_APRVL_ListDat_For...',
-    description: '시스템 권한부여를 위한 결재선',
-    isPopup: 'Y',
-    isEditable: 'Y',
-    isUsed: 'Y',
-    remarks: '권한 관리',
-    createdAt: '2025-09-01 09:15:00',
-    updatedAt: '2025-09-18 16:20:00',
-    createdBy: 'admin',
-    updatedBy: 'manager'
-  },
-  {
-    id: '3',
-    sequence: 3,
-    name: 'W02-이용권한 결재',
-    workType: 'WRS',
-    popupTitle: '이용권한 결재',
-    url: 'WRS/POP_APRVL_ListDat_For...',
-    description: '시스템 이용권한 승인 결재선',
-    isPopup: 'Y',
-    isEditable: 'Y',
-    isUsed: 'Y',
-    remarks: '일반 사용자 권한',
-    createdAt: '2025-09-01 10:00:00',
-    updatedAt: '2025-09-15 11:45:00',
-    createdBy: 'admin',
-    updatedBy: 'admin'
-  },
-  {
-    id: '4',
-    sequence: 4,
-    name: 'AP01-준법업무시현재',
-    workType: 'AMS',
-    popupTitle: '준법업무 시현 결재',
-    url: 'AMS/POP_APRVL_ListDat_For...',
-    description: '준법업무 시현을 위한 결재선',
-    isPopup: 'Y',
-    isEditable: 'Y',
-    isUsed: 'N',
-    remarks: '미사용',
-    createdAt: '2025-09-02 14:20:00',
-    updatedAt: '2025-09-10 09:30:00',
-    createdBy: 'manager',
-    updatedBy: 'admin'
-  },
-  {
-    id: '5',
-    sequence: 5,
-    name: 'AP05-부원담당자',
-    workType: 'AMS',
-    popupTitle: '부원담당자 지정 결재',
-    url: 'AMS/POP_APRVL_ListDat_For...',
-    description: '부원담당자 지정을 위한 결재선',
-    isPopup: 'Y',
-    isEditable: 'N',
-    isUsed: 'N',
-    remarks: '미사용',
-    createdAt: '2025-09-03 11:10:00',
-    updatedAt: '2025-09-12 15:00:00',
-    createdBy: 'manager',
-    updatedBy: 'manager'
-  },
-  {
-    id: '6',
-    sequence: 6,
-    name: 'AP18-조치자',
-    workType: 'AMS',
-    popupTitle: '조치자 지정 결재',
-    url: 'AMS/POP_APRVL_ListDat_For...',
-    description: '조치자 지정을 위한 결재선',
-    isPopup: 'N',
-    isEditable: 'Y',
-    isUsed: 'N',
-    remarks: '미사용',
-    createdAt: '2025-09-04 16:45:00',
-    updatedAt: '2025-09-14 10:20:00',
-    createdBy: 'user',
-    updatedBy: 'admin'
-  }
 ];
 
 /**
@@ -398,11 +272,8 @@ export const USE_YN_COLOR_MAP: Record<UseYN, string> = {
 /**
  * 업무 구분별 색상 매핑
  */
-export const WORK_TYPE_COLOR_MAP: Record<WorkType, string> = {
-  WRS: '#3B82F6', // Blue
-  PMS: '#10B981', // Green
-  RMS: '#F59E0B', // Amber
-  AMS: '#EF4444', // Red
-  CMS: '#8B5CF6', // Purple
-  ALL: '#6B7280'  // Gray
+export const WORK_TYPE_COLOR_MAP: Record<string, string> = {
+  WRS: '#3B82F6',     // Blue
+  IMPL: '#10B981',    // Green
+  IMPROVE: '#F59E0B'  // Amber
 };

@@ -306,9 +306,13 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
     const loadingToastId = toast.loading('개선이행 정보를 저장 중입니다...');
 
     try {
+      // 현재 선택된 항목에서 개선담당자ID 가져오기 (이름이 아닌 사번)
+      const currentExecution = executions.find(e => e.id === id);
+      const improvementManagerId = currentExecution?.improvementManagerId || '';
+
       // 폼 데이터를 API 요청 형식으로 변환
       const request: UpdateImprovementRequest = {
-        improvementManagerId: formData.improvementManager,
+        improvementManagerId: improvementManagerId, // 사번 사용 (이름 X)
         improvementStatusCd: formData.improvementStatus,
         improvementPlanContent: formData.improvementPlanContent,
         improvementPlanDate: formData.improvementPlanDate,
@@ -440,11 +444,15 @@ const ImplMonitoringImprovement: React.FC<ImplMonitoringImprovementProps> = ({ c
   }, []);
 
   // Memoized computed values
+  /**
+   * 통계 계산
+   * - 점검결과상태코드: 01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료
+   */
   const statistics = useMemo<ExecutionStatistics>(() => {
     const total = pagination.total;
     // 개선이행상태 기준으로 통계 계산 (improvement_status_cd)
     const inProgress = executions.filter(e => e.improvementStatus === '04' || e.improvementStatus === '개선이행').length;
-    const completed = executions.filter(e => e.improvementStatus === '03' || e.improvementStatus === '완료' || e.improvementStatus === '개선완료').length;
+    const completed = executions.filter(e => e.improvementStatus === '06' || e.improvementStatus === '완료' || e.improvementStatus === '개선완료').length;
     const notStarted = executions.filter(e => e.improvementStatus === '01' || e.improvementStatus === '개선미이행').length;
     const rejected = executions.filter(e => e.finalInspectionResult === '02' || e.finalInspectionResult === '반려').length;
     const systemUptime = 99.2;

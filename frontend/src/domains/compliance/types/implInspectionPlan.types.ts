@@ -76,7 +76,7 @@ export interface ImplInspectionItemDto {
   inspectionDate: string;
 
   // 2단계: 개선이행 정보
-  /** 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:개선완료) */
+  /** 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료) */
   improvementStatusCd: string;
   /** 개선이행상태명 */
   improvementStatusName: string;

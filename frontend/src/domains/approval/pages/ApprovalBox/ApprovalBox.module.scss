@@ -132,6 +132,45 @@
   background: #fafbfc;
 }
 
+// 📑 탭 컨테이너
+.tabContainer {
+  background: white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xs $spacing-sm;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: $spacing-xs;
+
+  .tabs {
+    min-height: 40px;
+
+    :global(.MuiTab-root) {
+      min-height: 40px;
+      padding: $spacing-xs $spacing-md;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: none;
+      color: #64748b;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #334155;
+        background: rgba(0, 0, 0, 0.02);
+      }
+
+      &.Mui-selected {
+        color: var(--theme-button-primary, #3b82f6);
+        font-weight: 600;
+      }
+    }
+
+    :global(.MuiTabs-indicator) {
+      background: var(--theme-button-primary, #3b82f6);
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+    }
+  }
+}
+
 
 
 // AG-Grid 모던 플랫 스타일

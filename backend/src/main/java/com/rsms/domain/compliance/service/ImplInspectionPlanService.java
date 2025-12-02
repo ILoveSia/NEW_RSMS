@@ -451,8 +451,15 @@ public class ImplInspectionPlanService {
             }
         }
 
-        ImplInspectionItem savedItem = itemRepository.save(item);
+        itemRepository.save(item);
         log.info("✅ [ImplInspectionPlanService] 점검결과 업데이트 완료: {}", itemId);
+
+        // 저장 후 전체 연관관계를 포함하여 다시 조회 (Lazy Loading 문제 방지)
+        ImplInspectionItem savedItem = itemRepository.findByIdWithFullHierarchy(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("점검항목을 찾을 수 없습니다: " + itemId));
+
+        // Transient 필드 설정
+        populateTransientFields(List.of(savedItem));
 
         return ImplInspectionItemDto.from(savedItem);
     }
@@ -460,9 +467,10 @@ public class ImplInspectionPlanService {
     /**
      * 개선이행 업데이트
      * - 개선계획, 개선이행, 최종점검 정보 업데이트
+     * - 개선계획 저장 시 (상태 01 -> 02): 개선계획내용이 있으면 자동으로 '02(개선계획)'으로 상태 변경
      * @param itemId 점검항목ID
      * @param improvementManagerId 개선담당자ID
-     * @param improvementStatusCd 개선이행상태코드 (01~05)
+     * @param improvementStatusCd 개선이행상태코드 (01~05) - 무시됨 (자동 계산)
      * @param improvementPlanContent 개선계획내용
      * @param improvementPlanDate 개선계획수립일자
      * @param improvementApprovedBy 개선계획 승인자ID
@@ -492,20 +500,18 @@ public class ImplInspectionPlanService {
             String userId) {
         log.info("✅ [ImplInspectionPlanService] 개선이행 업데이트 시작");
         log.info("  - 점검항목ID: {}", itemId);
-        log.info("  - 개선이행상태코드: {}", improvementStatusCd);
+        log.info("  - 개선이행상태코드(입력): {}", improvementStatusCd);
         log.info("  - 개선담당자ID: {}", improvementManagerId);
 
         ImplInspectionItem item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("점검항목을 찾을 수 없습니다: " + itemId));
 
+        String currentStatus = item.getImprovementStatusCd();
+        log.info("  - 현재 개선이행상태코드: {}", currentStatus);
+
         // 개선담당자ID 업데이트
         if (improvementManagerId != null && !improvementManagerId.isEmpty()) {
             item.setImprovementManagerId(improvementManagerId);
-        }
-
-        // 개선이행상태코드 업데이트
-        if (improvementStatusCd != null && !improvementStatusCd.isEmpty()) {
-            item.setImprovementStatusCd(improvementStatusCd);
         }
 
         // 개선계획 정보 업데이트
@@ -514,6 +520,27 @@ public class ImplInspectionPlanService {
         }
         if (improvementPlanDate != null && !improvementPlanDate.isEmpty()) {
             item.setImprovementPlanDate(java.time.LocalDate.parse(improvementPlanDate));
+        }
+
+        // 개선계획 저장 시 상태 자동 변경: 01(개선미이행) -> 02(개선계획)
+        // 조건: 현재 상태가 '01'이고 개선계획내용이 입력된 경우
+        if ("01".equals(currentStatus) && improvementPlanContent != null && !improvementPlanContent.trim().isEmpty()) {
+            log.info("  - 개선계획 저장으로 상태 자동 변경: 01(개선미이행) -> 02(개선계획)");
+            item.setImprovementStatusCd("02");
+        }
+
+        // 계획승인요청 시 상태 변경: 02(개선계획) -> 03(승인요청)
+        // 조건: 현재 상태가 '02'이고 입력받은 상태가 '03'인 경우
+        if ("02".equals(currentStatus) && "03".equals(improvementStatusCd)) {
+            log.info("  - 계획승인요청으로 상태 변경: 02(개선계획) -> 03(승인요청)");
+            item.setImprovementStatusCd("03");
+        }
+
+        // 개선완료승인요청 시 상태 변경: 05(개선완료) -> 06(완료승인요청)
+        // 조건: 현재 상태가 '05'이고 입력받은 상태가 '06'인 경우
+        if ("05".equals(currentStatus) && "06".equals(improvementStatusCd)) {
+            log.info("  - 개선완료승인요청으로 상태 변경: 05(개선완료) -> 06(완료승인요청)");
+            item.setImprovementStatusCd("06");
         }
 
         // 개선계획 승인 정보 업데이트
@@ -543,8 +570,12 @@ public class ImplInspectionPlanService {
 
         item.setUpdatedBy(userId);
 
-        ImplInspectionItem savedItem = itemRepository.save(item);
+        itemRepository.save(item);
         log.info("✅ [ImplInspectionPlanService] 개선이행 업데이트 완료: {}", itemId);
+
+        // 저장 후 전체 연관관계를 포함하여 다시 조회 (Lazy Loading 문제 방지)
+        ImplInspectionItem savedItem = itemRepository.findByIdWithFullHierarchy(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("점검항목을 찾을 수 없습니다: " + itemId));
 
         // Transient 필드 설정
         populateTransientFields(List.of(savedItem));

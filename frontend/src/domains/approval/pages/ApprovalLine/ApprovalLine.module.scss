@@ -1,20 +1,18 @@
 /**
  * 결재선 관리 페이지 스타일
  *
- * @description 이미지 기준 좌우 분할 레이아웃 스타일
+ * @description DeliberativeMgmt 패턴 100% 준수
+ * - BasePageHeader 공통 컴포넌트 사용
+ * - 8가지 브랜드 테마 지원
+ *
  * @author Claude AI
- * @version 2.0.0
- * @created 2025-09-24
+ * @since 2025-12-02
  */
 
-@use 'sass:color';
 @import '@/styles/variables';
 @import '@/styles/mixins';
 
-// ===============================
-// Container & Layout
-// ===============================
-
+// 컨테이너
 .container {
   width: 100%;
   background: white;
@@ -22,376 +20,108 @@
   flex-direction: column;
 }
 
-// 내용 영역
+// 메인 컨텐츠 영역
 .content {
-  flex: 1;
   padding: $spacing-sm;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 180px);
-}
-
-// ===============================
-// Page Header (PositionMgmt 패턴 준수)
-// ===============================
-
-.pageHeader {
-  position: relative;
-  z-index: 2;
-  background: var(--theme-page-header-bg);
-  color: var(--theme-page-header-text);
-  padding: $spacing-sm $spacing-md;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: $border-radius-lg;
-  margin-bottom: $spacing-sm;
-}
-
-.headerContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  @include responsive-breakpoint($breakpoint-tablet) {
-    flex-direction: column;
-    gap: $spacing-sm;
-    align-items: stretch;
-  }
-}
-
-.titleSection {
-  display: flex;
-  align-items: center;
   gap: $spacing-sm;
+  background: #fafbfc;
 }
 
-.headerIcon {
-  font-size: 1.25rem !important;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.pageTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0;
-  color: white;
-}
-
-.pageDescription {
-  font-size: 0.75rem;
-  margin: 0;
-  opacity: 0.8;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.headerStats {
-  display: flex;
-  gap: $spacing-md;
-
-  @include responsive-breakpoint($breakpoint-tablet) {
-    justify-content: space-between;
-  }
-
-  @include responsive-breakpoint($breakpoint-mobile) {
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
-}
-
-.statCard {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: $border-radius-lg;
-  padding: $spacing-sm $spacing-md;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  min-width: 80px;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  transition: background 0.2s ease;
-}
-
-.statIcon {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    font-size: 1rem !important;
-    color: rgba(255, 255, 255, 0.9);
-  }
-}
-
-.statContent {
-  flex: 1;
-}
-
-.statNumber {
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
+// AG-Grid 스타일
+:global(.ag-theme-alpine) {
+  border: none !important;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
+  border-radius: 0;
+  overflow: hidden;
 
-.statLabel {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 400;
-}
+  .ag-root-wrapper,
+  .ag-root,
+  .ag-body-viewport {
+    border: none !important;
+  }
 
-// ===============================
-// 좌우 분할 레이아웃 (이미지 기준)
-// ===============================
+  .ag-header {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-bottom: 2px solid #e1e7ef !important;
+    font-weight: 500;
 
-// 좌측 패널
-.leftPanel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+    .ag-header-cell {
+      border-right: 1px solid #e1e7ef !important;
 
-  .leftHeader {
-    padding: $spacing-sm;
-    border-bottom: 1px solid $color-border-default;
-    background: var(--theme-surface, $color-background-paper);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .filterSection {
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-
-      .filterLabel {
-        font-weight: 500;
-        color: var(--theme-text-primary, $color-text-primary);
-        min-width: 40px;
+      &:last-child {
+        border-right: none !important;
       }
 
-      .workTypeSelect {
-        padding: 6px 12px;
-        border: 1px solid $color-border-default;
-        border-radius: $border-radius-sm;
-        background: var(--theme-background, $color-background-default);
-        color: var(--theme-text-primary, $color-text-primary);
+      &:hover {
+        background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+      }
+
+      .ag-header-cell-label {
+        font-weight: 600;
+        color: #334e68;
         font-size: 0.875rem;
-        min-width: 150px;
-
-        &:focus {
-          outline: none;
-          border-color: var(--theme-primary, $color-primary);
-        }
-      }
-
-      .refreshButton {
-        padding: 6px 10px;
-        border: 1px solid $color-border-default;
-        border-radius: $border-radius-sm;
-        background: var(--theme-background, $color-background-default);
-        color: var(--theme-text-primary, $color-text-primary);
-        cursor: pointer;
-        font-size: 1rem;
-
-        &:hover {
-          background: var(--theme-hover, rgba(0, 0, 0, 0.04));
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
-    }
-
-    .leftActionButtons {
-      display: flex;
-      gap: $spacing-xs;
-
-      .actionButton {
-        padding: 6px 16px;
-        border: none;
-        border-radius: $border-radius-sm;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        &.addButton {
-          background: var(--theme-button-primary, $color-primary);
-          color: var(--theme-button-primary-text, white);
-
-          &:hover:not(:disabled) {
-            background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
-          }
-        }
-
-        &.saveButton {
-          background: var(--theme-success, $color-success);
-          color: white;
-
-          &:hover:not(:disabled) {
-            background: color.adjust($color-success, $lightness: -10%);
-          }
-        }
-
-        &.deleteButton {
-          background: var(--theme-error, $color-error);
-          color: white;
-
-          &:hover:not(:disabled) {
-            background: color.adjust($color-error, $lightness: -10%);
-          }
-        }
       }
     }
   }
 
-  .leftGrid {
-    flex: 1;
-    padding: $spacing-sm;
-    height: calc(100vh - 280px);
-    min-height: 500px;
+  .ag-row {
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    &:hover {
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    &.ag-row-selected {
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 3px solid #627d98 !important;
+    }
+
+    &:nth-child(even) {
+      background: linear-gradient(145deg, #fafbfc 0%, #f8fafc 100%);
+    }
+  }
+
+  .ag-cell {
+    border-right: 1px solid #e2e8f0 !important;
+    font-weight: 400;
+    color: #334e68;
+    font-size: 0.875rem;
+    padding: 10px 14px;
+
+    &:last-child {
+      border-right: none !important;
+    }
+  }
+
+  .ag-paging-panel {
+    background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 2px solid #e1e7ef !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 12px 16px;
+    color: #334e68;
+  }
+
+  .ag-root-wrapper {
+    border-radius: 0;
+    border: none !important;
+    overflow: hidden;
   }
 }
 
-// 우측 패널
-.rightPanel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .rightHeader {
-    padding: $spacing-sm;
-    border-bottom: 1px solid $color-border-default;
-    background: var(--theme-surface, $color-background-paper);
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: $spacing-md;
-
-    .actionButtons {
-      display: flex;
-      gap: $spacing-xs;
-
-      .actionButton {
-        padding: 6px 16px;
-        border: none;
-        border-radius: $border-radius-sm;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        &.addButton {
-          background: var(--theme-button-primary, $color-primary);
-          color: var(--theme-button-primary-text, white);
-
-          &:hover:not(:disabled) {
-            background: var(--theme-button-primary-hover, color.adjust($color-primary, $lightness: -10%));
-          }
-        }
-
-        &.saveButton {
-          background: var(--theme-success, $color-success);
-          color: white;
-
-          &:hover:not(:disabled) {
-            background: color.adjust($color-success, $lightness: -10%);
-          }
-        }
-
-        &.deleteButton {
-          background: var(--theme-error, $color-error);
-          color: white;
-
-          &:hover:not(:disabled) {
-            background: color.adjust($color-error, $lightness: -10%);
-          }
-        }
-      }
-    }
-
-    .orderButtons {
-      display: flex;
-      gap: $spacing-xs;
-
-      .orderButton {
-        padding: 6px 12px;
-        border: 1px solid $color-border-default;
-        border-radius: $border-radius-sm;
-        background: var(--theme-background, $color-background-default);
-        color: var(--theme-text-primary, $color-text-primary);
-        font-size: 0.75rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover:not(:disabled) {
-          background: var(--theme-hover, rgba(0, 0, 0, 0.04));
-          border-color: var(--theme-primary, $color-primary);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
-    }
-  }
-
-  .rightGrid {
-    flex: 1;
-    padding: $spacing-sm;
-    height: calc(100vh - 280px);
-    min-height: 500px;
-  }
-}
-
-// ===============================
-// Responsive Design
-// ===============================
-
+// 반응형
 @include responsive-breakpoint($breakpoint-tablet) {
-  .leftPanel .leftHeader .filterSection {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $spacing-xs;
-
-    .filterLabel {
-      min-width: auto;
-    }
-
-    .workTypeSelect {
-      width: 100%;
-    }
-  }
-
-  .rightPanel .rightHeader {
-    flex-direction: column;
+  .content {
+    padding: $spacing-xs;
     gap: $spacing-sm;
-    align-items: stretch;
+  }
+}
 
-    .actionButtons,
-    .orderButtons {
-      justify-content: center;
-    }
+@include responsive-breakpoint($breakpoint-mobile) {
+  .content {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
   }
 }

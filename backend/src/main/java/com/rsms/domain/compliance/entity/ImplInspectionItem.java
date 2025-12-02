@@ -264,6 +264,48 @@ public class ImplInspectionItem {
     }
 
     /**
+     * 개선계획 승인 처리
+     * - 결재 승인 시 호출
+     * - 상태: 승인요청(03) → 개선이행(04)
+     * @param approverId 승인자 ID
+     */
+    public void approvePlanApproval(String approverId) {
+        this.improvementStatusCd = "04"; // 개선이행
+        this.improvementPlanApprovedBy = approverId;
+        this.improvementPlanApprovedDate = LocalDate.now();
+    }
+
+    /**
+     * 개선계획 반려 처리
+     * - 결재 반려 시 호출
+     * - 상태: 승인요청(03) → 개선계획(02)
+     */
+    public void rejectPlanApproval() {
+        this.improvementStatusCd = "02"; // 개선계획
+        this.improvementPlanApprovedBy = null;
+        this.improvementPlanApprovedDate = null;
+    }
+
+    /**
+     * 개선완료 승인 처리
+     * - 완료 결재 승인 시 호출
+     * - 상태: 완료승인요청(05) → 개선완료(06)
+     */
+    public void approveCompleteApproval() {
+        this.improvementStatusCd = "06"; // 개선완료
+        this.improvementCompletedDate = LocalDate.now();
+    }
+
+    /**
+     * 개선완료 반려 처리
+     * - 완료 결재 반려 시 호출
+     * - 상태: 완료승인요청(05) → 개선이행(04)
+     */
+    public void rejectCompleteApproval() {
+        this.improvementStatusCd = "04"; // 개선이행
+    }
+
+    /**
      * 최종점검 - 승인
      */
     public void approveFinally(String resultContent) {

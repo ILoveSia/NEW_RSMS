@@ -272,7 +272,7 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
       const value = params.value;
       if (!value) return '-';
 
-      // 개선이행상태에 따른 색상 표시 (improvement_status_cd: 01=개선미이행, 02=개선계획, 03=승인요청, 04=개선이행, 05=개선완료)
+      // 개선이행상태에 따른 색상 표시 (improvement_status_cd: 01=개선미이행, 02=개선계획, 03=승인요청, 04=개선이행, 05=완료승인요청, 06=개선완료)
       let color = '#666';
       let displayText = value;
 
@@ -288,7 +288,10 @@ export const improvementColumns: ColDef<ImprovementData>[] = [
       } else if (value === '04' || value === '개선이행' || value === '진행중') {
         color = '#ff9800';
         displayText = '개선이행';
-      } else if (value === '05' || value === '완료' || value === '개선완료') {
+      } else if (value === '05' || value === '완료승인요청') {
+        color = '#e91e63';
+        displayText = '완료승인요청';
+      } else if (value === '06' || value === '완료' || value === '개선완료') {
         color = '#4caf50';
         displayText = '개선완료';
       }

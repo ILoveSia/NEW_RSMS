@@ -12,9 +12,15 @@ import {
   uploadAttachment
 } from '@/shared/api/attachmentApi';
 import { useAuthStore } from '@/app/store/authStore';
+import {
+  requestImprovementPlanApproval,
+  requestImprovementCompleteApproval
+} from '@/domains/approval/api/approvalApi';
 import { Button } from '@/shared/components/atoms/Button';
 import { FileUpload } from '@/shared/components/molecules/FileUpload/FileUpload';
 import type { UploadedFile } from '@/shared/components/molecules/FileUpload/types';
+import { ApprovalRequestModal } from '@/shared/components/organisms/ApprovalRequestModal';
+import type { ApprovalDocumentInfo } from '@/shared/components/organisms/ApprovalRequestModal';
 import { useCommonCode } from '@/shared/hooks/useCommonCode';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CloseIcon from '@mui/icons-material/Close';
@@ -157,35 +163,169 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
    * - 04(개선이행): 개선담당자 → 개선이행 세부내용 작성 가능
    * - 05(개선완료): 점검자 → 최종점검 수행 가능
    */
-  const { canEditPlan, canEditImpl, canEditFinal, canApprove } = useMemo(() => {
-    // 기본값: 모든 섹션 비활성화
+  /**
+   * 버튼 표시 권한 계산
+   * - 상태코드별 버튼 표시 로직:
+   *   01(개선미이행): 로그인자 == 개선담당자 → "저장"
+   *   02(개선계획): 로그인자 == 개선담당자 → "계획승인요청", "저장"
+   *   03(승인요청): 모든 버튼 숨김
+   *   04(개선이행): 로그인자 == 개선담당자 → "완료승인요청", "저장"
+   *   05(완료승인요청): 로그인자 == 점검자 → "저장"
+   *   06(개선완료): 모든 버튼 숨김
+   */
+  const {
+    canEditPlan,
+    canEditImpl,
+    canEditFinal,
+    canRequestApproval,
+    canRequestCompletion,
+    canSave
+  } = useMemo(() => {
+    // 기본값: 모든 권한 비활성화
     if (!improvement || !loggedInEmpNo) {
-      return { canEditPlan: false, canEditImpl: false, canEditFinal: false, canApprove: false };
+      return {
+        canEditPlan: false,
+        canEditImpl: false,
+        canEditFinal: false,
+        canRequestApproval: false,
+        canRequestCompletion: false,
+        canSave: false
+      };
     }
 
     const improvementStatus = improvement.improvementStatus || '';
     const improvementManagerId = improvement.improvementManagerId || '';
-    // 최종점검자는 점검자(inspector)와 동일
     const inspectorId = improvement.inspector || '';
 
-    // 개선계획 섹션: 로그인자 == 개선담당자ID && 상태 01 또는 02
-    const canEditPlan = loggedInEmpNo === improvementManagerId &&
-                        (improvementStatus === '01' || improvementStatus === '02');
+    // 로그인자와 개선담당자 비교
+    const isImprovementManager = loggedInEmpNo === improvementManagerId;
+    // 로그인자와 점검자 비교
+    const isInspector = loggedInEmpNo === inspectorId;
 
-    // 승인/반려 권한: 로그인자 == 점검자ID && 상태 03(승인요청)
-    const canApprove = loggedInEmpNo === inspectorId &&
-                       improvementStatus === '03';
+    // 섹션 편집 권한 (UI 표시용)
+    const canEditPlan = (improvementStatus === '01' || improvementStatus === '02') && isImprovementManager;
+    const canEditImpl = improvementStatus === '04' && isImprovementManager;
+    const canEditFinal = improvementStatus === '05' && isInspector;
 
-    // 개선이행 섹션: 로그인자 == 개선담당자ID && 상태 04
-    const canEditImpl = loggedInEmpNo === improvementManagerId &&
-                        improvementStatus === '04';
+    // 버튼 표시 권한
+    // 01: 저장만 (개선담당자)
+    // 02: 계획승인요청 + 저장 (개선담당자)
+    // 03: 모든 버튼 숨김
+    // 04: 완료승인요청 + 저장 (개선담당자)
+    // 05: 저장만 (점검자)
+    // 06: 모든 버튼 숨김
+    const canRequestApproval = improvementStatus === '02' && isImprovementManager;
+    const canRequestCompletion = improvementStatus === '04' && isImprovementManager;
 
-    // 최종점검정보 섹션: 로그인자 == 점검자ID && 상태 05
-    const canEditFinal = loggedInEmpNo === inspectorId &&
-                         improvementStatus === '05';
+    // 저장 버튼 표시 조건
+    let canSave = false;
+    if (improvementStatus === '01' && isImprovementManager) {
+      canSave = true;  // 01: 개선담당자만
+    } else if (improvementStatus === '02' && isImprovementManager) {
+      canSave = true;  // 02: 개선담당자만
+    } else if (improvementStatus === '04' && isImprovementManager) {
+      canSave = true;  // 04: 개선담당자만
+    } else if (improvementStatus === '05' && isInspector) {
+      canSave = true;  // 05: 점검자만
+    }
+    // 03, 06: canSave = false (모든 버튼 숨김)
 
-    return { canEditPlan, canEditImpl, canEditFinal, canApprove };
+    return {
+      canEditPlan,
+      canEditImpl,
+      canEditFinal,
+      canRequestApproval,
+      canRequestCompletion,
+      canSave
+    };
   }, [improvement, loggedInEmpNo]);
+
+  /**
+   * 결재요청 모달 상태 관리
+   * - approvalModalOpen: 결재요청 모달 열림 여부
+   * - approvalType: 결재 유형 (PLAN: 계획승인요청, COMPLETE: 개선완료승인요청)
+   */
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false);
+  const [approvalType, setApprovalType] = useState<'PLAN' | 'COMPLETE'>('PLAN');
+
+  /**
+   * 계획승인요청 버튼 클릭 핸들러
+   * - 결재요청 모달을 열어 결재선 선택 후 결재 요청
+   */
+  const handleRequestApproval = useCallback(() => {
+    if (!improvement?.id) return;
+    console.log('[ImprovementDetailModal] 계획승인요청 모달 열기:', improvement.id);
+    setApprovalType('PLAN');
+    setApprovalModalOpen(true);
+  }, [improvement]);
+
+  /**
+   * 개선완료승인요청 버튼 클릭 핸들러
+   * - 결재요청 모달을 열어 결재선 선택 후 결재 요청
+   */
+  const handleRequestCompletion = useCallback(() => {
+    if (!improvement?.id) return;
+    console.log('[ImprovementDetailModal] 개선완료승인요청 모달 열기:', improvement.id);
+    setApprovalType('COMPLETE');
+    setApprovalModalOpen(true);
+  }, [improvement]);
+
+  /**
+   * 결재요청 제출 핸들러
+   * - 결재선 선택 후 실제 결재 요청 처리
+   * - 결재 API 호출 후 상태 변경: PLAN(02→03), COMPLETE(04→05)
+   * @param approvalLineId 선택한 결재선 ID
+   * @param opinion 결재 의견
+   */
+  const handleApprovalSubmit = useCallback(async (approvalLineId: string, opinion: string) => {
+    if (!improvement?.id) {
+      throw new Error('개선이행 정보가 없습니다.');
+    }
+
+    console.log('[ImprovementDetailModal] 결재요청 제출:', {
+      improvementId: improvement.id,
+      approvalLineId,
+      approvalType,
+      opinion
+    });
+
+    try {
+      // 결재 요청 API 호출
+      if (approvalType === 'PLAN') {
+        // 계획승인 요청
+        await requestImprovementPlanApproval(improvement.id, approvalLineId, opinion);
+      } else {
+        // 완료승인 요청
+        await requestImprovementCompleteApproval(improvement.id, approvalLineId, opinion);
+      }
+
+      // 새 상태 결정: PLAN은 03(승인요청), COMPLETE는 05(완료승인요청)
+      const newStatus = approvalType === 'PLAN' ? '03' : '05';
+
+      // 상태 변경하여 저장
+      const approvalData: ImprovementFormData = {
+        improvementManager: improvement.improvementManagerName || '',
+        improvementStatus: newStatus,
+        improvementPlanContent: improvement.improvementPlanContent || '',
+        improvementPlanDate: improvement.improvementPlanDate || null,
+        improvementApprovedDate: improvement.improvementApprovedDate || null,
+        improvementDetail: improvement.improvementDetailContent || '',
+        improvementCompletedDate: improvement.improvementCompletedDate || null,
+        finalInspector: improvement.finalInspectorName || '',
+        finalInspectionResult: improvement.finalInspectionResult || '',
+        finalInspectionOpinion: improvement.finalInspectionOpinion || '',
+        finalInspectionDate: improvement.finalInspectionDate || null
+      };
+
+      // 상태 업데이트
+      onUpdate(improvement.id, approvalData);
+
+      console.log('[ImprovementDetailModal] 결재요청 완료:', newStatus);
+    } catch (error) {
+      console.error('[ImprovementDetailModal] 결재요청 실패:', error);
+      throw error;
+    }
+  }, [improvement, approvalType, onUpdate]);
 
   /**
    * 첨부파일 상태 관리
@@ -326,105 +466,102 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
 
   /**
    * 개선계획 첨부파일 변경 핸들러
-   * - 새 파일 추가 시 서버에 업로드
-   * - 파일 삭제 시 서버에서 삭제
+   * - 로컬 상태만 변경 (서버 업로드는 저장 버튼 클릭 시 수행)
+   * - 파일 추가/삭제 시 로컬 상태만 업데이트
    */
-  const handlePlanAttachmentsChange = useCallback(async (files: UploadedFile[]) => {
-    if (!improvement?.id) return;
-
-    // 새로 추가된 파일 찾기 (serverId가 없는 파일)
-    const newFiles = files.filter(f => !f.serverId);
-    // 삭제된 파일 찾기 (기존에 있었으나 새 목록에 없는 파일)
-    const deletedFiles = planAttachments.filter(
-      existing => existing.serverId && !files.find(f => f.serverId === existing.serverId)
-    );
-
-    // 새 파일 업로드
-    for (const newFile of newFiles) {
-      try {
-        const result = await uploadAttachment({
-          file: newFile.file,
-          entityType: 'impl_inspection_items',
-          entityId: improvement.id,
-          attachmentPhase: 'PLAN',
-          fileCategory: 'EVIDENCE'
-        });
-        // 업로드 성공 시 serverId 업데이트
-        newFile.serverId = result.attachmentId;
-        newFile.url = result.downloadUrl;
-      } catch (error) {
-        console.error('파일 업로드 실패:', error);
-      }
-    }
-
-    // 삭제된 파일 처리
-    for (const deletedFile of deletedFiles) {
-      try {
-        if (deletedFile.serverId) {
-          await deleteAttachment(deletedFile.serverId);
-        }
-      } catch (error) {
-        console.error('파일 삭제 실패:', error);
-      }
-    }
-
+  const handlePlanAttachmentsChange = useCallback((files: UploadedFile[]) => {
+    // 로컬 상태만 업데이트 (서버 업로드는 저장 시 수행)
     setPlanAttachments(files);
-  }, [improvement?.id, planAttachments]);
+  }, []);
 
   /**
    * 개선이행 첨부파일 변경 핸들러
-   * - 새 파일 추가 시 서버에 업로드
-   * - 파일 삭제 시 서버에서 삭제
+   * - 로컬 상태만 변경 (서버 업로드는 저장 버튼 클릭 시 수행)
+   * - 파일 추가/삭제 시 로컬 상태만 업데이트
    */
-  const handleImplAttachmentsChange = useCallback(async (files: UploadedFile[]) => {
-    if (!improvement?.id) return;
+  const handleImplAttachmentsChange = useCallback((files: UploadedFile[]) => {
+    // 로컬 상태만 업데이트 (서버 업로드는 저장 시 수행)
+    setImplAttachments(files);
+  }, []);
+
+  /**
+   * 첨부파일 서버 업로드 처리
+   * - 저장 버튼 클릭 시 호출됨
+   * - 새로 추가된 파일 업로드, 삭제된 파일 삭제
+   * @param entityId 엔티티 ID (impl_inspection_items.impl_inspection_item_id)
+   * @param currentFiles 현재 로컬 상태의 파일 목록
+   * @param originalFiles 서버에서 조회한 원본 파일 목록
+   * @param phase 첨부파일 단계 ('PLAN' | 'IMPL')
+   */
+  const syncAttachmentsToServer = useCallback(async (
+    entityId: string,
+    currentFiles: UploadedFile[],
+    phase: 'PLAN' | 'IMPL'
+  ) => {
+    // 서버에서 원본 파일 목록 다시 조회 (삭제 비교용)
+    const serverFiles = await getAttachmentsByPhase('impl_inspection_items', entityId, phase);
+    const serverFileIds = serverFiles.map(f => f.attachmentId);
 
     // 새로 추가된 파일 찾기 (serverId가 없는 파일)
-    const newFiles = files.filter(f => !f.serverId);
-    // 삭제된 파일 찾기 (기존에 있었으나 새 목록에 없는 파일)
-    const deletedFiles = implAttachments.filter(
-      existing => existing.serverId && !files.find(f => f.serverId === existing.serverId)
+    const newFiles = currentFiles.filter(f => !f.serverId);
+    // 삭제된 파일 찾기 (서버에 있었으나 현재 목록에 없는 파일)
+    const deletedFileIds = serverFileIds.filter(
+      serverId => !currentFiles.find(f => f.serverId === serverId)
     );
+
+    console.log(`[ImprovementDetailModal] ${phase} 첨부파일 동기화:`, {
+      newFiles: newFiles.length,
+      deletedFiles: deletedFileIds.length
+    });
 
     // 새 파일 업로드
     for (const newFile of newFiles) {
       try {
-        const result = await uploadAttachment({
+        await uploadAttachment({
           file: newFile.file,
           entityType: 'impl_inspection_items',
-          entityId: improvement.id,
-          attachmentPhase: 'IMPL',
+          entityId: entityId,
+          attachmentPhase: phase,
           fileCategory: 'EVIDENCE'
         });
-        // 업로드 성공 시 serverId 업데이트
-        newFile.serverId = result.attachmentId;
-        newFile.url = result.downloadUrl;
+        console.log(`[ImprovementDetailModal] ${phase} 파일 업로드 성공:`, newFile.file.name);
       } catch (error) {
-        console.error('파일 업로드 실패:', error);
+        console.error(`[ImprovementDetailModal] ${phase} 파일 업로드 실패:`, error);
       }
     }
 
     // 삭제된 파일 처리
-    for (const deletedFile of deletedFiles) {
+    for (const fileId of deletedFileIds) {
       try {
-        if (deletedFile.serverId) {
-          await deleteAttachment(deletedFile.serverId);
-        }
+        await deleteAttachment(fileId);
+        console.log(`[ImprovementDetailModal] ${phase} 파일 삭제 성공:`, fileId);
       } catch (error) {
-        console.error('파일 삭제 실패:', error);
+        console.error(`[ImprovementDetailModal] ${phase} 파일 삭제 실패:`, error);
       }
     }
-
-    setImplAttachments(files);
-  }, [improvement?.id, implAttachments]);
+  }, []);
 
   /**
    * 폼 저장 핸들러
+   * - 첨부파일 서버 업로드 후 폼 데이터 저장
    * - edit 모드: onUpdate 호출 (기존 데이터 수정)
    * - 그 외: onSave 호출 (신규 등록)
    */
-  const handleFormSubmit = useCallback((data: ImprovementFormData) => {
+  const handleFormSubmit = useCallback(async (data: ImprovementFormData) => {
     console.log('[ImprovementDetailModal] handleFormSubmit 호출됨', { mode, improvement, data });
+
+    // 첨부파일 서버 동기화 (저장 버튼 클릭 시에만 수행)
+    if (improvement?.id) {
+      try {
+        // 개선계획 첨부파일 동기화
+        await syncAttachmentsToServer(improvement.id, planAttachments, 'PLAN');
+        // 개선이행 첨부파일 동기화
+        await syncAttachmentsToServer(improvement.id, implAttachments, 'IMPL');
+      } catch (error) {
+        console.error('[ImprovementDetailModal] 첨부파일 동기화 실패:', error);
+      }
+    }
+
     if (mode === 'edit' && improvement) {
       console.log('[ImprovementDetailModal] onUpdate 호출', { id: improvement.id, data });
       onUpdate(improvement.id, data);
@@ -432,7 +569,7 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
       console.log('[ImprovementDetailModal] onSave 호출', { data });
       onSave(data);
     }
-  }, [mode, improvement, onSave, onUpdate]);
+  }, [mode, improvement, onSave, onUpdate, planAttachments, implAttachments, syncAttachmentsToServer]);
 
   const modalTitle = mode === 'detail' ? '개선이행 상세 조회' : '개선이행 결과 작성';
 
@@ -710,28 +847,26 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                     </div>
 
                     <div>
-                      <Typography className={styles.fieldLabel}>개선이행상태 <span style={{ color: 'red' }}>*</span></Typography>
+                      <Typography className={styles.fieldLabel}>개선이행상태</Typography>
+                      {/* 개선이행상태는 읽기 전용 - 저장 시 자동으로 '02(개선계획)'으로 변경됨 */}
                       <Controller
                         name="improvementStatus"
                         control={control}
                         render={({ field }) => (
-                          <FormControl fullWidth size="small" error={!!errors.improvementStatus} disabled={!canEditPlan}>
-                            <Select
-                              value={field.value || '01'}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                            >
-                              <MenuItem value="01">개선미이행</MenuItem>
-                              <MenuItem value="02">개선계획</MenuItem>
-                              <MenuItem value="03">승인요청</MenuItem>
-                              <MenuItem value="04">개선이행</MenuItem>
-                              <MenuItem value="05">개선완료</MenuItem>
-                            </Select>
-                            {errors.improvementStatus && (
-                              <FormHelperText>{errors.improvementStatus.message}</FormHelperText>
-                            )}
-                          </FormControl>
+                          <TextField
+                            {...field}
+                            fullWidth
+                            size="small"
+                            InputProps={{ readOnly: true }}
+                            value={
+                              field.value === '01' ? '개선미이행' :
+                              field.value === '02' ? '개선계획' :
+                              field.value === '03' ? '승인요청' :
+                              field.value === '04' ? '개선이행' :
+                              field.value === '05' ? '완료승인요청' :
+                              field.value === '06' ? '개선완료' : '-'
+                            }
+                          />
                         )}
                       />
                     </div>
@@ -991,9 +1126,36 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
           <Button variant="outlined" onClick={onClose} disabled={loading}>
             닫기
           </Button>
-          {/* 편집 가능한 섹션이 하나라도 있을 때만 저장 버튼 표시 */}
-          {/* canEditPlan(01,02), canApprove(03), canEditImpl(04), canEditFinal(05) */}
-          {(canEditPlan || canApprove || canEditImpl || canEditFinal) && (
+          {/* 계획승인요청 버튼: 상태 02(개선계획) && 로그인자 == 개선담당자 */}
+          {canRequestApproval && (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleRequestApproval}
+              disabled={loading}
+            >
+              {loading ? '처리 중...' : '계획승인요청'}
+            </Button>
+          )}
+          {/* 완료승인요청 버튼: 상태 04(개선이행) && 로그인자 == 개선담당자 */}
+          {canRequestCompletion && (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleRequestCompletion}
+              disabled={loading}
+            >
+              {loading ? '처리 중...' : '개선완료승인요청'}
+            </Button>
+          )}
+          {/* 저장 버튼: 상태별 권한에 따라 표시
+              - 01(개선미이행): 개선담당자
+              - 02(개선계획): 개선담당자
+              - 03(승인요청): 숨김
+              - 04(개선이행): 개선담당자
+              - 05(완료승인요청): 점검자
+              - 06(개선완료): 숨김 */}
+          {canSave && (
             <Button
               variant="contained"
               onClick={handleSubmit(handleFormSubmit, handleFormError)}
@@ -1004,6 +1166,35 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
           )}
         </DialogActions>
       </Dialog>
+
+      {/* 결재요청 모달 - 공통 컴포넌트 사용 */}
+      <ApprovalRequestModal
+        open={approvalModalOpen}
+        onClose={() => setApprovalModalOpen(false)}
+        onSubmit={handleApprovalSubmit}
+        document={improvement ? {
+          id: improvement.id,
+          title: approvalType === 'PLAN' ? '개선계획 승인요청' : '개선완료 승인요청',
+          displayFields: [
+            { label: '관리활동명', value: improvement.managementActivityName || '-' },
+            { label: '개선담당자', value: improvement.improvementManagerName || '-' },
+            {
+              label: approvalType === 'PLAN' ? '개선계획내용' : '개선이행내용',
+              value: approvalType === 'PLAN'
+                ? (improvement.improvementPlanContent || '-')
+                : (improvement.improvementDetailContent || '-')
+            }
+          ]
+        } : null}
+        workTypeCd="IMPROVE"
+        approvalTypeCd={approvalType === 'PLAN' ? 'PLAN_APPROVAL' : 'COMPLETE_APPROVAL'}
+        modalTitle={approvalType === 'PLAN' ? '계획승인요청' : '개선완료승인요청'}
+        requestDescription={approvalType === 'PLAN'
+          ? '개선계획에 대한 승인을 요청합니다.'
+          : '개선완료에 대한 승인을 요청합니다.'
+        }
+        loading={loading}
+      />
     </LocalizationProvider>
   );
 };

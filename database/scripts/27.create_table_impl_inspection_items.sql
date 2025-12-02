@@ -80,7 +80,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- ============================================
   -- 2단계: 개선이행 정보 (부적정 시에만 사용)
   -- ============================================
-  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:개선완료) IMPR_FLFL_STCD
+  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료) IMPR_FLFL_STCD
   improvement_manager_id VARCHAR(50),                 -- 개선담당자ID (사용자ID : 수행자)
   improvement_plan_content TEXT,                      -- 개선계획내용
   improvement_plan_date DATE,                         -- 개선계획수립일자
@@ -136,8 +136,10 @@ CREATE TABLE rsms.impl_inspection_items (
   -- 점검결과상태코드 검증
   CONSTRAINT chk_inspection_status CHECK (inspection_status_cd IN ('01', '02', '03')),
 
-  -- 개선이행상태코드 검증
-  CONSTRAINT chk_improvement_status CHECK (improvement_status_cd IN ('01', '02', '03')),
+  -- 개선이행상태코드 검증 (01~06 전체 허용)
+  -- 01: 개선미이행, 02: 개선계획, 03: 승인요청
+  -- 04: 개선이행, 05: 완료승인요청, 06: 개선완료
+  CONSTRAINT chk_improvement_status CHECK (improvement_status_cd IN ('01', '02', '03', '04', '05', '06')),
 
   -- 최종점검결과코드 검증
   CONSTRAINT chk_final_inspection_result CHECK (final_inspection_result_cd IN ('01', '02')),
@@ -151,10 +153,12 @@ CREATE TABLE rsms.impl_inspection_items (
     (inspection_status_cd = '01')
   ),
 
-  -- 비즈니스 로직 검증: 개선완료 시 개선완료일자 필수
+  -- 비즈니스 로직 검증: 개선완료(06) 시 개선완료일자 필수
+  -- 상태가 '06'(개선완료)일 때는 improvement_completed_date 필수
+  -- 그 외 상태('01'~'05')에서는 improvement_completed_date 없어도 됨
   CONSTRAINT chk_improvement_completed_date_required CHECK (
-    (improvement_status_cd = '03' AND improvement_completed_date IS NOT NULL) OR
-    (improvement_status_cd IN ('01', '02'))
+    (improvement_status_cd = '06' AND improvement_completed_date IS NOT NULL) OR
+    (improvement_status_cd IN ('01', '02', '03', '04', '05'))
   )
 );
 
