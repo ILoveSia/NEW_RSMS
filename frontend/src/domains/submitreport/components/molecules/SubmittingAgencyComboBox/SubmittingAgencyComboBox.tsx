@@ -7,18 +7,17 @@
  * @since 2025-01-13
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   FormHelperText,
-  CircularProgress,
   Alert,
-  Box,
   type SelectChangeEvent,
 } from '@mui/material';
+import { useCommonCode } from '@/shared/hooks/useCommonCode';
 import type { SubmittingAgencyComboBoxProps } from './types';
 
 /**
@@ -60,17 +59,11 @@ const SubmittingAgencyComboBox: React.FC<SubmittingAgencyComboBoxProps> = ({
   size = 'small',
   fullWidth = true,
 }) => {
-  // TODO: useQuery로 SUB_AGENCY_CD 공통코드 조회 API 연동
-  // 현재는 Mock 데이터 사용
-  const agencies = useMemo(() => [
-    { code: 'FSS', name: '금융감독원' },
-    { code: 'FSC', name: '금융위원회' },
-    { code: 'BOK', name: '한국은행' },
-    { code: 'KDIC', name: '예금보험공사' }
-  ], []);
-
-  const isLoading = false;
-  const isError = false;
+  /**
+   * 공통코드 SUB_AGENCY_CD 조회
+   * - codeStore에서 공통코드 목록 조회
+   */
+  const { options: agencies } = useCommonCode('SUB_AGENCY_CD');
 
   /**
    * 선택 변경 핸들러
@@ -80,44 +73,6 @@ const SubmittingAgencyComboBox: React.FC<SubmittingAgencyComboBoxProps> = ({
     const selectedValue = event.target.value;
     onChange(selectedValue === '' ? null : selectedValue);
   };
-
-  /**
-   * 로딩 중일 때
-   */
-  if (isLoading) {
-    return (
-      <FormControl
-        fullWidth={fullWidth}
-        size={size}
-        disabled
-        className={className}
-      >
-        <InputLabel>{label}</InputLabel>
-        <Select
-          value=""
-          label={label}
-          displayEmpty
-          renderValue={() => (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CircularProgress size={20} />
-              <span>데이터 로딩 중...</span>
-            </Box>
-          )}
-        />
-      </FormControl>
-    );
-  }
-
-  /**
-   * 에러 발생 시
-   */
-  if (isError) {
-    return (
-      <Alert severity="error" className={className}>
-        데이터 조회 실패
-      </Alert>
-    );
-  }
 
   /**
    * 데이터 없을 때
@@ -152,15 +107,15 @@ const SubmittingAgencyComboBox: React.FC<SubmittingAgencyComboBoxProps> = ({
         onChange={handleChange}
         label={label}
       >
-        <MenuItem value="" disabled>
+        <MenuItem value="">
           <em>{placeholder}</em>
         </MenuItem>
         {agencies.map((agency) => (
           <MenuItem
-            key={agency.code}
-            value={agency.code}
+            key={agency.value}
+            value={agency.value}
           >
-            {agency.name} ({agency.code})
+            {agency.label}
           </MenuItem>
         ))}
       </Select>

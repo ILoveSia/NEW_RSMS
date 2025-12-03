@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS rsms.dept_manager_manuals (
   exec_check_frequency_cd VARCHAR(20),                 -- 수행점검주기 (FLFL_ISPC_FRCD)
 
   -- 상태 관리
-  is_active CHAR(1) DEFAULT 'Y',                       -- 사용여부 (Y/N)
+  is_active VARCHAR(1) DEFAULT 'Y',                    -- 사용여부 (Y/N)
   status VARCHAR(20) DEFAULT 'active',                 -- 상태 (active: 사용, inactive: 미사용)
 
   -- 감사 필드 (BaseEntity 패턴)

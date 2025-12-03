@@ -264,6 +264,24 @@ public class ImplInspectionItem {
     }
 
     /**
+     * 계획승인 결재 요청
+     * - 결재 요청 시 호출
+     * - 상태: 개선계획(02) → 승인요청(03)
+     */
+    public void requestPlanApproval() {
+        this.improvementStatusCd = "03"; // 승인요청
+    }
+
+    /**
+     * 완료승인 결재 요청
+     * - 결재 요청 시 호출
+     * - 상태: 개선이행(04) → 완료승인요청(05)
+     */
+    public void requestCompleteApproval() {
+        this.improvementStatusCd = "05"; // 완료승인요청
+    }
+
+    /**
      * 개선계획 승인 처리
      * - 결재 승인 시 호출
      * - 상태: 승인요청(03) → 개선이행(04)
@@ -290,10 +308,13 @@ public class ImplInspectionItem {
      * 개선완료 승인 처리
      * - 완료 결재 승인 시 호출
      * - 상태: 완료승인요청(05) → 개선완료(06)
+     * - 최종점검결과: 승인(01), 최종점검일자: 현재일
      */
     public void approveCompleteApproval() {
         this.improvementStatusCd = "06"; // 개선완료
         this.improvementCompletedDate = LocalDate.now();
+        this.finalInspectionResultCd = "01"; // 최종점검결과: 승인
+        this.finalInspectionDate = LocalDate.now(); // 최종점검일자: 현재일
     }
 
     /**

@@ -25,15 +25,21 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 // Domain Components
+import { InspectionPlanComboBox } from '@/domains/compliance/components/molecules/InspectionPlanComboBox';
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+
+// API
+import { createImplInspectionReport, updateImplInspectionReport } from '@/domains/reports/api/implInspectionReportApi';
+import toast from '@/shared/utils/toast';
 
 /**
  * 이행점검결과보고서 폼 데이터 타입
+ * - impl_inspection_reports 테이블 구조와 매핑
  */
 interface ReportFormData {
   ledgerOrderId: string;              // 원장차수ID
-  inspectionName: string;             // 점검명
-  reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서, 03:부서별보고서)
+  implInspectionPlanId: string;       // 이행점검계획ID (점검명 선택 시 설정)
+  reportTypeCd: string;               // 보고서구분 (01:CEO보고서, 02:임원보고서)
   reviewDate: string | null;          // 검토일자
   result: string;                     // 결과
 }
@@ -55,18 +61,19 @@ interface ReportFormModalProps {
 
 /**
  * 폼 검증 스키마
+ * - impl_inspection_reports 테이블 필드와 매핑
  */
 const schema = yup.object().shape({
   ledgerOrderId: yup
     .string()
     .required('원장차수는 필수입니다'),
-  inspectionName: yup
+  implInspectionPlanId: yup
     .string()
     .required('점검명은 필수입니다'),
   reportTypeCd: yup
     .string()
     .required('보고서구분은 필수입니다')
-    .oneOf(['01', '02'], '보고서구분은 01, 02, 03만 가능합니다'),
+    .oneOf(['01', '02'], '보고서구분은 01, 02만 가능합니다'),
   reviewDate: yup
     .string()
     .nullable()
@@ -107,13 +114,14 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors }
   } = useForm<ReportFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
       ledgerOrderId: '',
-      inspectionName: '',
+      implInspectionPlanId: '',
       reportTypeCd: getReportTypeCd(reportType),
       reviewDate: dayjs().format('YYYY-MM-DD'),
       result: ''
@@ -122,13 +130,13 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
   /**
    * 폼 초기화
-   * - mode와 report 데이터에 따라 폼 데이터 설정
+   * - mode와 reportData에 따라 폼 데이터 설정
    */
   useEffect(() => {
     if (mode === 'create') {
       reset({
         ledgerOrderId: '',
-        inspectionName: '',
+        implInspectionPlanId: '',
         reportTypeCd: getReportTypeCd(reportType),
         reviewDate: dayjs().format('YYYY-MM-DD'),
         result: ''
@@ -137,7 +145,7 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     } else if (reportData) {
       reset({
         ledgerOrderId: reportData.ledgerOrderId || '',
-        inspectionName: reportData.inspectionName || '',
+        implInspectionPlanId: reportData.implInspectionPlanId || '',
         reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
         reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
         result: reportData.result || ''
@@ -148,13 +156,22 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
   /**
    * 폼 제출 핸들러
+   * - 등록/수정 API 호출
    */
   const onFormSubmit = useCallback(async (formData: ReportFormData) => {
     try {
       if (mode === 'create') {
-        // TODO: API 호출 - 보고서 등록
-        console.log('보고서 등록:', formData);
-        alert('보고서가 성공적으로 등록되었습니다.');
+        // API 호출 - 보고서 등록
+        const createRequest = {
+          ledgerOrderId: formData.ledgerOrderId,
+          implInspectionPlanId: formData.implInspectionPlanId,
+          reportTypeCd: formData.reportTypeCd,
+          reviewDate: formData.reviewDate || undefined,
+          result: formData.result || undefined
+        };
+
+        await createImplInspectionReport(createRequest);
+        toast.success('보고서가 성공적으로 등록되었습니다.');
 
         if (onSubmit) {
           await onSubmit(formData);
@@ -166,9 +183,15 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
         onClose();
       } else if (reportData && isEditing) {
-        // TODO: API 호출 - 보고서 수정
-        console.log('보고서 수정:', reportData.id, formData);
-        alert('보고서가 성공적으로 수정되었습니다.');
+        // API 호출 - 보고서 수정
+        const updateRequest = {
+          reportTypeCd: formData.reportTypeCd,
+          reviewDate: formData.reviewDate || undefined,
+          result: formData.result || undefined
+        };
+
+        await updateImplInspectionReport(reportData.implInspectionReportId, updateRequest);
+        toast.success('보고서가 성공적으로 수정되었습니다.');
 
         if (onSubmit) {
           await onSubmit(formData);
@@ -182,7 +205,7 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
       }
     } catch (error) {
       console.error('보고서 저장 실패:', error);
-      alert(error instanceof Error ? error.message : '보고서 저장에 실패했습니다.');
+      toast.error(error instanceof Error ? error.message : '보고서 저장에 실패했습니다.');
     }
   }, [mode, reportData, isEditing, onClose, onRefresh, onSubmit]);
 
@@ -190,11 +213,16 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
     setIsEditing(true);
   }, []);
 
+  /**
+   * 취소 버튼 핸들러
+   * - 상세 모드: 수정 취소 후 원래 데이터로 복원
+   * - 등록 모드: 모달 닫기
+   */
   const handleCancel = useCallback(() => {
     if (mode === 'detail' && reportData) {
       reset({
         ledgerOrderId: reportData.ledgerOrderId || '',
-        inspectionName: reportData.inspectionName || '',
+        implInspectionPlanId: reportData.implInspectionPlanId || '',
         reportTypeCd: reportData.reportTypeCd || getReportTypeCd(reportType),
         reviewDate: reportData.reviewDate || dayjs().format('YYYY-MM-DD'),
         result: reportData.result || ''
@@ -207,6 +235,9 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
   const modalTitle = title || (mode === 'create' ? '이행점검결과보고서 등록' : '이행점검결과보고서 상세');
   const isReadOnly = mode === 'detail' && !isEditing;
+
+  // 원장차수ID 감시 (점검명 콤보박스에서 필터링용)
+  const watchedLedgerOrderId = watch('ledgerOrderId');
 
   return (
     <Dialog
@@ -234,38 +265,42 @@ const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
       <DialogContent dividers sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {/* 원장차수 */}
-          <LedgerOrderComboBox
-            value={undefined}
-            onChange={() => {}}
-            label="원장차수"
-            required
-            disabled={isReadOnly}
-            error={!!errors.ledgerOrderId}
-            helperText={errors.ledgerOrderId?.message}
-            fullWidth
-            size="small"
-          />
-
-          {/* 점검명 */}
+          {/* 원장차수 - Controller 연결 */}
           <Controller
-            name="inspectionName"
+            name="ledgerOrderId"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label="점검명"
+              <LedgerOrderComboBox
+                value={field.value || ''}
+                onChange={(value) => field.onChange(value || '')}
+                label="원장차수"
                 required
+                disabled={isReadOnly}
+                error={!!errors.ledgerOrderId}
+                helperText={errors.ledgerOrderId?.message}
                 fullWidth
                 size="small"
-                disabled={isReadOnly}
-                error={!!errors.inspectionName}
-                helperText={errors.inspectionName?.message}
-              >
-                <MenuItem value="">선택</MenuItem>
-                <MenuItem value="2025년 하반기 정기점검">2025년 하반기 정기점검</MenuItem>
-              </TextField>
+              />
+            )}
+          />
+
+          {/* 점검명 - InspectionPlanComboBox 사용 */}
+          <Controller
+            name="implInspectionPlanId"
+            control={control}
+            render={({ field }) => (
+              <InspectionPlanComboBox
+                ledgerOrderId={watchedLedgerOrderId}
+                value={field.value || ''}
+                onChange={(value) => field.onChange(value)}
+                label="점검명"
+                required
+                disabled={isReadOnly || !watchedLedgerOrderId}
+                error={!!errors.implInspectionPlanId}
+                helperText={errors.implInspectionPlanId?.message}
+                fullWidth
+                size="small"
+              />
             )}
           />
 

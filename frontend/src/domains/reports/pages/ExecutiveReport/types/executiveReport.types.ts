@@ -100,7 +100,7 @@ export interface ExecutiveReportModalState {
   detailModal: boolean; // 상세보기 모달
   targetOrgModal: boolean; // 대상조직 관리 모달
   selectedReport: ResponsibilityInspection | DutyInspection | null;
-  modalMode: 'create' | 'edit' | 'detail';
+  modalMode: 'create' | 'detail'; // ExecutiveReportFormModal에서 지원하는 모드만 정의
 }
 
 // 페이지네이션 인터페이스

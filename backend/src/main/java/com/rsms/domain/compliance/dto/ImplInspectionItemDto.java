@@ -103,6 +103,8 @@ public class ImplInspectionItemDto {
     private String improvementManagerName;  // 개선담당자명
     private String improvementPlanContent;  // 개선계획내용
     private LocalDate improvementPlanDate;  // 개선계획수립일자
+    private String improvementPlanApprovedBy; // 개선계획 승인자ID
+    private LocalDate improvementPlanApprovedDate; // 개선계획 승인일자
     private String improvementDetailContent;// 개선이행세부내용
     private LocalDate improvementCompletedDate; // 개선완료일자
 
@@ -147,6 +149,8 @@ public class ImplInspectionItemDto {
                 .improvementManagerName(entity.getImprovementManagerName())  // 개선담당자명 (Transient 필드)
                 .improvementPlanContent(entity.getImprovementPlanContent())
                 .improvementPlanDate(entity.getImprovementPlanDate())
+                .improvementPlanApprovedBy(entity.getImprovementPlanApprovedBy())  // 개선계획 승인자ID
+                .improvementPlanApprovedDate(entity.getImprovementPlanApprovedDate())  // 개선계획 승인일자
                 .improvementDetailContent(entity.getImprovementDetailContent())
                 .improvementCompletedDate(entity.getImprovementCompletedDate())
                 .finalInspectorId(entity.getFinalInspectorId())

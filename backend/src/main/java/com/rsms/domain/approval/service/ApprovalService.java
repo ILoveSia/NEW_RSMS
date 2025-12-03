@@ -8,6 +8,8 @@ import com.rsms.domain.approval.entity.ApprovalLineStep;
 import com.rsms.domain.approval.repository.ApprovalHistoryRepository;
 import com.rsms.domain.approval.repository.ApprovalLineRepository;
 import com.rsms.domain.approval.repository.ApprovalRepository;
+import com.rsms.domain.compliance.entity.ImplInspectionItem;
+import com.rsms.domain.compliance.repository.ImplInspectionItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class ApprovalService {
     private final ApprovalRepository approvalRepository;
     private final ApprovalHistoryRepository approvalHistoryRepository;
     private final ApprovalLineRepository approvalLineRepository;
+    private final ImplInspectionItemRepository implInspectionItemRepository;
 
     // ==============================
     // 결재함 조회
@@ -251,6 +254,9 @@ public class ApprovalService {
             approvalHistoryRepository.save(pendingHistory);
         }
 
+        // 개선이행 결재 요청 시 impl_inspection_items 상태 업데이트
+        updateImprovementStatusOnRequest(request);
+
         log.info("결재 요청 완료 - id: {}, no: {}", savedApproval.getApprovalId(), savedApproval.getApprovalNo());
         return ApprovalDto.fromEntity(savedApproval);
     }
@@ -323,6 +329,9 @@ public class ApprovalService {
             } else {
                 // 마지막 단계 - 결재 완료
                 approval.complete();
+
+                // 개선이행 결재 승인 시 impl_inspection_items 상태 업데이트
+                updateImprovementStatusOnApproval(approval, userId);
             }
         }
         // 반려 처리
@@ -331,6 +340,9 @@ public class ApprovalService {
             currentHistory.setApproverDeptId(deptCd);
             currentHistory.setApproverDeptName(deptName);
             approval.reject(request.getComment());
+
+            // 개선이행 결재 반려 시 impl_inspection_items 상태 업데이트
+            updateImprovementStatusOnRejection(approval);
         }
 
         approval.setUpdatedBy(userId);
@@ -366,6 +378,131 @@ public class ApprovalService {
 
         log.info("결재 회수 완료 - id: {}", approvalId);
         return ApprovalDto.fromEntity(approval);
+    }
+
+    // ==============================
+    // 개선이행 상태 업데이트
+    // ==============================
+
+    /**
+     * 개선이행 결재 요청 시 impl_inspection_items 상태 업데이트
+     * - IMPROVE + PLAN_APPROVAL 요청: improvement_status_cd = '03' (승인요청)
+     * - IMPROVE + COMPLETE_APPROVAL 요청: improvement_status_cd = '05' (완료승인요청)
+     *
+     * @param request 결재 요청 정보
+     */
+    private void updateImprovementStatusOnRequest(CreateApprovalRequest request) {
+        // 업무구분이 IMPROVE가 아니면 처리하지 않음
+        if (!"IMPROVE".equals(request.getWorkTypeCd())) {
+            return;
+        }
+
+        String referenceId = request.getRefDocId();
+        String approvalTypeCd = request.getApprovalTypeCd();
+
+        if (referenceId == null || approvalTypeCd == null) {
+            log.warn("개선이행 상태 업데이트 실패 - referenceId: {}, approvalTypeCd: {}", referenceId, approvalTypeCd);
+            return;
+        }
+
+        // 이행점검항목 조회
+        ImplInspectionItem item = implInspectionItemRepository.findById(referenceId).orElse(null);
+        if (item == null) {
+            log.warn("이행점검항목을 찾을 수 없습니다 - referenceId: {}", referenceId);
+            return;
+        }
+
+        // 결재유형에 따른 상태 업데이트
+        if ("PLAN_APPROVAL".equals(approvalTypeCd)) {
+            // 계획승인 요청 → 승인요청(03)
+            item.requestPlanApproval();
+            log.info("개선계획 승인요청 처리 완료 - itemId: {}, 상태: 03(승인요청)", referenceId);
+        } else if ("COMPLETE_APPROVAL".equals(approvalTypeCd)) {
+            // 완료승인 요청 → 완료승인요청(05)
+            item.requestCompleteApproval();
+            log.info("개선완료 승인요청 처리 완료 - itemId: {}, 상태: 05(완료승인요청)", referenceId);
+        }
+    }
+
+    /**
+     * 개선이행 결재 승인 시 impl_inspection_items 상태 업데이트
+     * - IMPROVE + PLAN_APPROVAL 승인: improvement_status_cd = '04' (개선이행)
+     * - IMPROVE + COMPLETE_APPROVAL 승인: improvement_status_cd = '06' (개선완료)
+     *
+     * @param approval 결재 엔티티
+     * @param approverId 승인자 ID
+     */
+    private void updateImprovementStatusOnApproval(Approval approval, String approverId) {
+        // 업무구분이 IMPROVE가 아니면 처리하지 않음
+        if (!"IMPROVE".equals(approval.getWorkTypeCd())) {
+            return;
+        }
+
+        String referenceId = approval.getReferenceId();
+        String approvalTypeCd = approval.getApprovalTypeCd();
+
+        if (referenceId == null || approvalTypeCd == null) {
+            log.warn("개선이행 상태 업데이트 실패 - referenceId: {}, approvalTypeCd: {}", referenceId, approvalTypeCd);
+            return;
+        }
+
+        // 이행점검항목 조회
+        ImplInspectionItem item = implInspectionItemRepository.findById(referenceId).orElse(null);
+        if (item == null) {
+            log.warn("이행점검항목을 찾을 수 없습니다 - referenceId: {}", referenceId);
+            return;
+        }
+
+        // 결재유형에 따른 상태 업데이트
+        if ("PLAN_APPROVAL".equals(approvalTypeCd)) {
+            // 계획승인 → 개선이행(04)
+            item.approvePlanApproval(approverId);
+            log.info("개선계획 승인 처리 완료 - itemId: {}, 상태: 04(개선이행)", referenceId);
+        } else if ("COMPLETE_APPROVAL".equals(approvalTypeCd)) {
+            // 완료승인 → 개선완료(06)
+            item.approveCompleteApproval();
+            log.info("개선완료 승인 처리 완료 - itemId: {}, 상태: 06(개선완료)", referenceId);
+        }
+    }
+
+    /**
+     * 개선이행 결재 반려 시 impl_inspection_items 상태 업데이트
+     * - IMPROVE + PLAN_APPROVAL 반려: improvement_status_cd = '02' (개선계획)
+     * - IMPROVE + COMPLETE_APPROVAL 반려: improvement_status_cd = '04' (개선이행)
+     *
+     * @param approval 결재 엔티티
+     */
+    private void updateImprovementStatusOnRejection(Approval approval) {
+        // 업무구분이 IMPROVE가 아니면 처리하지 않음
+        if (!"IMPROVE".equals(approval.getWorkTypeCd())) {
+            return;
+        }
+
+        String referenceId = approval.getReferenceId();
+        String approvalTypeCd = approval.getApprovalTypeCd();
+
+        if (referenceId == null || approvalTypeCd == null) {
+            log.warn("개선이행 상태 업데이트 실패 - referenceId: {}, approvalTypeCd: {}", referenceId, approvalTypeCd);
+            return;
+        }
+
+        // 이행점검항목 조회
+        ImplInspectionItem item = implInspectionItemRepository.findById(referenceId).orElse(null);
+        if (item == null) {
+            log.warn("이행점검항목을 찾을 수 없습니다 - referenceId: {}", referenceId);
+            return;
+        }
+
+        // 결재유형에 따른 상태 업데이트
+        if ("PLAN_APPROVAL".equals(approvalTypeCd)) {
+            // 계획승인 반려 → 개선계획(02)
+            item.rejectPlanApproval();
+            log.info("개선계획 반려 처리 완료 - itemId: {}, 상태: 02(개선계획)", referenceId);
+        } else if ("COMPLETE_APPROVAL".equals(approvalTypeCd)) {
+            // 완료승인 반려 → 개선이행(04)
+            item.rejectCompleteApproval();
+            log.info("개선완료 반려 처리 완료 - itemId: {}, 상태: 04(개선이행)", referenceId);
+        }
     }
 
     // ==============================

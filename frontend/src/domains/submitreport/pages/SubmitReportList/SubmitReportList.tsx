@@ -2,6 +2,7 @@
  * 제출보고서목록 관리 페이지
  * submit_reports 테이블 기반
  * PositionMgmt.tsx 표준 템플릿 준수
+ * - 실제 API 연동 CRUD 구현
  */
 
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
@@ -9,7 +10,7 @@ import toast from '@/shared/utils/toast';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './SubmitReportList.module.scss';
 
@@ -23,25 +24,63 @@ import type {
 
 // Shared Components
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
+import { SubmittingAgencyComboBox } from '@/domains/submitreport/components/molecules/SubmittingAgencyComboBox';
+import { ReportTypeComboBox } from '@/domains/submitreport/components/molecules/ReportTypeComboBox';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
 import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
 
 // SubmitReport specific components
-import { submitReportColumns } from './components/SubmitReportDataGrid/submitReportColumns';
+import { createSubmitReportColumns } from './components/SubmitReportDataGrid/submitReportColumns';
 import SubmitReportFormModal from './components/SubmitReportFormModal';
 import type { SubmitReportFormData } from './types/submitReportList.types';
+
+// 공통코드 Hook
+import { useCommonCode } from '@/shared/hooks/useCommonCode';
+
+// API Hooks
+import {
+  useSubmitReports,
+  useCreateSubmitReport,
+  useUpdateSubmitReport,
+  useDeleteSubmitReports,
+} from '@/domains/submitreport/hooks/useSubmitReport';
+import type { SubmitReportSearchParams, SubmitReportRequest } from '@/domains/submitreport/api/submitReportApi';
+
+// 첨부파일 API
+import { uploadAttachment } from '@/shared/api/attachmentApi';
 
 interface SubmitReportListProps {
   className?: string;
 }
 
+/**
+ * 제출보고서목록 관리 페이지 컴포넌트
+ * - 제출보고서 CRUD 기능 제공
+ * - API 연동 완료
+ */
 const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
   const { t } = useTranslation('submitreport');
 
+  // ===============================
+  // 공통코드 Hook (코드값 → 코드명 변환용)
+  // ===============================
+  const { getCodeName: getSubmittingAgencyName } = useCommonCode('SUB_AGENCY_CD');
+  const { getCodeName: getReportTypeName } = useCommonCode('SUB_REPORT_TYCD');
+
+  /**
+   * Grid 컬럼 정의 (공통코드 코드명 변환 적용)
+   */
+  const submitReportColumns = useMemo(() => {
+    return createSubmitReportColumns({
+      getSubmittingAgencyName,
+      getReportTypeName,
+    });
+  }, [getSubmittingAgencyName, getReportTypeName]);
+
+  // ===============================
   // State Management
-  const [reports, setReports] = useState<SubmitReport[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  // ===============================
   const [selectedReports, setSelectedReports] = useState<SubmitReport[]>([]);
 
   // 개별 로딩 상태
@@ -51,6 +90,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     delete: false,
   });
 
+  // 검색 필터 상태
   const [filters, setFilters] = useState<SubmitReportListFilters>({
     ledgerOrderId: '',
     reportTypeCd: '',
@@ -58,6 +98,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     submissionDateFrom: '',
     submissionDateTo: ''
   });
+
+  // 검색 실행용 파라미터 (검색 버튼 클릭 시에만 업데이트)
+  const [searchParams, setSearchParams] = useState<SubmitReportSearchParams>({});
 
   const [pagination, setPagination] = useState<SubmitReportListPagination>({
     page: 1,
@@ -73,11 +116,85 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     selectedReport: null
   });
 
+  // ===============================
+  // API Hooks
+  // ===============================
+
+  /**
+   * 제출보고서 목록 조회 (React Query)
+   */
+  const {
+    data: reportsData,
+    isLoading: isLoadingReports,
+    refetch: refetchReports,
+  } = useSubmitReports(searchParams);
+
+  /**
+   * 제출보고서 생성 mutation
+   */
+  const createMutation = useCreateSubmitReport();
+
+  /**
+   * 제출보고서 수정 mutation
+   */
+  const updateMutation = useUpdateSubmitReport();
+
+  /**
+   * 제출보고서 일괄 삭제 mutation
+   */
+  const deleteMutation = useDeleteSubmitReports();
+
+  // ===============================
+  // 데이터 변환 및 표시
+  // ===============================
+
+  /**
+   * API 응답을 UI용 SubmitReport 타입으로 변환
+   */
+  const displayReports = useMemo<SubmitReport[]>(() => {
+    if (!reportsData) return [];
+
+    return reportsData.map((report, index) => ({
+      reportId: String(report.reportId),
+      sequence: index + 1,
+      ledgerOrderId: report.ledgerOrderId,
+      submittingAgencyCd: report.submittingAgencyCd,
+      submittingAgencyName: report.submittingAgencyName || '',
+      reportTypeCd: report.reportTypeCd,
+      reportTypeName: report.reportTypeName || '',
+      subReportTitle: report.subReportTitle || '',
+      targetExecutiveEmpNo: report.targetExecutiveEmpNo || '',
+      targetExecutiveName: report.targetExecutiveName || '',
+      positionId: report.positionId ? String(report.positionId) : '',
+      positionName: report.positionName || '',
+      submissionDate: report.submissionDate,
+      remarks: report.remarks || '',
+      attachmentCount: 0,
+      createdAt: report.createdAt,
+      updatedAt: report.updatedAt,
+      createdBy: report.createdBy,
+      updatedBy: report.updatedBy,
+      version: 1
+    }));
+  }, [reportsData]);
+
+  // 로딩 상태 통합
+  const loading = isLoadingReports || loadingStates.search;
+
+  // ===============================
   // Event Handlers
+  // ===============================
+
+  /**
+   * 필터 값 변경 핸들러
+   */
   const handleFiltersChange = useCallback((newFilters: Partial<SubmitReportListFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
 
+  /**
+   * 신규 등록 모달 열기
+   */
   const handleNewReport = useCallback(() => {
     setModalState(prev => ({
       ...prev,
@@ -87,6 +204,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     toast.info('신규 제출보고서를 작성해주세요.', { autoClose: 2000 });
   }, []);
 
+  /**
+   * 모달 닫기
+   */
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({
       ...prev,
@@ -97,6 +217,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     }));
   }, []);
 
+  /**
+   * 제출보고서 삭제 핸들러
+   */
   const handleDeleteReports = useCallback(async () => {
     if (selectedReports.length === 0) {
       toast.warning('삭제할 제출보고서를 선택해주세요.');
@@ -110,15 +233,13 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     try {
       setLoadingStates(prev => ({ ...prev, delete: true }));
 
-      // TODO: API 호출로 실제 삭제
-      // await deleteReports(selectedReports.map(r => r.reportId));
+      // 선택된 보고서 ID 배열 생성
+      const reportIds = selectedReports.map(r => Number(r.reportId));
 
-      // 임시로 로컬 상태에서 제거
-      const selectedIds = selectedReports.map(r => r.reportId);
-      setReports(prev => prev.filter(report => !selectedIds.includes(report.reportId)));
-      setPagination(prev => ({ ...prev, total: prev.total - selectedReports.length }));
+      // API 호출로 일괄 삭제
+      await deleteMutation.mutateAsync(reportIds);
+
       setSelectedReports([]);
-
       toast.success(`${selectedReports.length}건의 제출보고서가 삭제되었습니다.`);
     } catch (error) {
       console.error('제출보고서 삭제 실패:', error);
@@ -126,8 +247,11 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedReports]);
+  }, [selectedReports, deleteMutation]);
 
+  /**
+   * 보고서 상세 보기
+   */
   const handleReportDetail = useCallback((report: SubmitReport) => {
     setModalState(prev => ({
       ...prev,
@@ -138,109 +262,132 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
 
   /**
    * 제출보고서 등록 핸들러
+   * - 보고서 생성 후 첨부파일 업로드 처리
    */
   const handleSave = useCallback(async (formData: SubmitReportFormData) => {
     try {
-      // TODO: 실제 API 호출로 교체
-      console.log('제출보고서 등록:', formData);
-      await new Promise(resolve => setTimeout(resolve, 500)); // 시뮬레이션
-
-      // Mock 데이터에 추가
-      const newReport: SubmitReport = {
-        reportId: String(reports.length + 1),
-        sequence: reports.length + 1,
+      // API 요청 DTO 생성
+      const request: SubmitReportRequest = {
         ledgerOrderId: formData.ledgerOrderId,
         submittingAgencyCd: formData.submittingAgencyCd,
-        submittingAgencyName: '', // TODO: 코드명 조회
         reportTypeCd: formData.reportTypeCd,
-        reportTypeName: '', // TODO: 코드명 조회
         subReportTitle: formData.subReportTitle,
         targetExecutiveEmpNo: formData.targetExecutiveEmpNo,
         targetExecutiveName: '', // TODO: 임원명 조회
-        positionId: formData.positionId,
+        positionId: formData.positionId ? Number(formData.positionId) : undefined,
         positionName: '', // TODO: 직책명 조회
         submissionDate: formData.submissionDate,
         remarks: formData.remarks,
-        attachmentCount: formData.attachments?.length || 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: 'admin',
-        updatedBy: 'admin',
-        version: 1
       };
 
-      setReports(prev => [...prev, newReport]);
-      setPagination(prev => ({
-        ...prev,
-        total: prev.total + 1,
-        totalPages: Math.ceil((prev.total + 1) / prev.size)
-      }));
+      // 1. 제출보고서 생성 (reportId 반환)
+      const createdReport = await createMutation.mutateAsync(request);
+      const newReportId = String(createdReport.reportId);
+      console.log('[SubmitReportList] 제출보고서 생성 완료:', newReportId);
+
+      // 2. 첨부파일 업로드 (파일이 있을 경우에만)
+      if (formData.attachments && formData.attachments.length > 0) {
+        console.log('[SubmitReportList] 첨부파일 업로드 시작:', formData.attachments.length, '개');
+        for (const file of formData.attachments) {
+          try {
+            await uploadAttachment({
+              file,
+              entityType: 'submit_reports',
+              entityId: newReportId,
+              fileCategory: 'REPORT'
+            });
+            console.log('[SubmitReportList] 파일 업로드 성공:', file.name);
+          } catch (uploadError) {
+            console.error('[SubmitReportList] 파일 업로드 실패:', file.name, uploadError);
+            // 파일 업로드 실패해도 보고서는 이미 생성됨 - 경고만 표시
+            toast.warning(`파일 '${file.name}' 업로드에 실패했습니다.`);
+          }
+        }
+      }
+
+      toast.success('제출보고서가 등록되었습니다.');
+      handleModalClose();
     } catch (error) {
       console.error('제출보고서 등록 실패:', error);
+      toast.error('제출보고서 등록에 실패했습니다.');
       throw error;
     }
-  }, [reports]);
+  }, [createMutation, handleModalClose]);
 
   /**
    * 제출보고서 수정 핸들러
    */
   const handleUpdate = useCallback(async (id: string, formData: SubmitReportFormData) => {
     try {
-      // TODO: 실제 API 호출로 교체
-      console.log('제출보고서 수정:', id, formData);
-      await new Promise(resolve => setTimeout(resolve, 500)); // 시뮬레이션
+      // API 요청 DTO 생성
+      const request: SubmitReportRequest = {
+        ledgerOrderId: formData.ledgerOrderId,
+        submittingAgencyCd: formData.submittingAgencyCd,
+        reportTypeCd: formData.reportTypeCd,
+        subReportTitle: formData.subReportTitle,
+        targetExecutiveEmpNo: formData.targetExecutiveEmpNo,
+        targetExecutiveName: '', // TODO: 임원명 조회
+        positionId: formData.positionId ? Number(formData.positionId) : undefined,
+        positionName: '', // TODO: 직책명 조회
+        submissionDate: formData.submissionDate,
+        remarks: formData.remarks,
+      };
 
-      // Mock 데이터 업데이트
-      setReports(prev => prev.map(report =>
-        report.reportId === id
-          ? {
-              ...report,
-              ledgerOrderId: formData.ledgerOrderId,
-              submittingAgencyCd: formData.submittingAgencyCd,
-              reportTypeCd: formData.reportTypeCd,
-              subReportTitle: formData.subReportTitle,
-              targetExecutiveEmpNo: formData.targetExecutiveEmpNo,
-              positionId: formData.positionId,
-              submissionDate: formData.submissionDate,
-              remarks: formData.remarks,
-              attachmentCount: formData.attachments?.length || report.attachmentCount,
-              updatedAt: new Date().toISOString(),
-              updatedBy: 'admin'
-            }
-          : report
-      ));
+      await updateMutation.mutateAsync({ id: Number(id), request });
+      toast.success('제출보고서가 수정되었습니다.');
+      handleModalClose();
     } catch (error) {
       console.error('제출보고서 수정 실패:', error);
+      toast.error('제출보고서 수정에 실패했습니다.');
       throw error;
     }
-  }, []);
+  }, [updateMutation, handleModalClose]);
 
+  /**
+   * 검색 실행 핸들러
+   */
   const handleSearch = useCallback(async () => {
-    setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
 
-    // 로딩 토스트 표시
+    // 검색 토스트 표시
     const loadingToastId = toast.loading('제출보고서 정보를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // 검색 파라미터 업데이트 (빈 값 제외)
+      const newSearchParams: SubmitReportSearchParams = {};
+      if (filters.ledgerOrderId) newSearchParams.ledgerOrderId = filters.ledgerOrderId;
+      if (filters.submittingAgencyCd) newSearchParams.submittingAgencyCd = filters.submittingAgencyCd;
+      if (filters.reportTypeCd) newSearchParams.reportTypeCd = filters.reportTypeCd;
+      if (filters.submissionDateFrom) newSearchParams.submissionDateFrom = filters.submissionDateFrom;
+      if (filters.submissionDateTo) newSearchParams.submissionDateTo = filters.submissionDateTo;
 
-      console.log('검색 필터:', filters);
+      setSearchParams(newSearchParams);
 
       // 성공 토스트로 업데이트
-      toast.update(loadingToastId, { type: 'success', render: '검색이 완료되었습니다.', isLoading: false, autoClose: 2000 });
+      toast.update(loadingToastId, {
+        type: 'success',
+        render: '검색이 완료되었습니다.',
+        isLoading: false,
+        autoClose: 2000
+      });
     } catch (error) {
       // 에러 토스트로 업데이트
-      toast.update(loadingToastId, { type: 'error', render: '검색에 실패했습니다.', isLoading: false, autoClose: 3000 });
+      toast.update(loadingToastId, {
+        type: 'error',
+        render: '검색에 실패했습니다.',
+        isLoading: false,
+        autoClose: 3000
+      });
       console.error('검색 실패:', error);
     } finally {
-      setLoading(false);
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
   }, [filters]);
 
+  /**
+   * 필터 초기화 핸들러
+   */
   const handleClearFilters = useCallback(() => {
     setFilters({
       ledgerOrderId: '',
@@ -249,10 +396,21 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       submissionDateFrom: '',
       submissionDateTo: ''
     });
+    setSearchParams({});
     setPagination(prev => ({ ...prev, page: 1 }));
   }, []);
 
+  /**
+   * 데이터 새로고침 핸들러
+   */
+  const handleRefresh = useCallback(() => {
+    refetchReports();
+  }, [refetchReports]);
+
+  // ===============================
   // Grid Event Handlers
+  // ===============================
+
   const handleRowClick = useCallback((report: SubmitReport) => {
     console.log('행 클릭:', report);
   }, []);
@@ -266,18 +424,34 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     console.log('선택된 행:', selected.length);
   }, []);
 
-  // Memoized computed values (성능 최적화)
+  // ===============================
+  // Memoized Values
+  // ===============================
+
+  /**
+   * 통계 정보 계산
+   */
   const statistics = useMemo(() => {
-    const total = pagination.total;
+    const total = displayReports.length;
     return { total };
-  }, [pagination.total]);
+  }, [displayReports.length]);
 
-  // Filtered reports for display (성능 최적화)
-  const displayReports = useMemo(() => {
-    return reports; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
-  }, [reports]);
+  /**
+   * 페이지네이션 업데이트
+   */
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      total: displayReports.length,
+      totalPages: Math.ceil(displayReports.length / prev.size)
+    }));
+  }, [displayReports.length]);
 
-  // BaseSearchFilter용 필드 정의
+  /**
+   * BaseSearchFilter용 필드 정의
+   * - 제출기관: SUB_AGENCY_CD 공통코드 콤보박스
+   * - 제출보고서구분: SUB_REPORT_TYCD 공통코드 콤보박스
+   */
   const searchFields = useMemo<FilterField[]>(() => [
     {
       key: 'ledgerOrderId',
@@ -294,17 +468,29 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     },
     {
       key: 'submittingAgencyCd',
-      type: 'text',
+      type: 'custom',
       label: '제출기관',
-      placeholder: '제출기관코드를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      customComponent: (
+        <SubmittingAgencyComboBox
+          value={filters.submittingAgencyCd}
+          onChange={(value: string | null) => handleFiltersChange({ submittingAgencyCd: value || '' })}
+          placeholder="제출기관 선택"
+        />
+      )
     },
     {
       key: 'reportTypeCd',
-      type: 'text',
+      type: 'custom',
       label: '제출보고서구분',
-      placeholder: '제출보고서구분코드를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 2 }
+      gridSize: { xs: 12, sm: 6, md: 2 },
+      customComponent: (
+        <ReportTypeComboBox
+          value={filters.reportTypeCd}
+          onChange={(value: string | null) => handleFiltersChange({ reportTypeCd: value || '' })}
+          placeholder="제출보고서구분 선택"
+        />
+      )
     },
     {
       key: 'submissionDateFrom',
@@ -320,9 +506,11 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       placeholder: '종료일을 선택하세요',
       gridSize: { xs: 12, sm: 6, md: 1.5 }
     }
-  ], [filters.ledgerOrderId, handleFiltersChange]);
+  ], [filters.ledgerOrderId, filters.submittingAgencyCd, filters.reportTypeCd, handleFiltersChange]);
 
-  // 엑셀 다운로드 핸들러
+  /**
+   * 엑셀 다운로드 핸들러
+   */
   const handleExcelDownload = useCallback(async () => {
     try {
       setLoadingStates(prev => ({ ...prev, excel: true }));
@@ -339,7 +527,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
     }
   }, []);
 
-  // BaseActionBar용 액션 버튼 정의
+  /**
+   * BaseActionBar용 액션 버튼 정의
+   */
   const actionButtons = useMemo<ActionButton[]>(() => [
     {
       key: 'excel',
@@ -358,8 +548,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       variant: 'contained',
       color: 'success',
       onClick: handleNewReport,
-      disabled: loadingStates.excel,
-      loading: loadingStates.excel
+      disabled: loading
     },
     {
       key: 'delete',
@@ -371,72 +560,16 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       disabled: selectedReports.length === 0 || loadingStates.delete,
       loading: loadingStates.delete
     }
-  ], [handleExcelDownload, handleNewReport, handleDeleteReports, selectedReports.length, loadingStates]);
+  ], [handleExcelDownload, handleNewReport, handleDeleteReports, selectedReports.length, loadingStates, loading]);
 
-  // BaseActionBar용 상태 정보 정의
+  /**
+   * BaseActionBar용 상태 정보 정의
+   */
   const statusInfo = useMemo<StatusInfo[]>(() => [], []);
-
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockReports: SubmitReport[] = [
-      {
-        reportId: '1',
-        sequence: 1,
-        ledgerOrderId: '20250001',
-        submittingAgencyCd: 'FSS',
-        submittingAgencyName: '금융감독원',
-        reportTypeCd: 'RESP_CHG',
-        reportTypeName: '임원 이행점검 보고서',
-        subReportTitle: '[2025년 하반기 정기점검] 임원 이행점검 보고서',
-        targetExecutiveEmpNo: 'EMP001',
-        targetExecutiveName: '홍길동',
-        positionId: '1',
-        positionName: '임원',
-        submissionDate: '2025-11-25',
-        remarks: '2025년 4분기 책무 변경사항 반영',
-        attachmentCount: 2,
-        createdAt: '2025-11-25',
-        updatedAt: '2025-11-25',
-        createdBy: 'admin',
-        updatedBy: 'admin',
-        version: 1
-      },
-      {
-        reportId: '2',
-        sequence: 2,
-        ledgerOrderId: '20250001',
-        submittingAgencyCd: 'FSC',
-        submittingAgencyName: '금융위원회',
-        reportTypeCd: 'EXEC_CHG',
-        reportTypeName: 'CEO 이행점검 보고서',
-        subReportTitle: '[2025년 하반기 정기점검] CEO 이행점검 보고서',
-        targetExecutiveEmpNo: 'EMP002',
-        targetExecutiveName: '김철수',
-        positionId: '2',
-        positionName: 'CEO',
-        submissionDate: '2025-11-25',
-        remarks: 'CEO 이행점검 보고',
-        attachmentCount: 1,
-        createdAt: '2025-11-25',
-        updatedAt: '2025-11-25',
-        createdBy: 'admin',
-        updatedBy: 'admin',
-        version: 1
-      }
-    ];
-
-    setReports(mockReports);
-    setPagination(prev => ({
-      ...prev,
-      total: mockReports.length,
-      totalPages: Math.ceil(mockReports.length / prev.size)
-    }));
-  }, []);
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
+      {/* 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
           <div className={styles.titleSection}>
@@ -475,9 +608,9 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
         </div>
       </div>
 
-      {/* 🎨 메인 컨텐츠 영역 */}
+      {/* 메인 컨텐츠 영역 */}
       <div className={styles.content}>
-        {/* 🔍 공통 검색 필터 */}
+        {/* 공통 검색 필터 */}
         <BaseSearchFilter
           fields={searchFields}
           values={filters as unknown as FilterValues}
@@ -489,7 +622,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
           showClearButton={true}
         />
 
-        {/* 💎 공통 액션 바 */}
+        {/* 공통 액션 바 */}
         <BaseActionBar
           totalCount={statistics.total}
           totalLabel="총 제출보고서 수"
@@ -499,7 +632,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
           loading={loading}
         />
 
-        {/* 🎯 공통 데이터 그리드 */}
+        {/* 공통 데이터 그리드 */}
         <BaseDataGrid
           data={displayReports}
           columns={submitReportColumns}
@@ -514,12 +647,12 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
-        suppressHorizontalScroll={false}
-        suppressColumnVirtualisation={false}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
         />
       </div>
 
-      {/* 📝 제출보고서 등록 모달 */}
+      {/* 제출보고서 등록 모달 */}
       <SubmitReportFormModal
         open={modalState.newReportModal}
         mode="create"
@@ -527,10 +660,10 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
         onClose={handleModalClose}
         onSave={handleSave}
         onUpdate={handleUpdate}
-        onRefresh={handleSearch}
+        onRefresh={handleRefresh}
       />
 
-      {/* 📄 제출보고서 상세 모달 */}
+      {/* 제출보고서 상세 모달 */}
       <SubmitReportFormModal
         open={modalState.detailModal}
         mode="detail"
@@ -538,7 +671,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
         onClose={handleModalClose}
         onSave={handleSave}
         onUpdate={handleUpdate}
-        onRefresh={handleSearch}
+        onRefresh={handleRefresh}
       />
     </div>
   );

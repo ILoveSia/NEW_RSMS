@@ -19,12 +19,16 @@ export interface Report {
   reviewContent?: string;
   result?: string;
   improvementAction?: string;
+  /** 원장차수ID - ExecutiveReportModal 조회용 */
+  ledgerOrderId?: string;
+  /** 이행점검계획ID - ExecutiveReportModal 조회용 */
+  implInspectionPlanId?: string;
 }
 
 // 🔍 보고서 목록 필터 인터페이스
 export interface ReportListFilters {
   ledgerOrderId: string;
-  inspectionName: string;
+  inspectionPlanId: string;  // 이행점검계획ID (점검명 선택용)
   orgCode: string;
 }
 

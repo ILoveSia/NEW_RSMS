@@ -26,10 +26,18 @@ import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/
 import { OrganizationSearchModal, type Organization } from '@/shared/components/organisms/OrganizationSearchModal';
 
 // Domain Components
+import { InspectionPlanComboBox } from '@/domains/compliance/components/molecules/InspectionPlanComboBox';
 import { LedgerOrderComboBox } from '@/domains/resps/components/molecules/LedgerOrderComboBox';
 
 // Report specific components
 import { reportColumns } from './components/ReportDataGrid/reportColumns';
+
+// API hooks
+import type { ImplInspectionReportResponse } from '@/domains/reports/api/implInspectionReportApi';
+import {
+  useDeleteImplInspectionReports,
+  useImplInspectionReports,
+} from '@/domains/reports/hooks/useImplInspectionReport';
 
 // Lazy-loaded components for performance optimization
 const ReportFormModal = React.lazy(() =>
@@ -56,8 +64,6 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   const { t } = useTranslation('reports');
 
   // State Management
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [selectedReports, setSelectedReports] = useState<Report[]>([]);
 
   // 개별 로딩 상태
@@ -72,7 +78,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
 
   const [filters, setFilters] = useState<ReportListFilters>({
     ledgerOrderId: '',
-    inspectionName: '',
+    inspectionPlanId: '',
     orgCode: ''
   });
 
@@ -98,6 +104,63 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   const [executiveReportModalOpen, setExecutiveReportModalOpen] = useState(false);
   const [ceoReportModalOpen, setCeoReportModalOpen] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>(undefined);
+
+  // 선택된 보고서 상세 정보 (모달에 전달)
+  const [selectedReportData, setSelectedReportData] = useState<{
+    ledgerOrderId?: string;
+    implInspectionPlanId?: string;
+    result?: string;
+  }>({});
+
+  // ===============================
+  // API 훅 연동
+  // ===============================
+
+  // 보고서 목록 조회 (React Query)
+  const {
+    data: apiReports,
+    isLoading: isLoadingReports,
+    refetch: refetchReports,
+  } = useImplInspectionReports({
+    ledgerOrderId: filters.ledgerOrderId,
+    implInspectionPlanId: filters.inspectionPlanId || undefined,
+    orgCode: filters.orgCode || undefined,
+  });
+
+  // 일괄 삭제 mutation
+  const deleteReportsMutation = useDeleteImplInspectionReports();
+
+  /**
+   * API 응답을 Report 타입으로 변환
+   * - ledgerOrderId, implInspectionPlanId 포함 (ExecutiveReportModal 조회용)
+   */
+  const reports = useMemo<Report[]>(() => {
+    if (!apiReports) return [];
+
+    return apiReports.map((item: ImplInspectionReportResponse, index: number) => ({
+      id: item.implInspectionReportId,
+      sequence: index + 1,
+      department: '', // 부서 정보는 별도 조인 필요
+      category: item.reportTypeName || (item.reportTypeCd === '01' ? 'CEO' : 'EXECUTIVE'),
+      inspectionName: item.implInspectionName || item.implInspectionPlanId,
+      inspectionPeriod: item.inspectionPeriod || '',
+      reportNumber: item.implInspectionReportId,
+      status: 'COMPLETED' as const, // 기본 상태
+      author: item.createdBy,
+      createdAt: item.createdAt,
+      approver: item.updatedBy,
+      approvedAt: item.updatedAt,
+      reviewContent: item.reviewContent || '',
+      result: item.result || '',
+      improvementAction: item.improvementAction || '',
+      // ExecutiveReportModal 조회용 필드
+      ledgerOrderId: item.ledgerOrderId,
+      implInspectionPlanId: item.implInspectionPlanId,
+    }));
+  }, [apiReports]);
+
+  // 로딩 상태 통합
+  const loading = isLoadingReports || deleteReportsMutation.isPending;
 
   // Event Handlers
   const handleFiltersChange = useCallback((newFilters: Partial<ReportListFilters>) => {
@@ -150,35 +213,22 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   // 폼 모달 핸들러들
   const handleReportSave = useCallback(async (formData: ReportFormData) => {
     try {
-      setLoading(true);
-      // TODO: API 호출로 보고서 생성
+      setLoadingStates(prev => ({ ...prev, newReport: true }));
+      // TODO: 실제 API 호출로 보고서 생성 (createImplInspectionReport 사용)
+      // 현재는 임시로 처리 - 추후 API 연동 필요
 
-      // 임시로 새 보고서 객체 생성
-      const newReport: Report = {
-        id: Date.now().toString(),
-        sequence: reports.length + 1,
-        department: formData.reportType === 'DEPARTMENT' ? '일반부서' : '본부부서',
-        category: formData.reportType || 'DEPARTMENT',
-        inspectionName: '신규점검',
-        inspectionPeriod: formData.inspectionPeriod,
-        reportNumber: `RPT-${Date.now()}`,
-        status: 'DRAFT' as const,
-        author: '현재사용자',
-        createdAt: new Date().toISOString().split('T')[0],
-        reviewContent: formData.reviewContent
-      };
-
-      setReports(prev => [newReport, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
       handleModalClose();
       toast.success('보고서가 성공적으로 등록되었습니다.');
+
+      // 목록 갱신
+      await refetchReports();
     } catch (error) {
       console.error('보고서 등록 실패:', error);
       toast.error('보고서 등록에 실패했습니다.');
     } finally {
-      setLoading(false);
+      setLoadingStates(prev => ({ ...prev, newReport: false }));
     }
-  }, [handleModalClose, reports.length]);
+  }, [handleModalClose, refetchReports]);
 
   const handleDeleteReports = useCallback(async () => {
     if (selectedReports.length === 0) {
@@ -193,51 +243,40 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     try {
       setLoadingStates(prev => ({ ...prev, delete: true }));
 
-      // TODO: API 호출로 실제 삭제
-      // await deleteReports(selectedReports.map(r => r.id));
-
-      // 임시로 로컬 상태에서 제거
+      // 실제 API 호출로 삭제
       const selectedIds = selectedReports.map(r => r.id);
-      setReports(prev => prev.filter(report => !selectedIds.includes(report.id)));
-      setPagination(prev => ({ ...prev, total: prev.total - selectedReports.length }));
+      const result = await deleteReportsMutation.mutateAsync(selectedIds);
+
+      // 선택 초기화
       setSelectedReports([]);
 
-      toast.success(`${selectedReports.length}건의 보고서가 삭제되었습니다.`);
+      toast.success(result.message || `${selectedReports.length}건의 보고서가 삭제되었습니다.`);
     } catch (error) {
       console.error('보고서 삭제 실패:', error);
       toast.error('보고서 삭제에 실패했습니다.');
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedReports]);
+  }, [selectedReports, deleteReportsMutation]);
 
   const handleImprovementSave = useCallback(async (formData: ImprovementActionFormData) => {
     try {
-      setLoading(true);
-      // TODO: API 호출로 개선조치 등록
-
-      // 임시로 보고서 상태 업데이트
-      setReports(prev =>
-        prev.map(report =>
-          report.id === formData.reportId
-            ? {
-                ...report,
-                improvementAction: formData.actionPlan,
-                status: 'REVIEWING' as const
-              }
-            : report
-        )
-      );
+      setLoadingStates(prev => ({ ...prev, improvement: true }));
+      // TODO: 실제 API 호출로 개선조치 등록 (updateImplInspectionReport 사용)
+      // 현재는 임시로 처리 - 추후 API 연동 필요
 
       handleModalClose();
       toast.success('개선조치가 성공적으로 등록되었습니다.');
+
+      // 목록 갱신
+      await refetchReports();
     } catch (error) {
       console.error('개선조치 등록 실패:', error);
       toast.error('개선조치 등록에 실패했습니다.');
     } finally {
-      setLoading(false);
+      setLoadingStates(prev => ({ ...prev, improvement: false }));
     }
-  }, [handleModalClose]);
+  }, [handleModalClose, refetchReports]);
 
   const handleReportDetail = useCallback((report: Report) => {
     setModalState(prev => ({
@@ -248,7 +287,12 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    setLoading(true);
+    // ledgerOrderId 필수 검증
+    if (!filters.ledgerOrderId) {
+      toast.warning('책무이행차수를 선택해주세요.');
+      return;
+    }
+
     setLoadingStates(prev => ({ ...prev, search: true }));
     setPagination(prev => ({ ...prev, page: 1 }));
 
@@ -256,8 +300,8 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     const loadingToastId = toast.loading('보고서 정보를 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+      // React Query refetch 호출
+      await refetchReports();
 
       console.log('검색 필터:', filters);
 
@@ -268,15 +312,14 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
       console.error('검색 실패:', error);
     } finally {
-      setLoading(false);
       setLoadingStates(prev => ({ ...prev, search: false }));
     }
-  }, [filters]);
+  }, [filters, refetchReports]);
 
   const handleClearFilters = useCallback(() => {
     setFilters({
       ledgerOrderId: '',
-      inspectionName: '',
+      inspectionPlanId: '',
       orgCode: ''
     });
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -300,15 +343,26 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
     toast.success(`부서코드 "${organization.orgCode}" 선택되었습니다.`);
   }, []);
 
-  // Grid Event Handlers
+  /**
+   * Grid 행 클릭 핸들러
+   * - 보고서 구분(category)에 따라 해당 모달 표시
+   * - 임원보고서: ExecutiveReportModal (실제 API 데이터 조회)
+   * - CEO보고서: CeoReportModal
+   */
   const handleRowClick = useCallback((report: Report) => {
     console.log('행 클릭:', report);
 
     // 보고서 구분에 따라 해당 모달 표시
-    if (report.category === '임원') {
+    if (report.category === 'EXECUTIVE' || report.category === '임원' || report.category === '임원보고서') {
+      // ExecutiveReportModal용 데이터 설정
       setSelectedReportId(report.id);
+      setSelectedReportData({
+        ledgerOrderId: report.ledgerOrderId,
+        implInspectionPlanId: report.implInspectionPlanId,
+        result: report.result,
+      });
       setExecutiveReportModalOpen(true);
-    } else if (report.category === 'CEO') {
+    } else if (report.category === 'CEO' || report.category === 'CEO보고서') {
       setSelectedReportId(report.id);
       setCeoReportModalOpen(true);
     }
@@ -325,10 +379,10 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
 
   // Memoized computed values (성능 최적화)
   const statistics = useMemo(() => {
-    const total = pagination.total;
+    const total = reports.length;
     const draftReports = reports.filter(r => r.status === 'DRAFT').length;
     const submittedReports = reports.filter(r => r.status === 'SUBMITTED').length;
-    const approvedReports = reports.filter(r => r.status === 'APPROVED').length;
+    const approvedReports = reports.filter(r => r.status === 'APPROVED' || r.status === 'COMPLETED').length;
 
     return {
       total,
@@ -336,7 +390,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       submittedReports,
       approvedReports
     };
-  }, [pagination.total, reports]);
+  }, [reports]);
 
   // Filtered reports for display (성능 최적화)
   const displayReports = useMemo(() => {
@@ -360,10 +414,17 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
-      key: 'inspectionName',
-      type: 'text',
-      label: '점검명',
-      placeholder: '점검명을 입력하세요',
+      key: 'inspectionPlanId',
+      type: 'custom',
+      label: '',
+      placeholder: '',
+      customComponent: (
+        <InspectionPlanComboBox
+          ledgerOrderId={filters.ledgerOrderId}
+          value={filters.inspectionPlanId || ''}
+          onChange={(newValue) => handleFiltersChange({ inspectionPlanId: newValue || '' })}
+        />
+      ),
       gridSize: { xs: 12, sm: 6, md: 3 }
     },
     {
@@ -379,7 +440,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
         tooltip: '부서조회'
       }
     }
-  ], [filters.ledgerOrderId, handleFiltersChange, handleOrgSearchOpen]);
+  ], [filters.ledgerOrderId, filters.inspectionPlanId, handleFiltersChange, handleOrgSearchOpen]);
 
   // BaseActionBar용 액션 버튼 정의 (스마트 타입 사용)
   const actionButtons = useMemo<ActionButton[]>(() => [
@@ -445,54 +506,6 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
   // 필요시 React DevTools Profiler 사용 권장
   const onRenderProfiler = useCallback(() => {
     // 성능 프로파일링 비활성화
-  }, []);
-
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockReports: Report[] = [
-      {
-        id: '1',
-        sequence: 1,
-        department: '준법지원본부',
-        category: '임원',
-        inspectionName: '2025년 하반기 정기점검',
-        inspectionPeriod: '2025.11.21~2025.12.20',
-        reportNumber: '20250001A0001R001',
-        status: 'APPROVED' as const,
-        author: '홍길동',
-        createdAt: '2025-11-24',
-        approver: '김대표',
-        approvedAt: '2025-11-24',
-        reviewContent: '정기 이행점검 완료',
-        result: '적정',
-        improvementAction: '지속 모니터링'
-      },
-      {
-        id: '2',
-        sequence: 2,
-        department: '준법지원본부',
-        category: 'CEO',
-        inspectionName: '2025년 하반기 정기점검',
-        inspectionPeriod: '2025.11.21~2025.12.20',
-        reportNumber: '20250001A0001R002',
-        status: 'SUBMITTED' as const,
-        author: '김철수',
-        createdAt: '2025-11-24',
-        approver: '김대표',
-        approvedAt: '2025-11-24',
-        reviewContent: 'CEO 지시사항 점검',
-        result: '개선필요',
-        improvementAction: '지속 모니터링'
-      }
-    ];
-
-    setReports(mockReports);
-    setPagination(prev => ({
-      ...prev,
-      total: mockReports.length,
-      totalPages: Math.ceil(mockReports.length / prev.size)
-    }));
   }, []);
 
   return (
@@ -632,7 +645,7 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
           onSelect={handleOrganizationSelect}
         />
 
-        {/* 임원 보고서 조회 모달 */}
+        {/* 임원 보고서 조회 모달 - 실제 API 데이터 연동 */}
         <React.Suspense fallback={<LoadingSpinner size="small" />}>
           {executiveReportModalOpen && (
             <ExecutiveReportModal
@@ -640,8 +653,12 @@ const ReportList: React.FC<ReportListProps> = ({ className }) => {
               onClose={() => {
                 setExecutiveReportModalOpen(false);
                 setSelectedReportId(undefined);
+                setSelectedReportData({});
               }}
               reportId={selectedReportId}
+              ledgerOrderId={selectedReportData.ledgerOrderId}
+              implInspectionPlanId={selectedReportData.implInspectionPlanId}
+              result={selectedReportData.result}
             />
           )}
         </React.Suspense>

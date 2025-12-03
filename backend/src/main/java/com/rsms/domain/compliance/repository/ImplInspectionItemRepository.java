@@ -194,4 +194,28 @@ public interface ImplInspectionItemRepository extends JpaRepository<ImplInspecti
            "LEFT JOIN FETCH i.implInspectionPlan p " +
            "WHERE i.implInspectionItemId = :itemId")
     Optional<ImplInspectionItem> findByIdWithFullHierarchy(@Param("itemId") String itemId);
+
+    /**
+     * 이행점검계획ID로 점검항목 조회 (isActive 조건만)
+     * - 임원이행점검보고서용
+     */
+    List<ImplInspectionItem> findByImplInspectionPlanIdAndIsActive(
+            String implInspectionPlanId, String isActive);
+
+    /**
+     * 원장차수ID로 점검항목 조회 (이행점검계획 통해)
+     * - 임원이행점검보고서용 (전체 계층 정보 포함)
+     */
+    @Query("SELECT DISTINCT i FROM ImplInspectionItem i " +
+           "LEFT JOIN FETCH i.deptManagerManual m " +
+           "LEFT JOIN FETCH m.organization " +
+           "LEFT JOIN FETCH m.managementObligation o " +
+           "LEFT JOIN FETCH o.responsibilityDetail rd " +
+           "LEFT JOIN FETCH rd.responsibility r " +
+           "LEFT JOIN FETCH i.implInspectionPlan p " +
+           "WHERE p.ledgerOrderId = :ledgerOrderId " +
+           "AND i.isActive = :isActive")
+    List<ImplInspectionItem> findByImplInspectionPlan_LedgerOrderIdAndIsActive(
+            @Param("ledgerOrderId") String ledgerOrderId,
+            @Param("isActive") String isActive);
 }

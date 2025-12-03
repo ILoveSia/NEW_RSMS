@@ -67,6 +67,18 @@
   }
 }
 
+// 한 줄에 두 필드 배치 (수행결과 + 점검주기 등)
+.fieldRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+// 한 줄 내 절반 너비 필드
+.fieldGroupHalf {
+  flex: 1;
+}
+
 // 필드 라벨
 .fieldLabel {
   font-size: 14px;

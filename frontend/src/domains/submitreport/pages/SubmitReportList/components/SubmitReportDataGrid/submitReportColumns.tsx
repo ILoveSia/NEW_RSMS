@@ -1,4 +1,3 @@
-import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { SubmitReport } from '../../types/submitReportList.types';
 
@@ -28,11 +27,30 @@ const ReportTitleRenderer = ({ value }: any) => {
 };
 
 /**
- * 제출보고서목록 AG-Grid 컬럼 정의 (9개 컬럼)
+ * 코드명 변환 함수 타입
+ * - useCommonCode의 getCodeName 함수와 동일한 시그니처
+ */
+type GetCodeNameFn = (detailCode: string) => string;
+
+/**
+ * 컬럼 생성에 필요한 코드명 변환 함수들
+ */
+interface CodeNameGetters {
+  /** 제출기관 코드명 변환 (SUB_AGENCY_CD) */
+  getSubmittingAgencyName: GetCodeNameFn;
+  /** 제출보고서구분 코드명 변환 (SUB_REPORT_TYCD) */
+  getReportTypeName: GetCodeNameFn;
+}
+
+/**
+ * 제출보고서목록 AG-Grid 컬럼 정의 생성 함수 (9개 컬럼)
  * submit_reports 테이블 구조 기반
  * 순번, 책무이행차수, 제출기관, 제출보고서구분, 제출보고서제목, 직책, 제출대상임원, 제출일, 첨부파일
+ *
+ * @param codeNameGetters 코드명 변환 함수 객체
+ * @returns AG-Grid 컬럼 정의 배열
  */
-export const submitReportColumns: ColDef<SubmitReport>[] = [
+export const createSubmitReportColumns = (codeNameGetters: CodeNameGetters): ColDef<SubmitReport>[] => [
   {
     headerName: '순번',
     field: 'sequence',
@@ -56,7 +74,11 @@ export const submitReportColumns: ColDef<SubmitReport>[] = [
     filter: true,
     width: 150,
     cellStyle: { display: 'flex', alignItems: 'center' },
-    valueGetter: (params) => params.data?.submittingAgencyName || params.data?.submittingAgencyCd || '-'
+    // 코드값(submittingAgencyCd)을 코드명으로 변환하여 표시
+    valueGetter: (params) => {
+      const code = params.data?.submittingAgencyCd;
+      return code ? codeNameGetters.getSubmittingAgencyName(code) : '-';
+    }
   },
   {
     headerName: '제출보고서구분',
@@ -65,7 +87,11 @@ export const submitReportColumns: ColDef<SubmitReport>[] = [
     filter: true,
     width: 180,
     cellStyle: { display: 'flex', alignItems: 'center' },
-    valueGetter: (params) => params.data?.reportTypeName || params.data?.reportTypeCd || '-'
+    // 코드값(reportTypeCd)을 코드명으로 변환하여 표시
+    valueGetter: (params) => {
+      const code = params.data?.reportTypeCd;
+      return code ? codeNameGetters.getReportTypeName(code) : '-';
+    }
   },
   {
     headerName: '제출보고서제목',

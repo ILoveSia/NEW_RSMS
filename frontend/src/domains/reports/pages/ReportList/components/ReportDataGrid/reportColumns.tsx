@@ -2,6 +2,30 @@ import { ColDef } from 'ag-grid-community';
 import { Report } from '../../types/reportList.types';
 
 /**
+ * 날짜 포맷 함수
+ * - ISO 형식 또는 다양한 날짜 형식을 yyyy-mm-dd로 변환
+ * @param dateString 날짜 문자열
+ * @returns yyyy-mm-dd 형식 문자열
+ */
+const formatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return '';
+
+  try {
+    // ISO 형식 또는 다양한 날짜 형식 처리
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  } catch {
+    return dateString;
+  }
+};
+
+/**
  * 보고서번호 렌더러 컴포넌트
  * - PositionMgmt의 직책 컬럼과 동일한 스타일 적용
  * - 파란색 글자에 hover 시 underline 표시
@@ -107,11 +131,12 @@ export const reportColumns: ColDef<Report>[] = [
     sortable: true,
     filter: true,
     width: 120,
-    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    valueFormatter: (params) => formatDate(params.value)
   },
   {
-    headerName: '검토내용',
-    field: 'reviewContent',
+    headerName: '결과',
+    field: 'result',
     sortable: true,
     filter: true,
     flex: 1,
@@ -126,7 +151,8 @@ export const reportColumns: ColDef<Report>[] = [
     sortable: true,
     filter: true,
     width: 120,
-    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+    cellStyle: { textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    valueFormatter: (params) => formatDate(params.value)
   }
 ];
 

@@ -63,7 +63,7 @@ CREATE TABLE rsms.impl_inspection_reports (
   remarks TEXT,                                           -- 비고
 
   -- 상태 정보
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',                 -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',              -- 사용여부 ('Y', 'N')
 
   -- 감사 정보
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

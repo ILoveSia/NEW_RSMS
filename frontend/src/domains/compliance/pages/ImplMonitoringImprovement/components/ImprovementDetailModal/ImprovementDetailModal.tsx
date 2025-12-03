@@ -5,22 +5,21 @@
  * - 우측: 개선이행정보 + 최종점검정보 영역 (편집 가능)
  */
 
+import { useAuthStore } from '@/app/store/authStore';
+import {
+  requestImprovementCompleteApproval,
+  requestImprovementPlanApproval
+} from '@/domains/approval/api/approvalApi';
 import {
   deleteAttachment,
   getAttachmentsByPhase,
   toUploadedFile,
   uploadAttachment
 } from '@/shared/api/attachmentApi';
-import { useAuthStore } from '@/app/store/authStore';
-import {
-  requestImprovementPlanApproval,
-  requestImprovementCompleteApproval
-} from '@/domains/approval/api/approvalApi';
 import { Button } from '@/shared/components/atoms/Button';
 import { FileUpload } from '@/shared/components/molecules/FileUpload/FileUpload';
 import type { UploadedFile } from '@/shared/components/molecules/FileUpload/types';
 import { ApprovalRequestModal } from '@/shared/components/organisms/ApprovalRequestModal';
-import type { ApprovalDocumentInfo } from '@/shared/components/organisms/ApprovalRequestModal';
 import { useCommonCode } from '@/shared/hooks/useCommonCode';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CloseIcon from '@mui/icons-material/Close';
@@ -742,15 +741,28 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                     />
                   </div>
 
-                  <div className={styles.fieldGroup}>
-                    <Typography className={styles.fieldLabel}>수행결과</Typography>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      variant="outlined"
-                      value={getExecutionResultDisplayName(improvement?.executionResultCd, getExecutionResultCodeName(improvement?.executionResultCd || ''))}
-                      InputProps={{ readOnly: true }}
-                    />
+                  {/* 수행결과 + 점검주기 한 줄 배치 */}
+                  <div className={styles.fieldRow}>
+                    <div className={styles.fieldGroupHalf}>
+                      <Typography className={styles.fieldLabel}>수행결과</Typography>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        value={getExecutionResultDisplayName(improvement?.executionResultCd, getExecutionResultCodeName(improvement?.executionResultCd || ''))}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </div>
+                    <div className={styles.fieldGroupHalf}>
+                      <Typography className={styles.fieldLabel}>점검주기</Typography>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        value={improvement?.activityFrequencyCd ? getFrequencyName(improvement.activityFrequencyCd) : '-'}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.fieldGroup}>
@@ -761,17 +773,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                       rows={2}
                       variant="outlined"
                       value={improvement?.executionResultContent || '-'}
-                      InputProps={{ readOnly: true }}
-                    />
-                  </div>
-
-                  <div className={styles.fieldGroup}>
-                    <Typography className={styles.fieldLabel}>점검주기</Typography>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      variant="outlined"
-                      value={improvement?.activityFrequencyCd ? getFrequencyName(improvement.activityFrequencyCd) : '-'}
                       InputProps={{ readOnly: true }}
                     />
                   </div>
@@ -1027,25 +1028,7 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
 
                 {/* 카드 섹션 4: 최종점검정보 입력 */}
                 <div className={`${styles.cardSection} ${styles.cardFinalInspectionInput}`}>
-                  <div className={styles.cardTitle}>🔍 최종점검정보 입력</div>
-
-                  <div className={styles.fieldGroup}>
-                    <Typography className={styles.fieldLabel}>최종점검자</Typography>
-                    <Controller
-                      name="finalInspector"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          size="small"
-                          disabled={!canEditFinal}
-                          error={!!errors.finalInspector}
-                          helperText={errors.finalInspector?.message}
-                        />
-                      )}
-                    />
-                  </div>
+                  <div className={styles.cardTitle}>🔍 최종점검정보</div>
 
                   <div className={styles.fieldGroup}>
                     <Typography className={styles.fieldLabel}>최종점검일자</Typography>
@@ -1094,25 +1077,6 @@ const ImprovementDetailModal: React.FC<ImprovementDetailModalProps> = ({
                             <FormHelperText>{errors.finalInspectionResult.message}</FormHelperText>
                           )}
                         </FormControl>
-                      )}
-                    />
-                  </div>
-
-                  <div className={styles.fieldGroup}>
-                    <Typography className={styles.fieldLabel}>최종점검결과 내용</Typography>
-                    <Controller
-                      name="finalInspectionOpinion"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          fullWidth
-                          multiline
-                          rows={3}
-                          disabled={!canEditFinal}
-                          error={!!errors.finalInspectionOpinion}
-                          helperText={errors.finalInspectionOpinion?.message}
-                        />
                       )}
                     />
                   </div>

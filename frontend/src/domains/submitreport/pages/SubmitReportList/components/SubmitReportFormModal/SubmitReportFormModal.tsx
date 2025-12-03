@@ -1,6 +1,7 @@
 /**
  * 제출보고서 등록/수정/상세 모달
  * PositionFormModal 표준 템플릿 기반
+ * - API 연동 CRUD 구현 완료
  *
  * 주요 기능:
  * 1. 등록 모드: 새로운 제출보고서 작성 및 첨부파일 업로드
@@ -10,6 +11,14 @@
 
 import { Button } from '@/shared/components/atoms/Button';
 import { FileUpload, type UploadedFile } from '@/shared/components/molecules/FileUpload';
+import toast from '@/shared/utils/toast';
+// 첨부파일 API
+import {
+  deleteAttachment,
+  getAttachmentsByEntity,
+  toUploadedFile,
+  uploadAttachment
+} from '@/shared/api/attachmentApi';
 import {
   Box,
   Dialog,
@@ -77,6 +86,77 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   /**
+   * 서버에서 첨부파일 목록 조회
+   * - submit_reports 테이블의 reportId로 첨부파일 조회
+   * @param reportId 제출보고서 ID
+   */
+  const loadAttachments = useCallback(async (reportId: string) => {
+    console.log('[SubmitReportFormModal] 첨부파일 조회 시작:', reportId);
+    try {
+      const files = await getAttachmentsByEntity('submit_reports', reportId);
+      console.log('[SubmitReportFormModal] 첨부파일 조회 결과:', files);
+      setUploadedFiles(files.map(toUploadedFile));
+    } catch (error) {
+      console.error('[SubmitReportFormModal] 첨부파일 조회 실패:', error);
+      setUploadedFiles([]);
+    }
+  }, []);
+
+  /**
+   * 첨부파일 서버 동기화 처리
+   * - 저장 버튼 클릭 시 호출됨
+   * - 새로 추가된 파일 업로드, 삭제된 파일 삭제
+   * @param reportId 제출보고서 ID (submit_reports.report_id)
+   * @param currentFiles 현재 로컬 상태의 파일 목록
+   */
+  const syncAttachmentsToServer = useCallback(async (
+    reportId: string,
+    currentFiles: UploadedFile[]
+  ) => {
+    // 서버에서 원본 파일 목록 다시 조회 (삭제 비교용)
+    const serverFiles = await getAttachmentsByEntity('submit_reports', reportId);
+    const serverFileIds = serverFiles.map(f => f.attachmentId);
+
+    // 새로 추가된 파일 찾기 (serverId가 없는 파일)
+    const newFiles = currentFiles.filter(f => !f.serverId);
+    // 삭제된 파일 찾기 (서버에 있었으나 현재 목록에 없는 파일)
+    const deletedFileIds = serverFileIds.filter(
+      serverId => !currentFiles.find(f => f.serverId === serverId)
+    );
+
+    console.log('[SubmitReportFormModal] 첨부파일 동기화:', {
+      newFiles: newFiles.length,
+      deletedFiles: deletedFileIds.length
+    });
+
+    // 새 파일 업로드
+    for (const newFile of newFiles) {
+      try {
+        await uploadAttachment({
+          file: newFile.file,
+          entityType: 'submit_reports',
+          entityId: reportId,
+          fileCategory: 'REPORT'
+        });
+        console.log('[SubmitReportFormModal] 파일 업로드 성공:', newFile.file.name);
+      } catch (error) {
+        console.error('[SubmitReportFormModal] 파일 업로드 실패:', error);
+        throw error;
+      }
+    }
+
+    // 삭제된 파일 처리
+    for (const fileId of deletedFileIds) {
+      try {
+        await deleteAttachment(fileId);
+        console.log('[SubmitReportFormModal] 파일 삭제 성공:', fileId);
+      } catch (error) {
+        console.error('[SubmitReportFormModal] 파일 삭제 실패:', error);
+      }
+    }
+  }, []);
+
+  /**
    * 모달 열릴 때 초기화
    */
   useEffect(() => {
@@ -109,16 +189,15 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
         remarks: report.remarks || ''
       });
 
-      // TODO: 서버에서 첨부파일 목록 조회 (attachments API 연동 시)
-      // const attachments = await fetchAttachments(report.reportId);
-      // setUploadedFiles(attachments);
-      setUploadedFiles([]);
+      // 서버에서 첨부파일 목록 조회
+      setUploadedFiles([]); // 먼저 초기화
+      loadAttachments(report.reportId);
 
       setIsEditing(false);
       setErrors({});
       setFileError('');
     }
-  }, [mode, report]);
+  }, [mode, report, loadAttachments]);
 
   /**
    * 폼 필드 값 변경 핸들러
@@ -179,50 +258,63 @@ const SubmitReportFormModal: React.FC<SubmitReportFormModalProps> = ({
 
   /**
    * 등록/수정 제출 핸들러
+   * - API를 통한 CRUD 처리
+   * - 수정 모드에서 첨부파일 서버 동기화 처리
    */
   const handleSubmit = useCallback(async () => {
     // 폼 검증
     if (!validateForm()) {
+      toast.warning('필수 항목을 모두 입력해주세요.');
       return;
     }
 
     try {
       if (mode === 'create') {
-        // 등록 모드
+        // 등록 모드 - 폼 데이터 저장
+        // 주의: 신규 등록 시에는 reportId가 없으므로 먼저 보고서를 생성한 후
+        // 반환된 reportId로 첨부파일을 업로드해야 함
+        // 이 로직은 상위 컴포넌트(SubmitReportList.tsx)의 handleSave에서 처리
         await onSave({
           ...formData,
           attachments: uploadedFiles.map(f => f.file) // File 객체 배열 전달
         });
 
-        alert('제출보고서가 성공적으로 등록되었습니다.');
-
         // 목록 새로고침
         if (onRefresh) {
-          await onRefresh();
+          onRefresh();
         }
 
         onClose();
       } else if (report && isEditing) {
-        // 수정 모드
+        // 수정 모드 - 첨부파일 서버 동기화 후 폼 데이터 저장
+        try {
+          // 1. 첨부파일 서버 동기화 (새 파일 업로드, 삭제된 파일 삭제)
+          await syncAttachmentsToServer(report.reportId, uploadedFiles);
+          console.log('[SubmitReportFormModal] 첨부파일 동기화 완료');
+        } catch (error) {
+          console.error('[SubmitReportFormModal] 첨부파일 동기화 실패:', error);
+          toast.error('첨부파일 업로드에 실패했습니다.');
+          return;
+        }
+
+        // 2. 폼 데이터 저장 (첨부파일 제외 - 이미 동기화됨)
         await onUpdate(report.reportId, {
           ...formData,
-          attachments: uploadedFiles.map(f => f.file)
+          attachments: [] // 이미 동기화됨
         });
-
-        alert('제출보고서가 성공적으로 수정되었습니다.');
 
         // 목록 새로고침
         if (onRefresh) {
-          await onRefresh();
+          onRefresh();
         }
 
         onClose();
       }
     } catch (error) {
       console.error('제출보고서 저장 실패:', error);
-      alert(error instanceof Error ? error.message : '제출보고서 저장에 실패했습니다.');
+      // 에러 토스트는 상위 컴포넌트에서 처리됨
     }
-  }, [mode, formData, uploadedFiles, report, isEditing, onClose, onSave, onUpdate, onRefresh, validateForm]);
+  }, [mode, formData, uploadedFiles, report, isEditing, onClose, onSave, onUpdate, onRefresh, validateForm, syncAttachmentsToServer]);
 
   /**
    * 수정 모드 전환 핸들러

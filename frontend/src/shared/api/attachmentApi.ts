@@ -241,6 +241,6 @@ export const toUploadedFile = (dto: AttachmentDto) => ({
   id: dto.attachmentId,
   serverId: dto.attachmentId,
   url: getDownloadUrl(dto.attachmentId),
-  uploadedAt: new Date(dto.createdAt),
+  uploadedAt: dto.createdAt, // string 타입 유지 (UploadedFile 인터페이스와 일치)
   uploadedBy: dto.createdBy,
 });

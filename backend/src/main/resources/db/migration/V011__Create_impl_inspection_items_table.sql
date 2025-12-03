@@ -88,7 +88,7 @@ CREATE TABLE rsms.impl_inspection_items (
   rejection_count INTEGER DEFAULT 0,                      -- 반려 횟수
 
   -- 상태 정보
-  is_active CHAR(1) NOT NULL DEFAULT 'Y',                 -- 사용여부 ('Y', 'N')
+  is_active VARCHAR(1) NOT NULL DEFAULT 'Y',              -- 사용여부 ('Y', 'N')
 
   -- 감사 정보
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

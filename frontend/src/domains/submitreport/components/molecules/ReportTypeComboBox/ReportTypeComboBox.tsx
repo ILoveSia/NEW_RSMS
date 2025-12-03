@@ -7,18 +7,17 @@
  * @since 2025-01-13
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   FormHelperText,
-  CircularProgress,
   Alert,
-  Box,
   type SelectChangeEvent,
 } from '@mui/material';
+import { useCommonCode } from '@/shared/hooks/useCommonCode';
 import type { ReportTypeComboBoxProps } from './types';
 
 /**
@@ -60,18 +59,11 @@ const ReportTypeComboBox: React.FC<ReportTypeComboBoxProps> = ({
   size = 'small',
   fullWidth = true,
 }) => {
-  // TODO: useQuery로 SUB_REPORT_TYCD 공통코드 조회 API 연동
-  // 현재는 Mock 데이터 사용
-  const reportTypes = useMemo(() => [
-    { code: 'RESP_CHG', name: '책무기재내용 변경 보고서' },
-    { code: 'EXEC_CHG', name: '임원 변경 보고서' },
-    { code: 'ORG_CHG', name: '조직 변경 보고서' },
-    { code: 'POSITION_CHG', name: '직책 변경 보고서' },
-    { code: 'OTHER', name: '기타 보고서' }
-  ], []);
-
-  const isLoading = false;
-  const isError = false;
+  /**
+   * 공통코드 SUB_REPORT_TYCD 조회
+   * - codeStore에서 공통코드 목록 조회
+   */
+  const { options: reportTypes } = useCommonCode('SUB_REPORT_TYCD');
 
   /**
    * 선택 변경 핸들러
@@ -81,44 +73,6 @@ const ReportTypeComboBox: React.FC<ReportTypeComboBoxProps> = ({
     const selectedValue = event.target.value;
     onChange(selectedValue === '' ? null : selectedValue);
   };
-
-  /**
-   * 로딩 중일 때
-   */
-  if (isLoading) {
-    return (
-      <FormControl
-        fullWidth={fullWidth}
-        size={size}
-        disabled
-        className={className}
-      >
-        <InputLabel>{label}</InputLabel>
-        <Select
-          value=""
-          label={label}
-          displayEmpty
-          renderValue={() => (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CircularProgress size={20} />
-              <span>데이터 로딩 중...</span>
-            </Box>
-          )}
-        />
-      </FormControl>
-    );
-  }
-
-  /**
-   * 에러 발생 시
-   */
-  if (isError) {
-    return (
-      <Alert severity="error" className={className}>
-        데이터 조회 실패
-      </Alert>
-    );
-  }
 
   /**
    * 데이터 없을 때
@@ -153,15 +107,15 @@ const ReportTypeComboBox: React.FC<ReportTypeComboBoxProps> = ({
         onChange={handleChange}
         label={label}
       >
-        <MenuItem value="" disabled>
+        <MenuItem value="">
           <em>{placeholder}</em>
         </MenuItem>
         {reportTypes.map((type) => (
           <MenuItem
-            key={type.code}
-            value={type.code}
+            key={type.value}
+            value={type.value}
           >
-            {type.name}
+            {type.label}
           </MenuItem>
         ))}
       </Select>

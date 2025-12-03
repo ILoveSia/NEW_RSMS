@@ -95,7 +95,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- 3단계: 최종점검(승인) 정보
   -- ============================================
   final_inspection_result_cd VARCHAR(20),             -- 최종점검결과코드 (01:승인, 02:반려) FINAL_RESULT_CD
-  final_inspection_result_content TEXT,               -- 최종점검결과내용
+  final_inspection_result_content TEXT,               -- 최종점검결과내용 (삭제 예정)
   final_inspection_date DATE,                         -- 최종점검일자
 
   -- ============================================
