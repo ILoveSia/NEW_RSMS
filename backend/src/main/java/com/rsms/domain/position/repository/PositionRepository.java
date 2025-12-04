@@ -38,6 +38,15 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     List<Position> findByPositionsName(String positionsName);
 
     /**
+     * 직책코드 목록으로 일괄 조회
+     * - UserMgmtService에서 직위명 조회 시 사용
+     *
+     * @param positionsCdList 직책코드 목록
+     * @return 직책 리스트
+     */
+    List<Position> findByPositionsCdIn(List<String> positionsCdList);
+
+    /**
      * 직책명으로 검색 (LIKE)
      * - 부분 일치 검색
      *

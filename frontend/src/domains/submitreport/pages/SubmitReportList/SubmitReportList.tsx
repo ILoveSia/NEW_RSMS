@@ -169,7 +169,7 @@ const SubmitReportList: React.FC<SubmitReportListProps> = ({ className }) => {
       positionName: report.positionName || '',
       submissionDate: report.submissionDate,
       remarks: report.remarks || '',
-      attachmentCount: 0,
+      attachmentCount: report.attachmentCount || 0,
       createdAt: report.createdAt,
       updatedAt: report.updatedAt,
       createdBy: report.createdBy,

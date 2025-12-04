@@ -2,9 +2,12 @@
  * 사용자관리 시스템 메인 컴포넌트
  *
  * @description PositionMgmt 표준 템플릿 기반 사용자관리 시스템
- * @author Claude AI
- * @version 1.0.0
+ * - 실제 DB 데이터 연동 (users, user_roles, employees 테이블)
+ * - API: /api/system/users
+ * @author RSMS Development Team
+ * @version 2.0.0
  * @created 2025-09-24
+ * @updated 2025-12-04 - 실제 데이터 연동
  */
 
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
@@ -13,7 +16,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SecurityIcon from '@mui/icons-material/Security';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './UserMgmt.module.scss';
 
@@ -21,25 +24,29 @@ import styles from './UserMgmt.module.scss';
 import type {
   User,
   UserFilters,
-  UserFormData,
   UserModalState,
-  UserPagination,
-  CreateUserRequest,
-  UpdateUserRequest,
   UserStatistics,
   RoleOption,
-  DetailRoleOption,
-  DepartmentOption,
-  PositionOption
+  AccountStatus
 } from './types/user.types';
+
+// API
+import {
+  getAllUsers,
+  searchUsers,
+  deleteUsers,
+  getActiveRoles,
+  type UserDto
+} from '../../api/userMgmtApi';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
 import { BaseActionBar, type ActionButton, type StatusInfo } from '@/shared/components/organisms/BaseActionBar';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import { BaseSearchFilter, type FilterField, type FilterValues } from '@/shared/components/organisms/BaseSearchFilter';
+import { BaseSearchFilter, type FilterField } from '@/shared/components/organisms/BaseSearchFilter';
 import BasePageHeader from '@/shared/components/organisms/BasePageHeader';
 import BaseModalWrapper from '@/shared/components/organisms/BaseModalWrapper';
+import { OrganizationSelect } from '@/shared/components/molecules/OrganizationSelect';
 
 // Custom Hooks
 import { useAsyncHandlers } from '@/shared/hooks/useAsyncHandler';
@@ -58,12 +65,60 @@ interface UserMgmtProps {
   className?: string;
 }
 
+/**
+ * UserDto (API 응답)를 User (Frontend 타입)로 변환
+ * - API 응답 데이터를 UI 컴포넌트에서 사용할 수 있는 형식으로 변환
+ */
+const convertDtoToUser = (dto: UserDto): User => {
+  return {
+    id: dto.userId.toString(),
+    username: dto.username,
+    employeeNo: dto.empNo || '',
+    fullName: dto.empName || dto.username,
+    englishName: dto.empNameEn,
+    email: dto.email,
+    deptCode: dto.orgCode,
+    deptName: dto.orgName,
+    positionName: dto.positionName,
+    accountStatus: (dto.accountStatus || 'ACTIVE') as AccountStatus,
+    passwordChangeRequired: dto.passwordChangeRequired,
+    lastLoginAt: dto.lastLoginAt,
+    failedLoginCount: dto.failedLoginCount,
+    isAdmin: dto.isAdmin,
+    isExecutive: dto.isExecutive,
+    authLevel: dto.authLevel,
+    isLoginBlocked: dto.isLoginBlocked,
+    timezone: dto.timezone || 'Asia/Seoul',
+    language: dto.language || 'ko',
+    isActive: dto.isActive,
+    roles: dto.roles?.map(role => ({
+      id: role.userRoleId?.toString() || '',
+      userId: dto.userId.toString(),
+      roleId: role.roleId.toString(),
+      roleCode: role.roleCode,
+      roleName: role.roleName,
+      detailRoleCount: 0,
+      assignedAt: role.assignedAt || '',
+      assignedBy: role.assignedBy || '',
+      isActive: role.isActive
+    })),
+    roleCount: dto.roleCount,
+    createdAt: dto.createdAt || '',
+    updatedAt: dto.updatedAt || '',
+    createdBy: dto.createdBy,
+    updatedBy: dto.updatedBy,
+    isDeleted: false
+  };
+};
+
 const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
-  const { t } = useTranslation('system');
+  // i18n 훅 (추후 다국어 지원 시 사용)
+  useTranslation('system');
 
   // State Management
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // 모달 상태 관리
   const [modalState, setModalState] = useState<UserModalState>({
@@ -81,82 +136,130 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     update: { key: 'user-update' }
   });
 
-  const { pagination, goToPage, changePageSize, updateTotal } = usePagination({
+  const { pagination, updateTotal } = usePagination({
     initialPage: 1,
     initialSize: 20,
-    total: 4
+    total: 0
   });
 
   const {
     filters,
     setFilter,
-    clearFilters,
-    hasFilters
+    clearFilters
   } = useFilters<UserFilters>({});
 
-  // 옵션 데이터
-  const [roles] = useState<RoleOption[]>([]);
-  const [detailRoles] = useState<DetailRoleOption[]>([]);
-  const [departments] = useState<DepartmentOption[]>([]);
-  const [positions] = useState<PositionOption[]>([]);
+  // 역할 목록 (드롭다운용)
+  const [, setRoles] = useState<RoleOption[]>([]);
 
-  // 검색 필드 정의 (이미지 기준으로 수정)
+  /**
+   * 사용자 목록 조회
+   * - 컴포넌트 마운트 시 및 검색 시 호출
+   */
+  const fetchUsers = useCallback(async (keyword?: string) => {
+    try {
+      let response: UserDto[];
+
+      if (keyword && keyword.trim()) {
+        response = await searchUsers(keyword);
+      } else {
+        response = await getAllUsers();
+      }
+
+      const convertedUsers = response.map(convertDtoToUser);
+      setUsers(convertedUsers);
+      updateTotal(convertedUsers.length);
+    } catch (error) {
+      console.error('사용자 목록 조회 실패:', error);
+      toast.error('사용자 목록을 불러오는데 실패했습니다.');
+    }
+  }, [updateTotal]);
+
+  /**
+   * 역할 목록 조회 (드롭다운용)
+   */
+  const fetchRoles = useCallback(async () => {
+    try {
+      const response = await getActiveRoles();
+      const convertedRoles: RoleOption[] = response.map(role => ({
+        id: role.roleId.toString(),
+        code: role.roleCode,
+        name: role.roleName,
+        detailRoleCount: 0,
+        isSystemRole: false
+      }));
+      setRoles(convertedRoles);
+    } catch (error) {
+      console.error('역할 목록 조회 실패:', error);
+    }
+  }, []);
+
+  /**
+   * 초기 데이터 로딩
+   */
+  useEffect(() => {
+    const initializeData = async () => {
+      setIsInitialLoading(true);
+      await Promise.all([fetchUsers(), fetchRoles()]);
+      setIsInitialLoading(false);
+    };
+    initializeData();
+  }, [fetchUsers, fetchRoles]);
+
+  // 부서 선택 변경 핸들러
+  const handleOrgChange = useCallback((orgCode: string | null) => {
+    setFilter('deptCode', orgCode || '');
+  }, [setFilter]);
+
+  // 검색 필드 정의
   const searchFields = useMemo<FilterField[]>(() => [
     {
-      key: 'deptName',
-      type: 'text',
-      label: '부정',
-      placeholder: '부서명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      key: 'deptCode',
+      type: 'custom',
+      label: '부서',
+      gridSize: { xs: 6, sm: 4, md: 2 },
+      customComponent: (
+        <OrganizationSelect
+          value={filters.deptCode as string || null}
+          onChange={handleOrgChange}
+          label="부서"
+          placeholder="부서를 선택하세요"
+          size="small"
+          fullWidth
+        />
+      )
     },
     {
       key: 'fullName',
       type: 'text',
       label: '성명',
       placeholder: '성명을 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 4 }
-    },
-    {
-      key: 'jobRankName',
-      type: 'text',
-      label: '직위',
-      placeholder: '직위를 입력하세요',
-      gridSize: { xs: 12, sm: 6, md: 4 }
+      gridSize: { xs: 6, sm: 4, md: 2 }
     }
-  ], []);
+  ], [filters.deptCode, handleOrgChange]);
 
-  // 검색 핸들러
-  const handleSearch = useCallback(async (searchFilters: FilterValues) => {
-    // Update filters first
-    Object.entries(searchFilters).forEach(([key, value]) => {
-      setFilter(key as keyof UserFilters, value);
-    });
-
+  /**
+   * 검색 핸들러
+   * - API searchUsers 호출
+   * - filters 상태에서 검색어 추출
+   */
+  const handleSearch = useCallback(async () => {
     await handlers.search.execute(
       async () => {
-        // TODO: 실제 검색 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-
-        // Mock 검색 결과
-        const mockFilteredUsers = mockUsers.filter(user => {
-          if (searchFilters.fullName && !user.fullName.includes(searchFilters.fullName as string)) return false;
-          if (searchFilters.employeeNo && !user.employeeNo.includes(searchFilters.employeeNo as string)) return false;
-          if (searchFilters.searchKeyword && !user.deptName?.includes(searchFilters.searchKeyword as string)) return false;
-          return true;
-        });
-
-        setUsers(mockFilteredUsers);
-        updateTotal(mockFilteredUsers.length);
+        // 검색어 추출 (fullName 또는 deptCode)
+        const keyword = (filters.fullName as string) || '';
+        await fetchUsers(keyword);
+        // TODO: 부서코드(deptCode)로 필터링하는 로직은 백엔드 API 확장 필요
+        // 현재는 성명으로만 검색
       },
       {
         loading: '사용자를 검색 중입니다...',
-        success: `검색이 완료되었습니다.`,
+        success: '검색이 완료되었습니다.',
         error: '검색에 실패했습니다.'
       }
     );
-  }, [handlers.search, setFilter, updateTotal, users.length]);
+  }, [handlers.search, filters, fetchUsers]);
 
-  // 필터 변경 핸들러 (이제 useFilters 훅에서 자동 처리됨)
+  // 필터 변경 핸들러
   const handleFiltersChange = useCallback((newFilters: Partial<UserFilters>) => {
     Object.entries(newFilters).forEach(([key, value]) => {
       setFilter(key as keyof UserFilters, value);
@@ -166,15 +269,16 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
   // 필터 초기화 핸들러
   const handleClearFilters = useCallback(() => {
     clearFilters();
+    fetchUsers(); // 전체 목록 다시 조회
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, [clearFilters]);
+  }, [clearFilters, fetchUsers]);
 
   // 엑셀 다운로드 핸들러
   const handleExcelDownload = useCallback(async () => {
     await handlers.excel.execute(
       async () => {
         // TODO: 실제 엑셀 다운로드 API 호출
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
+        await new Promise(resolve => setTimeout(resolve, 2000));
         console.log('엑셀 다운로드 완료');
       },
       {
@@ -185,7 +289,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     );
   }, [handlers.excel]);
 
-  // 사용자 등록 핸들러
+  // 사용자 등록 모달 열기
   const handleAddUser = useCallback(() => {
     setModalState({
       addModal: true,
@@ -194,7 +298,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     });
   }, []);
 
-  // 사용자 수정 핸들러
+  // 사용자 수정 모달 열기
   const handleEditUser = useCallback((user: User) => {
     setModalState({
       addModal: false,
@@ -212,120 +316,60 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     });
   }, []);
 
-  // 사용자 저장 핸들러
-  const handleUserSave = useCallback(async (formData: CreateUserRequest) => {
-    await handlers.create.execute(
-      async () => {
-        // TODO: 실제 사용자 등록 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+  /**
+   * 사용자 복수 삭제 핸들러
+   * - API deleteUsers 호출
+   */
+  const handleDeleteSelectedUsers = useCallback(async () => {
+    if (selectedUsers.length === 0) {
+      toast.warning('삭제할 사용자를 선택해주세요.');
+      return;
+    }
 
-        // Mock 사용자 추가
-        const newUser: User = {
-          id: Date.now().toString(),
-          username: formData.employeeNo,
-          employeeNo: formData.employeeNo,
-          fullName: formData.fullName,
-          englishName: formData.englishName,
-          deptId: formData.deptId,
-          deptName: '새 부서',
-          positionId: formData.positionId,
-          positionName: '새 직책',
-          accountStatus: formData.accountStatus,
-          passwordChangeRequired: formData.passwordChangeRequired,
-          failedLoginCount: 0,
-          isAdmin: false,
-          isExecutive: false,
-          authLevel: 5,
-          timezone: formData.timezone,
-          language: 'Korean',
-          isActive: formData.isActive,
-          roleCount: formData.roleIds.length,
-          detailRoleCount: formData.detailRoleIds.length,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          isDeleted: false
-        };
-
-        setUsers(prev => [newUser, ...prev]);
-        updateTotal(pagination.total + 1);
-
-        handleModalClose();
-      },
-      {
-        loading: '사용자를 등록 중입니다...',
-        success: '사용자가 등록되었습니다.',
-        error: '사용자 등록에 실패했습니다.'
-      }
-    );
-  }, [handlers.create, handleModalClose, pagination.total, updateTotal]);
-
-  // 사용자 수정 핸들러
-  const handleUserUpdate = useCallback(async (id: string, formData: UpdateUserRequest) => {
-    await handlers.update.execute(
-      async () => {
-        // TODO: 실제 사용자 수정 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
-
-        setUsers(prev =>
-          prev.map(user =>
-            user.id === id
-              ? {
-                  ...user,
-                  fullName: formData.fullName,
-                  englishName: formData.englishName,
-                  accountStatus: formData.accountStatus,
-                  isActive: formData.isActive,
-                  timezone: formData.timezone,
-                  updatedAt: new Date().toISOString()
-                }
-              : user
-          )
-        );
-
-        handleModalClose();
-      },
-      {
-        loading: '사용자 정보를 수정 중입니다...',
-        success: '사용자 정보가 수정되었습니다.',
-        error: '사용자 수정에 실패했습니다.'
-      }
-    );
-  }, [handlers.update, handleModalClose]);
-
-  // 사용자 삭제 핸들러
-  const handleDeleteUser = useCallback(async (id: string) => {
     await handlers.delete.execute(
       async () => {
-        // TODO: 실제 사용자 삭제 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
+        const userIds = selectedUsers.map(user => parseInt(user.id));
+        const result = await deleteUsers(userIds);
 
-        setUsers(prev => prev.filter(user => user.id !== id));
-        updateTotal(pagination.total - 1);
+        if (result.failCount > 0) {
+          toast.warning(`${result.successCount}개 성공, ${result.failCount}개 실패`);
+        }
 
-        handleModalClose();
+        await fetchUsers(); // 목록 새로고침
+        setSelectedUsers([]); // 선택 초기화
       },
       {
-        loading: '사용자를 삭제 중입니다...',
-        success: '사용자가 삭제되었습니다.',
+        loading: '선택한 사용자를 삭제 중입니다...',
+        success: '선택한 사용자가 삭제되었습니다.',
         error: '사용자 삭제에 실패했습니다.'
       }
     );
-  }, [handlers.delete, handleModalClose, pagination.total, updateTotal]);
+  }, [handlers.delete, selectedUsers, fetchUsers]);
 
   // 액션 버튼 정의
   const actionButtons = useMemo<ActionButton[]>(() => [
     {
+      key: 'excel',
       label: '엑셀다운로드',
       variant: 'contained',
       onClick: handleExcelDownload,
       loading: loadingStates.excel
     },
     {
+      key: 'add',
       label: '등록',
       variant: 'contained',
       onClick: handleAddUser
+    },
+    {
+      key: 'delete',
+      label: '삭제',
+      variant: 'contained',
+      onClick: handleDeleteSelectedUsers,
+      loading: loadingStates.delete,
+      disabled: selectedUsers.length === 0
     }
-  ], [handleExcelDownload, handleAddUser, loadingStates.excel]);
+  ], [handleExcelDownload, handleAddUser, handleDeleteSelectedUsers, loadingStates.excel, loadingStates.delete, selectedUsers.length]);
 
   // 상태 정보 정의
   const statusInfo = useMemo<StatusInfo[]>(() => [
@@ -343,7 +387,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
 
   // 통계 계산
   const statistics = useMemo<UserStatistics>(() => {
-    const total = pagination.total;
+    const total = users.length;
     const activeCount = users.filter(user => user.accountStatus === 'ACTIVE').length;
     const lockedCount = users.filter(user => user.accountStatus === 'LOCKED').length;
     const adminCount = users.filter(user => user.isAdmin).length;
@@ -355,7 +399,7 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
       adminUsers: adminCount,
       recentLogins: 0
     };
-  }, [pagination.total, users]);
+  }, [users]);
 
   // BasePageHeader용 통계 데이터
   const headerStatistics = useMemo(() => [
@@ -379,167 +423,9 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     }
   ], [statistics]);
 
-  // Mock 데이터 로딩 - 참조 이미지 기반
-  const mockUsers: User[] = useMemo(() => [
-    {
-      id: '1',
-      username: 'fit3',
-      employeeNo: '0000003',
-      fullName: 'FIT 3',
-      deptName: '여신실사부',
-      positionName: '사원',
-      accountStatus: 'ACTIVE',
-      passwordChangeRequired: true,
-      lastLoginAt: '2024-09-23T14:30:00Z',
-      failedLoginCount: 0,
-      isAdmin: false,
-      isExecutive: false,
-      authLevel: 5,
-      roles: [
-        {
-          id: 'r1',
-          userId: '1',
-          roleId: 'role_user',
-          roleCode: 'USER',
-          roleName: '일반사용자',
-          detailRoleCount: 3,
-          assignedAt: '2024-01-01T00:00:00Z',
-          assignedBy: 'admin',
-          isActive: true
-        }
-      ],
-      roleCount: 1,
-      detailRoleCount: 3,
-      timezone: '(GMT+09:00) Seoul/Asia',
-      language: 'English, United States',
-      isActive: true,
-      isLoginBlocked: false,  // 로그인차단 필드 추가
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isDeleted: false
-    },
-    {
-      id: '2',
-      username: 'fit2',
-      employeeNo: '0000002',
-      fullName: 'FIT 2',
-      deptName: '영업부',
-      positionName: '주임',
-      accountStatus: 'ACTIVE',
-      passwordChangeRequired: false,
-      lastLoginAt: '2024-09-23T13:45:00Z',
-      failedLoginCount: 0,
-      isAdmin: false,
-      isExecutive: false,
-      authLevel: 5,
-      roles: [
-        {
-          id: 'r2',
-          userId: '2',
-          roleId: 'role_user',
-          roleCode: 'USER',
-          roleName: '일반사용자',
-          detailRoleCount: 2,
-          assignedAt: '2024-01-01T00:00:00Z',
-          assignedBy: 'admin',
-          isActive: true
-        }
-      ],
-      roleCount: 1,
-      detailRoleCount: 2,
-      timezone: '(GMT+09:00) Seoul/Asia',
-      language: 'English, United States',
-      isActive: true,
-      isLoginBlocked: false,  // 로그인차단 필드 추가
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isDeleted: false
-    },
-    {
-      id: '3',
-      username: 'manager',
-      employeeNo: '0000001',
-      fullName: '관리감리부',
-      deptName: '경영전략부',
-      positionName: '대리',
-      accountStatus: 'ACTIVE',
-      passwordChangeRequired: false,
-      lastLoginAt: '2024-09-23T12:20:00Z',
-      failedLoginCount: 0,
-      isAdmin: false,
-      isExecutive: false,
-      authLevel: 5,
-      roles: [
-        {
-          id: 'r3',
-          userId: '3',
-          roleId: 'role_manager',
-          roleCode: 'MANAGER',
-          roleName: '관리자',
-          detailRoleCount: 5,
-          assignedAt: '2024-01-01T00:00:00Z',
-          assignedBy: 'admin',
-          isActive: true
-        }
-      ],
-      roleCount: 1,
-      detailRoleCount: 5,
-      timezone: '(GMT+09:00) Seoul/Asia',
-      language: 'English, United States',
-      isActive: true,
-      isLoginBlocked: true,  // 로그인차단 필드 추가 (예시로 차단된 사용자)
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isDeleted: false
-    },
-    {
-      id: '4',
-      username: 'admin',
-      employeeNo: '0000000',
-      fullName: '관리자',
-      deptName: '법무팀',
-      positionName: '과장',
-      accountStatus: 'ACTIVE',
-      passwordChangeRequired: false,
-      lastLoginAt: '2024-09-23T16:00:00Z',
-      failedLoginCount: 0,
-      isAdmin: true,
-      isExecutive: true,
-      authLevel: 1,
-      roles: [
-        {
-          id: 'r4',
-          userId: '4',
-          roleId: 'role_admin',
-          roleCode: 'ADMIN',
-          roleName: '시스템관리자',
-          detailRoleCount: 10,
-          assignedAt: '2024-01-01T00:00:00Z',
-          assignedBy: 'system',
-          isActive: true
-        }
-      ],
-      roleCount: 1,
-      detailRoleCount: 10,
-      timezone: '(GMT+09:00) Seoul/Asia',
-      language: 'English, United States',
-      isActive: true,
-      isLoginBlocked: false,  // 로그인차단 필드 추가
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isDeleted: false
-    }
-  ], []);
-
-  // 컴포넌트 마운트 시 Mock 데이터 설정
-  React.useEffect(() => {
-    setUsers(mockUsers);
-    updateTotal(mockUsers.length);
-  }, [mockUsers, updateTotal]);
-
   // React.Profiler onRender 콜백 (성능 모니터링)
   const onRenderProfiler = useCallback((
-    id: string,
+    _id: string,
     phase: 'mount' | 'update' | 'nested-update',
     actualDuration: number
   ) => {
@@ -548,10 +434,19 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
     }
   }, []);
 
+  // 초기 로딩 중 표시
+  if (isInitialLoading) {
+    return (
+      <div className={`${styles.container} ${className || ''}`}>
+        <LoadingSpinner text="사용자 목록을 불러오는 중입니다..." />
+      </div>
+    );
+  }
+
   return (
     <React.Profiler id="UserMgmt" onRender={onRenderProfiler}>
       <div className={`${styles.container} ${className || ''}`}>
-        {/* 🏗️ 공통 페이지 헤더 */}
+        {/* 공통 페이지 헤더 */}
         <BasePageHeader
           icon={<SecurityIcon />}
           title="사용자관리"
@@ -560,30 +455,30 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
           i18nNamespace="system"
         />
 
-      <div className={styles.content}>
-        {/* 🔍 공통 검색 필터 */}
-        <BaseSearchFilter
-          fields={searchFields}
-          values={filters}
-          onValuesChange={handleFiltersChange}
-          onSearch={handleSearch}
-          onClear={handleClearFilters}
-          loading={loading}
-          searchLoading={loadingStates.search}
-          showClearButton={true}
-        />
+        <div className={styles.content}>
+          {/* 공통 검색 필터 */}
+          <BaseSearchFilter
+            fields={searchFields}
+            values={filters}
+            onValuesChange={handleFiltersChange}
+            onSearch={handleSearch}
+            onClear={handleClearFilters}
+            loading={loading}
+            searchLoading={loadingStates.search}
+            showClearButton={true}
+          />
 
-        {/* 💎 공통 액션 바 */}
-        <BaseActionBar
-          statusInfo={statusInfo}
-          actions={actionButtons}
-        />
+          {/* 공통 액션 바 */}
+          <BaseActionBar
+            statusInfo={statusInfo}
+            actions={actionButtons}
+          />
 
-        {/* 🎯 공통 데이터 그리드 */}
-        {loading ? (
-          <LoadingSpinner text="사용자 목록을 불러오는 중입니다..." />
-        ) : (
-          <BaseDataGrid
+          {/* 공통 데이터 그리드 */}
+          {loading ? (
+            <LoadingSpinner text="사용자 목록을 불러오는 중입니다..." />
+          ) : (
+            <BaseDataGrid
               data={users}
               columns={userColumns}
               loading={loading}
@@ -598,32 +493,26 @@ const UserMgmt: React.FC<UserMgmtProps> = ({ className }) => {
               suppressHorizontalScroll={false}
               suppressColumnVirtualisation={false}
             />
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* 사용자 폼 모달 - BaseModalWrapper 적용 */}
-      <BaseModalWrapper
-        isOpen={modalState.addModal || modalState.detailModal}
-        onClose={handleModalClose}
-        ariaLabel="사용자 관리 모달"
-        fallbackComponent={<LoadingSpinner text="사용자 모달을 불러오는 중..." />}
-      >
-        <UserFormModal
-          open={modalState.addModal || modalState.detailModal}
-          mode={modalState.addModal ? 'create' : 'edit'}
-          user={modalState.selectedUser}
+        {/* 사용자 폼 모달 - BaseModalWrapper 적용 */}
+        <BaseModalWrapper
+          isOpen={modalState.addModal || modalState.detailModal}
           onClose={handleModalClose}
-          onSave={handleUserSave}
-          onUpdate={handleUserUpdate}
-          onDelete={handleDeleteUser}
-          loading={loadingStates.create || loadingStates.update}
-          roles={roles}
-          detailRoles={detailRoles}
-          departments={departments}
-          positions={positions}
-        />
-      </BaseModalWrapper>
-    </div>
+          ariaLabel="사용자 관리 모달"
+          fallbackComponent={<LoadingSpinner text="사용자 모달을 불러오는 중..." />}
+        >
+          <UserFormModal
+            open={modalState.addModal || modalState.detailModal}
+            mode={modalState.addModal ? 'create' : 'detail'}
+            user={modalState.selectedUser}
+            onClose={handleModalClose}
+            onRefresh={fetchUsers}
+            loading={loadingStates.create || loadingStates.update}
+          />
+        </BaseModalWrapper>
+      </div>
     </React.Profiler>
   );
 };

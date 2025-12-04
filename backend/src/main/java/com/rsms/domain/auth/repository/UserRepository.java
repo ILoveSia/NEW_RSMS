@@ -73,4 +73,35 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT u FROM User u WHERE u.passwordChangeRequired = 'Y' AND u.isDeleted = 'N'")
     java.util.List<User> findUsersNeedingPasswordChange();
+
+    /**
+     * 삭제되지 않은 전체 사용자 조회
+     */
+    @Query("SELECT u FROM User u WHERE u.isDeleted = 'N' ORDER BY u.userId DESC")
+    java.util.List<User> findAllNotDeleted();
+
+    /**
+     * 사용자명 또는 직원번호로 검색 (부분 일치)
+     */
+    @Query("SELECT u FROM User u WHERE u.isDeleted = 'N' AND " +
+           "(u.username LIKE %:keyword% OR u.empNo LIKE %:keyword%)")
+    java.util.List<User> searchByKeyword(@Param("keyword") String keyword);
+
+    /**
+     * 계정상태별 사용자 조회
+     */
+    @Query("SELECT u FROM User u WHERE u.accountStatus = :status AND u.isDeleted = 'N'")
+    java.util.List<User> findByAccountStatus(@Param("status") String status);
+
+    /**
+     * 활성 사용자 수 조회
+     */
+    @Query("SELECT COUNT(u) FROM User u WHERE u.isActive = 'Y' AND u.isDeleted = 'N'")
+    long countActiveUsers();
+
+    /**
+     * 전체 사용자 수 조회 (삭제되지 않은)
+     */
+    @Query("SELECT COUNT(u) FROM User u WHERE u.isDeleted = 'N'")
+    long countAllNotDeleted();
 }

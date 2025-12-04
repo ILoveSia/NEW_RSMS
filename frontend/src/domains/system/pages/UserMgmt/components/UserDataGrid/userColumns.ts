@@ -23,20 +23,22 @@ const AccountStatusRenderer = (params: any) => {
   return statusLabels[status as keyof typeof statusLabels] || status;
 };
 
-// 활성화 체크박스 렌더러
-const ActiveCheckboxRenderer = (params: any) => {
+/**
+ * 활성화 상태 텍스트 렌더러
+ * - HTML 태그 대신 순수 텍스트 반환
+ */
+const ActiveStatusRenderer = (params: any) => {
   const isActive = params.value;
-  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-    <input type="checkbox" ${isActive ? 'checked' : ''} disabled style="cursor: not-allowed;" />
-  </div>`;
+  return isActive ? 'Y' : 'N';
 };
 
-// 로그인차단 체크박스 렌더러
-const LoginBlockCheckboxRenderer = (params: any) => {
+/**
+ * 로그인차단 상태 텍스트 렌더러
+ * - HTML 태그 대신 순수 텍스트 반환
+ */
+const LoginBlockStatusRenderer = (params: any) => {
   const isBlocked = params.value || false;
-  return `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-    <input type="checkbox" ${isBlocked ? 'checked' : ''} disabled style="cursor: not-allowed;" />
-  </div>`;
+  return isBlocked ? 'Y' : 'N';
 };
 
 // 역할 개수 렌더러 (텍스트만 반환)
@@ -131,7 +133,7 @@ export const userColumns: ColDef<User>[] = [
     filter: 'agSetColumnFilter',
     cellClass: 'login-block-cell',
     headerClass: 'user-header',
-    cellRenderer: LoginBlockCheckboxRenderer
+    cellRenderer: LoginBlockStatusRenderer
   },
   {
     headerName: '활성화',
@@ -141,7 +143,7 @@ export const userColumns: ColDef<User>[] = [
     filter: 'agSetColumnFilter',
     cellClass: 'active-status-cell',
     headerClass: 'user-header',
-    cellRenderer: ActiveCheckboxRenderer
+    cellRenderer: ActiveStatusRenderer
   },
   {
     headerName: '언어',

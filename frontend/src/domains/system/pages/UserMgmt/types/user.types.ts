@@ -95,9 +95,8 @@ export interface UserDetailRole {
 // 사용자 검색 필터
 export interface UserFilters {
   [key: string]: string | undefined;
-  deptName?: string;         // 부정(부서명)
+  deptCode?: string;         // 부서코드 (콤보박스)
   fullName?: string;         // 성명
-  jobRankName?: string;      // 직위
 }
 
 // 사용자 폼 데이터 (등록/수정용)

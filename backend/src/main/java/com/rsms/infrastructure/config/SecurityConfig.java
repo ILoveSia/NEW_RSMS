@@ -70,6 +70,9 @@ public class SecurityConfig {
                 // 인증 API (로그인/로그아웃은 인증 불필요)
                 .requestMatchers("/api/auth/login", "/api/auth/logout", "/api/auth/health").permitAll()
 
+                // 시스템 관리 API (개발 단계에서 임시 허용 - 운영 환경에서는 인증 필요로 변경)
+                .requestMatchers("/api/system/**").permitAll()
+
                 // 관리자 API
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

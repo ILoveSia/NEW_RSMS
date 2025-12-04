@@ -2,10 +2,11 @@
  * 역활관리 시스템 TypeScript 타입 정의
  *
  * @description DB 설계서 기반 RBAC 타입 시스템
- * @based_on docs/통합_DB_설계서.md - roles, role_permissions 테이블
+ * @based_on database/scripts - roles, permissions, role_permissions 테이블
  * @author Claude AI
- * @version 1.0.0
+ * @version 2.0.0
  * @created 2025-09-24
+ * @updated 2025-12-04
  */
 
 // ===============================
@@ -13,31 +14,31 @@
 // ===============================
 
 /**
- * 역활 ID 타입 (UUID 기반)
+ * 역활 ID 타입 (BIGSERIAL)
  */
 export type RoleId = string;
 
 /**
- * 권한 ID 타입 (UUID 기반)
+ * 권한 ID 타입 (BIGSERIAL)
  */
 export type PermissionId = string;
 
 /**
- * 사용자 ID 타입 (UUID 기반)
+ * 사용자 ID 타입 (BIGSERIAL)
  */
 export type UserId = string;
 
 // ===============================
-// 역활 관련 타입
+// 역활 관련 타입 (roles 테이블 기반)
 // ===============================
 
 /**
  * 역활 상태 열거형
+ * - roles.status 컬럼
  */
 export const RoleStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
-  PENDING: 'PENDING',
   ARCHIVED: 'ARCHIVED'
 } as const;
 
@@ -45,55 +46,77 @@ export type RoleStatusType = typeof RoleStatus[keyof typeof RoleStatus];
 
 /**
  * 역활 타입 열거형
+ * - roles.role_type 컬럼
  */
 export const RoleType = {
   SYSTEM: 'SYSTEM',     // 시스템 기본 역활
-  CUSTOM: 'CUSTOM',     // 사용자 정의 역활
-  INHERITED: 'INHERITED' // 상속 역활
+  CUSTOM: 'CUSTOM'      // 사용자 정의 역활
 } as const;
 
 export type RoleTypeType = typeof RoleType[keyof typeof RoleType];
 
 /**
+ * 역활 카테고리 열거형
+ * - roles.role_category 컬럼
+ */
+export const RoleCategory = {
+  TOP_ADMIN: '최고관리자',
+  ADMIN: '관리자',
+  USER: '사용자'
+} as const;
+
+export type RoleCategoryType = typeof RoleCategory[keyof typeof RoleCategory];
+
+/**
  * 역활 엔티티 인터페이스
+ * - roles 테이블 구조 기반
  */
 export interface Role {
-  id: RoleId;
-  roleCode: string;           // 역활 코드 (예: ADMIN, MANAGER)
-  roleName: string;           // 역활 명 (예: 시스템 관리자)
-  description?: string;       // 역활 설명
-  roleType: RoleTypeType;     // 역활 타입
-  status: RoleStatusType;     // 역활 상태
-  parentRoleId?: RoleId;      // 부모 역활 ID (계층형 구조)
-  sortOrder: number;          // 정렬 순서
-  isSystemRole: boolean;      // 시스템 기본 역활 여부
-  createdAt: string;          // 생성일시 (ISO string)
-  updatedAt: string;          // 수정일시 (ISO string)
-  createdBy?: UserId;         // 생성자 ID
-  updatedBy?: UserId;         // 수정자 ID
+  id: RoleId;                    // role_id (PK)
+  roleCode: string;              // role_code (예: 001, 101, 201)
+  roleName: string;              // role_name (예: CEO, 최고관리자/준법감시인)
+  description?: string;          // description
+  roleType: RoleTypeType;        // role_type (SYSTEM, CUSTOM)
+  roleCategory?: RoleCategoryType; // role_category (최고관리자, 관리자, 사용자)
+  parentRoleId?: RoleId;         // parent_role_id (계층 구조)
+  sortOrder: number;             // sort_order
+  status: RoleStatusType;        // status (ACTIVE, INACTIVE, ARCHIVED)
+  isSystemRole: boolean;         // is_system_role ('Y', 'N')
+  createdAt: string;             // created_at
+  updatedAt: string;             // updated_at
+  createdBy?: string;            // created_by
+  updatedBy?: string;            // updated_by
 }
 
 /**
  * 역활 생성 요청 DTO
+ * - roles 테이블 필수 컬럼 포함
  */
 export interface CreateRoleRequest {
   roleCode: string;
   roleName: string;
   description?: string;
   roleType: RoleTypeType;
+  roleCategory?: RoleCategoryType;  // 역활 카테고리 추가
   parentRoleId?: RoleId;
   sortOrder?: number;
+  status?: RoleStatusType;          // 상태 추가
+  isSystemRole?: boolean;           // 시스템 역활 여부 추가
 }
 
 /**
  * 역활 수정 요청 DTO
+ * - roles 테이블 수정 가능 컬럼 포함
  */
 export interface UpdateRoleRequest {
   roleName?: string;
   description?: string;
+  roleType?: RoleTypeType;
+  roleCategory?: RoleCategoryType;  // 역활 카테고리 추가
   parentRoleId?: RoleId;
   sortOrder?: number;
   status?: RoleStatusType;
+  isSystemRole?: boolean;           // 시스템 역활 여부 추가
 }
 
 // ===============================
@@ -128,19 +151,49 @@ export const PermissionAction = {
 export type PermissionActionType = typeof PermissionAction[keyof typeof PermissionAction];
 
 /**
+ * Y/N 플래그 타입 (DB에서 VARCHAR(1)로 저장)
+ */
+export type YNFlag = 'Y' | 'N';
+
+/**
+ * 확장 권한 유형
+ */
+export type ExtendedPermissionType = '전체권한' | '제한권한' | '조회권한';
+
+/**
  * 권한 엔티티 인터페이스
+ * - permissions 테이블 구조 기반
  */
 export interface Permission {
-  id: PermissionId;
-  permissionCode: string;         // 권한 코드
-  permissionName: string;         // 권한 명
-  description?: string;           // 권한 설명
-  permissionType: PermissionTypeType; // 권한 타입
-  resource: string;               // 리소스 (메뉴, API 경로 등)
-  actions: PermissionActionType[]; // 허용 액션 목록
-  isSystemPermission: boolean;    // 시스템 기본 권한 여부
-  createdAt: string;             // 생성일시
-  updatedAt: string;             // 수정일시
+  id: PermissionId;               // permission_id (PK)
+  permissionCode: string;         // permission_code (예: A01, A99, U01)
+  permissionName: string;         // permission_name (예: 운영관리자, 시스템관리자)
+  description?: string;           // description
+  menuId: number;                 // menu_id (연결된 메뉴, NOT NULL)
+  sortOrder: number;              // sort_order
+
+  // 업무 권한 유형 (permissions 테이블 컬럼, 'Y'/'N' 문자열)
+  businessPermission: YNFlag;     // business_permission - 역활유형 (Y: 업무, N: 일반)
+  mainBusinessPermission: YNFlag; // main_business_permission - 본점기본
+  executionPermission: YNFlag;    // execution_permission - 영업점기본
+
+  // CRUD 권한 ('Y'/'N' 문자열)
+  canView: YNFlag;                // can_view - 조회 권한
+  canCreate: YNFlag;              // can_create - 생성 권한
+  canUpdate: YNFlag;              // can_update - 수정 권한
+  canDelete: YNFlag;              // can_delete - 삭제 권한
+  canSelect: YNFlag;              // can_select - 선택 권한
+
+  // 확장 권한
+  extendedPermissionType?: ExtendedPermissionType; // extended_permission_type
+  extendedPermissionName?: string; // extended_permission_name
+
+  isActive: YNFlag;               // is_active ('Y', 'N')
+  isDeleted?: YNFlag;             // is_deleted ('Y', 'N')
+  createdAt?: string;             // created_at
+  updatedAt?: string;             // updated_at
+  createdBy?: string;             // created_by
+  updatedBy?: string;             // updated_by
 }
 
 // ===============================
@@ -197,11 +250,13 @@ export interface UserRoleAssignRequest {
 
 /**
  * 권한이 포함된 역활 상세 정보
+ * - RoleMgmt 화면에서 사용하는 확장 타입
  */
 export interface RoleWithPermissions extends Role {
   permissions: Permission[];      // 연결된 권한 목록
   userCount?: number;            // 해당 역활을 가진 사용자 수
   childRoles?: Role[];           // 하위 역활 목록 (계층형 구조)
+  detailRoleCount?: number;      // 상세역활(권한) 수 - UI 표시용
 }
 
 /**

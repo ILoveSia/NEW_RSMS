@@ -1,3 +1,12 @@
+/**
+ * 메뉴 트리 컴포넌트
+ * - 메뉴 계층 구조를 트리 형태로 표시
+ * - 검색, 확장/축소, 선택 기능 제공
+ *
+ * @author Claude AI
+ * @since 2025-12-04
+ */
+
 import React, { useCallback, useMemo } from 'react';
 import {
   Dashboard as DashboardIcon,
@@ -13,10 +22,25 @@ import {
 import styles from './MenuTreeComponent.module.scss';
 
 // Types
-import type { MenuNode, TreeState } from '../../types/menuMgmt.types';
+import type { TreeState } from '../../types/menuMgmt.types';
+
+/**
+ * 메뉴 노드 표시용 인터페이스 (트리 컴포넌트용)
+ * - MenuMgmt.tsx에서 변환된 데이터를 받음
+ * - 트리 구조 표시에 필요한 최소 필드만 포함
+ */
+interface MenuNodeDisplay {
+  id: string;
+  menuName: string;
+  menuType: 'folder' | 'page';
+  isActive: boolean;
+  isTestPage?: boolean;
+  icon?: string;
+  children: MenuNodeDisplay[];
+}
 
 interface MenuTreeComponentProps {
-  menuTree: MenuNode[];
+  menuTree: MenuNodeDisplay[];
   treeState: TreeState;
   onMenuSelect: (menuId: string) => void;
   onMenuExpand: (menuId: string) => void;
@@ -41,12 +65,16 @@ const MenuTreeComponent: React.FC<MenuTreeComponentProps> = ({
   onMenuExpand,
   searchTerm = ''
 }) => {
-  // 검색어가 있을 때 메뉴 필터링
+  /**
+   * 검색어가 있을 때 메뉴 필터링
+   * - 메뉴명에 검색어가 포함된 노드만 표시
+   * - 하위 메뉴에 매칭되면 상위 메뉴도 표시
+   */
   const filteredTree = useMemo(() => {
     if (!searchTerm) return menuTree;
 
-    const filterNodes = (nodes: MenuNode[]): MenuNode[] => {
-      return nodes.reduce((acc: MenuNode[], node) => {
+    const filterNodes = (nodes: MenuNodeDisplay[]): MenuNodeDisplay[] => {
+      return nodes.reduce((acc: MenuNodeDisplay[], node) => {
         const matchesSearch = node.menuName.toLowerCase().includes(searchTerm.toLowerCase());
         const filteredChildren = filterNodes(node.children);
 
@@ -64,8 +92,12 @@ const MenuTreeComponent: React.FC<MenuTreeComponentProps> = ({
     return filterNodes(menuTree);
   }, [menuTree, searchTerm]);
 
-  // 메뉴 노드 렌더링 함수
-  const renderMenuNode = useCallback((node: MenuNode, depth: number = 0): React.ReactNode => {
+  /**
+   * 메뉴 노드 렌더링 함수
+   * - 트리 구조의 각 노드를 재귀적으로 렌더링
+   * - depth에 따라 들여쓰기 적용
+   */
+  const renderMenuNode = useCallback((node: MenuNodeDisplay, depth: number = 0): React.ReactNode => {
     const hasChildren = node.children && node.children.length > 0;
     const isExpanded = treeState.expandedNodes.has(node.id);
     const isSelected = treeState.selectedNode === node.id;
@@ -175,11 +207,14 @@ const MenuTreeComponent: React.FC<MenuTreeComponentProps> = ({
     );
   };
 
-  // 트리 통계 정보
+  /**
+   * 트리 통계 정보 계산
+   * - 전체 메뉴 수, 활성 메뉴 수, 페이지 수 집계
+   */
   const treeStats = useMemo(() => {
     const stats = filteredTree.reduce(
       (acc, node) => {
-        const countNodes = (n: MenuNode): { total: number; active: number; pages: number } => {
+        const countNodes = (n: MenuNodeDisplay): { total: number; active: number; pages: number } => {
           let total = 1;
           let active = n.isActive ? 1 : 0;
           let pages = n.menuType === 'page' ? 1 : 0;

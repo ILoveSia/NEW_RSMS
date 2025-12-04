@@ -14,7 +14,8 @@ import type {
   RoleWithPermissions,
   CreateRoleRequest,
   UpdateRoleRequest,
-  RoleId
+  RoleId,
+  RoleTypeType
 } from '../../../types';
 
 interface RoleFormModalProps {
@@ -36,11 +37,17 @@ const RoleFormModal: React.FC<RoleFormModalProps> = ({
   onUpdate,
   loading = false
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    roleCode: string;
+    roleName: string;
+    description: string;
+    roleType: RoleTypeType;
+    sortOrder: number;
+  }>({
     roleCode: '',
     roleName: '',
     description: '',
-    roleType: 'CUSTOM' as const,
+    roleType: 'CUSTOM',
     sortOrder: 0
   });
 
@@ -52,7 +59,7 @@ const RoleFormModal: React.FC<RoleFormModalProps> = ({
           roleCode: role.roleCode || '',
           roleName: role.roleName || '',
           description: role.description || '',
-          roleType: role.roleType || 'CUSTOM',
+          roleType: (role.roleType as RoleTypeType) || 'CUSTOM',
           sortOrder: role.sortOrder || 0
         });
       } else {

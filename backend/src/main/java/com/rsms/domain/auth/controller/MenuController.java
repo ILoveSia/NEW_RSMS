@@ -1,9 +1,10 @@
 package com.rsms.domain.auth.controller;
 
-import com.rsms.domain.auth.dto.MenuItemDto;
+import com.rsms.domain.auth.dto.*;
 import com.rsms.domain.auth.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -171,5 +172,158 @@ public class MenuController {
         response.put("status", "UP");
         response.put("service", "menu");
         return ResponseEntity.ok(response);
+    }
+
+    // ===============================
+    // 메뉴 CRUD API (MenuMgmt용)
+    // ===============================
+
+    /**
+     * 전체 메뉴 목록 조회
+     * GET /api/menus
+     *
+     * @return 전체 메뉴 목록
+     */
+    @GetMapping
+    public ResponseEntity<List<MenuItemDto>> getAllMenus() {
+        log.debug("GET /api/menus - 전체 메뉴 목록 조회");
+        List<MenuItemDto> menus = menuService.getAllMenus();
+        return ResponseEntity.ok(menus);
+    }
+
+    /**
+     * 메뉴 단건 조회
+     * GET /api/menus/{menuId}
+     *
+     * @param menuId 메뉴 ID
+     * @return 메뉴 정보
+     */
+    @GetMapping("/{menuId}")
+    public ResponseEntity<MenuItemDto> getMenu(@PathVariable Long menuId) {
+        log.debug("GET /api/menus/{} - 메뉴 단건 조회", menuId);
+        MenuItemDto menu = menuService.getMenuById(menuId);
+        if (menu == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(menu);
+    }
+
+    /**
+     * 메뉴 생성
+     * POST /api/menus
+     *
+     * @param request 생성 요청 DTO
+     * @return 생성된 메뉴 정보
+     */
+    @PostMapping
+    public ResponseEntity<MenuItemDto> createMenu(@RequestBody CreateMenuRequest request) {
+        log.debug("POST /api/menus - 메뉴 생성 request: {}", request);
+        MenuItemDto menu = menuService.createMenu(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(menu);
+    }
+
+    /**
+     * 메뉴 수정
+     * PUT /api/menus/{menuId}
+     *
+     * @param menuId 메뉴 ID
+     * @param request 수정 요청 DTO
+     * @return 수정된 메뉴 정보
+     */
+    @PutMapping("/{menuId}")
+    public ResponseEntity<MenuItemDto> updateMenu(
+            @PathVariable Long menuId,
+            @RequestBody UpdateMenuRequest request) {
+        log.debug("PUT /api/menus/{} - 메뉴 수정 request: {}", menuId, request);
+        MenuItemDto menu = menuService.updateMenu(menuId, request);
+        return ResponseEntity.ok(menu);
+    }
+
+    /**
+     * 메뉴 삭제
+     * DELETE /api/menus/{menuId}
+     *
+     * @param menuId 메뉴 ID
+     */
+    @DeleteMapping("/{menuId}")
+    public ResponseEntity<Void> deleteMenu(@PathVariable Long menuId) {
+        log.debug("DELETE /api/menus/{} - 메뉴 삭제", menuId);
+        menuService.deleteMenu(menuId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===============================
+    // 메뉴 권한 API (MenuMgmt 오른쪽 그리드용)
+    // ===============================
+
+    /**
+     * 메뉴별 권한 목록 조회
+     * GET /api/menus/{menuId}/permissions
+     *
+     * @param menuId 메뉴 ID
+     * @return 권한 목록
+     */
+    @GetMapping("/{menuId}/permissions")
+    public ResponseEntity<List<MenuPermissionDto>> getMenuPermissions(@PathVariable Long menuId) {
+        log.debug("GET /api/menus/{}/permissions - 메뉴 권한 목록 조회", menuId);
+        List<MenuPermissionDto> permissions = menuService.getMenuPermissions(menuId);
+        return ResponseEntity.ok(permissions);
+    }
+
+    /**
+     * 메뉴 권한 생성
+     * POST /api/menus/permissions
+     *
+     * @param request 생성 요청 DTO
+     * @return 생성된 권한 정보
+     */
+    @PostMapping("/permissions")
+    public ResponseEntity<MenuPermissionDto> createMenuPermission(@RequestBody CreateMenuPermissionRequest request) {
+        log.debug("POST /api/menus/permissions - 메뉴 권한 생성 request: {}", request);
+        MenuPermissionDto permission = menuService.createMenuPermission(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(permission);
+    }
+
+    /**
+     * 메뉴 권한 수정
+     * PUT /api/menus/permissions/{menuPermissionId}
+     *
+     * @param menuPermissionId 메뉴 권한 ID
+     * @param request 수정 요청 DTO
+     * @return 수정된 권한 정보
+     */
+    @PutMapping("/permissions/{menuPermissionId}")
+    public ResponseEntity<MenuPermissionDto> updateMenuPermission(
+            @PathVariable Long menuPermissionId,
+            @RequestBody UpdateMenuPermissionRequest request) {
+        log.debug("PUT /api/menus/permissions/{} - 메뉴 권한 수정 request: {}", menuPermissionId, request);
+        MenuPermissionDto permission = menuService.updateMenuPermission(menuPermissionId, request);
+        return ResponseEntity.ok(permission);
+    }
+
+    /**
+     * 메뉴 권한 삭제
+     * DELETE /api/menus/permissions/{menuPermissionId}
+     *
+     * @param menuPermissionId 메뉴 권한 ID
+     */
+    @DeleteMapping("/permissions/{menuPermissionId}")
+    public ResponseEntity<Void> deleteMenuPermission(@PathVariable Long menuPermissionId) {
+        log.debug("DELETE /api/menus/permissions/{} - 메뉴 권한 삭제", menuPermissionId);
+        menuService.deleteMenuPermission(menuPermissionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 메뉴 권한 복수 삭제
+     * DELETE /api/menus/permissions
+     *
+     * @param menuPermissionIds 메뉴 권한 ID 목록
+     */
+    @DeleteMapping("/permissions")
+    public ResponseEntity<Void> deleteMenuPermissions(@RequestBody List<Long> menuPermissionIds) {
+        log.debug("DELETE /api/menus/permissions - 메뉴 권한 복수 삭제 ids: {}", menuPermissionIds);
+        menuService.deleteMenuPermissions(menuPermissionIds);
+        return ResponseEntity.noContent().build();
     }
 }

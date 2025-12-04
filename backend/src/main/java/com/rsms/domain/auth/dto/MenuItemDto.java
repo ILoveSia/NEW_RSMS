@@ -101,7 +101,32 @@ public class MenuItemDto {
     private Boolean dashboardLayout;
 
     /**
+     * 테스트 페이지 여부
+     */
+    private Boolean isTestPage;
+
+    /**
      * 하위 메뉴 목록 (계층 구조)
      */
     private List<MenuItemDto> children;
+
+    /**
+     * 생성일시
+     */
+    private String createdAt;
+
+    /**
+     * 수정일시
+     */
+    private String updatedAt;
+
+    /**
+     * 생성자
+     */
+    private String createdBy;
+
+    /**
+     * 수정자
+     */
+    private String updatedBy;
 }

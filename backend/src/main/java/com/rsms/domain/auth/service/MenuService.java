@@ -1,16 +1,23 @@
 package com.rsms.domain.auth.service;
 
-import com.rsms.domain.auth.dto.MenuItemDto;
+import com.rsms.domain.auth.dto.*;
 import com.rsms.domain.auth.entity.MenuItem;
+import com.rsms.domain.auth.entity.MenuPermission;
+import com.rsms.domain.auth.entity.Role;
 import com.rsms.domain.auth.repository.MenuItemRepository;
+import com.rsms.domain.auth.repository.MenuPermissionRepository;
+import com.rsms.domain.auth.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +34,8 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuItemRepository menuItemRepository;
+    private final MenuPermissionRepository menuPermissionRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * 메뉴 계층 구조 조회 (LeftMenu용)
@@ -120,6 +129,8 @@ public class MenuService {
 
     /**
      * Entity를 DTO로 변환
+     * - Y/N 문자열을 Boolean으로 변환
+     * - 날짜 필드는 문자열로 변환
      *
      * @param entity MenuItem 엔티티
      * @return MenuItemDto
@@ -142,6 +153,11 @@ public class MenuService {
             .requiresAuth("Y".equals(entity.getRequiresAuth()))
             .openInNewWindow("Y".equals(entity.getOpenInNewWindow()))
             .dashboardLayout("Y".equals(entity.getDashboardLayout()))
+            .isTestPage("Y".equals(entity.getIsTestPage()))
+            .createdAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null)
+            .updatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null)
+            .createdBy(entity.getCreatedBy())
+            .updatedBy(entity.getUpdatedBy())
             .children(null)  // 초기값 null, 계층 구조 생성 시 설정
             .build();
     }
@@ -228,5 +244,355 @@ public class MenuService {
         return menuItemRepository.searchByMenuName(menuName).stream()
             .map(this::convertToDto)
             .collect(Collectors.toList());
+    }
+
+    // ===============================
+    // 메뉴 CRUD 기능 (MenuMgmt용)
+    // ===============================
+
+    /**
+     * 메뉴 단건 조회 (ID)
+     *
+     * @param menuId 메뉴 ID
+     * @return MenuItemDto
+     */
+    @Transactional(readOnly = true)
+    public MenuItemDto getMenuById(Long menuId) {
+        log.debug("메뉴 조회: menuId={}", menuId);
+
+        return menuItemRepository.findById(menuId)
+            .filter(menu -> "N".equals(menu.getIsDeleted()))
+            .map(this::convertToDto)
+            .orElse(null);
+    }
+
+    /**
+     * 전체 메뉴 목록 조회 (삭제되지 않은 것만)
+     *
+     * @return 전체 메뉴 목록
+     */
+    @Transactional(readOnly = true)
+    public List<MenuItemDto> getAllMenus() {
+        log.debug("전체 메뉴 목록 조회");
+
+        return menuItemRepository.findAll().stream()
+            .filter(menu -> "N".equals(menu.getIsDeleted()))
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 메뉴 생성
+     *
+     * @param request 생성 요청 DTO
+     * @return 생성된 MenuItemDto
+     */
+    @Transactional
+    public MenuItemDto createMenu(CreateMenuRequest request) {
+        log.debug("메뉴 생성: request={}", request);
+
+        // 메뉴 코드 중복 검사
+        if (menuItemRepository.findByMenuCode(request.getMenuCode()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 메뉴 코드입니다: " + request.getMenuCode());
+        }
+
+        // 시스템 코드 중복 검사
+        if (menuItemRepository.findBySystemCode(request.getSystemCode()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 시스템 코드입니다: " + request.getSystemCode());
+        }
+
+        MenuItem menu = MenuItem.builder()
+            .menuCode(request.getMenuCode())
+            .menuName(request.getMenuName())
+            .description(request.getDescription())
+            .url(request.getUrl())
+            .parameters(request.getParameters())
+            .menuType(request.getMenuType() != null ? request.getMenuType() : "page")
+            .depth(request.getDepth() != null ? request.getDepth() : 1)
+            .parentId(request.getParentId())
+            .sortOrder(request.getSortOrder() != null ? request.getSortOrder() : 0)
+            .systemCode(request.getSystemCode())
+            .icon(request.getIcon())
+            .isActive(request.getIsActive() != null ? request.getIsActive() : "Y")
+            .isTestPage(request.getIsTestPage() != null ? request.getIsTestPage() : "N")
+            .requiresAuth(request.getRequiresAuth() != null ? request.getRequiresAuth() : "Y")
+            .openInNewWindow(request.getOpenInNewWindow() != null ? request.getOpenInNewWindow() : "N")
+            .dashboardLayout(request.getDashboardLayout() != null ? request.getDashboardLayout() : "N")
+            .createdBy("system")
+            .updatedBy("system")
+            .isDeleted("N")
+            .build();
+
+        MenuItem savedMenu = menuItemRepository.save(menu);
+        log.info("메뉴 생성 완료: menuId={}", savedMenu.getMenuId());
+
+        return convertToDto(savedMenu);
+    }
+
+    /**
+     * 메뉴 수정
+     *
+     * @param menuId 메뉴 ID
+     * @param request 수정 요청 DTO
+     * @return 수정된 MenuItemDto
+     */
+    @Transactional
+    public MenuItemDto updateMenu(Long menuId, UpdateMenuRequest request) {
+        log.debug("메뉴 수정: menuId={}, request={}", menuId, request);
+
+        MenuItem menu = menuItemRepository.findById(menuId)
+            .filter(m -> "N".equals(m.getIsDeleted()))
+            .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다: " + menuId));
+
+        // 필드 업데이트
+        if (request.getMenuName() != null) {
+            menu.setMenuName(request.getMenuName());
+        }
+        if (request.getDescription() != null) {
+            menu.setDescription(request.getDescription());
+        }
+        if (request.getUrl() != null) {
+            menu.setUrl(request.getUrl());
+        }
+        if (request.getParameters() != null) {
+            menu.setParameters(request.getParameters());
+        }
+        if (request.getSortOrder() != null) {
+            menu.setSortOrder(request.getSortOrder());
+        }
+        if (request.getSystemCode() != null) {
+            menu.setSystemCode(request.getSystemCode());
+        }
+        if (request.getIcon() != null) {
+            menu.setIcon(request.getIcon());
+        }
+        if (request.getIsActive() != null) {
+            menu.setIsActive(request.getIsActive());
+        }
+        if (request.getIsTestPage() != null) {
+            menu.setIsTestPage(request.getIsTestPage());
+        }
+        if (request.getRequiresAuth() != null) {
+            menu.setRequiresAuth(request.getRequiresAuth());
+        }
+        if (request.getOpenInNewWindow() != null) {
+            menu.setOpenInNewWindow(request.getOpenInNewWindow());
+        }
+        if (request.getDashboardLayout() != null) {
+            menu.setDashboardLayout(request.getDashboardLayout());
+        }
+        menu.setUpdatedBy("system");
+
+        MenuItem savedMenu = menuItemRepository.save(menu);
+        log.info("메뉴 수정 완료: menuId={}", savedMenu.getMenuId());
+
+        return convertToDto(savedMenu);
+    }
+
+    /**
+     * 메뉴 삭제 (논리적 삭제)
+     *
+     * @param menuId 메뉴 ID
+     */
+    @Transactional
+    public void deleteMenu(Long menuId) {
+        log.debug("메뉴 삭제: menuId={}", menuId);
+
+        MenuItem menu = menuItemRepository.findById(menuId)
+            .filter(m -> "N".equals(m.getIsDeleted()))
+            .orElseThrow(() -> new IllegalArgumentException("메뉴를 찾을 수 없습니다: " + menuId));
+
+        // 하위 메뉴 존재 확인
+        List<MenuItem> childMenus = menuItemRepository.findByParentId(menuId);
+        if (!childMenus.isEmpty()) {
+            throw new IllegalArgumentException("하위 메뉴가 있는 메뉴는 삭제할 수 없습니다.");
+        }
+
+        // 메뉴 권한도 함께 삭제
+        menuPermissionRepository.softDeleteByMenuId(menuId, "system");
+
+        // 메뉴 삭제
+        menu.setIsDeleted("Y");
+        menu.setUpdatedBy("system");
+        menuItemRepository.save(menu);
+
+        log.info("메뉴 삭제 완료: menuId={}", menuId);
+    }
+
+    // ===============================
+    // 메뉴 권한 CRUD 기능 (MenuMgmt 오른쪽 그리드용)
+    // ===============================
+
+    /**
+     * 메뉴별 권한 목록 조회
+     * - MenuMgmt 오른쪽 그리드에 표시할 역할별 권한 정보
+     *
+     * @param menuId 메뉴 ID
+     * @return 권한 목록
+     */
+    @Transactional(readOnly = true)
+    public List<MenuPermissionDto> getMenuPermissions(Long menuId) {
+        log.debug("메뉴 권한 목록 조회: menuId={}", menuId);
+
+        List<MenuPermission> permissions = menuPermissionRepository.findByMenuId(menuId);
+
+        return permissions.stream()
+            .map(this::convertToMenuPermissionDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 메뉴 권한 생성
+     *
+     * @param request 생성 요청 DTO
+     * @return 생성된 MenuPermissionDto
+     */
+    @Transactional
+    public MenuPermissionDto createMenuPermission(CreateMenuPermissionRequest request) {
+        log.debug("메뉴 권한 생성: request={}", request);
+
+        // 중복 검사
+        if (menuPermissionRepository.existsByRoleIdAndMenuId(request.getRoleId(), request.getMenuId())) {
+            throw new IllegalArgumentException("이미 존재하는 역할-메뉴 권한입니다.");
+        }
+
+        MenuPermission permission = MenuPermission.builder()
+            .menuId(request.getMenuId())
+            .roleId(request.getRoleId())
+            .canView(request.getCanView() != null ? request.getCanView() : "N")
+            .canCreate(request.getCanCreate() != null ? request.getCanCreate() : "N")
+            .canUpdate(request.getCanUpdate() != null ? request.getCanUpdate() : "N")
+            .canDelete(request.getCanDelete() != null ? request.getCanDelete() : "N")
+            .canSelect(request.getCanSelect() != null ? request.getCanSelect() : "N")
+            .assignedAt(LocalDateTime.now())
+            .assignedBy("system")
+            .createdBy("system")
+            .updatedBy("system")
+            .isDeleted("N")
+            .build();
+
+        MenuPermission savedPermission = menuPermissionRepository.save(permission);
+        log.info("메뉴 권한 생성 완료: menuPermissionId={}", savedPermission.getMenuPermissionId());
+
+        return convertToMenuPermissionDto(savedPermission);
+    }
+
+    /**
+     * 메뉴 권한 수정
+     *
+     * @param menuPermissionId 메뉴 권한 ID
+     * @param request 수정 요청 DTO
+     * @return 수정된 MenuPermissionDto
+     */
+    @Transactional
+    public MenuPermissionDto updateMenuPermission(Long menuPermissionId, UpdateMenuPermissionRequest request) {
+        log.debug("메뉴 권한 수정: menuPermissionId={}, request={}", menuPermissionId, request);
+
+        MenuPermission permission = menuPermissionRepository.findById(menuPermissionId)
+            .filter(p -> "N".equals(p.getIsDeleted()))
+            .orElseThrow(() -> new IllegalArgumentException("메뉴 권한을 찾을 수 없습니다: " + menuPermissionId));
+
+        permission.updatePermissions(
+            request.getCanView(),
+            request.getCanCreate(),
+            request.getCanUpdate(),
+            request.getCanDelete(),
+            request.getCanSelect(),
+            "system"
+        );
+
+        MenuPermission savedPermission = menuPermissionRepository.save(permission);
+        log.info("메뉴 권한 수정 완료: menuPermissionId={}", savedPermission.getMenuPermissionId());
+
+        return convertToMenuPermissionDto(savedPermission);
+    }
+
+    /**
+     * 메뉴 권한 삭제 (논리적 삭제)
+     *
+     * @param menuPermissionId 메뉴 권한 ID
+     */
+    @Transactional
+    public void deleteMenuPermission(Long menuPermissionId) {
+        log.debug("메뉴 권한 삭제: menuPermissionId={}", menuPermissionId);
+
+        int deleted = menuPermissionRepository.softDeleteById(menuPermissionId, "system");
+        if (deleted == 0) {
+            throw new IllegalArgumentException("메뉴 권한을 찾을 수 없습니다: " + menuPermissionId);
+        }
+
+        log.info("메뉴 권한 삭제 완료: menuPermissionId={}", menuPermissionId);
+    }
+
+    /**
+     * 메뉴 권한 복수 삭제 (논리적 삭제)
+     *
+     * @param menuPermissionIds 메뉴 권한 ID 목록
+     */
+    @Transactional
+    public void deleteMenuPermissions(List<Long> menuPermissionIds) {
+        log.debug("메뉴 권한 복수 삭제: ids={}", menuPermissionIds);
+
+        for (Long id : menuPermissionIds) {
+            menuPermissionRepository.softDeleteById(id, "system");
+        }
+
+        log.info("메뉴 권한 복수 삭제 완료: count={}", menuPermissionIds.size());
+    }
+
+    /**
+     * MenuPermission Entity -> DTO 변환
+     * - Role 정보를 함께 조회하여 포함
+     */
+    private MenuPermissionDto convertToMenuPermissionDto(MenuPermission entity) {
+        // Role 정보 조회
+        Optional<Role> roleOpt = roleRepository.findById(entity.getRoleId());
+        String roleCode = "";
+        String roleName = "";
+        String roleCategory = "";
+
+        if (roleOpt.isPresent()) {
+            Role role = roleOpt.get();
+            roleCode = role.getRoleCode();
+            roleName = role.getRoleName();
+            // 역할 카테고리 결정 (role_type 기반)
+            roleCategory = determineRoleCategory(role.getRoleType());
+        }
+
+        return MenuPermissionDto.builder()
+            .menuPermissionId(entity.getMenuPermissionId())
+            .menuId(entity.getMenuId())
+            .roleId(entity.getRoleId())
+            .roleCode(roleCode)
+            .roleName(roleName)
+            .roleCategory(roleCategory)
+            .canView("Y".equals(entity.getCanView()))
+            .canCreate("Y".equals(entity.getCanCreate()))
+            .canUpdate("Y".equals(entity.getCanUpdate()))
+            .canDelete("Y".equals(entity.getCanDelete()))
+            .canSelect("Y".equals(entity.getCanSelect()))
+            .assignedBy(entity.getAssignedBy())
+            .assignedAt(entity.getAssignedAt() != null
+                ? entity.getAssignedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : null)
+            .build();
+    }
+
+    /**
+     * 역할 타입에 따른 카테고리 결정
+     */
+    private String determineRoleCategory(String roleType) {
+        if (roleType == null) return "사용자";
+
+        switch (roleType) {
+            case "CEO":
+            case "C-LEVEL":
+                return "최고관리자";
+            case "ADMIN":
+            case "MANAGER":
+                return "관리자";
+            default:
+                return "사용자";
+        }
     }
 }

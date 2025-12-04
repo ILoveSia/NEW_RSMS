@@ -1,567 +1,707 @@
 /**
- * 사용자 등록/수정 모달 컴포넌트
+ * 사용자 등록/수정/상세 모달
+ * PositionFormModal 표준 템플릿 기반
  *
- * @description PositionFormModal 표준 템플릿 기반 사용자 폼 모달
- * @author Claude AI
- * @version 1.0.0
- * @created 2025-09-24
+ * 주요 기능:
+ * 1. 사용자 등록 (create 모드)
+ * 2. 사용자 상세 조회 (detail 모드)
+ * 3. 사용자 수정 (detail 모드에서 수정 버튼 클릭)
+ * 4. 실제 API 연동 (createUser, updateUser, getUser)
+ *
+ * @author RSMS Development Team
+ * @since 2025-12-04
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Box,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
   TextField,
   MenuItem,
   FormControlLabel,
   Checkbox,
   Grid,
-  Typography,
-  Divider,
-  Box,
-  IconButton
+  IconButton,
+  Divider
 } from '@mui/material';
-import {
-  Search as SearchIcon,
-  Close as CloseIcon,
-  Refresh as RefreshIcon
-} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { Button } from '@/shared/components/atoms/Button';
+import { OrganizationSelect } from '@/shared/components/molecules/OrganizationSelect';
 import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import type {
-  UserFormModalProps,
-  User,
-  CreateUserRequest,
-  UpdateUserRequest,
-  AccountStatus,
-  EmploymentType,
-  RoleOption,
-  DetailRoleOption
-} from '../../types/user.types';
+import type { ColDef } from 'ag-grid-community';
 
+// API
+import {
+  getUser,
+  createUser,
+  updateUser,
+  getActiveRoles,
+  type CreateUserRequest,
+  type UpdateUserRequest,
+  type UserDto,
+  type UserRoleDto
+} from '../../../../api/userMgmtApi';
+
+// Types
+import type { User, RoleOption } from '../../types/user.types';
+
+// ===============================
+// Props 타입 정의
+// ===============================
+
+interface UserFormModalProps {
+  open: boolean;
+  mode: 'create' | 'detail';
+  user: User | null;
+  onClose: () => void;
+  onRefresh?: () => Promise<void>;
+  loading?: boolean;
+}
+
+// ===============================
+// 폼 데이터 타입
+// ===============================
+
+interface UserFormData {
+  username: string;
+  password: string;
+  empNo: string;
+  orgCode: string;
+  accountStatus: string;
+  isAdmin: boolean;
+  isExecutive: boolean;
+  authLevel: number;
+  isLoginBlocked: boolean;
+  timezone: string;
+  language: string;
+  isActive: boolean;
+  passwordChangeRequired: boolean;
+}
+
+// ===============================
+// 컴포넌트
+// ===============================
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
   open,
   mode,
   user,
   onClose,
-  onSave,
-  onUpdate,
-  onDelete,
-  loading = false,
-  roles = [],
-  detailRoles = [],
-  departments = [],
-  positions = []
+  onRefresh,
+  loading = false
 }) => {
   // 폼 데이터 상태
-  const [formData, setFormData] = useState({
-    employeeNo: '',
-    fullName: '',
-    englishName: '',
-    jobRankCode: '',
-    deptId: 0,
-    deptCode: '',
-    deptName: '',
-    employmentType: 'REGULAR' as EmploymentType,
-    accountStatus: 'ACTIVE' as AccountStatus,
-    loginBlocked: false,
+  const [formData, setFormData] = useState<UserFormData>({
+    username: '',
+    password: '',
+    empNo: '',
+    orgCode: '',
+    accountStatus: 'ACTIVE',
+    isAdmin: false,
+    isExecutive: false,
+    authLevel: 5,
+    isLoginBlocked: false,
+    timezone: 'Asia/Seoul',
+    language: 'ko',
     isActive: true,
-    timezone: '(GMT+09:00) Seoul/Asia',
-    passwordChangeRequired: true,
-    resetPassword: false
+    passwordChangeRequired: true
   });
 
   // 역할 선택 상태
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [selectedDetailRoles, setSelectedDetailRoles] = useState<string[]>([]);
+  const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<RoleOption[]>([]);
 
-  // Mock 역할 데이터
-  const mockRoles: RoleOption[] = useMemo(() => [
+  // 편집 모드 상태
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 에러 상태
+  const [errors, setErrors] = useState({
+    username: '',
+    password: '',
+    empNo: ''
+  });
+
+  // 로딩 상태
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ===============================
+  // 역할 그리드 컬럼 정의
+  // ===============================
+
+  const roleColumns = useMemo<ColDef<RoleOption>[]>(() => [
     {
-      id: '1',
-      code: 'Administrator',
-      name: '최고관리자',
-      detailRoleCount: 2,
-      isSystemRole: true
+      field: 'code',
+      headerName: '역할코드',
+      width: 120,
+      sortable: true
     },
     {
-      id: '2',
-      code: 'Manager',
-      name: '관리자',
-      detailRoleCount: 5,
-      isSystemRole: true
-    },
-    {
-      id: '3',
-      code: 'User',
-      name: '사용자',
-      detailRoleCount: 5,
-      isSystemRole: true
-    },
-    {
-      id: '4',
-      code: 'Any',
-      name: '비로그인',
-      detailRoleCount: 0,
-      isSystemRole: true
+      field: 'name',
+      headerName: '역할명',
+      flex: 1,
+      sortable: true
     }
   ], []);
 
-  // Mock 상세 역할 데이터
-  const mockDetailRoles: DetailRoleOption[] = useMemo(() => [
-    {
-      id: '1',
-      roleId: '1',
-      code: 'A01',
-      name: '준법감시인',
-      description: '준법감시인 권한',
-      roleDescriptionCode: '002-준법감시',
-      isSystemRole: true
-    },
-    {
-      id: '2',
-      roleId: '1',
-      code: 'A99',
-      name: '시스템관리자',
-      description: '시스템관리자 권한',
-      roleDescriptionCode: '002-준법감시',
-      isSystemRole: true
-    }
-  ], []);
+  // ===============================
+  // 역할 목록 조회
+  // ===============================
 
-  // 역할 컬럼 정의
-  const roleColumns = useMemo(() => [
-    {
-      headerName: '선택',
-      field: 'selected',
-      width: 60,
-      cellRenderer: (params: any) => {
-        const isSelected = selectedRoles.includes(params.data.id);
-        return `<input type="checkbox" ${isSelected ? 'checked' : ''} />`;
-      },
-      onCellClicked: (params: any) => {
-        const roleId = params.data.id;
-        setSelectedRoles(prev =>
-          prev.includes(roleId)
-            ? prev.filter(id => id !== roleId)
-            : [...prev, roleId]
-        );
+  const fetchRoles = useCallback(async () => {
+    try {
+      const roles = await getActiveRoles();
+      const converted: RoleOption[] = roles.map((role: UserRoleDto) => ({
+        id: role.roleId.toString(),
+        code: role.roleCode,
+        name: role.roleName,
+        detailRoleCount: 0,
+        isSystemRole: false
+      }));
+      setAvailableRoles(converted);
+    } catch (error) {
+      console.error('역할 목록 조회 실패:', error);
+    }
+  }, []);
+
+  // ===============================
+  // 사용자 상세 조회
+  // ===============================
+
+  const fetchUserDetail = useCallback(async (userId: number) => {
+    try {
+      const userDetail: UserDto = await getUser(userId);
+
+      setFormData({
+        username: userDetail.username || '',
+        password: '',
+        empNo: userDetail.empNo || '',
+        orgCode: userDetail.orgCode || '',
+        accountStatus: userDetail.accountStatus || 'ACTIVE',
+        isAdmin: userDetail.isAdmin || false,
+        isExecutive: userDetail.isExecutive || false,
+        authLevel: userDetail.authLevel || 5,
+        isLoginBlocked: userDetail.isLoginBlocked || false,
+        timezone: userDetail.timezone || 'Asia/Seoul',
+        language: userDetail.language || 'ko',
+        isActive: userDetail.isActive || true,
+        passwordChangeRequired: userDetail.passwordChangeRequired || false
+      });
+
+      // 역할 선택 상태 설정
+      if (userDetail.roles && userDetail.roles.length > 0) {
+        const roleIds = userDetail.roles.map(role => role.roleId);
+        setSelectedRoleIds(roleIds);
+      } else {
+        setSelectedRoleIds([]);
       }
-    },
-    {
-      headerName: '순서',
-      valueGetter: (params: any) => params.node.rowIndex + 1,
-      width: 60
-    },
-    {
-      headerName: '역할코드',
-      field: 'code',
-      width: 120
-    },
-    {
-      headerName: '역할명',
-      field: 'name',
-      width: 120
-    },
-    {
-      headerName: '상세역할수',
-      field: 'detailRoleCount',
-      width: 100,
-      cellRenderer: (params: any) => `${params.value}개`
+    } catch (error) {
+      console.error('사용자 상세 조회 실패:', error);
     }
-  ], [selectedRoles]);
+  }, []);
 
-  // 상세 역할 컬럼 정의
-  const detailRoleColumns = useMemo(() => [
-    {
-      headerName: '선택',
-      field: 'selected',
-      width: 60,
-      cellRenderer: (params: any) => {
-        const isSelected = selectedDetailRoles.includes(params.data.id);
-        return `<input type="checkbox" ${isSelected ? 'checked' : ''} />`;
-      },
-      onCellClicked: (params: any) => {
-        const roleId = params.data.id;
-        setSelectedDetailRoles(prev =>
-          prev.includes(roleId)
-            ? prev.filter(id => id !== roleId)
-            : [...prev, roleId]
-        );
-      }
-    },
-    {
-      headerName: '순서',
-      valueGetter: (params: any) => params.node.rowIndex + 1,
-      width: 60
-    },
-    {
-      headerName: '역할코드',
-      field: 'code',
-      width: 100
-    },
-    {
-      headerName: '역할명',
-      field: 'name',
-      width: 120
-    },
-    {
-      headerName: '역할설명코드',
-      field: 'roleDescriptionCode',
-      width: 130
-    }
-  ], [selectedDetailRoles]);
+  // ===============================
+  // 모달 열릴 때 초기화
+  // ===============================
 
-  // 모달 열릴 때 폼 데이터 초기화
   useEffect(() => {
     if (open) {
-      if (mode === 'edit' && user) {
-        setFormData({
-          employeeNo: user.employeeNo || '',
-          fullName: user.fullName || '',
-          englishName: user.englishName || '',
-          jobRankCode: user.jobRankCode || '',
-          deptId: user.deptId || 0,
-          deptCode: user.deptCode || '',
-          deptName: user.deptName || '',
-          employmentType: (user.employmentType as EmploymentType) || 'REGULAR',
-          accountStatus: user.accountStatus || 'ACTIVE',
-          loginBlocked: false,
-          isActive: user.isActive || true,
-          timezone: user.timezone || '(GMT+09:00) Seoul/Asia',
-          passwordChangeRequired: user.passwordChangeRequired || false,
-          resetPassword: false
-        });
+      fetchRoles();
 
-        // 기존 역할 선택 상태 설정
-        if (user.roles) {
-          setSelectedRoles(user.roles.map(role => role.roleId));
-        }
-      } else {
-        // 등록 모드 초기화
+      if (mode === 'create') {
+        // 등록 모드: 폼 초기화
         setFormData({
-          employeeNo: '',
-          fullName: '',
-          englishName: '',
-          jobRankCode: '',
-          deptId: 0,
-          deptCode: '',
-          deptName: '',
-          employmentType: 'REGULAR',
+          username: '',
+          password: '',
+          empNo: '',
+          orgCode: '',
           accountStatus: 'ACTIVE',
-          loginBlocked: false,
+          isAdmin: false,
+          isExecutive: false,
+          authLevel: 5,
+          isLoginBlocked: false,
+          timezone: 'Asia/Seoul',
+          language: 'ko',
           isActive: true,
-          timezone: '(GMT+09:00) Seoul/Asia',
-          passwordChangeRequired: true,
-          resetPassword: false
+          passwordChangeRequired: true
         });
-        setSelectedRoles([]);
-        setSelectedDetailRoles([]);
+        setSelectedRoleIds([]);
+        setIsEditing(true);
+        setErrors({ username: '', password: '', empNo: '' });
+      } else if (user) {
+        // 상세 모드: 사용자 정보 로드
+        fetchUserDetail(parseInt(user.id));
+        setIsEditing(false);
+        setErrors({ username: '', password: '', empNo: '' });
       }
     }
-  }, [open, mode, user]);
+  }, [open, mode, user, fetchRoles, fetchUserDetail]);
 
+  // ===============================
   // 입력 핸들러
-  const handleChange = (field: keyof typeof formData) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+  // ===============================
+
+  const handleChange = useCallback((field: keyof UserFormData, value: string | boolean | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
 
-  // 부서 검색 핸들러
-  const handleDeptSearch = () => {
-    // TODO: 부서 검색 모달 열기
-    console.log('부서 검색');
-  };
+  // 부서 선택 핸들러
+  const handleOrgChange = useCallback((orgCode: string | null) => {
+    setFormData(prev => ({
+      ...prev,
+      orgCode: orgCode || ''
+    }));
+  }, []);
 
-  // 폼 제출 핸들러
-  const handleSubmit = async () => {
-    if (!formData.fullName.trim()) {
-      alert('성명을 입력해주세요.');
+  // 역할 선택 핸들러
+  const handleRoleSelectionChange = useCallback((selectedRows: RoleOption[]) => {
+    const roleIds = selectedRows.map(role => parseInt(role.id));
+    setSelectedRoleIds(roleIds);
+  }, []);
+
+  // ===============================
+  // 폼 검증
+  // ===============================
+
+  const validateForm = useCallback((): boolean => {
+    const newErrors = { username: '', password: '', empNo: '' };
+    let isValid = true;
+
+    if (!formData.username.trim()) {
+      newErrors.username = '사용자명을 입력해주세요.';
+      isValid = false;
+    }
+
+    if (mode === 'create' && !formData.password.trim()) {
+      newErrors.password = '비밀번호를 입력해주세요.';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  }, [formData, mode]);
+
+  // ===============================
+  // 등록/수정 핸들러
+  // ===============================
+
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm()) {
       return;
     }
 
-    if (mode === 'create') {
-      const createData: CreateUserRequest = {
-        employeeNo: formData.employeeNo || formData.fullName.toUpperCase(),
-        fullName: formData.fullName,
-        englishName: formData.englishName,
-        deptId: formData.deptId || undefined,
-        jobRankCode: formData.jobRankCode,
-        employmentType: formData.employmentType,
-        accountStatus: formData.accountStatus,
-        isActive: formData.isActive,
-        timezone: formData.timezone,
-        passwordChangeRequired: formData.passwordChangeRequired,
-        roleIds: selectedRoles,
-        detailRoleIds: selectedDetailRoles
-      };
-      await onSave(createData);
-    } else if (user) {
-      const updateData: UpdateUserRequest = {
-        fullName: formData.fullName,
-        englishName: formData.englishName,
-        deptId: formData.deptId || undefined,
-        jobRankCode: formData.jobRankCode,
-        employmentType: formData.employmentType,
-        accountStatus: formData.accountStatus,
-        isActive: formData.isActive,
-        timezone: formData.timezone,
-        passwordChangeRequired: formData.passwordChangeRequired,
-        resetPassword: formData.resetPassword,
-        roleIds: selectedRoles,
-        detailRoleIds: selectedDetailRoles
-      };
-      await onUpdate(user.id, updateData);
-    }
-  };
+    setIsSubmitting(true);
 
-  // 삭제 핸들러
-  const handleDelete = async () => {
-    if (!user) return;
+    try {
+      if (mode === 'create') {
+        // 사용자 등록
+        const request: CreateUserRequest = {
+          username: formData.username,
+          password: formData.password,
+          empNo: formData.empNo || undefined,
+          accountStatus: formData.accountStatus,
+          isAdmin: formData.isAdmin ? 'Y' : 'N',
+          isExecutive: formData.isExecutive ? 'Y' : 'N',
+          authLevel: formData.authLevel,
+          isLoginBlocked: formData.isLoginBlocked ? 'Y' : 'N',
+          timezone: formData.timezone,
+          language: formData.language,
+          isActive: formData.isActive ? 'Y' : 'N',
+          roleIds: selectedRoleIds
+        };
 
-    const confirmMessage = `사용자 "${user.fullName}"을(를) 삭제하시겠습니까?`;
-    if (window.confirm(confirmMessage) && onDelete) {
-      await onDelete(user.id);
+        await createUser(request);
+        alert('사용자가 성공적으로 등록되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+        onClose();
+
+      } else if (user && isEditing) {
+        // 사용자 수정
+        const request: UpdateUserRequest = {
+          empNo: formData.empNo || undefined,
+          accountStatus: formData.accountStatus,
+          passwordChangeRequired: formData.passwordChangeRequired ? 'Y' : 'N',
+          isAdmin: formData.isAdmin ? 'Y' : 'N',
+          isExecutive: formData.isExecutive ? 'Y' : 'N',
+          authLevel: formData.authLevel,
+          isLoginBlocked: formData.isLoginBlocked ? 'Y' : 'N',
+          timezone: formData.timezone,
+          language: formData.language,
+          isActive: formData.isActive ? 'Y' : 'N',
+          roleIds: selectedRoleIds
+        };
+
+        // 비밀번호 변경이 있는 경우
+        if (formData.password.trim()) {
+          request.newPassword = formData.password;
+        }
+
+        await updateUser(parseInt(user.id), request);
+        alert('사용자 정보가 성공적으로 수정되었습니다.');
+
+        if (onRefresh) {
+          await onRefresh();
+        }
+        onClose();
+      }
+    } catch (error) {
+      console.error('사용자 저장 실패:', error);
+      alert(error instanceof Error ? error.message : '사용자 저장에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [mode, formData, user, isEditing, selectedRoleIds, validateForm, onRefresh, onClose]);
+
+  // ===============================
+  // 수정/취소 핸들러
+  // ===============================
+
+  const handleEdit = useCallback(() => {
+    setIsEditing(true);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    if (mode === 'detail' && user) {
+      // 상세 모드: 원래 데이터로 복원
+      fetchUserDetail(parseInt(user.id));
+      setIsEditing(false);
+    } else {
+      onClose();
+    }
+  }, [mode, user, fetchUserDetail, onClose]);
+
+  // ===============================
+  // 렌더링
+  // ===============================
+
+  const title = mode === 'create' ? '사용자 등록' : '사용자 상세';
+  const isReadOnly = mode === 'detail' && !isEditing;
+
+  // 선택된 역할 데이터
+  const selectedRolesData = useMemo(() => {
+    return availableRoles.filter(role => selectedRoleIds.includes(parseInt(role.id)));
+  }, [availableRoles, selectedRoleIds]);
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="lg"
+      maxWidth="md"
       fullWidth
       PaperProps={{
-        className: styles.modalPaper
+        sx: {
+          borderRadius: 1,
+          maxHeight: '85vh'
+        }
       }}
     >
-      <DialogTitle >
-        <Typography variant="h6">
-          {mode === 'create' ? '사용자 정보 등록 팝업' : '사용자 정보 수정 팝업'}
-        </Typography>
-        <IconButton onClick={onClose} size="small">
-          <CloseIcon />
-        </IconButton>
+      {/* 모달 헤더 - 테마 적용 */}
+      <DialogTitle
+        sx={{
+          background: 'var(--theme-page-header-bg)',
+          color: 'var(--theme-page-header-text)',
+          fontSize: '1.25rem',
+          fontWeight: 600
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <span>{title}</span>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            size="small"
+            sx={{ color: 'var(--theme-page-header-text)' }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
-      <DialogContent >
-        {/* 기본 정보 섹션 */}
-        <Box >
+      <DialogContent dividers sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* 기본 정보 섹션 */}
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            기본 정보
+          </Typography>
+
           <Grid container spacing={2}>
+            {/* 사용자명 */}
             <Grid item xs={6}>
               <TextField
-                label="직번 *"
-                value={formData.employeeNo}
-                onChange={handleChange('employeeNo')}
-                placeholder="사용자 식별번호"
-                disabled={mode === 'edit'}
+                label="사용자명 *"
+                value={formData.username}
+                onChange={(e) => handleChange('username', e.target.value)}
+                placeholder="로그인 ID"
+                disabled={mode === 'detail'}
                 required
                 fullWidth
                 size="small"
+                error={!!errors.username}
+                helperText={errors.username}
               />
             </Grid>
+
+            {/* 비밀번호 */}
             <Grid item xs={6}>
               <TextField
-                label="성명 *"
-                value={formData.fullName}
-                onChange={handleChange('fullName')}
-                placeholder="사용자 실명"
-                required
+                label={mode === 'create' ? '비밀번호 *' : '새 비밀번호'}
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                placeholder={mode === 'create' ? '비밀번호 입력' : '변경 시에만 입력'}
+                disabled={isReadOnly}
+                required={mode === 'create'}
+                fullWidth
+                size="small"
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+
+            {/* 직원번호 */}
+            <Grid item xs={6}>
+              <TextField
+                label="직원번호"
+                value={formData.empNo}
+                onChange={(e) => handleChange('empNo', e.target.value)}
+                placeholder="employees 테이블 연결용"
+                disabled={isReadOnly}
                 fullWidth
                 size="small"
               />
             </Grid>
+
+            {/* 부서 - OrganizationSelect 사용 */}
             <Grid item xs={6}>
-              <TextField
-                label="직위"
-                value={formData.jobRankCode}
-                onChange={handleChange('jobRankCode')}
-                placeholder="직위"
-                fullWidth
+              <OrganizationSelect
+                value={formData.orgCode || null}
+                onChange={handleOrgChange}
+                label="부서"
+                placeholder="부서를 선택하세요"
+                disabled={isReadOnly}
                 size="small"
+                fullWidth
               />
             </Grid>
-            <Grid item xs={6}>
-              <Box display="flex" gap={1}>
-                <TextField
-                  label="부정 *"
-                  value={formData.deptName}
-                  placeholder="부서명"
-                  fullWidth
-                  size="small"
-                  InputProps={{
-                    readOnly: true
-                  }}
-                />
-                <IconButton size="small" onClick={handleDeptSearch}>
-                  <SearchIcon />
-                </IconButton>
-                <IconButton size="small">
-                  <RefreshIcon />
-                </IconButton>
-              </Box>
-            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 1 }} />
+
+          {/* 계정 설정 섹션 */}
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            계정 설정
+          </Typography>
+
+          <Grid container spacing={2}>
+            {/* 계정 상태 */}
             <Grid item xs={6}>
               <TextField
-                label="근무상태"
+                label="계정 상태"
                 value={formData.accountStatus}
-                onChange={handleChange('accountStatus')}
+                onChange={(e) => handleChange('accountStatus', e.target.value)}
                 select
+                disabled={isReadOnly}
                 fullWidth
                 size="small"
               >
-                <MenuItem value="ACTIVE">재직</MenuItem>
+                <MenuItem value="ACTIVE">활성</MenuItem>
+                <MenuItem value="LOCKED">잠금</MenuItem>
                 <MenuItem value="SUSPENDED">정지</MenuItem>
                 <MenuItem value="RESIGNED">퇴직</MenuItem>
               </TextField>
             </Grid>
+
+            {/* 권한 레벨 */}
             <Grid item xs={6}>
+              <TextField
+                label="권한 레벨"
+                type="number"
+                value={formData.authLevel}
+                onChange={(e) => handleChange('authLevel', parseInt(e.target.value) || 5)}
+                disabled={isReadOnly}
+                fullWidth
+                size="small"
+                inputProps={{ min: 1, max: 10 }}
+              />
+            </Grid>
+
+            {/* 타임존 */}
+            <Grid item xs={6}>
+              <TextField
+                label="타임존"
+                value={formData.timezone}
+                onChange={(e) => handleChange('timezone', e.target.value)}
+                select
+                disabled={isReadOnly}
+                fullWidth
+                size="small"
+              >
+                <MenuItem value="Asia/Seoul">Asia/Seoul (GMT+09:00)</MenuItem>
+                <MenuItem value="UTC">UTC (GMT+00:00)</MenuItem>
+                <MenuItem value="America/New_York">America/New_York (GMT-05:00)</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* 언어 */}
+            <Grid item xs={6}>
+              <TextField
+                label="언어"
+                value={formData.language}
+                onChange={(e) => handleChange('language', e.target.value)}
+                select
+                disabled={isReadOnly}
+                fullWidth
+                size="small"
+              >
+                <MenuItem value="ko">한국어</MenuItem>
+                <MenuItem value="en">English</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
+
+          {/* 체크박스 옵션들 */}
+          <Grid container spacing={2}>
+            <Grid item xs={3}>
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={formData.loginBlocked}
-                    onChange={handleChange('loginBlocked')}
+                    checked={formData.isAdmin}
+                    onChange={(e) => handleChange('isAdmin', e.target.checked)}
+                    disabled={isReadOnly}
+                    size="small"
+                  />
+                }
+                label="관리자"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.isExecutive}
+                    onChange={(e) => handleChange('isExecutive', e.target.checked)}
+                    disabled={isReadOnly}
+                    size="small"
+                  />
+                }
+                label="임원"
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.isLoginBlocked}
+                    onChange={(e) => handleChange('isLoginBlocked', e.target.checked)}
+                    disabled={isReadOnly}
+                    size="small"
                   />
                 }
                 label="로그인 차단"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <FormControlLabel
                 control={
                   <Checkbox
                     checked={formData.isActive}
-                    onChange={handleChange('isActive')}
+                    onChange={(e) => handleChange('isActive', e.target.checked)}
+                    disabled={isReadOnly}
+                    size="small"
                   />
                 }
-                label={mode === 'create' ? '활성화' : '재설 활성화'}
+                label="활성화"
               />
             </Grid>
-            <Grid item xs={6}>
-              <TextField
-                label="타임존"
-                value={formData.timezone}
-                onChange={handleChange('timezone')}
-                select
-                fullWidth
-                size="small"
-              >
-                <MenuItem value="(GMT+09:00) Seoul/Asia">(GMT+09:00) Seoul/Asia</MenuItem>
-                <MenuItem value="(GMT+00:00) UTC">(GMT+00:00) UTC</MenuItem>
-              </TextField>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Divider  />
-
-        {/* 비밀번호 설정 섹션 */}
-        <Box >
-          <Typography variant="subtitle2" gutterBottom>
-            비밀번호 설정
-          </Typography>
-          <Grid container spacing={2}>
             <Grid item xs={6}>
               <FormControlLabel
                 control={
                   <Checkbox
                     checked={formData.passwordChangeRequired}
-                    onChange={handleChange('passwordChangeRequired')}
+                    onChange={(e) => handleChange('passwordChangeRequired', e.target.checked)}
+                    disabled={isReadOnly}
+                    size="small"
                   />
                 }
-                label="비밀번호 변경 여부: 예"
+                label="비밀번호 변경 필요"
               />
             </Grid>
-            {mode === 'edit' && (
-              <Grid item xs={6}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formData.resetPassword}
-                      onChange={handleChange('resetPassword')}
-                    />
-                  }
-                  label="비밀번호 초기화"
-                />
-              </Grid>
-            )}
           </Grid>
-        </Box>
 
-        <Divider  />
+          <Divider sx={{ my: 1 }} />
 
-        {/* 역할 할당 섹션 */}
-        <Box >
-          <Grid container spacing={2}>
-            {/* 역할(MenuID) */}
-            <Grid item xs={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                🔐 역할(MenuID)
+          {/* 역할 할당 섹션 */}
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            역할 할당 ({selectedRoleIds.length}개 선택)
+          </Typography>
+
+          <Box sx={{ height: '200px' }}>
+            <BaseDataGrid
+              data={availableRoles}
+              columns={roleColumns}
+              rowSelection={isReadOnly ? 'none' : 'multiple'}
+              pagination={false}
+              height="200px"
+              onSelectionChange={handleRoleSelectionChange}
+              checkboxSelection={!isReadOnly}
+            />
+          </Box>
+
+          {/* 선택된 역할 표시 (읽기 전용 모드) */}
+          {isReadOnly && selectedRolesData.length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                할당된 역할: {selectedRolesData.map(r => r.name).join(', ')}
               </Typography>
-              <Box >
-                <BaseDataGrid
-                  data={mockRoles}
-                  columns={roleColumns}
-                  height="200px"
-                  pagination={false}
-                  rowSelection="multiple"
-                />
-              </Box>
-            </Grid>
-
-            {/* 상세 역할 */}
-            <Grid item xs={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                🔍 상세 역할
-              </Typography>
-              <Box >
-                <BaseDataGrid
-                  data={mockDetailRoles}
-                  columns={detailRoleColumns}
-                  height="200px"
-                  pagination={false}
-                  rowSelection="multiple"
-                />
-              </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          )}
         </Box>
       </DialogContent>
 
-      <DialogActions >
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          disabled={loading}
-        >
-          단순
-        </Button>
-        {mode === 'edit' && onDelete && (
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            삭제
-          </Button>
+      {/* 모달 푸터 - 버튼 */}
+      <DialogActions sx={{ p: 1, gap: 1 }}>
+        {mode === 'create' ? (
+          <>
+            <Button variant="outlined" onClick={onClose} disabled={loading || isSubmitting}>
+              취소
+            </Button>
+            <Button variant="contained" onClick={handleSubmit} disabled={loading || isSubmitting}>
+              {isSubmitting ? '등록 중...' : '등록'}
+            </Button>
+          </>
+        ) : (
+          <>
+            {isEditing ? (
+              <>
+                <Button variant="outlined" onClick={handleCancel} disabled={loading || isSubmitting}>
+                  취소
+                </Button>
+                <Button variant="contained" onClick={handleSubmit} disabled={loading || isSubmitting}>
+                  {isSubmitting ? '저장 중...' : '저장'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outlined" onClick={onClose}>
+                  닫기
+                </Button>
+                <Button variant="contained" onClick={handleEdit}>
+                  수정
+                </Button>
+              </>
+            )}
+          </>
         )}
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          loading={loading}
-        >
-          {mode === 'create' ? '등록' : '수정'}
-        </Button>
       </DialogActions>
     </Dialog>
   );
