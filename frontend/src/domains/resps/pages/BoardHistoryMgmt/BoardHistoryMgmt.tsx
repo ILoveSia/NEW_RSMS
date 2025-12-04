@@ -1,10 +1,20 @@
+/**
+ * 이사회이력관리 페이지
+ * - board_resolutions 테이블 CRUD
+ * - 실제 API 연동 (Mock 데이터 없음)
+ * - PositionMgmt 표준 템플릿 기반
+ *
+ * @author RSMS Development Team
+ * @since 2025-12-04
+ */
+
 // 번들 크기 최적화를 위한 개별 import (tree-shaking)
 import toast from '@/shared/utils/toast';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import HistoryIcon from '@mui/icons-material/History';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './BoardHistoryMgmt.module.scss';
 
@@ -17,6 +27,14 @@ import type {
   BoardHistoryPagination,
   BoardHistoryStatistics
 } from './types/boardHistory.types';
+
+// API
+import {
+  getAllBoardResolutions,
+  searchBoardResolutions,
+  deleteBoardResolutions,
+  type BoardResolutionDto
+} from '../../api/boardResolutionApi';
 
 // Shared Components
 import { LoadingSpinner } from '@/shared/components/atoms/LoadingSpinner';
@@ -37,12 +55,38 @@ interface BoardHistoryMgmtProps {
   className?: string;
 }
 
+/**
+ * API 응답 DTO를 Frontend 타입으로 변환
+ */
+const convertDtoToBoardHistory = (dto: BoardResolutionDto): BoardHistory => {
+  return {
+    id: dto.resolutionId,
+    seq: dto.meetingNumber,
+    ledgerOrderId: dto.ledgerOrderId,
+    round: dto.meetingNumber,
+    resolutionName: dto.resolutionName,
+    resolutionDate: dto.createdAt?.split('T')[0] || '',
+    uploadDate: dto.createdAt?.split('T')[0] || '',
+    summary: dto.summary || '',
+    content: dto.content || '',
+    hasResponsibilityChart: (dto.responsibilityFileCount || 0) > 0,
+    isActive: true,
+    createdAt: dto.createdAt || '',
+    createdBy: dto.createdBy || '',
+    updatedAt: dto.updatedAt,
+    updatedBy: dto.updatedBy,
+    fileCount: dto.fileCount || 0,
+    responsibilityFileCount: dto.responsibilityFileCount || 0
+  };
+};
+
 const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
   const { t } = useTranslation('resps');
 
   // State Management
   const [boardHistories, setBoardHistories] = useState<BoardHistory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
   const [selectedBoardHistories, setSelectedBoardHistories] = useState<BoardHistory[]>([]);
 
   // 개별 로딩 상태
@@ -72,7 +116,45 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
     selectedBoardHistory: null
   });
 
+  // ===============================
+  // 데이터 조회 함수
+  // ===============================
+
+  /**
+   * 이사회결의 목록 조회
+   */
+  const fetchBoardHistories = useCallback(async () => {
+    try {
+      const response = await getAllBoardResolutions();
+      const converted = response.map(convertDtoToBoardHistory);
+      setBoardHistories(converted);
+      setPagination(prev => ({
+        ...prev,
+        total: converted.length,
+        totalPages: Math.ceil(converted.length / prev.size)
+      }));
+    } catch (error) {
+      console.error('이사회결의 목록 조회 실패:', error);
+      toast.error('이사회 이력 목록을 불러오는데 실패했습니다.');
+    }
+  }, []);
+
+  /**
+   * 초기 데이터 로딩
+   */
+  useEffect(() => {
+    const initializeData = async () => {
+      setIsInitialLoading(true);
+      await fetchBoardHistories();
+      setIsInitialLoading(false);
+    };
+    initializeData();
+  }, [fetchBoardHistories]);
+
+  // ===============================
   // Event Handlers
+  // ===============================
+
   const handleFiltersChange = useCallback((newFilters: Partial<BoardHistoryFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   }, []);
@@ -83,24 +165,17 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       addModal: true,
       selectedBoardHistory: null
     }));
-    toast.info('새 이사회 이력을 등록해주세요.', { autoClose: 2000 });
   }, []);
 
   const handleExcelDownload = useCallback(async () => {
     setLoadingStates(prev => ({ ...prev, excel: true }));
-
-    // 로딩 토스트 표시
     const loadingToastId = toast.loading('엑셀 파일을 생성 중입니다...');
 
     try {
       // TODO: 실제 엑셀 다운로드 API 호출
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 시뮬레이션
-
-      // 성공 토스트로 업데이트
+      await new Promise(resolve => setTimeout(resolve, 2000));
       toast.update(loadingToastId, 'success', '엑셀 파일이 다운로드되었습니다.');
-      console.log('이사회 이력 엑셀 다운로드 완료');
     } catch (error) {
-      // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '엑셀 다운로드에 실패했습니다.');
       console.error('엑셀 다운로드 실패:', error);
     } finally {
@@ -108,157 +183,105 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
     }
   }, []);
 
+  /**
+   * 이사회결의 복수 삭제
+   */
   const handleDeleteBoardHistories = useCallback(async () => {
     if (selectedBoardHistories.length === 0) {
       toast.warning('삭제할 이사회 이력을 선택해주세요.');
       return;
     }
 
-    // 확인 메시지
     const confirmMessage = `선택된 ${selectedBoardHistories.length}개의 이사회 이력을 삭제하시겠습니까?`;
     if (!window.confirm(confirmMessage)) {
       return;
     }
 
     setLoadingStates(prev => ({ ...prev, delete: true }));
-
-    // 로딩 토스트 표시
     const loadingToastId = toast.loading(`${selectedBoardHistories.length}개 이사회 이력을 삭제 중입니다...`);
 
     try {
-      // TODO: 실제 삭제 API 호출
-      await new Promise(resolve => setTimeout(resolve, 1500)); // 시뮬레이션
+      const resolutionIds = selectedBoardHistories.map(h => h.id);
+      const result = await deleteBoardResolutions(resolutionIds);
 
-      // 상태 업데이트 (삭제된 항목 제거)
-      setBoardHistories(prev =>
-        prev.filter(history => !selectedBoardHistories.some(selected => selected.id === history.id))
-      );
-      setPagination(prev => ({
-        ...prev,
-        total: prev.total - selectedBoardHistories.length
-      }));
+      if (result.failCount > 0) {
+        toast.update(loadingToastId, 'warning', `${result.successCount}개 성공, ${result.failCount}개 실패`);
+      } else {
+        toast.update(loadingToastId, 'success', `${result.successCount}개 이사회 이력이 삭제되었습니다.`);
+      }
+
+      // 목록 새로고침
+      await fetchBoardHistories();
       setSelectedBoardHistories([]);
-
-      // 성공 토스트로 업데이트
-      toast.update(loadingToastId, 'success', `${selectedBoardHistories.length}개 이사회 이력이 삭제되었습니다.`);
     } catch (error) {
-      // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '이사회 이력 삭제에 실패했습니다.');
       console.error('이사회 이력 삭제 실패:', error);
     } finally {
       setLoadingStates(prev => ({ ...prev, delete: false }));
     }
-  }, [selectedBoardHistories]);
+  }, [selectedBoardHistories, fetchBoardHistories]);
 
   const handleModalClose = useCallback(() => {
-    setModalState(prev => ({
-      ...prev,
+    setModalState({
       addModal: false,
       detailModal: false,
       selectedBoardHistory: null
-    }));
+    });
   }, []);
 
-  // 폼 모달 핸들러들
-  const handleBoardHistorySave = useCallback(async (formData: BoardHistoryFormData) => {
-    try {
-      setLoading(true);
-      // TODO: API 호출로 이사회 이력 생성
-      // const response = await boardHistoryApi.create(formData);
+  /**
+   * 이사회결의 저장 완료 후 콜백
+   */
+  const handleBoardHistorySave = useCallback(async (_formData: BoardHistoryFormData) => {
+    // 저장은 Modal에서 직접 API 호출
+    // 여기서는 목록 새로고침만 수행
+    await fetchBoardHistories();
+    handleModalClose();
+    toast.success('이사회 이력이 성공적으로 등록되었습니다.');
+  }, [fetchBoardHistories, handleModalClose]);
 
-      // 임시로 새 이사회 이력 객체 생성
-      const newBoardHistory: BoardHistory = {
-        id: Date.now().toString(),
-        seq: boardHistories.length + 1,
-        ledgerOrderId: formData.ledgerOrderId,
-        round: boardHistories.length + 1, // 회차는 자동 증가
-        resolutionName: formData.resolutionName,
-        resolutionDate: formData.resolutionDate,
-        uploadDate: new Date().toISOString().split('T')[0],
-        summary: formData.summary,
-        content: formData.content,
-        hasResponsibilityChart: false, // 초기값
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        createdBy: '현재사용자',
-        fileCount: formData.files?.length || 0,
-        responsibilityFileCount: formData.files?.filter(f => f.fileCategory === 'responsibility').length || 0
-      };
-
-      setBoardHistories(prev => [newBoardHistory, ...prev]);
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }));
-      handleModalClose();
-      toast.success('이사회 이력이 성공적으로 등록되었습니다.');
-    } catch (error) {
-      console.error('이사회 이력 등록 실패:', error);
-      toast.error('이사회 이력 등록에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [boardHistories.length, handleModalClose]);
-
-  const handleBoardHistoryUpdate = useCallback(async (id: string, formData: BoardHistoryFormData) => {
-    try {
-      setLoading(true);
-      // TODO: API 호출로 이사회 이력 수정
-      // const response = await boardHistoryApi.update(id, formData);
-
-      // 임시로 기존 이사회 이력 업데이트
-      setBoardHistories(prev =>
-        prev.map(history =>
-          history.id === id
-            ? {
-                ...history,
-                ledgerOrderId: formData.ledgerOrderId,
-                resolutionName: formData.resolutionName,
-                resolutionDate: formData.resolutionDate,
-                summary: formData.summary,
-                content: formData.content,
-                updatedAt: new Date().toISOString(),
-                updatedBy: '현재사용자',
-                fileCount: formData.files?.length || 0,
-                responsibilityFileCount: formData.files?.filter(f => f.fileCategory === 'responsibility').length || 0
-              }
-            : history
-        )
-      );
-
-      handleModalClose();
-      toast.success('이사회 이력이 성공적으로 수정되었습니다.');
-    } catch (error) {
-      console.error('이사회 이력 수정 실패:', error);
-      toast.error('이사회 이력 수정에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  }, [handleModalClose]);
+  /**
+   * 이사회결의 수정 완료 후 콜백
+   */
+  const handleBoardHistoryUpdate = useCallback(async (_id: string, _formData: BoardHistoryFormData) => {
+    // 수정은 Modal에서 직접 API 호출
+    // 여기서는 목록 새로고침만 수행
+    await fetchBoardHistories();
+    handleModalClose();
+    toast.success('이사회 이력이 성공적으로 수정되었습니다.');
+  }, [fetchBoardHistories, handleModalClose]);
 
   const handleBoardHistoryDetail = useCallback((boardHistory: BoardHistory) => {
-    setModalState(prev => ({
-      ...prev,
+    setModalState({
+      addModal: false,
       detailModal: true,
       selectedBoardHistory: boardHistory
-    }));
+    });
   }, []);
 
+  /**
+   * 검색 핸들러
+   */
   const handleSearch = useCallback(async () => {
     setLoading(true);
     setLoadingStates(prev => ({ ...prev, search: true }));
-    setPagination(prev => ({ ...prev, page: 1 }));
-
-    // 로딩 토스트 표시
     const loadingToastId = toast.loading('이사회 이력을 검색 중입니다...');
 
     try {
-      // TODO: 실제 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 시뮬레이션
-
-      console.log('검색 필터:', filters);
-
-      // 성공 토스트로 업데이트
+      const response = await searchBoardResolutions(
+        filters.ledgerOrderId || undefined,
+        filters.resolutionName || undefined
+      );
+      const converted = response.map(convertDtoToBoardHistory);
+      setBoardHistories(converted);
+      setPagination(prev => ({
+        ...prev,
+        page: 1,
+        total: converted.length,
+        totalPages: Math.ceil(converted.length / prev.size)
+      }));
       toast.update(loadingToastId, 'success', '검색이 완료되었습니다.');
     } catch (error) {
-      // 에러 토스트로 업데이트
       toast.update(loadingToastId, 'error', '검색에 실패했습니다.');
       console.error('검색 실패:', error);
     } finally {
@@ -274,9 +297,9 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       resolutionDateFrom: '',
       resolutionDateTo: ''
     });
-    setPagination(prev => ({ ...prev, page: 1 }));
+    fetchBoardHistories();
     toast.info('검색 조건이 초기화되었습니다.', { autoClose: 2000 });
-  }, []);
+  }, [fetchBoardHistories]);
 
   // Grid Event Handlers
   const handleRowClick = useCallback((boardHistory: BoardHistory) => {
@@ -289,16 +312,20 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
 
   const handleSelectionChange = useCallback((selected: BoardHistory[]) => {
     setSelectedBoardHistories(selected);
-    console.log('선택된 행:', selected.length);
   }, []);
 
-  // Memoized computed values (성능 최적화)
+  // ===============================
+  // Memoized Values
+  // ===============================
+
+  // 통계 계산
   const statistics = useMemo((): BoardHistoryStatistics => {
-    const total = pagination.total;
+    const total = boardHistories.length;
     const currentYear = new Date().getFullYear();
-    const currentYearCount = boardHistories.filter(h =>
-      new Date(h.resolutionDate).getFullYear() === currentYear
-    ).length;
+    const currentYearCount = boardHistories.filter(h => {
+      const createdYear = h.createdAt ? new Date(h.createdAt).getFullYear() : 0;
+      return createdYear === currentYear;
+    }).length;
     const totalFileCount = boardHistories.reduce((sum, h) => sum + (h.fileCount || 0), 0);
     const responsibilityFileCount = boardHistories.reduce((sum, h) => sum + (h.responsibilityFileCount || 0), 0);
     const activeCount = boardHistories.filter(h => h.isActive).length;
@@ -312,11 +339,6 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       activeCount,
       inactiveCount
     };
-  }, [pagination.total, boardHistories]);
-
-  // Filtered board histories for display (성능 최적화)
-  const displayBoardHistories = useMemo(() => {
-    return boardHistories; // TODO: 클라이언트 사이드 필터링이 필요한 경우 추가
   }, [boardHistories]);
 
   // BaseSearchFilter용 필드 정의
@@ -342,18 +364,6 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
       label: '이사회 결의명',
       placeholder: '이사회 결의명을 입력하세요',
       gridSize: { xs: 12, sm: 6, md: 3 }
-    },
-    {
-      key: 'resolutionDateFrom',
-      type: 'date',
-      label: '결의일자 시작',
-      gridSize: { xs: 12, sm: 6, md: 2 }
-    },
-    {
-      key: 'resolutionDateTo',
-      type: 'date',
-      label: '결의일자 종료',
-      gridSize: { xs: 12, sm: 6, md: 2 }
     }
   ], [filters.ledgerOrderId, handleFiltersChange]);
 
@@ -393,79 +403,23 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
     {
       label: '첨부파일',
       value: statistics.totalFileCount,
-      color: 'info',
+      color: 'primary',
       icon: <AttachFileIcon />
     }
   ], [statistics]);
 
-  // Mock data loading
-  React.useEffect(() => {
-    // TODO: Replace with actual API call
-    const mockBoardHistories: BoardHistory[] = [
-      {
-        id: '1',
-        seq: 1,
-        ledgerOrderId: '20250001',
-        round: 1,
-        resolutionName: '2025년 1차 이사회결의',
-        resolutionDate: '2025-08-13',
-        uploadDate: '2025-08-13',
-        summary: '신규 임원 선임 및 조직 개편에 관한 이사회 결의',
-        content: '대상 임원: ○○○\n대상 민원: ○○○',
-        hasResponsibilityChart: true,
-        isActive: true,
-        createdAt: '2025-08-13T09:00:00.000Z',
-        createdBy: '관리자',
-        fileCount: 3,
-        responsibilityFileCount: 1
-      },
-      {
-        id: '2',
-        seq: 2,
-        ledgerOrderId: '20250001',
-        round: 2,
-        resolutionName: '2025년 2차 이사회결의',
-        resolutionDate: '2025-09-15',
-        uploadDate: '2025-09-15',
-        summary: '예산 승인 및 신사업 추진 계획 검토',
-        content: '2025년 하반기 예산 및 신사업 계획 심의',
-        hasResponsibilityChart: false,
-        isActive: true,
-        createdAt: '2025-09-15T14:30:00.000Z',
-        createdBy: '관리자',
-        fileCount: 2,
-        responsibilityFileCount: 0
-      },
-      {
-        id: '3',
-        seq: 3,
-        ledgerOrderId: '20250001',
-        round: 3,
-        resolutionName: '2025년 3차 이사회결의',
-        resolutionDate: '2025-09-20',
-        uploadDate: '2025-09-20',
-        summary: '리스크 관리 체계 개선 방안 논의',
-        content: '리스크 관리 체계 강화 및 모니터링 시스템 구축',
-        hasResponsibilityChart: true,
-        isActive: true,
-        createdAt: '2025-09-20T10:15:00.000Z',
-        createdBy: '관리자',
-        fileCount: 5,
-        responsibilityFileCount: 2
-      }
-    ];
-
-    setBoardHistories(mockBoardHistories);
-    setPagination(prev => ({
-      ...prev,
-      total: mockBoardHistories.length,
-      totalPages: Math.ceil(mockBoardHistories.length / prev.size)
-    }));
-  }, []);
+  // 초기 로딩 중 표시
+  if (isInitialLoading) {
+    return (
+      <div className={`${styles.container} ${className || ''}`}>
+        <LoadingSpinner text="이사회 이력 목록을 불러오는 중입니다..." />
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      {/* 🏗️ 페이지 헤더 */}
+      {/* 페이지 헤더 */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
           <div className={styles.titleSection}>
@@ -496,9 +450,7 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
                 <HistoryIcon />
               </div>
               <div className={styles.statContent}>
-                <div className={styles.statNumber}>
-                  {statistics.currentYearCount}
-                </div>
+                <div className={styles.statNumber}>{statistics.currentYearCount}</div>
                 <div className={styles.statLabel}>금년 이력</div>
               </div>
             </div>
@@ -526,9 +478,9 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
         </div>
       </div>
 
-      {/* 🎨 메인 컨텐츠 영역 */}
+      {/* 메인 컨텐츠 영역 */}
       <div className={styles.content}>
-        {/* 🔍 공통 검색 필터 */}
+        {/* 공통 검색 필터 */}
         <BaseSearchFilter
           fields={searchFields}
           values={filters as unknown as FilterValues}
@@ -540,7 +492,7 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
           showClearButton={true}
         />
 
-        {/* 💎 공통 액션 바 */}
+        {/* 공통 액션 바 */}
         <BaseActionBar
           totalCount={statistics.totalCount}
           totalLabel="총 이사회 이력 수"
@@ -550,9 +502,9 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
           loading={loading}
         />
 
-        {/* 🎯 공통 데이터 그리드 */}
+        {/* 공통 데이터 그리드 */}
         <BaseDataGrid
-          data={displayBoardHistories}
+          data={boardHistories}
           columns={boardHistoryColumns}
           loading={loading}
           theme="alpine"
@@ -565,8 +517,8 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
           rowSelection="multiple"
           checkboxSelection={true}
           headerCheckboxSelection={true}
-        suppressHorizontalScroll={false}
-        suppressColumnVirtualisation={false}
+          suppressHorizontalScroll={false}
+          suppressColumnVirtualisation={false}
         />
       </div>
 
@@ -579,6 +531,7 @@ const BoardHistoryMgmt: React.FC<BoardHistoryMgmtProps> = ({ className }) => {
           onClose={handleModalClose}
           onSave={handleBoardHistorySave}
           onUpdate={handleBoardHistoryUpdate}
+          onRefresh={fetchBoardHistories}
           loading={loading}
         />
       </React.Suspense>

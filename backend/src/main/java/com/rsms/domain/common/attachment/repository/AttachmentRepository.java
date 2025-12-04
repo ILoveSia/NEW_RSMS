@@ -103,4 +103,54 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String> 
            "FROM Attachment a " +
            "WHERE a.attachmentId LIKE :prefix%")
     Integer findMaxSequenceByPrefix(@Param("prefix") String prefix);
+
+    /**
+     * 특정 엔티티의 활성 첨부파일 조회 (isActive 파라미터 버전)
+     * @param entityType 엔티티 타입
+     * @param entityId 엔티티 ID
+     * @param isActive 활성 여부
+     * @return 첨부파일 목록
+     */
+    @Query("SELECT a FROM Attachment a " +
+           "WHERE a.entityType = :entityType " +
+           "AND a.entityId = :entityId " +
+           "AND a.isActive = :isActive " +
+           "ORDER BY a.sortOrder, a.createdAt")
+    List<Attachment> findByEntityTypeAndEntityIdAndIsActive(
+            @Param("entityType") String entityType,
+            @Param("entityId") String entityId,
+            @Param("isActive") String isActive);
+
+    /**
+     * 복수 엔티티의 첨부파일 개수 조회 (일괄 조회용)
+     * @param entityType 엔티티 타입
+     * @param entityIds 엔티티 ID 목록
+     * @return [entityId, count] 배열 목록
+     */
+    @Query("SELECT a.entityId, COUNT(a) FROM Attachment a " +
+           "WHERE a.entityType = :entityType " +
+           "AND a.entityId IN :entityIds " +
+           "AND a.isActive = 'Y' " +
+           "GROUP BY a.entityId")
+    List<Object[]> countByEntityTypeAndEntityIds(
+            @Param("entityType") String entityType,
+            @Param("entityIds") List<String> entityIds);
+
+    /**
+     * 복수 엔티티의 특정 분류 첨부파일 개수 조회
+     * @param entityType 엔티티 타입
+     * @param entityIds 엔티티 ID 목록
+     * @param fileCategory 파일 분류
+     * @return [entityId, count] 배열 목록
+     */
+    @Query("SELECT a.entityId, COUNT(a) FROM Attachment a " +
+           "WHERE a.entityType = :entityType " +
+           "AND a.entityId IN :entityIds " +
+           "AND LOWER(a.fileCategory) = LOWER(:fileCategory) " +
+           "AND a.isActive = 'Y' " +
+           "GROUP BY a.entityId")
+    List<Object[]> countByEntityTypeAndEntityIdsAndCategory(
+            @Param("entityType") String entityType,
+            @Param("entityIds") List<String> entityIds,
+            @Param("fileCategory") String fileCategory);
 }

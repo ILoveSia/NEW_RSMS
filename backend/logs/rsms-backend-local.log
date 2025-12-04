@@ -1008,3 +1008,184 @@
 2025-12-04 16:18:27.234 INFO  [http-nio-8090-exec-1] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
 2025-12-04 16:18:27.235 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
 2025-12-04 16:18:27.248 DEBUG [http-nio-8090-exec-1] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 16:23:15.101 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 16:41:22.429 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.9 with PID 5764 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-12-04 16:41:22.432 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-12-04 16:41:22.433 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-12-04 16:41:34.974 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 13.26 seconds (process running for 13.787)
+2025-12-04 16:42:14.699 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.9 with PID 6681 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-12-04 16:42:14.700 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-12-04 16:42:14.701 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-12-04 16:42:25.360 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 11.174 seconds (process running for 11.533)
+2025-12-04 16:43:48.156 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-12-04 16:43:48.162 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-12-04 16:43:48.666 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-12-04 16:43:48.731 DEBUG [http-nio-8090-exec-6] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-12-04 16:43:49.067 INFO  [http-nio-8090-exec-6] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-12-04 16:43:49.106 INFO  [http-nio-8090-exec-6] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=da2a3c0a-5953-4ece-968b-21f41e839d02
+2025-12-04 16:43:49.226 INFO  [http-nio-8090-exec-8] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-12-04 16:43:49.226 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 16:43:49.227 INFO  [http-nio-8090-exec-7] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-12-04 16:43:49.228 DEBUG [http-nio-8090-exec-8] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-12-04 16:43:49.228 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 16:43:49.267 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 16:43:49.272 DEBUG [http-nio-8090-exec-9] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 16:43:49.277 DEBUG [http-nio-8090-exec-7] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-12-04 16:43:56.472 INFO  [http-nio-8090-exec-10] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 16:43:56.472 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 16:43:56.482 DEBUG [http-nio-8090-exec-10] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 16:48:49.638 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 16:53:49.626 DEBUG [http-nio-8090-exec-9] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 16:59:18.488 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 16:59:20.991 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 16:59:20.999 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 16:59:21.027 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 16:59:21.027 DEBUG [http-nio-8090-exec-10] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 16:59:21.037 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 16:59:21.078 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 16:59:21.079 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 16:59:21.090 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 16:59:21.108 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 16:59:21.109 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 16:59:22.315 INFO  [http-nio-8090-exec-4] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 16:59:22.316 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 16:59:22.363 DEBUG [http-nio-8090-exec-4] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:04:09.830 ERROR [http-nio-8090-exec-7] c.r.g.e.GlobalExceptionHandler - [NoResourceFoundException] No static resource api/resps/board-resolutions. - Cause: Unknown
+2025-12-04 17:04:09.882 ERROR [http-nio-8090-exec-8] c.r.g.e.GlobalExceptionHandler - [NoResourceFoundException] No static resource api/resps/board-resolutions. - Cause: Unknown
+2025-12-04 17:04:20.856 DEBUG [http-nio-8090-exec-10] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 17:04:25.544 ERROR [http-nio-8090-exec-1] c.r.g.e.GlobalExceptionHandler - [NoResourceFoundException] No static resource api/resps/board-resolutions. - Cause: Unknown
+2025-12-04 17:04:25.781 INFO  [http-nio-8090-exec-3] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:04:25.805 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:04:25.812 DEBUG [http-nio-8090-exec-3] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:12:00.678 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.9 with PID 23944 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-12-04 17:12:00.678 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-12-04 17:12:00.679 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-12-04 17:12:11.122 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 11.06 seconds (process running for 11.444)
+2025-12-04 17:14:58.061 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 API 호출: username=admin
+2025-12-04 17:14:58.077 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 시도: username=admin
+2025-12-04 17:14:58.534 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 로그인 시도: username=admin
+2025-12-04 17:14:58.574 DEBUG [http-nio-8090-exec-2] c.r.d.a.s.CustomUserDetailsService - 사용자 역할 조회 완료: username=admin, roles=[002, 103]
+2025-12-04 17:14:59.019 INFO  [http-nio-8090-exec-2] c.r.domain.auth.service.AuthService - 로그인 성공: username=admin, userId=1
+2025-12-04 17:14:59.065 INFO  [http-nio-8090-exec-2] c.r.d.auth.controller.AuthController - 로그인 성공: username=admin, sessionId=b577e539-f816-4a1c-8a15-991e76df965f
+2025-12-04 17:14:59.330 INFO  [http-nio-8090-exec-4] c.r.d.o.c.OrganizationController - GET /api/organizations/active - 활성 조직 목록 조회
+2025-12-04 17:14:59.331 DEBUG [http-nio-8090-exec-4] c.r.d.o.service.OrganizationService - 활성 조직 목록 조회
+2025-12-04 17:14:59.333 INFO  [http-nio-8090-exec-3] c.r.d.s.c.c.CommonCodeController - GET /api/system/codes/groups/active/with-details - 활성화된 모든 코드 그룹 및 상세 조회
+2025-12-04 17:14:59.335 DEBUG [http-nio-8090-exec-3] c.r.d.s.c.service.CommonCodeService - 활성화된 모든 코드 그룹 및 상세 조회
+2025-12-04 17:14:59.336 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 17:14:59.385 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 17:14:59.418 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 17:14:59.423 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 17:15:07.932 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:15:07.934 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:15:07.967 DEBUG [http-nio-8090-exec-7] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:15:07.968 DEBUG [http-nio-8090-exec-7] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:15:08.140 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:15:08.143 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:15:08.155 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:20:24.348 DEBUG [http-nio-8090-exec-2] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.351 DEBUG [http-nio-8090-exec-2] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.352 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 17:20:24.435 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 17:20:24.441 DEBUG [http-nio-8090-exec-3] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.443 DEBUG [http-nio-8090-exec-3] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.551 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.552 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.592 DEBUG [http-nio-8090-exec-7] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.594 DEBUG [http-nio-8090-exec-7] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:20:24.803 INFO  [http-nio-8090-exec-8] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:20:24.803 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:20:24.808 DEBUG [http-nio-8090-exec-8] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:22:01.171 DEBUG [http-nio-8090-exec-5] c.r.d.b.c.BoardResolutionController - POST /api/resps/board-resolutions - 이사회결의 생성: ledgerOrderId=20250001
+2025-12-04 17:22:01.173 DEBUG [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 이사회결의 생성: ledgerOrderId=20250001, resolutionName=2025년 1차 결의
+2025-12-04 17:22:01.256 INFO  [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 이사회결의 생성 완료: resolutionId=20250001B0001
+2025-12-04 17:22:01.322 DEBUG [http-nio-8090-exec-3] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:22:01.322 DEBUG [http-nio-8090-exec-3] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:22:01.390 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:22:01.391 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:22:06.945 DEBUG [http-nio-8090-exec-7] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:22:06.946 DEBUG [http-nio-8090-exec-7] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:24:53.958 DEBUG [http-nio-8090-exec-9] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:24:53.959 DEBUG [http-nio-8090-exec-9] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:25:24.219 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 17:25:32.752 DEBUG [http-nio-8090-exec-4] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:25:32.753 DEBUG [http-nio-8090-exec-4] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:25:32.759 INFO  [http-nio-8090-exec-5] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:25:32.764 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:25:32.768 DEBUG [http-nio-8090-exec-5] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:25:32.859 DEBUG [http-nio-8090-exec-3] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:25:32.861 DEBUG [http-nio-8090-exec-3] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:25:32.919 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:25:32.920 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:25:32.992 DEBUG [http-nio-8090-exec-7] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:25:32.997 DEBUG [http-nio-8090-exec-7] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:26:00.176 DEBUG [http-nio-8090-exec-2] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0001 - 이사회결의 상세 조회
+2025-12-04 17:26:00.181 DEBUG [http-nio-8090-exec-2] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0001
+2025-12-04 17:28:34.953 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.9 with PID 34101 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-12-04 17:28:34.954 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-12-04 17:28:34.955 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-12-04 17:28:44.433 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 9.928 seconds (process running for 10.344)
+2025-12-04 17:30:24.340 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 세션 확인 API 호출
+2025-12-04 17:30:38.581 INFO  [restartedMain] com.rsms.RsmsApplication - Starting RsmsApplication using Java 21.0.9 with PID 35732 (/home/rocosoo/RSMS/backend/build/classes/java/main started by rocosoo in /home/rocosoo/RSMS/backend)
+2025-12-04 17:30:38.582 DEBUG [restartedMain] com.rsms.RsmsApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2025-12-04 17:30:38.584 INFO  [restartedMain] com.rsms.RsmsApplication - The following 1 profile is active: "local"
+2025-12-04 17:30:50.520 INFO  [restartedMain] com.rsms.RsmsApplication - Started RsmsApplication in 12.607 seconds (process running for 13.231)
+2025-12-04 17:31:16.021 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 17:31:16.021 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - 메뉴 계층 구조 조회 API 호출
+2025-12-04 17:31:16.021 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 17:31:16.024 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.AuthController - 현재 사용자 정보 조회 API 호출
+2025-12-04 17:31:16.034 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 17:31:16.036 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 조회 시작
+2025-12-04 17:31:16.253 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 17:31:16.253 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 활성 메뉴 조회 완료: 35 개
+2025-12-04 17:31:16.258 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 17:31:16.258 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 계층 구조 생성 완료: 최상위 메뉴 8 개
+2025-12-04 17:31:16.736 DEBUG [http-nio-8090-exec-5] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:31:16.737 DEBUG [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:31:16.825 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:31:16.826 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:31:17.066 INFO  [http-nio-8090-exec-7] c.r.d.l.c.LedgerOrderController - GET /api/ledger-orders/combo - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:31:17.068 DEBUG [http-nio-8090-exec-7] c.r.d.l.service.LedgerOrderService - 콤보박스용 원장차수 조회 (PROG, CLSD만)
+2025-12-04 17:31:17.075 DEBUG [http-nio-8090-exec-7] c.r.d.l.service.LedgerOrderService - 활성 원장차수 조회 완료 - count: 1
+2025-12-04 17:31:49.541 DEBUG [http-nio-8090-exec-9] c.r.d.b.c.BoardResolutionController - POST /api/resps/board-resolutions - 이사회결의 생성: ledgerOrderId=20250001
+2025-12-04 17:31:49.541 DEBUG [http-nio-8090-exec-9] c.r.d.b.s.BoardResolutionService - 이사회결의 생성: ledgerOrderId=20250001, resolutionName=2025년 1-1차 결의
+2025-12-04 17:31:49.658 INFO  [http-nio-8090-exec-9] c.r.d.b.s.BoardResolutionService - 이사회결의 생성 완료: resolutionId=20250001B0002
+2025-12-04 17:31:49.894 INFO  [http-nio-8090-exec-10] c.r.d.c.a.c.AttachmentController - POST /api/attachments/upload - entityType: board_resolutions, entityId: 20250001B0002, phase: null
+2025-12-04 17:31:49.898 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService - 📎 [AttachmentService] 파일 업로드 시작
+2025-12-04 17:31:49.898 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService -   - 원본 파일명: 수료증.pdf
+2025-12-04 17:31:49.898 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService -   - 파일 크기: 271180 bytes
+2025-12-04 17:31:49.898 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService -   - 엔티티 타입: board_resolutions, ID: 20250001B0002
+2025-12-04 17:31:49.898 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService -   - 업무 단계: null
+2025-12-04 17:31:49.905 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService -   - 파일 저장 완료: ./uploads/board_resolutions/2025/12/be7268ec-a306-4e45-9bed-edb2d235f8f9.pdf
+2025-12-04 17:31:49.922 INFO  [http-nio-8090-exec-10] c.r.d.c.a.service.AttachmentService - ✅ [AttachmentService] 파일 업로드 완료: ATT20251204000001
+2025-12-04 17:31:50.021 DEBUG [http-nio-8090-exec-1] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:31:50.023 DEBUG [http-nio-8090-exec-1] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:31:50.138 DEBUG [http-nio-8090-exec-4] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:31:50.139 DEBUG [http-nio-8090-exec-4] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:31:55.890 DEBUG [http-nio-8090-exec-3] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0002 - 이사회결의 상세 조회
+2025-12-04 17:31:55.891 DEBUG [http-nio-8090-exec-3] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0002
+2025-12-04 17:32:03.334 DEBUG [http-nio-8090-exec-5] c.r.d.b.c.BoardResolutionController - PUT /api/resps/board-resolutions/20250001B0002 - 이사회결의 수정
+2025-12-04 17:32:03.335 DEBUG [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 이사회결의 수정: resolutionId=20250001B0002
+2025-12-04 17:32:03.339 INFO  [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 이사회결의 수정 완료: resolutionId=20250001B0002
+2025-12-04 17:32:03.340 DEBUG [http-nio-8090-exec-5] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0002
+2025-12-04 17:32:03.392 DEBUG [http-nio-8090-exec-6] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:32:03.392 DEBUG [http-nio-8090-exec-6] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:32:03.436 DEBUG [http-nio-8090-exec-7] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions - 전체 이사회결의 목록 조회
+2025-12-04 17:32:03.437 DEBUG [http-nio-8090-exec-7] c.r.d.b.s.BoardResolutionService - 전체 이사회결의 목록 조회
+2025-12-04 17:32:05.284 DEBUG [http-nio-8090-exec-8] c.r.d.b.c.BoardResolutionController - GET /api/resps/board-resolutions/20250001B0002 - 이사회결의 상세 조회
+2025-12-04 17:32:05.285 DEBUG [http-nio-8090-exec-8] c.r.d.b.s.BoardResolutionService - 이사회결의 상세 조회: resolutionId=20250001B0002
+2025-12-04 17:32:22.554 DEBUG [http-nio-8090-exec-1] c.r.d.auth.controller.MenuController - GET /api/menus - 전체 메뉴 목록 조회
+2025-12-04 17:32:22.555 DEBUG [http-nio-8090-exec-1] c.r.domain.auth.service.MenuService - 전체 메뉴 목록 조회
+2025-12-04 17:32:22.596 DEBUG [http-nio-8090-exec-4] c.r.d.auth.controller.MenuController - GET /api/menus - 전체 메뉴 목록 조회
+2025-12-04 17:32:22.597 DEBUG [http-nio-8090-exec-4] c.r.domain.auth.service.MenuService - 전체 메뉴 목록 조회
+2025-12-04 17:32:24.586 DEBUG [http-nio-8090-exec-3] c.r.d.auth.controller.MenuController - GET /api/menus/3/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:24.586 DEBUG [http-nio-8090-exec-3] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=3
+2025-12-04 17:32:25.112 DEBUG [http-nio-8090-exec-2] c.r.d.auth.controller.MenuController - GET /api/menus/6/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:25.113 DEBUG [http-nio-8090-exec-2] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=6
+2025-12-04 17:32:25.481 DEBUG [http-nio-8090-exec-5] c.r.d.auth.controller.MenuController - GET /api/menus/9/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:25.482 DEBUG [http-nio-8090-exec-5] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=9
+2025-12-04 17:32:25.893 DEBUG [http-nio-8090-exec-6] c.r.d.auth.controller.MenuController - GET /api/menus/8/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:25.893 DEBUG [http-nio-8090-exec-6] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=8
+2025-12-04 17:32:26.450 DEBUG [http-nio-8090-exec-7] c.r.d.auth.controller.MenuController - GET /api/menus/25/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:26.450 DEBUG [http-nio-8090-exec-7] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=25
+2025-12-04 17:32:27.008 DEBUG [http-nio-8090-exec-8] c.r.d.auth.controller.MenuController - GET /api/menus/29/permissions - 메뉴 권한 목록 조회
+2025-12-04 17:32:27.009 DEBUG [http-nio-8090-exec-8] c.r.domain.auth.service.MenuService - 메뉴 권한 목록 조회: menuId=29

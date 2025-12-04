@@ -12,7 +12,7 @@
  * @since 2025-12-04
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Dialog,
@@ -26,14 +26,17 @@ import {
   Checkbox,
   Grid,
   IconButton,
-  Divider
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { Button } from '@/shared/components/atoms/Button';
 import { OrganizationSelect } from '@/shared/components/molecules/OrganizationSelect';
-import { BaseDataGrid } from '@/shared/components/organisms/BaseDataGrid';
-import type { ColDef } from 'ag-grid-community';
 
 // API
 import {
@@ -48,7 +51,7 @@ import {
 } from '../../../../api/userMgmtApi';
 
 // Types
-import type { User, RoleOption } from '../../types/user.types';
+import type { User } from '../../types/user.types';
 
 // ===============================
 // Props 타입 정의
@@ -83,6 +86,13 @@ interface UserFormData {
   passwordChangeRequired: boolean;
 }
 
+// 역할 옵션 타입
+interface RoleItem {
+  roleId: number;
+  roleCode: string;
+  roleName: string;
+}
+
 // ===============================
 // 컴포넌트
 // ===============================
@@ -112,9 +122,9 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     passwordChangeRequired: true
   });
 
-  // 역할 선택 상태
+  // 역할 관련 상태
+  const [availableRoles, setAvailableRoles] = useState<RoleItem[]>([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
-  const [availableRoles, setAvailableRoles] = useState<RoleOption[]>([]);
 
   // 편집 모드 상태
   const [isEditing, setIsEditing] = useState(false);
@@ -128,43 +138,26 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
   // 로딩 상태
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // ===============================
-  // 역할 그리드 컬럼 정의
-  // ===============================
-
-  const roleColumns = useMemo<ColDef<RoleOption>[]>(() => [
-    {
-      field: 'code',
-      headerName: '역할코드',
-      width: 120,
-      sortable: true
-    },
-    {
-      field: 'name',
-      headerName: '역할명',
-      flex: 1,
-      sortable: true
-    }
-  ], []);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(false);
 
   // ===============================
   // 역할 목록 조회
   // ===============================
 
   const fetchRoles = useCallback(async () => {
+    setIsLoadingRoles(true);
     try {
       const roles = await getActiveRoles();
-      const converted: RoleOption[] = roles.map((role: UserRoleDto) => ({
-        id: role.roleId.toString(),
-        code: role.roleCode,
-        name: role.roleName,
-        detailRoleCount: 0,
-        isSystemRole: false
+      const converted: RoleItem[] = roles.map((role: UserRoleDto) => ({
+        roleId: role.roleId,
+        roleCode: role.roleCode,
+        roleName: role.roleName
       }));
       setAvailableRoles(converted);
     } catch (error) {
       console.error('역할 목록 조회 실패:', error);
+    } finally {
+      setIsLoadingRoles(false);
     }
   }, []);
 
@@ -260,10 +253,15 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     }));
   }, []);
 
-  // 역할 선택 핸들러
-  const handleRoleSelectionChange = useCallback((selectedRows: RoleOption[]) => {
-    const roleIds = selectedRows.map(role => parseInt(role.id));
-    setSelectedRoleIds(roleIds);
+  // 역할 체크박스 토글 핸들러
+  const handleRoleToggle = useCallback((roleId: number) => {
+    setSelectedRoleIds(prev => {
+      if (prev.includes(roleId)) {
+        return prev.filter(id => id !== roleId);
+      } else {
+        return [...prev, roleId];
+      }
+    });
   }, []);
 
   // ===============================
@@ -386,11 +384,6 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
   const title = mode === 'create' ? '사용자 등록' : '사용자 상세';
   const isReadOnly = mode === 'detail' && !isEditing;
-
-  // 선택된 역할 데이터
-  const selectedRolesData = useMemo(() => {
-    return availableRoles.filter(role => selectedRoleIds.includes(parseInt(role.id)));
-  }, [availableRoles, selectedRoleIds]);
 
   return (
     <Dialog
@@ -645,26 +638,49 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             역할 할당 ({selectedRoleIds.length}개 선택)
           </Typography>
 
-          <Box sx={{ height: '200px' }}>
-            <BaseDataGrid
-              data={availableRoles}
-              columns={roleColumns}
-              rowSelection={isReadOnly ? 'none' : 'multiple'}
-              pagination={false}
-              height="200px"
-              onSelectionChange={handleRoleSelectionChange}
-              checkboxSelection={!isReadOnly}
-            />
-          </Box>
-
-          {/* 선택된 역할 표시 (읽기 전용 모드) */}
-          {isReadOnly && selectedRolesData.length > 0 && (
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                할당된 역할: {selectedRolesData.map(r => r.name).join(', ')}
-              </Typography>
-            </Box>
-          )}
+          <Paper variant="outlined" sx={{ maxHeight: 200, overflow: 'auto' }}>
+            {isLoadingRoles ? (
+              <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  역할 목록을 불러오는 중...
+                </Typography>
+              </Box>
+            ) : availableRoles.length === 0 ? (
+              <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  등록된 역할이 없습니다.
+                </Typography>
+              </Box>
+            ) : (
+              <List dense>
+                {availableRoles.map((role) => (
+                  <ListItem
+                    key={role.roleId}
+                    sx={{
+                      py: 0.5,
+                      '&:hover': { bgcolor: 'action.hover' }
+                    }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>
+                      <Checkbox
+                        edge="start"
+                        checked={selectedRoleIds.includes(role.roleId)}
+                        onChange={() => handleRoleToggle(role.roleId)}
+                        disabled={isReadOnly}
+                        size="small"
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={role.roleName}
+                      secondary={role.roleCode}
+                      primaryTypographyProps={{ variant: 'body2' }}
+                      secondaryTypographyProps={{ variant: 'caption' }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Paper>
         </Box>
       </DialogContent>
 
