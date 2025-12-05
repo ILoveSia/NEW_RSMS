@@ -73,14 +73,14 @@ CREATE TABLE rsms.impl_inspection_items (
   -- 1단계: 점검 정보
   -- ============================================
   inspector_id VARCHAR(50),                           -- 점검자ID
-  inspection_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 점검결과상태코드 (01:미점검, 02:적정, 03:부적정) FLFL_STCD
+  inspection_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 점검결과상태코드 (01:미점검, 02:적정, 03:부적정) common_code_details의 FLFL_STCD
   inspection_result_content TEXT,                     -- 점검결과내용
   inspection_date DATE,                               -- 점검일자
 
   -- ============================================
   -- 2단계: 개선이행 정보 (부적정 시에만 사용)
   -- ============================================
-  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료) IMPR_FLFL_STCD
+  improvement_status_cd VARCHAR(20) NOT NULL DEFAULT '01', -- 개선이행상태코드 (01:개선미이행, 02:개선계획, 03:승인요청, 04:개선이행, 05:완료승인요청, 06:개선완료) common_code_details의 IMPR_FLFL_STCD
   improvement_manager_id VARCHAR(50),                 -- 개선담당자ID (사용자ID : 수행자)
   improvement_plan_content TEXT,                      -- 개선계획내용
   improvement_plan_date DATE,                         -- 개선계획수립일자
@@ -94,7 +94,7 @@ CREATE TABLE rsms.impl_inspection_items (
   -- ============================================
   -- 3단계: 최종점검(승인) 정보
   -- ============================================
-  final_inspection_result_cd VARCHAR(20),             -- 최종점검결과코드 (01:승인, 02:반려) FINAL_RESULT_CD
+  final_inspection_result_cd VARCHAR(20),             -- 최종점검결과코드 (01:승인, 02:반려) common_code_details의 FINAL_RESULT_CD
   final_inspection_result_content TEXT,               -- 최종점검결과내용 (삭제 예정)
   final_inspection_date DATE,                         -- 최종점검일자
 

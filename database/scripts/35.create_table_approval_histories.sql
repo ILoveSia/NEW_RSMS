@@ -56,7 +56,7 @@ CREATE TABLE rsms.approval_histories (
     -- ============================================
     step_sequence           INTEGER         NOT NULL,               -- 단계순서
     step_name               VARCHAR(100),                           -- 단계명
-    step_type_cd            VARCHAR(10),                            -- 단계유형코드 (DRAFT, REVIEW, APPROVE, FINAL)
+    step_type_cd            VARCHAR(10),                            -- 단계유형코드 (DRAFT:기안, REVIEW:검토, APPROVE:승인, FINAL:최종승인) common_code_details의 APR_STP_TYCD 그룹 참조
 
     -- ============================================
     -- 결재자 정보
@@ -70,7 +70,7 @@ CREATE TABLE rsms.approval_histories (
     -- ============================================
     -- 결재 결과
     -- ============================================
-    action_cd               VARCHAR(10)     NOT NULL,               -- 처리코드 (DRAFT: 기안, APPROVE: 승인, REJECT: 반려, WITHDRAW: 회수, FORWARD: 전달)
+    action_cd               VARCHAR(10)     NOT NULL,               -- 처리코드 (DRAFT: 기안, APPROVE: 승인, REJECT: 반려, WITHDRAW: 회수, FORWARD: 전달) common_code_details의 ACT_CD 그룹 참조
     action_date             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP, -- 처리일시
     action_comment          VARCHAR(2000),                          -- 처리의견
 

@@ -57,7 +57,7 @@ CREATE TABLE rsms.approval_line_steps (
     -- ============================================
     step_sequence           INTEGER         NOT NULL,               -- 단계순서
     step_name               VARCHAR(100)    NOT NULL,               -- 단계명 (기안, 검토, 승인 등)
-    step_type_cd            VARCHAR(10)     NOT NULL,               -- 단계유형코드 (DRAFT: 기안, REVIEW: 검토, APPROVE: 승인, FINAL: 최종승인)
+    step_type_cd            VARCHAR(10)     NOT NULL,               -- 단계유형코드 (DRAFT: 기안, REVIEW: 검토, APPROVE: 승인, FINAL: 최종승인) APR_STP_TYCD
 
     -- ============================================
     -- 결재자 정보

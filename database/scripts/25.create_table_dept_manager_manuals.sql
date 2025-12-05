@@ -37,14 +37,14 @@ CREATE TABLE rsms.dept_manager_manuals (
   -- 수행 정보
   executor_id VARCHAR(50),                             -- 수행자ID
   execution_date DATE,                                 -- 수행일자
-  execution_status VARCHAR(20) DEFAULT '01',           -- 수행여부 (01:미수행, 02:수행완료)
-  execution_result_cd VARCHAR(20),                     -- 수행결과코드 (01:적정, 02:부적정)
+  execution_status VARCHAR(20) DEFAULT '01',           -- 수행여부 (01:미수행, 02:수행완료) common_code_details.group_code = EXECUT_STS
+  execution_result_cd VARCHAR(20),                     -- 수행결과코드 (01:적정, 02:부적정) common_code_details.group_code = EXECUT_RESCD
   execution_result_content TEXT,                       -- 수행결과내용
 
   -- 수행점검 정보
   exec_check_method VARCHAR(500),                      -- 수행점검항목
   exec_check_detail TEXT,                              -- 수행점검세부내용
-  exec_check_frequency_cd VARCHAR(20),                 -- 수행점검주기 (FLFL_ISPC_FRCD)
+  exec_check_frequency_cd VARCHAR(20),                 -- 수행점검주기 (common_code_details.group_code = FLFL_ISPC_FRCD)
 
   -- 상태 관리
   is_active VARCHAR(1) DEFAULT 'Y',                    -- 사용여부 (Y/N) - Hibernate 호환성을 위해 VARCHAR(1) 사용

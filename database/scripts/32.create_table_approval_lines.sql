@@ -49,7 +49,7 @@ CREATE TABLE rsms.approval_lines (
     -- 기본 정보
     -- ============================================
     approval_line_name      VARCHAR(100)    NOT NULL,               -- 결재선명
-    work_type_cd            VARCHAR(10)     NOT NULL,               -- 업무구분코드 (WRS: 책무구조, IMPL: 이행점검, IMPROVE: 개선이행)
+    work_type_cd            VARCHAR(10)     NOT NULL,               -- 업무구분코드 (WRS: 책무구조, IMPL: 이행점검, IMPROVE: 개선이행) common_code_details의 WORK_TYCD
     popup_title             VARCHAR(200),                           -- Popup 제목
     description             VARCHAR(500),                           -- 설명
 

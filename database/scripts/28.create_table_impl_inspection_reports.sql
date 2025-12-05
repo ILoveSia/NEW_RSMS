@@ -64,7 +64,7 @@ CREATE TABLE rsms.impl_inspection_reports (
   impl_inspection_plan_id VARCHAR(13) NOT NULL,       -- 이행점검ID (FK → impl_inspection_plans)
 
   -- 기본 정보
-  report_type_cd VARCHAR(20) NOT NULL,                -- 보고서구분 (01:CEO보고서, 02:임원보고서, 03:부서별)
+  report_type_cd VARCHAR(20) NOT NULL,                -- 보고서구분 (01:CEO보고서, 02:임원보고서, 03:부서별) common_code_details의 REPORT_TYCD 코드참조
   review_content TEXT,                                -- 검토내용
   review_date DATE,                                   -- 검토일자
   result TEXT,                                        -- 결과

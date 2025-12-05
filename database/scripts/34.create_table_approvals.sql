@@ -77,8 +77,8 @@ CREATE TABLE rsms.approvals (
     -- ============================================
     -- 업무 정보
     -- ============================================
-    work_type_cd            VARCHAR(10)     NOT NULL,               -- 업무구분코드 (WRS, IMPL, IMPROVE)
-    approval_type_cd        VARCHAR(20)     NOT NULL,               -- 결재유형코드 (PLAN_APPROVAL: 계획승인, COMPLETE_APPROVAL: 완료승인, RESULT_APPROVAL: 결과승인)
+    work_type_cd            VARCHAR(10)     NOT NULL,               -- 업무구분코드 (WRS, IMPL, IMPROVE) WORK_TYCD : 업무구분코드
+    approval_type_cd        VARCHAR(20)     NOT NULL,               -- 결재유형코드 (PLAN_APPROVAL: 계획승인, COMPLETE_APPROVAL: 완료승인, RESULT_APPROVAL: 결과승인) APR_TYCD : 결재유형코드
     reference_type          VARCHAR(50)     NOT NULL,               -- 참조유형 (MGMT_ACTIVITY, IMPL_INSPECTION_ITEM 등) - 필수
     reference_id            VARCHAR(50)     NOT NULL,               -- 참조ID (원본 테이블의 PK) - 필수
 
@@ -100,7 +100,7 @@ CREATE TABLE rsms.approvals (
     -- ============================================
     -- 결재 진행 상태
     -- ============================================
-    approval_status_cd      VARCHAR(10)     NOT NULL DEFAULT '01',  -- 결재상태코드 (01: 기안, 02: 진행중, 03: 완료, 04: 반려, 05: 회수)
+    approval_status_cd      VARCHAR(10)     NOT NULL DEFAULT '01',  -- 결재상태코드 (01: 기안, 02: 진행중, 03: 완료, 04: 반려, 05: 회수) APR_STS_CD
     current_step            INTEGER         DEFAULT 1,              -- 현재단계
     total_steps             INTEGER         DEFAULT 1,              -- 총단계수
 
@@ -128,7 +128,7 @@ CREATE TABLE rsms.approvals (
     -- ============================================
     -- 우선순위 및 마감일
     -- ============================================
-    priority_cd             VARCHAR(10)     DEFAULT 'MEDIUM',       -- 우선순위 (HIGH, MEDIUM, LOW)
+    priority_cd             VARCHAR(10)     DEFAULT 'MEDIUM',       -- 우선순위 (HIGH, MEDIUM, LOW) PRIORITY_CD
     due_date                DATE,                                   -- 완료예정일
 
     -- ============================================
