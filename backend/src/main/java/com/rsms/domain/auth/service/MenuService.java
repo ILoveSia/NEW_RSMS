@@ -555,8 +555,10 @@ public class MenuService {
             Role role = roleOpt.get();
             roleCode = role.getRoleCode();
             roleName = role.getRoleName();
-            // 역할 카테고리 결정 (role_type 기반)
-            roleCategory = determineRoleCategory(role.getRoleType());
+            // 역할 카테고리: role_category 필드 직접 사용 (없으면 role_type 기반 결정)
+            roleCategory = role.getRoleCategory() != null && !role.getRoleCategory().isEmpty()
+                ? role.getRoleCategory()
+                : determineRoleCategory(role.getRoleType());
         }
 
         return MenuPermissionDto.builder()

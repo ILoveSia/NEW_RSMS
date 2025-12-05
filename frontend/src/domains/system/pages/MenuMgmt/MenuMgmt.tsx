@@ -47,8 +47,11 @@ import {
   type UpdateMenuRequest
 } from '@/domains/auth/api/menuApi';
 
+// 역할 목록 조회 API
+import { getAllRoles, type RoleDto } from '@/domains/system/api/roleApi';
+
 // Shared Components
-import { Box, Button, Checkbox, CircularProgress, FormControlLabel, FormLabel, Grid, InputAdornment, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid, InputAdornment, MenuItem as MuiMenuItem, Paper, Radio, RadioGroup, Select, TextField, Typography } from '@mui/material';
 
 // AG-Grid
 import type { ColDef, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community';
@@ -90,6 +93,8 @@ interface MenuNodeDisplay {
 
 /**
  * 메뉴 권한 표시용 인터페이스 (그리드용)
+ * - status: 행 상태 (NEW: 신규, UPDATE: 수정)
+ * - _tempId: 신규 행의 임시 ID
  */
 interface MenuPermissionDisplay {
   id: string;
@@ -104,6 +109,8 @@ interface MenuPermissionDisplay {
   canUpdate: boolean;
   canDelete: boolean;
   canSelect: boolean;
+  status?: 'NEW' | 'UPDATE';  // 행 상태 (CodeMgmt 패턴)
+  _tempId?: string;           // 신규 행 임시 ID
 }
 
 interface MenuMgmtProps {
@@ -209,6 +216,21 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
   // 선택된 권한 ID 목록 (그리드 체크박스)
   const [selectedPermissionIds, setSelectedPermissionIds] = useState<number[]>([]);
 
+  // 역할 목록 (권한 추가용 드롭다운)
+  const [allRoles, setAllRoles] = useState<RoleDto[]>([]);
+
+  // ==========================================
+  // API 호출: 역할 목록 로드 (권한 추가용)
+  // ==========================================
+  const loadAllRoles = useCallback(async () => {
+    try {
+      const roles = await getAllRoles();
+      setAllRoles(roles);
+    } catch (error) {
+      console.error('역할 목록 조회 실패:', error);
+    }
+  }, []);
+
   // ==========================================
   // API 호출: 메뉴 목록 로드
   // ==========================================
@@ -256,11 +278,53 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
   }, []);
 
   // ==========================================
-  // 초기 데이터 로드
+  // 신규 권한 행 편집 핸들러 (permissionColumns보다 먼저 정의)
+  // ==========================================
+
+  /**
+   * 신규 행의 역할 선택 변경 핸들러
+   */
+  const handleRoleChange = useCallback((tempId: string, roleId: number) => {
+    const selectedRole = allRoles.find(r => r.roleId === roleId);
+    if (!selectedRole) return;
+
+    setPermissions(prev => prev.map(p => {
+      if (p._tempId === tempId) {
+        return {
+          ...p,
+          roleId: selectedRole.roleId,
+          roleName: selectedRole.roleName,
+          roleCode: selectedRole.roleCode,
+          roleCategory: selectedRole.roleCategory || '사용자'
+        };
+      }
+      return p;
+    }));
+  }, [allRoles]);
+
+  /**
+   * 신규 행의 권한 체크박스 변경 핸들러
+   */
+  const handleNewPermissionChange = useCallback((
+    tempId: string,
+    field: 'canView' | 'canCreate' | 'canUpdate' | 'canDelete' | 'canSelect',
+    value: boolean
+  ) => {
+    setPermissions(prev => prev.map(p => {
+      if (p._tempId === tempId) {
+        return { ...p, [field]: value };
+      }
+      return p;
+    }));
+  }, []);
+
+  // ==========================================
+  // 초기 데이터 로드 (메뉴 + 역할 목록)
   // ==========================================
   useEffect(() => {
     loadMenus();
-  }, [loadMenus]);
+    loadAllRoles();
+  }, [loadMenus, loadAllRoles]);
 
   // ==========================================
   // 메뉴 선택 시 권한 로드
@@ -289,43 +353,84 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
       field: 'roleCategory',
       headerName: '역할구분',
       width: 120,
-      cellRenderer: ({ data }: { data: MenuPermissionDisplay }) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '100%' }}>
-          <Box
-            sx={{
-              width: 20,
-              height: 20,
-              backgroundColor: data.roleCategory === '최고관리자' ? '#e53e3e' :
-                              data.roleCategory === '관리자' ? '#3182ce' : '#38a169',
-              borderRadius: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Typography variant="caption" color="white" sx={{ fontSize: '0.7rem' }}>
-              {data.roleCategory === '최고관리자' ? '최' :
-               data.roleCategory === '관리자' ? '관' : '사'}
-            </Typography>
+      cellRenderer: ({ data }: { data: MenuPermissionDisplay }) => {
+        // NEW 상태일 때는 역할 선택 후 자동 표시
+        if (data.status === 'NEW' && !data.roleId) {
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', color: '#666' }}>
+              역할 선택 필요
+            </Box>
+          );
+        }
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '100%' }}>
+            <Box
+              sx={{
+                width: 20,
+                height: 20,
+                backgroundColor: data.roleCategory === '최고관리자' ? '#e53e3e' :
+                                data.roleCategory === '관리자' ? '#3182ce' : '#38a169',
+                borderRadius: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Typography variant="caption" color="white" sx={{ fontSize: '0.7rem' }}>
+                {data.roleCategory === '최고관리자' ? '최' :
+                 data.roleCategory === '관리자' ? '관' : '사'}
+              </Typography>
+            </Box>
+            {data.roleCategory}
           </Box>
-          {data.roleCategory}
-        </Box>
-      )
+        );
+      }
     },
     {
       field: 'roleName',
       headerName: '역할명',
-      width: 180,
-      cellRenderer: ({ data }: { data: MenuPermissionDisplay }) => (
-        <Box>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            {data.roleName}
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            {data.roleCode}
-          </Typography>
-        </Box>
-      )
+      width: 200,
+      cellRenderer: ({ data }: { data: MenuPermissionDisplay }) => {
+        // NEW 상태일 때는 역할 선택 드롭다운 표시
+        if (data.status === 'NEW') {
+          return (
+            <FormControl size="small" fullWidth sx={{ my: 0.5 }}>
+              <Select
+                value={data.roleId || ''}
+                onChange={(e) => handleRoleChange(data._tempId!, Number(e.target.value))}
+                displayEmpty
+                sx={{
+                  height: 32,
+                  fontSize: '0.875rem',
+                  '& .MuiSelect-select': {
+                    py: 0.5
+                  }
+                }}
+              >
+                <MuiMenuItem value="" disabled>
+                  <em>역할을 선택하세요</em>
+                </MuiMenuItem>
+                {allRoles.map(role => (
+                  <MuiMenuItem key={role.roleId} value={role.roleId}>
+                    {role.roleName} ({role.roleCode})
+                  </MuiMenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          );
+        }
+        // 기존 데이터는 그대로 표시
+        return (
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {data.roleName}
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              {data.roleCode}
+            </Typography>
+          </Box>
+        );
+      }
     },
     {
       field: 'canView',
@@ -337,11 +442,16 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
             size="small"
             checked={data.canView}
             onChange={async (e) => {
+              // NEW 상태일 때는 로컬 상태만 변경
+              if (data.status === 'NEW') {
+                handleNewPermissionChange(data._tempId!, 'canView', e.target.checked);
+                return;
+              }
+              // 기존 데이터는 API 호출
               try {
                 await updateMenuPermissionApi(data.menuPermissionId, {
                   canView: e.target.checked ? 'Y' : 'N'
                 });
-                // 권한 목록 새로고침
                 loadMenuPermissions(data.menuId);
               } catch (error) {
                 toast.error('권한 수정에 실패했습니다.');
@@ -361,6 +471,12 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
             size="small"
             checked={data.canCreate}
             onChange={async (e) => {
+              // NEW 상태일 때는 로컬 상태만 변경
+              if (data.status === 'NEW') {
+                handleNewPermissionChange(data._tempId!, 'canCreate', e.target.checked);
+                return;
+              }
+              // 기존 데이터는 API 호출
               try {
                 await updateMenuPermissionApi(data.menuPermissionId, {
                   canCreate: e.target.checked ? 'Y' : 'N'
@@ -384,6 +500,12 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
             size="small"
             checked={data.canUpdate}
             onChange={async (e) => {
+              // NEW 상태일 때는 로컬 상태만 변경
+              if (data.status === 'NEW') {
+                handleNewPermissionChange(data._tempId!, 'canUpdate', e.target.checked);
+                return;
+              }
+              // 기존 데이터는 API 호출
               try {
                 await updateMenuPermissionApi(data.menuPermissionId, {
                   canUpdate: e.target.checked ? 'Y' : 'N'
@@ -407,6 +529,12 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
             size="small"
             checked={data.canDelete}
             onChange={async (e) => {
+              // NEW 상태일 때는 로컬 상태만 변경
+              if (data.status === 'NEW') {
+                handleNewPermissionChange(data._tempId!, 'canDelete', e.target.checked);
+                return;
+              }
+              // 기존 데이터는 API 호출
               try {
                 await updateMenuPermissionApi(data.menuPermissionId, {
                   canDelete: e.target.checked ? 'Y' : 'N'
@@ -420,7 +548,7 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
         </Box>
       )
     }
-  ], [loadMenuPermissions]);
+  ], [loadMenuPermissions, allRoles, handleRoleChange, handleNewPermissionChange]);
 
   // ==========================================
   // Event Handlers
@@ -732,6 +860,105 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
       toast.error('권한 삭제에 실패했습니다.');
     }
   }, [selectedPermissionIds, treeState.selectedNode, loadMenuPermissions]);
+
+  /**
+   * 권한 행 추가 핸들러 (CodeMgmt 패턴 적용)
+   * - 신규 행을 그리드 상단에 추가
+   * - status: 'NEW'로 설정하여 스타일 구분
+   */
+  const handleAddPermission = useCallback(() => {
+    if (!treeState.selectedNode) {
+      toast.warning('먼저 메뉴를 선택해주세요.');
+      return;
+    }
+
+    const menuId = parseInt(treeState.selectedNode, 10);
+    if (isNaN(menuId)) return;
+
+    // 임시 ID 생성 (CodeMgmt 패턴)
+    const tempId = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // 신규 권한 행 생성
+    const newPermission: MenuPermissionDisplay = {
+      id: tempId,
+      menuPermissionId: 0,
+      menuId: menuId,
+      roleId: 0,
+      roleName: '',
+      roleCode: '',
+      roleCategory: '',
+      canView: true,
+      canCreate: false,
+      canUpdate: false,
+      canDelete: false,
+      canSelect: false,
+      status: 'NEW',
+      _tempId: tempId
+    };
+
+    // 그리드 상단에 신규 행 추가
+    setPermissions(prev => [newPermission, ...prev]);
+    toast.info('역할을 선택하고 저장 버튼을 클릭하세요.');
+  }, [treeState.selectedNode]);
+
+  /**
+   * 권한 저장 핸들러
+   * - NEW 상태의 행만 저장
+   */
+  const handleSavePermissions = useCallback(async () => {
+    // NEW 상태인 행만 필터링
+    const newPermissions = permissions.filter(p => p.status === 'NEW');
+
+    if (newPermissions.length === 0) {
+      toast.warning('저장할 신규 권한이 없습니다.');
+      return;
+    }
+
+    // 역할 선택 여부 검증
+    const invalidPermissions = newPermissions.filter(p => p.roleId === 0);
+    if (invalidPermissions.length > 0) {
+      toast.warning('역할을 선택하지 않은 항목이 있습니다.');
+      return;
+    }
+
+    // 중복 체크 (같은 메뉴에 같은 역할이 이미 있는지)
+    const existingRoleIds = permissions
+      .filter(p => !p.status) // 기존 데이터만
+      .map(p => p.roleId);
+    const duplicates = newPermissions.filter(p => existingRoleIds.includes(p.roleId));
+    if (duplicates.length > 0) {
+      toast.warning('이미 등록된 역할이 있습니다.');
+      return;
+    }
+
+    try {
+      // 신규 권한 생성 API 호출
+      for (const perm of newPermissions) {
+        await createMenuPermissionApi({
+          menuId: perm.menuId,
+          roleId: perm.roleId,
+          canView: perm.canView ? 'Y' : 'N',
+          canCreate: perm.canCreate ? 'Y' : 'N',
+          canUpdate: perm.canUpdate ? 'Y' : 'N',
+          canDelete: perm.canDelete ? 'Y' : 'N',
+          canSelect: perm.canSelect ? 'Y' : 'N'
+        });
+      }
+
+      toast.success(`${newPermissions.length}개 권한이 저장되었습니다.`);
+
+      // 권한 목록 새로고침
+      if (treeState.selectedNode) {
+        const menuId = parseInt(treeState.selectedNode, 10);
+        if (!isNaN(menuId)) {
+          await loadMenuPermissions(menuId);
+        }
+      }
+    } catch (error) {
+      console.error('권한 저장 실패:', error);
+      toast.error('권한 저장에 실패했습니다.');
+    }
+  }, [permissions, treeState.selectedNode, loadMenuPermissions]);
 
   // 검색어 상태 관리
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -1288,14 +1515,48 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
                     >
                       역할 권한 설정
                     </Typography>
-                    <Box sx={{ display: 'flex' }}>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      {/* 추가 버튼 */}
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleAddPermission}
+                        disabled={!treeState.selectedNode}
+                        sx={{
+                          background: 'var(--theme-button-secondary)',
+                          color: 'var(--theme-button-secondary-text)',
+                          border: 'none',
+                          '&:hover:not(:disabled)': {
+                            background: 'var(--theme-button-secondary-hover)',
+                          }
+                        }}
+                      >
+                        추가
+                      </Button>
+                      {/* 저장 버튼 - NEW 상태 행이 있을 때만 활성화 */}
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleSavePermissions}
+                        disabled={!permissions.some(p => p.status === 'NEW')}
+                        sx={{
+                          background: 'var(--theme-button-primary)',
+                          color: 'var(--theme-button-primary-text)',
+                          border: 'none',
+                          '&:hover:not(:disabled)': {
+                            background: 'var(--theme-button-primary-hover)',
+                          }
+                        }}
+                      >
+                        저장
+                      </Button>
+                      {/* 삭제 버튼 */}
                       <Button
                         variant="outlined"
                         size="small"
                         onClick={handleDeletePermissions}
                         disabled={selectedPermissionIds.length === 0}
                         sx={{
-                          mr: 0.5,
                           borderColor: 'var(--theme-error-main) !important',
                           color: 'var(--theme-error-main) !important',
                           background: 'transparent !important',
@@ -1343,8 +1604,15 @@ const MenuMgmt: React.FC<MenuMgmtProps> = ({ className }) => {
                           onSelectionChanged={handlePermissionSelectionChanged}
                           suppressCellFocus={true}
                           enableCellTextSelection={true}
-                          getRowId={(params) => params.data.id}
+                          getRowId={(params) => params.data._tempId || params.data.id}
                           overlayNoRowsTemplate="<span>선택된 메뉴의 권한 정보가 없습니다.</span>"
+                          // NEW 상태 행에 배경색 적용 (CodeMgmt 패턴)
+                          getRowStyle={(params) => {
+                            if (params.data?.status === 'NEW') {
+                              return { backgroundColor: '#e3f2fd' }; // 연한 파란색
+                            }
+                            return undefined;
+                          }}
                         />
                       </div>
                     ) : (
