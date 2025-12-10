@@ -183,7 +183,7 @@ export const getAttachment = async (attachmentId: string): Promise<AttachmentDto
  * @returns 다운로드 URL
  */
 export const getDownloadUrl = (attachmentId: string): string => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090/api';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   return `${baseUrl}${BASE_URL}/${attachmentId}/download`;
 };
 

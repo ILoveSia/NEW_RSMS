@@ -11,7 +11,9 @@
 import axios, { type AxiosInstance } from 'axios';
 
 // API Base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090/api';
+// 개발 환경에서는 Vite 프록시 사용 (/api → localhost:8090/api)
+// 운영 환경에서는 환경변수로 설정
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * 공통 API 클라이언트 인스턴스
