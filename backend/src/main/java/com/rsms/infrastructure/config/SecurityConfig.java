@@ -67,6 +67,9 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
 
+                // 테스트 API (개발 환경 전용 - 운영에서는 제거)
+                .requestMatchers("/test/**").permitAll()
+
                 // 인증 API (로그인/로그아웃은 인증 불필요)
                 .requestMatchers("/api/auth/login", "/api/auth/logout", "/api/auth/health").permitAll()
 
