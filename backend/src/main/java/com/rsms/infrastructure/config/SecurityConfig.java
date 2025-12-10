@@ -96,43 +96,43 @@ public class SecurityConfig {
 
     /**
      * CORS 설정
+     * - 개발 환경: 모든 origin 허용
+     * - 운영 환경: 특정 도메인만 허용하도록 변경 필요
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000",
-            "http://localhost:4000",
-            "http://localhost:5173",
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:4000",
-            "http://127.0.0.1:5173"
-        ));
-        
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 개발 환경: 모든 origin 허용 (패턴 사용)
+        configuration.setAllowedOriginPatterns(List.of("*"));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
+        // 응답에 노출할 헤더
+        configuration.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
+
         return source;
     }
 
     /**
      * 세션 쿠키 직렬화 설정
      * - 쿠키 기반 세션 관리로 브라우저 새로고침 시에도 세션 유지
-     * - SameSite=Lax로 CSRF 보호
+     * - SameSite=None + Secure=false: 개발 환경에서 크로스 도메인 쿠키 허용
+     * - 운영 환경에서는 SameSite=Lax, Secure=true로 변경 필요
      */
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setUseHttpOnlyCookie(true);
-        serializer.setUseSecureCookie(false);  // 로컬 환경 (운영에서는 true)
-        serializer.setSameSite("Lax");
+        serializer.setUseSecureCookie(false);  // 개발 환경 (운영에서는 true)
+        serializer.setSameSite("None");  // 크로스 도메인 쿠키 허용 (개발 환경)
         serializer.setCookiePath("/");
         serializer.setCookieMaxAge(1800);  // 30분
         return serializer;

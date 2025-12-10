@@ -3,6 +3,7 @@
 -- =====================================================================================
 -- 목적: 책무 관리 테이블들의 PK를 자동증가 숫자에서 업무 코드로 변경
 -- 작성일: 2025-11-05
+-- 수정일: 2025-12-10 (컬럼 추가 순서 버그 수정)
 -- =====================================================================================
 -- 변경 대상 테이블:
 --   1. responsibilities: responsibility_id (BIGSERIAL) → responsibility_cd (VARCHAR)
@@ -39,7 +40,7 @@ ALTER TABLE rsms.management_obligations
 -- 1.4. FK 컬럼 타입 변경: responsibility_detail_id (BIGINT) → responsibility_detail_cd (VARCHAR)
 -- (1) 새 컬럼 추가
 ALTER TABLE rsms.management_obligations
-  ADD COLUMN responsibility_detail_cd VARCHAR(30);
+  ADD COLUMN IF NOT EXISTS responsibility_detail_cd VARCHAR(30);
 
 -- (2) 기존 컬럼 삭제 (현재 개발 환경이므로 데이터 없음)
 ALTER TABLE rsms.management_obligations
@@ -50,13 +51,13 @@ ALTER TABLE rsms.management_obligations
   ALTER COLUMN responsibility_detail_cd SET NOT NULL;
 
 -- 1.5. 새로운 인덱스 생성
-CREATE INDEX idx_mgmt_obligations_resp_detail_cd
+CREATE INDEX IF NOT EXISTS idx_mgmt_obligations_resp_detail_cd
   ON rsms.management_obligations(responsibility_detail_cd);
 
-CREATE INDEX idx_mgmt_obligations_detail_active
+CREATE INDEX IF NOT EXISTS idx_mgmt_obligations_detail_active
   ON rsms.management_obligations(responsibility_detail_cd, is_active);
 
-CREATE INDEX idx_mgmt_obligations_org_active
+CREATE INDEX IF NOT EXISTS idx_mgmt_obligations_org_active
   ON rsms.management_obligations(org_code, is_active);
 
 -- 1.6. 컬럼 코멘트 업데이트
@@ -76,22 +77,30 @@ DROP INDEX IF EXISTS rsms.idx_responsibility_details_responsibility_id;
 DROP INDEX IF EXISTS rsms.idx_responsibility_details_resp_active;
 
 -- 2.3. PK 변경: responsibility_detail_id → responsibility_detail_cd
--- (1) 기존 PK 제약조건 삭제
+-- (1) 먼저 새 컬럼 추가 (PK로 설정하기 전에 컬럼이 존재해야 함)
+ALTER TABLE rsms.responsibility_details
+  ADD COLUMN IF NOT EXISTS responsibility_detail_cd VARCHAR(30);
+
+-- (2) 기존 PK 제약조건 삭제
 ALTER TABLE rsms.responsibility_details
   DROP CONSTRAINT IF EXISTS responsibility_details_pkey;
-
--- (2) responsibility_detail_cd를 새로운 PK로 설정
-ALTER TABLE rsms.responsibility_details
-  ADD CONSTRAINT responsibility_details_pkey PRIMARY KEY (responsibility_detail_cd);
 
 -- (3) 기존 PK 컬럼 삭제
 ALTER TABLE rsms.responsibility_details
   DROP COLUMN IF EXISTS responsibility_detail_id;
 
+-- (4) responsibility_detail_cd에 NOT NULL 설정
+ALTER TABLE rsms.responsibility_details
+  ALTER COLUMN responsibility_detail_cd SET NOT NULL;
+
+-- (5) responsibility_detail_cd를 새로운 PK로 설정
+ALTER TABLE rsms.responsibility_details
+  ADD CONSTRAINT responsibility_details_pkey PRIMARY KEY (responsibility_detail_cd);
+
 -- 2.4. FK 컬럼 타입 변경: responsibility_id (BIGINT) → responsibility_cd (VARCHAR)
 -- (1) 새 컬럼 추가
 ALTER TABLE rsms.responsibility_details
-  ADD COLUMN responsibility_cd VARCHAR(20);
+  ADD COLUMN IF NOT EXISTS responsibility_cd VARCHAR(20);
 
 -- (2) 기존 컬럼 삭제
 ALTER TABLE rsms.responsibility_details
@@ -102,10 +111,10 @@ ALTER TABLE rsms.responsibility_details
   ALTER COLUMN responsibility_cd SET NOT NULL;
 
 -- 2.5. 새로운 인덱스 생성
-CREATE INDEX idx_responsibility_details_responsibility_cd
+CREATE INDEX IF NOT EXISTS idx_responsibility_details_responsibility_cd
   ON rsms.responsibility_details(responsibility_cd);
 
-CREATE INDEX idx_responsibility_details_resp_active
+CREATE INDEX IF NOT EXISTS idx_responsibility_details_resp_active
   ON rsms.responsibility_details(responsibility_cd, is_active);
 
 -- 2.6. 컬럼 코멘트 업데이트
@@ -133,10 +142,10 @@ ALTER TABLE rsms.responsibilities
   DROP COLUMN IF EXISTS responsibility_id;
 
 -- 3.3. 새로운 인덱스 생성 (코드 생성용)
-CREATE INDEX idx_responsibilities_ledger_cat
+CREATE INDEX IF NOT EXISTS idx_responsibilities_ledger_cat
   ON rsms.responsibilities(ledger_order_id, responsibility_cat);
 
-CREATE INDEX idx_responsibilities_positions_active
+CREATE INDEX IF NOT EXISTS idx_responsibilities_positions_active
   ON rsms.responsibilities(positions_id, is_active);
 
 -- 3.4. 컬럼 코멘트 업데이트
