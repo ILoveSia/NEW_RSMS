@@ -123,16 +123,15 @@ public class SecurityConfig {
     /**
      * 세션 쿠키 직렬화 설정
      * - 쿠키 기반 세션 관리로 브라우저 새로고침 시에도 세션 유지
-     * - SameSite=None + Secure=false: 개발 환경에서 크로스 도메인 쿠키 허용
-     * - 운영 환경에서는 SameSite=Lax, Secure=true로 변경 필요
+     * - SameSite=Lax: 같은 사이트 요청 + 탑레벨 네비게이션 허용
      */
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setUseHttpOnlyCookie(true);
-        serializer.setUseSecureCookie(false);  // 개발 환경 (운영에서는 true)
-        serializer.setSameSite("None");  // 크로스 도메인 쿠키 허용 (개발 환경)
+        serializer.setUseSecureCookie(false);  // HTTP 환경
+        serializer.setSameSite("Lax");  // HTTP 환경에서 안전한 설정
         serializer.setCookiePath("/");
         serializer.setCookieMaxAge(1800);  // 30분
         return serializer;
